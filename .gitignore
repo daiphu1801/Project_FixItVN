@@ -1,0 +1,42 @@
+# .gitignore — FixIt VN monorepo
+
+# ===================== Maven (Backend) =====================
+backend/target/
+backend/*.jar
+backend/*.war
+
+# ===================== Gradle / Android =====================
+android/.gradle/
+android/build/
+android/app/build/
+android/local.properties
+android/captures/
+android/.externalNativeBuild/
+android/.cxx/
+
+# ===================== IDE =====================
+.idea/
+*.iml
+*.iws
+*.ipr
+.vscode/
+*.swp
+*.swo
+*~
+
+# ===================== Environment =====================
+*.env
+.env.*
+
+# ===================== OS =====================
+.DS_Store
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# ===================== Docs =====================
+docs/
+
+# ===================== Logs =====================
+*.log
+logs/
