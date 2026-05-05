@@ -49,7 +49,8 @@ public class User {
     protected void onCreate() {
         createdAt = LocalDateTime.now();
         updatedAt = LocalDateTime.now();
-        if (active == null) active = true;
+        if (active == null)
+            active = true;
     }
 
     @PreUpdate
