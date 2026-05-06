@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_auth"
+    app:startDestination="@id/authRoleFragment">
+
+    <fragment
+        android:id="@+id/authRoleFragment"
+        android:name="com.fixit.ui.auth.AuthRoleFragment"
+        android:label="Chọn vai trò"
+        tools:layout="@layout/fragment_auth_role" />
+
+</navigation>

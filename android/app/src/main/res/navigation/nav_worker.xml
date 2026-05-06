@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/nav_worker"
+    app:startDestination="@id/workerHomeFragment">
+
+    <fragment
+        android:id="@+id/workerHomeFragment"
+        android:name="com.fixit.ui.worker.home.WorkerHomeFragment"
+        android:label="Trang chủ" />
+
+    <fragment
+        android:id="@+id/workerOrdersFragment"
+        android:name="com.fixit.ui.worker.orders.WorkerOrdersFragment"
+        android:label="Đơn hàng" />
+
+    <fragment
+        android:id="@+id/workerChatFragment"
+        android:name="com.fixit.ui.worker.chat.WorkerChatFragment"
+        android:label="Chat" />
+
+    <fragment
+        android:id="@+id/workerWalletFragment"
+        android:name="com.fixit.ui.worker.wallet.WorkerWalletFragment"
+        android:label="Ví" />
+
+    <fragment
+        android:id="@+id/workerStatsFragment"
+        android:name="com.fixit.ui.worker.stats.WorkerStatsFragment"
+        android:label="Thống kê" />
+
+</navigation>

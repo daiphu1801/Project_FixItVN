@@ -1,4 +1,3 @@
-<!-- android/app/src/main/AndroidManifest.xml -->
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
@@ -14,7 +13,28 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.FixItVN">
 
-        <!-- TODO: Add MainActivity and other activities here -->
+        <!-- Auth Activity (Launcher) -->
+        <activity
+            android:name=".ui.auth.AuthActivity"
+            android:exported="true"
+            android:windowSoftInputMode="adjustResize">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <!-- Customer Main Activity -->
+        <activity
+            android:name=".ui.customer.CustomerActivity"
+            android:exported="false"
+            android:windowSoftInputMode="adjustResize" />
+
+        <!-- Worker Main Activity -->
+        <activity
+            android:name=".ui.main.MainActivity"
+            android:exported="false"
+            android:windowSoftInputMode="adjustResize" />
 
     </application>
 </manifest>
