@@ -57,7 +57,7 @@
             app:backgroundTint="#42c2ff"
             app:tint="#ffffff"
             app:layout_anchor="@id/bottomAppBarWorker"
-            app:elevation="12dp"
+            app:elevation="13dp"
             android:contentDescription="Nhận việc" />
 
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
