@@ -20,6 +20,7 @@ import dagger.hilt.android.AndroidEntryPoint;
 public class WorkerHomeFragment extends BaseFragment<FragmentWorkerHomeBinding> {
 
     private WorkerHomeViewModel viewModel;
+    private com.fixit.ui.worker.WorkerStatusViewModel statusViewModel;
     private AppointmentAdapter appointmentAdapter;
 
     @Override
@@ -29,22 +30,28 @@ public class WorkerHomeFragment extends BaseFragment<FragmentWorkerHomeBinding> 
 
     @Override
     protected void setupViews() {
-        // UC-W02: Toggle trạng thái Sẵn sàng nhận việc
-        binding.switchOnlineStatus.setOnCheckedChangeListener((buttonView, isChecked) -> {
-            if (isChecked) {
-                binding.tvStatusDesc.setText("Sẵn sàng nhận việc");
-                binding.tvStatusDesc.setTextColor(android.graphics.Color.parseColor("#0d1b2a"));
-                binding.cardToggle.setStrokeColor(android.graphics.Color.parseColor("#42c2ff"));
-            } else {
-                binding.tvStatusDesc.setText("Đang nghỉ ngơi");
-                binding.tvStatusDesc.setTextColor(android.graphics.Color.parseColor("#94a3b8"));
-                binding.cardToggle.setStrokeColor(android.graphics.Color.parseColor("#e2e8f0"));
+        // Card trạng thái → click chuyển sang tab Tìm việc để bật/tắt
+        binding.cardToggle.setOnClickListener(v -> {
+            com.google.android.material.bottomnavigation.BottomNavigationView bottomNav =
+                    requireActivity().findViewById(com.fixit.R.id.bottomNavigationView);
+            if (bottomNav != null) {
+                bottomNav.setSelectedItemId(com.fixit.R.id.workerJobFragment);
             }
         });
 
         // UC-W01: Nút xem chi tiết đơn đang chạy
         binding.layoutActiveOrder.btnViewActiveOrder.setOnClickListener(v -> {
             // TODO: Navigate sang fragment_worker_order_detail
+        });
+
+        // Điều hướng sang Hồ sơ cá nhân khi nhấn vào Avatar
+        binding.ivWorkerAvatar.setOnClickListener(v -> {
+            androidx.navigation.Navigation.findNavController(v).navigate(com.fixit.R.id.workerProfileFragment);
+        });
+
+        // Điều hướng sang màn hình Thống kê đầy đủ
+        binding.tvViewStatsDetail.setOnClickListener(v -> {
+            androidx.navigation.Navigation.findNavController(v).navigate(com.fixit.R.id.workerStatsFragment);
         });
 
         // Setup RecyclerView cho Lịch hẹn hôm nay
@@ -67,6 +74,20 @@ public class WorkerHomeFragment extends BaseFragment<FragmentWorkerHomeBinding> 
     @Override
     protected void observeData() {
         viewModel = new ViewModelProvider(this).get(WorkerHomeViewModel.class);
+        statusViewModel = new ViewModelProvider(requireActivity()).get(com.fixit.ui.worker.WorkerStatusViewModel.class);
+
         // TODO: Observe data from ViewModel and update UI
+
+        statusViewModel.isOnline.observe(getViewLifecycleOwner(), isOnline -> {
+            if (isOnline) {
+                binding.tvStatusDesc.setText("ONLINE — Đang nhận việc");
+                binding.tvStatusDesc.setTextColor(android.graphics.Color.parseColor("#16a34a")); // Xanh lá
+                binding.viewStatusDot.setBackgroundColor(android.graphics.Color.parseColor("#22c55e"));
+            } else {
+                binding.tvStatusDesc.setText("OFFLINE");
+                binding.tvStatusDesc.setTextColor(android.graphics.Color.parseColor("#94a3b8")); // Xám
+                binding.viewStatusDot.setBackgroundColor(android.graphics.Color.parseColor("#94a3b8"));
+            }
+        });
     }
 }
