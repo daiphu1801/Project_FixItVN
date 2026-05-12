@@ -1,9 +1,14 @@
-# .gitignore — FixIt VN monorepo
+# .gitignore — FixIt VN monorepo (Android & Java Backend)
 
 # ===================== Maven (Backend) =====================
 backend/target/
 backend/*.jar
 backend/*.war
+backend/*.zip
+backend/*.tar.gz
+backend/*.class
+backend/bin/
+backend/.factorypath
 
 # ===================== Gradle / Android =====================
 android/.gradle/
@@ -13,30 +18,39 @@ android/local.properties
 android/captures/
 android/.externalNativeBuild/
 android/.cxx/
+# Quan trọng: Ignore gradle.properties vì nó chứa cấu hình Java Home cá nhân
+android/gradle.properties
 
-# ===================== IDE =====================
+# ===================== IDE (IntelliJ, VS Code, Eclipse) =====================
 .idea/
 *.iml
 *.iws
 *.ipr
 .vscode/
+.settings/
+.project
+.classpath
 *.swp
 *.swo
 *~
 
-# ===================== Environment =====================
+# ===================== Environment & Secrets =====================
 *.env
 .env.*
+*.jks
+*.keystore
+# Lưu ý: Các file dưới đây nên được chia sẻ qua kênh bảo mật khác thay vì Git
+google-services.json
+firebase.json
 
-# ===================== OS =====================
+# ===================== OS (System) =====================
 .DS_Store
 Thumbs.db
 ehthumbs.db
 Desktop.ini
 
-# ===================== Docs =====================
-docs/
-
-# ===================== Logs =====================
+# ===================== Logs, Caches & Docs =====================
 *.log
 logs/
+.gradle/
+docs/
