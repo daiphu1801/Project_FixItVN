@@ -7,7 +7,7 @@
 
     <fragment
         android:id="@+id/nav_customer_home"
-        android:name="com.fixit.ui.customer.home.CustomerHomeFragment"
+        android:name="com.fixit.feature.customer.home.presentation.CustomerHomeFragment"
         android:label="Trang chủ"
         tools:layout="@layout/fragment_customer_home" />
 

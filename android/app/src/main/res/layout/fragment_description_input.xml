@@ -17,7 +17,7 @@
             android:id="@+id/btnBack"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="< Quay lại"
+            android:text="&lt; Quay lại"
             android:textColor="#42C2FF"
             android:textSize="15sp"
             app:layout_constraintBottom_toBottomOf="parent"

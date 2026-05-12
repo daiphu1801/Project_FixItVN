@@ -5,7 +5,7 @@ package com.fixit.core.socket;
 //   implementation 'io.socket:socket.io-client:2.1.0'
 //
 // import android.util.Log;
-// import com.fixit.utils.Constants;
+// import com.fixit.core.common.Constants;
 // import io.socket.client.IO;
 // import io.socket.client.Socket;
 // import java.net.URISyntaxException;

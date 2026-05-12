@@ -130,7 +130,7 @@
             android:layout_width="32dp"
             android:layout_height="32dp"
             android:background="?attr/selectableItemBackgroundBorderless"
-            android:src="@android:drawable/ic_input_add"
+            android:src="@drawable/ic_add"
             app:tint="#888888" />
 
         <ImageButton
@@ -169,7 +169,7 @@
             <ImageView
                 android:layout_width="24dp"
                 android:layout_height="24dp"
-                android:src="@android:drawable/ic_menu_emoticons"
+                android:src="@drawable/ic_emoticon"
                 app:tint="#999999" />
         </LinearLayout>
 
@@ -179,7 +179,7 @@
             android:layout_height="44dp"
             android:background="@drawable/bg_bottom_sheet"
             android:backgroundTint="#29B6F6"
-            android:src="@android:drawable/ic_menu_send"
+            android:src="@drawable/ic_send"
             app:tint="#FFFFFF" />
     </LinearLayout>
 

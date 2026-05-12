@@ -7,7 +7,7 @@
 
     <fragment
         android:id="@+id/authRoleFragment"
-        android:name="com.fixit.ui.auth.AuthRoleFragment"
+        android:name="com.fixit.feature.auth.presentation.AuthRoleFragment"
         android:label="Chọn vai trò"
         tools:layout="@layout/fragment_auth_role">
         <action
@@ -17,7 +17,7 @@
 
     <fragment
         android:id="@+id/loginFragment"
-        android:name="com.fixit.ui.auth.LoginFragment"
+        android:name="com.fixit.feature.auth.presentation.LoginFragment"
         android:label="Đăng nhập"
         tools:layout="@layout/fragment_login">
         <action
@@ -30,13 +30,13 @@
 
     <fragment
         android:id="@+id/forgotPasswordFragment"
-        android:name="com.fixit.ui.auth.ForgotPasswordFragment"
+        android:name="com.fixit.feature.auth.presentation.ForgotPasswordFragment"
         android:label="Quên mật khẩu"
         tools:layout="@layout/fragment_forgotpassword" />
 
     <fragment
         android:id="@+id/registerFragment"
-        android:name="com.fixit.ui.auth.RegisterFragment"
+        android:name="com.fixit.feature.auth.presentation.RegisterFragment"
         android:label="Đăng ký"
         tools:layout="@layout/fragment_register" />
 

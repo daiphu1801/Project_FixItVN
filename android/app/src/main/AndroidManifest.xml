@@ -15,7 +15,7 @@
 
         <!-- Auth Activity (Launcher) -->
         <activity
-            android:name=".ui.auth.AuthActivity"
+            android:name=".feature.auth.presentation.AuthActivity"
             android:exported="true"
             android:windowSoftInputMode="adjustResize">
             <intent-filter>
@@ -26,13 +26,13 @@
 
         <!-- Customer Main Activity -->
         <activity
-            android:name=".ui.customer.CustomerActivity"
+            android:name=".feature.customer.presentation.CustomerActivity"
             android:exported="false"
             android:windowSoftInputMode="adjustResize" />
 
         <!-- Worker Main Activity -->
         <activity
-            android:name=".ui.main.MainActivity"
+            android:name=".feature.worker.presentation.WorkerActivity"
             android:exported="false"
             android:windowSoftInputMode="adjustResize" />
 
