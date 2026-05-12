@@ -9,10 +9,10 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.navigation.Navigation;
 
+import com.fixit.R;
 import com.fixit.databinding.FragmentAuthRoleBinding;
-import com.fixit.ui.customer.CustomerActivity;
-import com.fixit.ui.main.MainActivity;
 
 public class AuthRoleFragment extends Fragment {
 
@@ -30,17 +30,15 @@ public class AuthRoleFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         binding.cardCustomer.setOnClickListener(v -> {
-            // Chuyển sang màn hình chính của Customer
-            Intent intent = new Intent(requireActivity(), CustomerActivity.class);
-            startActivity(intent);
-            requireActivity().finish();
+            Bundle bundle = new Bundle();
+            bundle.putString("role", "CUSTOMER");
+            Navigation.findNavController(view).navigate(R.id.action_authRoleFragment_to_loginFragment, bundle);
         });
 
         binding.cardWorker.setOnClickListener(v -> {
-            // Chuyển sang màn hình chính của Worker (MainActivity)
-            Intent intent = new Intent(requireActivity(), MainActivity.class);
-            startActivity(intent);
-            requireActivity().finish();
+            Bundle bundle = new Bundle();
+            bundle.putString("role", "WORKER");
+            Navigation.findNavController(view).navigate(R.id.action_authRoleFragment_to_loginFragment, bundle);
         });
     }
 
