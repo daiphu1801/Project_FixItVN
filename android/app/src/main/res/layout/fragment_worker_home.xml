@@ -72,56 +72,95 @@
             </FrameLayout>
         </LinearLayout>
 
-        <!-- Online Toggle Card (Merged from layout_worker_home_toggle) -->
+        <!-- Trạng thái nhận việc (read-only) — click → sang tab Tìm việc -->
         <com.google.android.material.card.MaterialCardView
             android:id="@+id/cardToggle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="16dp"
+            android:clickable="true"
+            android:focusable="true"
+            app:cardBackgroundColor="@android:color/white"
             app:cardCornerRadius="20dp"
             app:cardElevation="4dp"
-            app:cardBackgroundColor="@android:color/white"
-            app:strokeColor="#42c2ff"
+            app:strokeColor="#e2e8f0"
             app:strokeWidth="2dp">
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:gravity="center"
-                android:orientation="vertical"
-                android:padding="20dp">
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:padding="16dp">
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="16dp"
-                    android:drawablePadding="8dp"
-                    android:text="Khu vực: Quận Cầu Giấy, Hà Nội"
-                    android:textColor="#94a3b8"
-                    android:textSize="13sp" />
+                <!-- Chấm trạng thái -->
+                <View
+                    android:id="@+id/viewStatusDot"
+                    android:layout_width="12dp"
+                    android:layout_height="12dp"
+                    android:layout_marginEnd="12dp"
+                    android:background="#94a3b8" />
 
-                <com.google.android.material.switchmaterial.SwitchMaterial
-                    android:id="@+id/switchOnlineStatus"
-                    android:layout_width="wrap_content"
+                <LinearLayout
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:checked="true"
-                    android:scaleX="1.5"
-                    android:scaleY="1.5" />
+                    android:layout_weight="1"
+                    android:orientation="vertical">
 
-                <TextView
-                    android:id="@+id/tvStatusDesc"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="16dp"
-                    android:text="Sẵn sàng nhận việc"
-                    android:textColor="#0d1b2a"
-                    android:textSize="16sp"
-                    android:textStyle="bold" />
+                    <TextView
+                        android:id="@+id/tvStatusDesc"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="OFFLINE"
+                        android:textColor="#94a3b8"
+                        android:textSize="14sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="2dp"
+                        android:text="Nhấn để thay đổi trạng thái →"
+                        android:textColor="#42c2ff"
+                        android:textSize="12sp" />
+                </LinearLayout>
+
+                <ImageView
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:src="@drawable/ic_lucide_chevron_right"
+                    app:tint="#cbd5e1" />
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
 
         <!-- Reusable Shared Components -->
         <include android:id="@+id/layoutActiveOrder" layout="@layout/layout_card_active_order" />
+        
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp">
+            
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentStart="true"
+                android:text="Thống kê thu nhập"
+                android:textColor="#0d1b2a"
+                android:textSize="18sp"
+                android:textStyle="bold" />
+                
+            <TextView
+                android:id="@+id/tvViewStatsDetail"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:text="Xem chi tiết"
+                android:textColor="#42c2ff"
+                android:textSize="14sp"
+                android:textStyle="bold" />
+        </RelativeLayout>
+
         <include android:id="@+id/layoutStats" layout="@layout/layout_stats_overview" />
         <include android:id="@+id/layoutChart" layout="@layout/layout_income_chart" />
 

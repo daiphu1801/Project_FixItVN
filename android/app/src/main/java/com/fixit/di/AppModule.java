@@ -16,7 +16,6 @@ import dagger.hilt.components.SingletonComponent;
 @Module
 @InstallIn(SingletonComponent.class)
 public class AppModule {
-
     @Provides
     @Singleton
     public SharedPreferences provideSharedPreferences(@ApplicationContext Context context) {

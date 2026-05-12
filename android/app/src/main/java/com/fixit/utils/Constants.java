@@ -2,7 +2,8 @@ package com.fixit.utils;
 
 public class Constants {
     // Network
-    public static final String BASE_URL = "https://api.fixitvn.com/";
+    // Dùng 10.0.2.2 cho máy ảo, hoặc IP máy tính cho máy thật (ví dụ: 192.168.1.5)
+    public static final String BASE_URL = "http://10.0.2.2:8080/";
     public static final int CONNECT_TIMEOUT = 30; // seconds
     public static final int READ_TIMEOUT = 30;    // seconds
 
