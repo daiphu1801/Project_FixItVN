@@ -40,3 +40,12 @@ docs/
 # ===================== Logs =====================
 *.log
 logs/
+
+# ===================== Security & Keys =====================
+*.jks
+*.keystore
+google-services.json
+firebase.json
+
+# ===================== IDE Caches =====================
+.gradle/
