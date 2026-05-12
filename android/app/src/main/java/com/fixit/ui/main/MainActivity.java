@@ -21,24 +21,33 @@ public class MainActivity extends BaseActivity<ActivityWorkerBinding> {
 
     @Override
     protected void setupViews() {
-        // Lấy NavController từ NavHostFragment
         NavHostFragment navHostFragment = (NavHostFragment) getSupportFragmentManager()
                 .findFragmentById(binding.navHostFragment.getId());
 
         if (navHostFragment != null) {
             NavController navController = navHostFragment.getNavController();
+
+            // Wire bottom nav (5 items: Trang chủ, Đơn hàng, Tìm việc, Chat, Tài khoản)
             NavigationUI.setupWithNavController(binding.bottomNavigationView, navController);
 
-            // Vô hiệu hóa nút placeholder ở giữa
-            android.view.MenuItem placeholderItem = binding.bottomNavigationView.getMenu().findItem(com.fixit.R.id.placeholder_worker);
-            if (placeholderItem != null) {
-                placeholderItem.setEnabled(false);
-            }
-        }
+            // FAB ở giữa → simulate click item "Tìm việc" trong bottom nav
+            // Để NavigationUI tự xử lý popUpTo đúng cách (tránh conflict back stack)
+            binding.fabWorkerOnline.setOnClickListener(v ->
+                    binding.bottomNavigationView.setSelectedItemId(com.fixit.R.id.workerJobFragment));
 
-        binding.fabWorkerOnline.setOnClickListener(v -> {
-            android.widget.Toast.makeText(this, "Chuyển trạng thái Nhận việc", android.widget.Toast.LENGTH_SHORT).show();
-        });
+            // Đổi màu FAB khi item Tìm Việc được chọn
+            navController.addOnDestinationChangedListener((controller, destination, arguments) -> {
+                if (destination.getId() == com.fixit.R.id.workerJobFragment) {
+                    binding.fabWorkerOnline.setBackgroundTintList(
+                            android.content.res.ColorStateList.valueOf(
+                                    android.graphics.Color.parseColor("#22c55e")));
+                } else {
+                    binding.fabWorkerOnline.setBackgroundTintList(
+                            android.content.res.ColorStateList.valueOf(
+                                    android.graphics.Color.parseColor("#42c2ff")));
+                }
+            });
+        }
     }
 
     @Override
