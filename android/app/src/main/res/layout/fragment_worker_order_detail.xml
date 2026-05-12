@@ -6,12 +6,15 @@
     android:background="#F5F7FA"
     android:orientation="vertical">
 
-    <include layout="@layout/layout_worker_topbar" />
+    <include
+        android:id="@+id/appBarLayout"
+        layout="@layout/layout_standard_appbar" />
 
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="1">
+        android:layout_weight="1"
+        android:fillViewport="true">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -19,137 +22,667 @@
             android:orientation="vertical"
             android:padding="16dp">
 
-            <!-- Fake Map View -->
-            <com.google.android.material.card.MaterialCardView
+            <!-- Order Status & ID -->
+            <RelativeLayout
                 android:layout_width="match_parent"
-                android:layout_height="200dp"
-                android:layout_marginBottom="16dp"
-                app:cardCornerRadius="16dp"
-                app:cardElevation="2dp"
-                app:strokeWidth="0dp">
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp">
 
-                <ImageView
+                <TextView
+                    android:id="@+id/tvOrderDetailStatus"
+                    style="@style/FixIt.Order.Badge"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="#E3F2FD"
+                    android:text="ĐANG THỰC HIỆN"
+                    android:textColor="#0ea5e9" />
+
+                <TextView
+                    android:id="@+id/tvOrderId"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentEnd="true"
+                    android:layout_centerVertical="true"
+                    android:text="#ODR-123456"
+                    android:textColor="#94a3b8"
+                    android:textSize="12sp" />
+            </RelativeLayout>
+
+            <!-- Map View Placeholder -->
+            <com.google.android.material.card.MaterialCardView
+                style="@style/FixIt.Card.Content"
+                android:layout_width="match_parent"
+                android:layout_height="180dp"
+                android:layout_marginBottom="20dp">
+
+                <FrameLayout
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:background="#E0E0E0"
-                    android:scaleType="centerCrop"
-                    android:src="@android:drawable/ic_dialog_map"
-                    app:tint="#BDBDBD" />
+                    android:layout_height="match_parent">
+
+                    <ImageView
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:background="#f1f5f9"
+                        android:scaleType="centerCrop"
+                        android:src="@drawable/circle_background"
+                        app:tint="#e2e8f0" />
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:gravity="center"
+                        android:orientation="vertical">
+
+                        <ImageView
+                            android:layout_width="40dp"
+                            android:layout_height="40dp"
+                            android:src="@drawable/ic_lucide_map_pin"
+                            app:tint="#0ea5e9" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="8dp"
+                            android:text="Xem bản đồ"
+                            android:textColor="#0ea5e9"
+                            android:textSize="14sp"
+                            android:textStyle="bold" />
+                    </LinearLayout>
+                </FrameLayout>
             </com.google.android.material.card.MaterialCardView>
 
+            <!-- Service Info -->
             <TextView
+                android:id="@+id/tvOrderDetailService"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="Sửa rò rỉ ống nước bồn rửa chén"
-                android:textColor="#333333"
-                android:textSize="20sp"
+                android:textColor="#0d1b2a"
+                android:textSize="22sp"
                 android:textStyle="bold" />
 
-            <TextView
+            <!-- Customer Info Section -->
+            <com.google.android.material.card.MaterialCardView
+                style="@style/FixIt.Card.Content"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:text="Địa chỉ: 123 Nguyễn Văn Linh, Quận 7"
-                android:textColor="#666666"
-                android:textSize="14sp" />
+                android:layout_marginTop="20dp">
 
-            <TextView
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="16dp">
+
+                    <TextView
+                        style="@style/FixIt.Text.SectionHeader"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Thông tin khách hàng"
+                        android:textColor="#94a3b8"
+                        android:textSize="12sp" />
+
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+
+                        <ImageView
+                            android:id="@+id/ivCustomerAvatar"
+                            android:layout_width="48dp"
+                            android:layout_height="48dp"
+                            android:src="@drawable/ic_lucide_user"
+                            android:background="@drawable/circle_background"
+                            android:backgroundTint="#f1f5f9"
+                            android:padding="8dp"
+                            app:tint="#64748b"/>
+
+                        <LinearLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="12dp"
+                            android:layout_toEndOf="@id/ivCustomerAvatar"
+                            android:layout_centerVertical="true"
+                            android:orientation="vertical">
+
+                            <TextView
+                                android:id="@+id/tvOrderDetailCustomerName"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Nguyễn Văn B"
+                                android:textColor="#0d1b2a"
+                                android:textSize="16sp"
+                                android:textStyle="bold" />
+
+                            <TextView
+                                android:id="@+id/tvOrderDetailCustomerPhone"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="0912 345 678"
+                                android:textColor="#64748b"
+                                android:textSize="14sp" />
+                        </LinearLayout>
+
+                        <ImageView
+                            android:id="@+id/btnChatCustomer"
+                            android:layout_width="40dp"
+                            android:layout_height="40dp"
+                            android:layout_alignParentEnd="true"
+                            android:layout_centerVertical="true"
+                            android:background="@drawable/circle_background"
+                            android:backgroundTint="#f0f9ff"
+                            android:padding="10dp"
+                            android:src="@drawable/ic_lucide_message"
+                            app:tint="#0ea5e9" />
+                    </RelativeLayout>
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- Order Details Section -->
+            <com.google.android.material.card.MaterialCardView
+                style="@style/FixIt.Card.Content"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="4dp"
-                android:text="SĐT khách: 090xxxxxxx"
-                android:textColor="#666666"
-                android:textSize="14sp" />
+                android:layout_marginTop="16dp">
 
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:layout_marginTop="16dp"
-                android:layout_marginBottom="16dp"
-                android:background="#DDDDDD" />
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="16dp">
 
+                    <!-- Địa chỉ -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="16dp"
+                        android:orientation="horizontal">
+                        <ImageView
+                            android:layout_width="20dp"
+                            android:layout_height="20dp"
+                            android:src="@drawable/ic_lucide_map_pin"
+                            app:tint="#94a3b8" />
+                        <TextView
+                            android:id="@+id/tvOrderDetailAddress"
+                            style="@style/FixIt.Text.InfoRow"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="123 Nguyễn Văn Linh, Quận 7, TP.HCM" />
+                    </LinearLayout>
+
+                    <!-- Thời gian -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="16dp"
+                        android:orientation="horizontal">
+                        <ImageView
+                            android:layout_width="20dp"
+                            android:layout_height="20dp"
+                            android:src="@drawable/ic_lucide_clock"
+                            app:tint="#94a3b8" />
+                        <TextView
+                            android:id="@+id/tvOrderDetailScheduledTime"
+                            style="@style/FixIt.Text.InfoRow"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="Hôm nay, 14:30 (10/05/2026)" />
+                    </LinearLayout>
+
+                    <!-- Thanh toán -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal">
+                        <ImageView
+                            android:layout_width="20dp"
+                            android:layout_height="20dp"
+                            android:src="@drawable/ic_lucide_wallet"
+                            app:tint="#94a3b8" />
+                        <TextView
+                            android:id="@+id/tvOrderDetailPaymentMethod"
+                            style="@style/FixIt.Text.InfoRow"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="Thanh toán: Tiền mặt (CASH)" />
+                    </LinearLayout>
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- Work Progress Section (Timeline) -->
             <TextView
+                style="@style/FixIt.Text.SectionHeader"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:text="Tiến độ công việc" />
+
+            <com.google.android.material.card.MaterialCardView
+                style="@style/FixIt.Card.Content"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="8dp"
-                android:text="Cập nhật tiến độ"
-                android:textColor="#333333"
-                android:textSize="16sp"
-                android:textStyle="bold" />
+                android:layout_marginBottom="16dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="16dp">
+
+                    <!-- Step 1: Nhận đơn -->
+                    <LinearLayout
+                        android:id="@+id/step1_container"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal">
+                        <LinearLayout
+                            android:layout_width="24dp"
+                            android:layout_height="match_parent"
+                            android:gravity="center_horizontal"
+                            android:orientation="vertical">
+                            <ImageView
+                                android:id="@+id/step1_icon"
+                                android:layout_width="20dp"
+                                android:layout_height="20dp"
+                                android:src="@drawable/ic_lucide_check_circle"
+                                app:tint="#0ea5e9" />
+                            <View
+                                android:id="@+id/step1_line"
+                                android:layout_width="2dp"
+                                android:layout_height="30dp"
+                                android:background="#0ea5e9" />
+                        </LinearLayout>
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="12dp"
+                            android:orientation="vertical">
+                            <TextView
+                                android:id="@+id/step1_title"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Đã nhận đơn"
+                                android:textColor="#0d1b2a"
+                                android:textSize="14sp"
+                                android:textStyle="bold" />
+                            <TextView
+                                android:id="@+id/step1_time"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="10:30, 10/05/2026"
+                                android:textColor="#94a3b8"
+                                android:textSize="12sp" />
+                        </LinearLayout>
+                    </LinearLayout>
+
+                    <!-- Step 2: Đang đến -->
+                    <LinearLayout
+                        android:id="@+id/step2_container"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal">
+                        <LinearLayout
+                            android:layout_width="24dp"
+                            android:layout_height="match_parent"
+                            android:gravity="center_horizontal"
+                            android:orientation="vertical">
+                            <ImageView
+                                android:id="@+id/step2_icon"
+                                android:layout_width="20dp"
+                                android:layout_height="20dp"
+                                android:src="@drawable/ic_lucide_check_circle"
+                                app:tint="#0ea5e9" />
+                            <View
+                                android:id="@+id/step2_line"
+                                android:layout_width="2dp"
+                                android:layout_height="30dp"
+                                android:background="#0ea5e9" />
+                        </LinearLayout>
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="12dp"
+                            android:orientation="vertical">
+                            <TextView
+                                android:id="@+id/step2_title"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Đang đến"
+                                android:textColor="#0d1b2a"
+                                android:textSize="14sp"
+                                android:textStyle="bold" />
+                            <TextView
+                                android:id="@+id/step2_time"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="10:32, 10/05/2026"
+                                android:textColor="#94a3b8"
+                                android:textSize="12sp" />
+                        </LinearLayout>
+                    </LinearLayout>
+
+                    <!-- Step 3: Khảo sát (Active) -->
+                    <LinearLayout
+                        android:id="@+id/step3_container"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal">
+                        <LinearLayout
+                            android:layout_width="24dp"
+                            android:layout_height="match_parent"
+                            android:gravity="center_horizontal"
+                            android:orientation="vertical">
+                            <FrameLayout
+                                android:id="@+id/step3_icon_container"
+                                android:layout_width="20dp"
+                                android:layout_height="20dp">
+                                <View
+                                    android:id="@+id/step3_pulse"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="match_parent"
+                                    android:background="@drawable/circle_background"
+                                    android:backgroundTint="#0ea5e9"
+                                    android:alpha="0.2"/>
+                                <View
+                                    android:id="@+id/step3_dot"
+                                    android:layout_width="10dp"
+                                    android:layout_height="10dp"
+                                    android:layout_gravity="center"
+                                    android:background="@drawable/circle_background"
+                                    android:backgroundTint="#0ea5e9"/>
+                            </FrameLayout>
+                            <View
+                                android:id="@+id/step3_line"
+                                android:layout_width="2dp"
+                                android:layout_height="30dp"
+                                android:background="#e2e8f0" />
+                        </LinearLayout>
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="12dp"
+                            android:orientation="vertical">
+                            <TextView
+                                android:id="@+id/step3_title"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Khảo sát &amp; Báo giá"
+                                android:textColor="#0ea5e9"
+                                android:textSize="14sp"
+                                android:textStyle="bold" />
+                            <TextView
+                                android:id="@+id/step3_time"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="10:58, 10/05/2026"
+                                android:textColor="#94a3b8"
+                                android:textSize="12sp" />
+                        </LinearLayout>
+                    </LinearLayout>
+
+                    <!-- Step 4: Đang sửa -->
+                    <LinearLayout
+                        android:id="@+id/step4_container"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal">
+                        <LinearLayout
+                            android:layout_width="24dp"
+                            android:layout_height="match_parent"
+                            android:gravity="center_horizontal"
+                            android:orientation="vertical">
+                            <View
+                                android:id="@+id/step4_dot"
+                                android:layout_width="12dp"
+                                android:layout_height="12dp"
+                                android:background="@drawable/circle_background"
+                                android:backgroundTint="#e2e8f0" />
+                            <View
+                                android:id="@+id/step4_line"
+                                android:layout_width="2dp"
+                                android:layout_height="30dp"
+                                android:background="#e2e8f0" />
+                        </LinearLayout>
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="12dp"
+                            android:orientation="vertical">
+                            <TextView
+                                android:id="@+id/step4_title"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Đang tiến hành sửa chữa"
+                                android:textColor="#94a3b8"
+                                android:textSize="14sp" />
+                        </LinearLayout>
+                    </LinearLayout>
+
+                    <!-- Step 5: Hoàn thành -->
+                    <LinearLayout
+                        android:id="@+id/step5_container"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal">
+                        <LinearLayout
+                            android:layout_width="24dp"
+                            android:layout_height="wrap_content"
+                            android:gravity="center_horizontal"
+                            android:orientation="vertical">
+                            <View
+                                android:id="@+id/step5_dot"
+                                android:layout_width="12dp"
+                                android:layout_height="12dp"
+                                android:background="@drawable/circle_background"
+                                android:backgroundTint="#e2e8f0" />
+                        </LinearLayout>
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="12dp"
+                            android:orientation="vertical">
+                            <TextView
+                                android:id="@+id/step5_title"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Hoàn thành &amp; Bàn giao"
+                                android:textColor="#94a3b8"
+                                android:textSize="14sp" />
+                        </LinearLayout>
+                    </LinearLayout>
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- Issue Description Section -->
+            <TextView
+                style="@style/FixIt.Text.SectionHeader"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Mô tả sự cố từ khách" />
+
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:cardBackgroundColor="#f8fafc"
+                app:cardCornerRadius="12dp"
+                app:cardElevation="0dp"
+                app:strokeColor="#e2e8f0"
+                app:strokeWidth="1dp">
+
+                <TextView
+                    android:id="@+id/tvOrderDetailIssueDescription"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:padding="16dp"
+                    android:text="Vòi nước bồn rửa chén bị rò rỉ mạnh ở phần cổ xoay, nước chảy tràn ra sàn bếp. Cần thợ qua kiểm tra và thay linh kiện sớm."
+                    android:textColor="#475569"
+                    android:textSize="14sp"
+                    android:lineSpacingExtra="4dp"/>
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- Proof of Work Section -->
+            <TextView
+                style="@style/FixIt.Text.SectionHeader"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Bằng chứng công việc (Ảnh chụp)" />
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal">
 
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/btnUploadBefore"
-                    style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/cardProofBefore"
                     android:layout_width="0dp"
-                    android:layout_height="100dp"
+                    android:layout_height="120dp"
                     android:layout_marginEnd="8dp"
                     android:layout_weight="1"
-                    android:text="Ảnh trước sửa"
-                    android:textColor="#888888"
-                    app:cornerRadius="12dp"
-                    app:icon="@android:drawable/ic_menu_camera"
-                    app:iconGravity="textTop"
-                    app:iconTint="#888888"
-                    app:strokeColor="#DDDDDD" />
+                    app:cardBackgroundColor="#f8fafc"
+                    app:cardCornerRadius="12dp"
+                    app:cardElevation="0dp"
+                    app:strokeColor="#e2e8f0"
+                    app:strokeWidth="1dp"
+                    android:clickable="true"
+                    android:focusable="true">
 
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/btnUploadAfter"
-                    style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:gravity="center"
+                        android:orientation="vertical">
+                        <ImageView
+                            android:layout_width="28dp"
+                            android:layout_height="28dp"
+                            android:src="@drawable/ic_lucide_camera"
+                            app:tint="#0ea5e9" />
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="8dp"
+                            android:text="Trước sửa"
+                            android:textColor="#64748b"
+                            android:textSize="12sp"
+                            android:textStyle="bold" />
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+
+                <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/cardProofAfter"
                     android:layout_width="0dp"
-                    android:layout_height="100dp"
+                    android:layout_height="120dp"
                     android:layout_marginStart="8dp"
                     android:layout_weight="1"
-                    android:text="Ảnh sau sửa"
-                    android:textColor="#888888"
-                    app:cornerRadius="12dp"
-                    app:icon="@android:drawable/ic_menu_camera"
-                    app:iconGravity="textTop"
-                    app:iconTint="#888888"
-                    app:strokeColor="#DDDDDD" />
+                    app:cardBackgroundColor="#f8fafc"
+                    app:cardCornerRadius="12dp"
+                    app:cardElevation="0dp"
+                    app:strokeColor="#e2e8f0"
+                    app:strokeWidth="1dp"
+                    android:clickable="true"
+                    android:focusable="true">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:gravity="center"
+                        android:orientation="vertical">
+                        <ImageView
+                            android:layout_width="28dp"
+                            android:layout_height="28dp"
+                            android:src="@drawable/ic_lucide_camera"
+                            app:tint="#0ea5e9" />
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="8dp"
+                            android:text="Sau sửa"
+                            android:textColor="#64748b"
+                            android:textSize="12sp"
+                            android:textStyle="bold" />
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
             </LinearLayout>
-            
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/btnAddFee"
-                style="@style/Widget.MaterialComponents.Button.TextButton"
+
+            <!-- Pricing Summary Section -->
+            <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:text="+ Thêm chi phí phát sinh (nếu có)"
-                android:textColor="#1976D2" />
+                android:layout_marginTop="24dp"
+                android:layout_marginBottom="16dp"
+                app:cardBackgroundColor="#f0f9ff"
+                app:cardCornerRadius="16dp"
+                app:cardElevation="0dp"
+                app:strokeWidth="0dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="16dp">
+
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="8dp">
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Tổng phí dịch vụ"
+                            android:textColor="#0369a1"
+                            android:textSize="14sp" />
+                        <TextView
+                            android:id="@+id/tvOrderDetailPrice"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentEnd="true"
+                            android:text="150.000 đ"
+                            android:textColor="#0ea5e9"
+                            android:textSize="18sp"
+                            android:textStyle="bold" />
+                    </RelativeLayout>
+                    
+                    <TextView
+                        android:id="@+id/btnAddExtraFee"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="+ Thêm chi phí phát sinh"
+                        android:textColor="#0ea5e9"
+                        android:textSize="13sp"
+                        android:textStyle="bold"
+                        android:clickable="true"
+                        android:focusable="true"/>
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
 
+    <!-- Bottom Actions -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@android:color/white"
-        android:elevation="8dp"
+        android:elevation="16dp"
         android:orientation="horizontal"
         android:padding="16dp">
 
         <com.google.android.material.button.MaterialButton
-            android:id="@+id/btnCancelOrder"
-            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+            android:id="@+id/btnCancelOrderDetail"
+            style="@style/FixIt.Button.Action.Outlined"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="8dp"
+            android:layout_weight="0"
+            android:layout_marginEnd="12dp"
             android:text="Hủy"
-            android:textColor="#F44336"
-            app:cornerRadius="8dp"
-            app:strokeColor="#F44336" />
+            android:textColor="#ef4444"
+            app:strokeColor="#ef4444" />
 
         <com.google.android.material.button.MaterialButton
-            android:id="@+id/btnCompleteOrder"
+            android:id="@+id/btnCompleteOrderDetail"
+            style="@style/FixIt.Button.Action"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="Hoàn thành công việc"
-            app:backgroundTint="#4CAF50"
-            app:cornerRadius="8dp" />
+            android:text="Cập nhật tiến độ tiếp theo"
+            android:textColor="@android:color/white"
+            app:backgroundTint="#0ea5e9" />
     </LinearLayout>
 </LinearLayout>

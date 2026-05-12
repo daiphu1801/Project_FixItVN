@@ -10,16 +10,16 @@
         android:title="Đơn hàng" />
         
     <item
-        android:id="@+id/placeholder_worker"
-        android:title="" 
-        android:enabled="false" />
+        android:id="@+id/workerJobFragment"
+        android:icon="@drawable/ic_lucide_radar"
+        android:title="" />
         
     <item
         android:id="@+id/workerChatFragment"
         android:icon="@drawable/ic_lucide_message"
         android:title="Chat" />
     <item
-        android:id="@+id/workerWalletFragment"
-        android:icon="@drawable/ic_lucide_wallet"
-        android:title="Ví" />
+        android:id="@+id/workerProfileFragment"
+        android:icon="@drawable/ic_lucide_user"
+        android:title="Tài khoản" />
 </menu>
