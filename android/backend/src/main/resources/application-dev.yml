@@ -1,0 +1,22 @@
+# backend/src/main/resources/application-dev.yml
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/fixitdb
+    username: fixit
+    password: fixit123
+    driver-class-name: org.postgresql.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+
+  data:
+    redis:
+      host: localhost
+      port: 6379
+
+logging:
+  level:
+    com.fixit: DEBUG
+    org.springframework.security: DEBUG

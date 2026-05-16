@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_worker"
+    app:startDestination="@id/workerHomeFragment">
+
+    <fragment
+        android:id="@+id/workerHomeFragment"
+        android:name="com.fixit.feature.worker.home.presentation.WorkerHomeFragment"
+        android:label="Trang chủ" />
+
+    <fragment
+        android:id="@+id/workerOrdersFragment"
+        android:name="com.fixit.feature.worker.orders.presentation.list.WorkerOrdersFragment"
+        android:label="Đơn hàng" />
+
+    <fragment
+        android:id="@+id/workerJobFragment"
+        android:name="com.fixit.feature.worker.job.presentation.WorkerJobFragment"
+        android:label="Tìm việc" />
+
+    <fragment
+        android:id="@+id/workerChatFragment"
+        android:name="com.fixit.feature.worker.chat.presentation.WorkerChatFragment"
+        android:label="Chat" />
+
+    <fragment
+        android:id="@+id/workerWalletFragment"
+        android:name="com.fixit.feature.worker.wallet.presentation.WorkerWalletFragment"
+        android:label="Ví" />
+
+    <fragment
+        android:id="@+id/workerStatsFragment"
+        android:name="com.fixit.feature.worker.stats.presentation.WorkerStatsFragment"
+        android:label="Thống kê" />
+
+    <fragment
+        android:id="@+id/workerProfileFragment"
+        android:name="com.fixit.feature.worker.profile.presentation.WorkerProfileFragment"
+        android:label="Tài khoản" />
+
+    <fragment
+        android:id="@+id/workerKycFragment"
+        android:name="com.fixit.feature.worker.kyc.presentation.WorkerKycFragment"
+        android:label="Xác minh danh tính" />
+
+    <fragment
+        android:id="@+id/workerKycPendingFragment"
+        android:name="com.fixit.feature.worker.kyc.presentation.WorkerKycPendingFragment"
+        android:label="Trạng thái hồ sơ" />
+
+    <fragment
+        android:id="@+id/workerEditProfileFragment"
+        android:name="com.fixit.feature.worker.profile.presentation.WorkerEditProfileFragment"
+        android:label="Chỉnh sửa hồ sơ" />
+
+    <fragment
+        android:id="@+id/workerOrderDetailFragment"
+        android:name="com.fixit.feature.worker.orders.presentation.detail.WorkerOrderDetailFragment"
+        android:label="Chi tiết đơn hàng">
+        <argument
+            android:name="orderId"
+            app:argType="string" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/workerComplaintFragment"
+        android:name="com.fixit.feature.worker.orders.presentation.complaint.WorkerComplaintFragment"
+        android:label="Khiếu nại bảo hành"
+        tools:layout="@layout/fragment_worker_complaint">
+        <argument
+            android:name="orderId"
+            app:argType="string" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/workerExtraCostFragment"
+        android:name="com.fixit.feature.worker.orders.presentation.extra_cost.WorkerExtraCostFragment"
+        android:label="Thêm chi phí"
+        tools:layout="@layout/fragment_worker_extra_cost" />
+
+    <fragment
+        android:id="@+id/workerInvoiceFragment"
+        android:name="com.fixit.feature.worker.orders.presentation.invoice.WorkerInvoiceFragment"
+        android:label="Hóa đơn"
+        tools:layout="@layout/fragment_worker_invoice">
+        <argument
+            android:name="orderId"
+            app:argType="string" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/workerQuestionnaireFragment"
+        android:name="com.fixit.feature.worker.orders.presentation.questionnaire.WorkerQuestionnaireFragment"
+        android:label="WorkerQuestionnaireFragment"
+        tools:layout="@layout/fragment_worker_questionnaire" />
+
+    <fragment
+        android:id="@+id/workerEditSpecializationFragment"
+        android:name="com.fixit.feature.worker.profile.presentation.WorkerEditSpecializationFragment"
+        android:label="Chỉnh sửa chuyên môn"
+        tools:layout="@layout/fragment_worker_edit_specialization" />
+    <fragment
+        android:id="@+id/changePasswordFragment"
+        android:name="com.fixit.feature.worker.profile.presentation.ChangePasswordFragment"
+        android:label="Đổi mật khẩu"
+        tools:layout="@layout/fragment_change_password" />
+</navigation>
