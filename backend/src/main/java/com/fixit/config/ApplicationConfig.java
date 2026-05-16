@@ -1,6 +1,6 @@
 package com.fixit.config;
 
-import com.fixit.domain.auth.repository.UserRepository;
+import com.fixit.domain.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
