@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/nav_customer_home"
+        android:icon="@drawable/ic_lucide_home"
+        android:title="Trang chủ" />
+        
+    <item
+        android:id="@+id/nav_customer_order"
+        android:icon="@drawable/ic_lucide_clipboard_list"
+        android:title="Đơn hàng" />
+
+    <item
+        android:id="@+id/placeholder"
+        android:title="" 
+        android:enabled="false" />
+
+    <item
+        android:id="@+id/nav_customer_contacts"
+        android:icon="@drawable/ic_lucide_users"
+        android:title="Thợ quen" />
+
+    <item
+        android:id="@+id/nav_customer_profile"
+        android:icon="@drawable/ic_lucide_user"
+        android:title="Cá nhân" />
+</menu>

@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_auth"
+    app:startDestination="@id/authRoleFragment">
+
+    <fragment
+        android:id="@+id/authRoleFragment"
+        android:name="com.fixit.feature.auth.presentation.AuthRoleFragment"
+        android:label="Chọn vai trò"
+        tools:layout="@layout/fragment_auth_role">
+        <action
+            android:id="@+id/action_authRoleFragment_to_loginFragment"
+            app:destination="@id/loginFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/loginFragment"
+        android:name="com.fixit.feature.auth.presentation.LoginFragment"
+        android:label="Đăng nhập"
+        tools:layout="@layout/fragment_login">
+        <action
+            android:id="@+id/action_loginFragment_to_registerFragment"
+            app:destination="@id/registerFragment" />
+        <action
+            android:id="@+id/action_loginFragment_to_forgotPasswordFragment"
+            app:destination="@id/forgotPasswordFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/forgotPasswordFragment"
+        android:name="com.fixit.feature.auth.presentation.ForgotPasswordFragment"
+        android:label="Quên mật khẩu"
+        tools:layout="@layout/fragment_forgotpassword" />
+
+    <fragment
+        android:id="@+id/registerFragment"
+        android:name="com.fixit.feature.auth.presentation.RegisterFragment"
+        android:label="Đăng ký"
+        tools:layout="@layout/fragment_register" />
+
+</navigation>
