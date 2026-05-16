@@ -1,0 +1,31 @@
+# backend/src/main/resources/application.yml
+spring:
+  application:
+    name: fixit-backend
+
+  profiles:
+    active: dev
+
+  jpa:
+    open-in-view: false
+    hibernate:
+      ddl-auto: validate
+    properties:
+      hibernate:
+        format_sql: true
+
+  jackson:
+    serialization:
+      write-dates-as-timestamps: false
+    default-property-inclusion: non_null
+
+server:
+  port: 8080
+  servlet:
+    context-path: /
+
+# JWT configuration
+jwt:
+  secret: ${JWT_SECRET:fixit-default-secret-key-change-in-production-please}
+  expiration-ms: 86400000  # 24 hours
+  refresh-expiration-ms: 604800000  # 7 days

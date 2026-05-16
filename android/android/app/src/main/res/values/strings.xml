@@ -1,0 +1,17 @@
+<!-- android/app/src/main/res/values/strings.xml -->
+<resources>
+    <string name="app_name">FixIt VN</string>
+    <string name="login">Đăng nhập</string>
+    <string name="register">Đăng ký</string>
+    <string name="welcome_back">Chào mừng bạn quay trở lại với FixIt VN</string>
+    <string name="create_account_subtitle">Tạo tài khoản để trải nghiệm dịch vụ tuyệt vời</string>
+    <string name="phone_number">Số điện thoại</string>
+    <string name="password">Mật khẩu</string>
+    <string name="confirm_password">Xác nhận mật khẩu</string>
+    <string name="full_name">Họ và tên</string>
+    <string name="forgot_password">Quên mật khẩu?</string>
+    <string name="no_account_yet">Chưa có tài khoản? </string>
+    <string name="register_now">Đăng ký ngay</string>
+    <string name="already_have_account">Đã có tài khoản? </string>
+    <string name="login_now">Đăng nhập ngay</string>
+</resources>

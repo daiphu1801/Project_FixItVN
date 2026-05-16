@@ -1,0 +1,181 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#f0faff">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:paddingBottom="100dp"> <!-- Padding for BottomNav & FAB -->
+
+        <!-- Header -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:paddingHorizontal="20dp"
+            android:paddingTop="40dp"
+            android:paddingBottom="40dp"
+            android:gravity="center_vertical"
+            android:background="#42c2ff">
+            
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="FixIt VN, xin chào 👋"
+                    android:textColor="#ffffff"
+                    android:textSize="14sp" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Khách hàng"
+                    android:textColor="#ffffff"
+                    android:textSize="20sp"
+                    android:textStyle="bold" />
+            </LinearLayout>
+
+            <ImageView
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:src="@drawable/ic_lucide_user"
+                app:tint="#ffffff"/>
+        </LinearLayout>
+
+        <!-- Current Location -->
+        <com.google.android.material.card.MaterialCardView
+            style="@style/FixIt.Card.Content"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="20dp"
+            android:layout_marginTop="-24dp">
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:padding="16dp"
+                android:gravity="center_vertical">
+                <ImageView
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:src="@drawable/ic_lucide_radar"
+                    app:tint="#42c2ff"/>
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:layout_marginStart="12dp">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Khu vực hoạt động gần bạn"
+                        android:textSize="12sp"
+                        android:textColor="#6c757d"/>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Quận 1, TP. Hồ Chí Minh"
+                        android:textSize="14sp"
+                        android:textColor="#0d1b2a"
+                        android:textStyle="bold"/>
+                </LinearLayout>
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <!-- Banner -->
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="match_parent"
+            android:layout_height="140dp"
+            android:layout_marginHorizontal="20dp"
+            android:layout_marginTop="20dp"
+            app:cardCornerRadius="16dp"
+            app:cardElevation="2dp"
+            app:strokeWidth="1dp"
+            app:strokeColor="#b3e5fc">
+            
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="#e0f4ff"
+                android:gravity="center_vertical"
+                android:padding="20dp">
+                
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="GIẢM 50K\nKHI ĐẶT THỢ!"
+                    android:textColor="#42c2ff"
+                    android:textSize="22sp"
+                    android:textStyle="bold" />
+                    
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <!-- Services -->
+        <TextView
+            style="@style/FixIt.Text.SectionHeader"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="20dp"
+            android:layout_marginTop="24dp"
+            android:text="Đặt dịch vụ ngay"
+            android:textSize="18sp" />
+
+        <GridLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="12dp"
+            android:layout_marginTop="12dp"
+            android:columnCount="4"
+            android:rowCount="2">
+            
+            <include layout="@layout/item_customer_service" android:layout_width="0dp" android:layout_columnWeight="1" />
+            <include layout="@layout/item_customer_service" android:layout_width="0dp" android:layout_columnWeight="1" />
+            <include layout="@layout/item_customer_service" android:layout_width="0dp" android:layout_columnWeight="1" />
+            <include layout="@layout/item_customer_service" android:layout_width="0dp" android:layout_columnWeight="1" />
+            <include layout="@layout/item_customer_service" android:layout_width="0dp" android:layout_columnWeight="1" />
+            <include layout="@layout/item_customer_service" android:layout_width="0dp" android:layout_columnWeight="1" />
+            <include layout="@layout/item_customer_service" android:layout_width="0dp" android:layout_columnWeight="1" />
+            <include layout="@layout/item_customer_service" android:layout_width="0dp" android:layout_columnWeight="1" />
+            
+        </GridLayout>
+
+        <!-- Promos -->
+        <TextView
+            style="@style/FixIt.Text.SectionHeader"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="20dp"
+            android:layout_marginTop="24dp"
+            android:text="Ưu đãi dành cho bạn"
+            android:textSize="18sp" />
+
+        <HorizontalScrollView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:paddingHorizontal="20dp"
+            android:clipToPadding="false"
+            android:scrollbars="none">
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <include layout="@layout/item_customer_promo" />
+                <include layout="@layout/item_customer_promo" />
+                <include layout="@layout/item_customer_promo" />
+
+            </LinearLayout>
+        </HorizontalScrollView>
+
+    </LinearLayout>
+</androidx.core.widget.NestedScrollView>
