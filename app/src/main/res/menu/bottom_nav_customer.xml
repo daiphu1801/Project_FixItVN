@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Mục Trang chủ -->
+    <item
+        android:id="@+id/nav_customer_home"
+        android:icon="@drawable/ic_lucide_home"
+        android:title="Trang chủ" />
+        
+    <!-- Mục Đơn hàng (Đơn hiện tại/đang xử lý) -->
+    <item
+        android:id="@+id/nav_customer_order"
+        android:icon="@drawable/ic_lucide_clipboard_list"
+        android:title="Đơn hàng" />
+
+    <!-- Mục Lịch sử (Đơn đã hoàn thành/đã hủy) -->
+    <!-- Tôi đã thêm mục này và dùng icon ic_lucide_clock (đồng hồ) thay thế -->
+    <item
+        android:id="@+id/nav_customer_history"
+        android:icon="@drawable/ic_lucide_clock"
+        android:title="Lịch sử" />
+
+    <!-- Mục Thợ quen -->
+    <item
+        android:id="@+id/nav_customer_contacts"
+        android:icon="@drawable/ic_lucide_users"
+        android:title="Thợ quen" />
+
+    <!-- Mục Cá nhân -->
+    <item
+        android:id="@+id/nav_customer_profile"
+        android:icon="@drawable/ic_lucide_user"
+        android:title="Cá nhân" />
+</menu>

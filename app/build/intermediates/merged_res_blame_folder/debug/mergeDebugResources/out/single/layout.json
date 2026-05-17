@@ -1,0 +1,310 @@
+[
+    {
+        "merged": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-mergeDebugResources-51:\\layout\\fragment_worker_profile.xml",
+        "source": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-main-54:\\layout\\fragment_worker_profile.xml"
+    },
+    {
+        "merged": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-mergeDebugResources-51:\\layout\\item_worker_specialization.xml",
+        "source": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-main-54:\\layout\\item_worker_specialization.xml"
+    },
+    {
+        "merged": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-mergeDebugResources-51:\\layout\\fragment_customer_account_info.xml",
+        "source": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-main-54:\\layout\\fragment_customer_account_info.xml"
+    },
+    {
+        "merged": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-mergeDebugResources-51:\\layout\\fragment_worker_edit_profile.xml",
+        "source": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-main-54:\\layout\\fragment_worker_edit_profile.xml"
+    },
+    {
+        "merged": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-mergeDebugResources-51:\\layout\\fragment_customer_search.xml",
+        "source": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-main-54:\\layout\\fragment_customer_search.xml"
+    },
+    {
+        "merged": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-mergeDebugResources-51:\\layout\\fragment_worker_home.xml",
+        "source": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-main-54:\\layout\\fragment_worker_home.xml"
+    },
+    {
+        "merged": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-mergeDebugResources-51:\\layout\\fragment_worker_order_detail.xml",
+        "source": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-main-54:\\layout\\fragment_worker_order_detail.xml"
+    },
+    {
+        "merged": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-mergeDebugResources-51:\\layout\\fragment_worker_wallet.xml",
+        "source": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-main-54:\\layout\\fragment_worker_wallet.xml"
+    },
+    {
+        "merged": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-mergeDebugResources-51:\\layout\\item_chat_customer.xml",
+        "source": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-main-54:\\layout\\item_chat_customer.xml"
+    },
+    {
+        "merged": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-mergeDebugResources-51:\\layout\\fragment_note_input.xml",
+        "source": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-main-54:\\layout\\fragment_note_input.xml"
+    },
+    {
+        "merged": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-mergeDebugResources-51:\\layout\\fragment_order_detail_finished.xml",
+        "source": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-main-54:\\layout\\fragment_order_detail_finished.xml"
+    },
+    {
+        "merged": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-mergeDebugResources-51:\\layout\\layout_card_active_order.xml",
+        "source": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-main-54:\\layout\\layout_card_active_order.xml"
+    },
+    {
+        "merged": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-mergeDebugResources-51:\\layout\\dialog_gender_selection.xml",
+        "source": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-main-54:\\layout\\dialog_gender_selection.xml"
+    },
+    {
+        "merged": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-mergeDebugResources-51:\\layout\\bottom_sheet_cancel_reason.xml",
+        "source": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-main-54:\\layout\\bottom_sheet_cancel_reason.xml"
+    },
+    {
+        "merged": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-mergeDebugResources-51:\\layout\\layout_empty_state.xml",
+        "source": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-main-54:\\layout\\layout_empty_state.xml"
+    },
+    {
+        "merged": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-mergeDebugResources-51:\\layout\\fragment_chat_customer.xml",
+        "source": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-main-54:\\layout\\fragment_chat_customer.xml"
+    },
+    {
+        "merged": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-mergeDebugResources-51:\\layout\\fragment_worker_kyc_pending.xml",
+        "source": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-main-54:\\layout\\fragment_worker_kyc_pending.xml"
+    },
+    {
+        "merged": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-mergeDebugResources-51:\\layout\\item_customer_service.xml",
+        "source": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-main-54:\\layout\\item_customer_service.xml"
+    },
+    {
+        "merged": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-mergeDebugResources-51:\\layout\\item_invoice_row.xml",
+        "source": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-main-54:\\layout\\item_invoice_row.xml"
+    },
+    {
+        "merged": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-mergeDebugResources-51:\\layout\\fragment_register.xml",
+        "source": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-main-54:\\layout\\fragment_register.xml"
+    },
+    {
+        "merged": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-mergeDebugResources-51:\\layout\\item_appointment_horizontal.xml",
+        "source": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-main-54:\\layout\\item_appointment_horizontal.xml"
+    },
+    {
+        "merged": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-mergeDebugResources-51:\\layout\\fragment_customer_location_picker.xml",
+        "source": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-main-54:\\layout\\fragment_customer_location_picker.xml"
+    },
+    {
+        "merged": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-mergeDebugResources-51:\\layout\\fragment_account_info.xml",
+        "source": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-main-54:\\layout\\fragment_account_info.xml"
+    },
+    {
+        "merged": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-mergeDebugResources-51:\\layout\\layout_income_chart.xml",
+        "source": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-main-54:\\layout\\layout_income_chart.xml"
+    },
+    {
+        "merged": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-mergeDebugResources-51:\\layout\\fragment_customer_order_container.xml",
+        "source": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-main-54:\\layout\\fragment_customer_order_container.xml"
+    },
+    {
+        "merged": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-mergeDebugResources-51:\\layout\\item_message_received.xml",
+        "source": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-main-54:\\layout\\item_message_received.xml"
+    },
+    {
+        "merged": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-mergeDebugResources-51:\\layout\\activity_worker.xml",
+        "source": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-main-54:\\layout\\activity_worker.xml"
+    },
+    {
+        "merged": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-mergeDebugResources-51:\\layout\\fragment_customer_list_msg.xml",
+        "source": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-main-54:\\layout\\fragment_customer_list_msg.xml"
+    },
+    {
+        "merged": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-mergeDebugResources-51:\\layout\\layout_worker_public_resume.xml",
+        "source": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-main-54:\\layout\\layout_worker_public_resume.xml"
+    },
+    {
+        "merged": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-mergeDebugResources-51:\\layout\\fragment_worker_complaint.xml",
+        "source": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-main-54:\\layout\\fragment_worker_complaint.xml"
+    },
+    {
+        "merged": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-mergeDebugResources-51:\\layout\\fragment_description_input.xml",
+        "source": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-main-54:\\layout\\fragment_description_input.xml"
+    },
+    {
+        "merged": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-mergeDebugResources-51:\\layout\\activity_customer.xml",
+        "source": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-main-54:\\layout\\activity_customer.xml"
+    },
+    {
+        "merged": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-mergeDebugResources-51:\\layout\\fragment_worker_stats.xml",
+        "source": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-main-54:\\layout\\fragment_worker_stats.xml"
+    },
+    {
+        "merged": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-mergeDebugResources-51:\\layout\\item_extra_cost.xml",
+        "source": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-main-54:\\layout\\item_extra_cost.xml"
+    },
+    {
+        "merged": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-mergeDebugResources-51:\\layout\\fragment_worker_kyc.xml",
+        "source": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-main-54:\\layout\\fragment_worker_kyc.xml"
+    },
+    {
+        "merged": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-mergeDebugResources-51:\\layout\\layout_worker_public_header.xml",
+        "source": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-main-54:\\layout\\layout_worker_public_header.xml"
+    },
+    {
+        "merged": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-mergeDebugResources-51:\\layout\\item_msg_sent.xml",
+        "source": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-main-54:\\layout\\item_msg_sent.xml"
+    },
+    {
+        "merged": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-mergeDebugResources-51:\\layout\\fragment_worker_list_msg.xml",
+        "source": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-main-54:\\layout\\fragment_worker_list_msg.xml"
+    },
+    {
+        "merged": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-mergeDebugResources-51:\\layout\\fragment_change_password.xml",
+        "source": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-main-54:\\layout\\fragment_change_password.xml"
+    },
+    {
+        "merged": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-mergeDebugResources-51:\\layout\\dialog_time_selection.xml",
+        "source": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-main-54:\\layout\\dialog_time_selection.xml"
+    },
+    {
+        "merged": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-mergeDebugResources-51:\\layout\\item_service_category.xml",
+        "source": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-main-54:\\layout\\item_service_category.xml"
+    },
+    {
+        "merged": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-mergeDebugResources-51:\\layout\\dialog_add_service.xml",
+        "source": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-main-54:\\layout\\dialog_add_service.xml"
+    },
+    {
+        "merged": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-mergeDebugResources-51:\\layout\\fragment_worker_questionnaire.xml",
+        "source": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-main-54:\\layout\\fragment_worker_questionnaire.xml"
+    },
+    {
+        "merged": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-mergeDebugResources-51:\\layout\\item_worker_order_card.xml",
+        "source": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-main-54:\\layout\\item_worker_order_card.xml"
+    },
+    {
+        "merged": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-mergeDebugResources-51:\\layout\\fragment_worker_job.xml",
+        "source": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-main-54:\\layout\\fragment_worker_job.xml"
+    },
+    {
+        "merged": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-mergeDebugResources-51:\\layout\\fragment_login.xml",
+        "source": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-main-54:\\layout\\fragment_login.xml"
+    },
+    {
+        "merged": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-mergeDebugResources-51:\\layout\\item_chat_worker.xml",
+        "source": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-main-54:\\layout\\item_chat_worker.xml"
+    },
+    {
+        "merged": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-mergeDebugResources-51:\\layout\\fragment_auth_role.xml",
+        "source": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-main-54:\\layout\\fragment_auth_role.xml"
+    },
+    {
+        "merged": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-mergeDebugResources-51:\\layout\\item_appointment.xml",
+        "source": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-main-54:\\layout\\item_appointment.xml"
+    },
+    {
+        "merged": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-mergeDebugResources-51:\\layout\\layout_stats_overview.xml",
+        "source": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-main-54:\\layout\\layout_stats_overview.xml"
+    },
+    {
+        "merged": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-mergeDebugResources-51:\\layout\\fragment_profile_customer.xml",
+        "source": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-main-54:\\layout\\fragment_profile_customer.xml"
+    },
+    {
+        "merged": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-mergeDebugResources-51:\\layout\\item_order_history.xml",
+        "source": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-main-54:\\layout\\item_order_history.xml"
+    },
+    {
+        "merged": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-mergeDebugResources-51:\\layout\\fragment_customer_home.xml",
+        "source": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-main-54:\\layout\\fragment_customer_home.xml"
+    },
+    {
+        "merged": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-mergeDebugResources-51:\\layout\\fragment_favorite_workers.xml",
+        "source": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-main-54:\\layout\\fragment_favorite_workers.xml"
+    },
+    {
+        "merged": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-mergeDebugResources-51:\\layout\\layout_standard_appbar.xml",
+        "source": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-main-54:\\layout\\layout_standard_appbar.xml"
+    },
+    {
+        "merged": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-mergeDebugResources-51:\\layout\\fragment_customer_booking.xml",
+        "source": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-main-54:\\layout\\fragment_customer_booking.xml"
+    },
+    {
+        "merged": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-mergeDebugResources-51:\\layout\\fragment_worker_orders.xml",
+        "source": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-main-54:\\layout\\fragment_worker_orders.xml"
+    },
+    {
+        "merged": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-mergeDebugResources-51:\\layout\\activity_auth.xml",
+        "source": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-main-54:\\layout\\activity_auth.xml"
+    },
+    {
+        "merged": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-mergeDebugResources-51:\\layout\\fragment_customer_order_detail.xml",
+        "source": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-main-54:\\layout\\fragment_customer_order_detail.xml"
+    },
+    {
+        "merged": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-mergeDebugResources-51:\\layout\\fragment_forgotpassword.xml",
+        "source": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-main-54:\\layout\\fragment_forgotpassword.xml"
+    },
+    {
+        "merged": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-mergeDebugResources-51:\\layout\\item_wallet_transaction.xml",
+        "source": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-main-54:\\layout\\item_wallet_transaction.xml"
+    },
+    {
+        "merged": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-mergeDebugResources-51:\\layout\\fragment_customer_finding_worker.xml",
+        "source": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-main-54:\\layout\\fragment_customer_finding_worker.xml"
+    },
+    {
+        "merged": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-mergeDebugResources-51:\\layout\\fragment_worker_extra_cost.xml",
+        "source": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-main-54:\\layout\\fragment_worker_extra_cost.xml"
+    },
+    {
+        "merged": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-mergeDebugResources-51:\\layout\\item_search_service.xml",
+        "source": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-main-54:\\layout\\item_search_service.xml"
+    },
+    {
+        "merged": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-mergeDebugResources-51:\\layout\\fragment_chat_worker.xml",
+        "source": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-main-54:\\layout\\fragment_chat_worker.xml"
+    },
+    {
+        "merged": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-mergeDebugResources-51:\\layout\\item_message_sent.xml",
+        "source": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-main-54:\\layout\\item_message_sent.xml"
+    },
+    {
+        "merged": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-mergeDebugResources-51:\\layout\\layout_worker_topbar.xml",
+        "source": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-main-54:\\layout\\layout_worker_topbar.xml"
+    },
+    {
+        "merged": "com.fixit.app-mergeDebugResources-51:/layout/fragment_customer_cancel_order.xml",
+        "source": "com.fixit.app-main-54:/layout/fragment_customer_cancel_order.xml"
+    },
+    {
+        "merged": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-mergeDebugResources-51:\\layout\\dialog_incoming_order.xml",
+        "source": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-main-54:\\layout\\dialog_incoming_order.xml"
+    },
+    {
+        "merged": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-mergeDebugResources-51:\\layout\\fragment_cancel_order.xml",
+        "source": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-main-54:\\layout\\fragment_cancel_order.xml"
+    },
+    {
+        "merged": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-mergeDebugResources-51:\\layout\\fragment_worker_invoice.xml",
+        "source": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-main-54:\\layout\\fragment_worker_invoice.xml"
+    },
+    {
+        "merged": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-mergeDebugResources-51:\\layout\\fragment_order_history.xml",
+        "source": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-main-54:\\layout\\fragment_order_history.xml"
+    },
+    {
+        "merged": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-mergeDebugResources-51:\\layout\\fragment_worker_edit_specialization.xml",
+        "source": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-main-54:\\layout\\fragment_worker_edit_specialization.xml"
+    },
+    {
+        "merged": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-mergeDebugResources-51:\\layout\\item_favorite_worker.xml",
+        "source": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-main-54:\\layout\\item_favorite_worker.xml"
+    },
+    {
+        "merged": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-mergeDebugResources-51:\\layout\\dialog_add_fee.xml",
+        "source": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-main-54:\\layout\\dialog_add_fee.xml"
+    },
+    {
+        "merged": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-mergeDebugResources-51:\\layout\\item_customer_promo.xml",
+        "source": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-main-54:\\layout\\item_customer_promo.xml"
+    },
+    {
+        "merged": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-mergeDebugResources-51:\\layout\\fragment_verification.xml",
+        "source": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-main-54:\\layout\\fragment_verification.xml"
+    }
+]

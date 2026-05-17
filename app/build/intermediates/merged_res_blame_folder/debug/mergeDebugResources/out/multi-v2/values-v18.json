@@ -1,0 +1,19 @@
+{
+    "logs": [
+        {
+            "outputFile": "com.fixit.app-mergeDebugResources-50:/values-v18/values-v18.xml",
+            "map": [
+                {
+                    "source": "C:\\Users\\ASUS\\.gradle\\caches\\9.4.1\\transforms\\2580eb262e8d4bff3950c27bf726a11c\\transformed\\appcompat-1.7.0\\res\\values-v18\\values-v18.xml",
+                    "from": {
+                        "startLines": "2",
+                        "startColumns": "4",
+                        "startOffsets": "55",
+                        "endColumns": "48",
+                        "endOffsets": "99"
+                    }
+                }
+            ]
+        }
+    ]
+}

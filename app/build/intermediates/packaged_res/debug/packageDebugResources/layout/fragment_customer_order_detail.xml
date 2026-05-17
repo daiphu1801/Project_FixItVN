@@ -1,0 +1,489 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="?attr/android:colorBackground">
+
+    <ImageView
+        android:id="@+id/ivMapBackground"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:scaleType="centerCrop"
+        android:src="@drawable/img_map_placeholder"
+        android:alpha="0.5"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/cardBottomSheet"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="12dp"
+        android:layout_marginBottom="16dp"
+        android:layout_marginTop="40dp"
+        app:cardCornerRadius="20dp"
+        app:cardElevation="16dp"
+        app:strokeWidth="0dp"
+        app:layout_constrainedHeight="true"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="1.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent">
+
+        <androidx.core.widget.NestedScrollView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:scrollbars="none">
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="?attr/colorSurface">
+
+                <!-- Header Title -->
+                <ImageView
+                    android:id="@+id/ivOrderIcon"
+                    android:layout_width="36dp"
+                    android:layout_height="36dp"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="16dp"
+                    android:background="@drawable/bg_badge_orange_light"
+                    android:padding="8dp"
+                    android:src="@drawable/ic_note"
+                    app:tint="#F97316"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <TextView
+                    android:id="@+id/tvOrderTitle"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="10dp"
+                    android:text="Chi tiết đơn dịch vụ"
+                    android:textSize="15sp"
+                    android:textStyle="bold"
+                    android:textColor="?attr/colorOnSurface" 
+                    app:layout_constraintTop_toTopOf="@id/ivOrderIcon"
+                    app:layout_constraintBottom_toTopOf="@id/tvOrderCode"
+                    app:layout_constraintStart_toEndOf="@id/ivOrderIcon"
+                    app:layout_constraintEnd_toStartOf="@id/ivClose"
+                    app:layout_constraintVertical_chainStyle="packed"/>
+
+                <TextView
+                    android:id="@+id/tvOrderCode"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="10dp"
+                    android:layout_marginTop="2dp"
+                    android:text="#3001548"
+                    android:textSize="12sp"
+                    android:textColor="#64748B" 
+                    app:layout_constraintTop_toBottomOf="@id/tvOrderTitle"
+                    app:layout_constraintBottom_toBottomOf="@id/ivOrderIcon"
+                    app:layout_constraintStart_toEndOf="@id/ivOrderIcon"
+                    app:layout_constraintEnd_toStartOf="@id/ivClose"/>
+
+                <ImageView
+                    android:id="@+id/ivClose"
+                    android:layout_width="32dp"
+                    android:layout_height="32dp"
+                    android:layout_marginEnd="16dp"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:padding="6dp"
+                    android:src="@drawable/ic_add"
+                    android:rotation="45"
+                    app:tint="#64748B"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="@id/ivOrderIcon"
+                    app:layout_constraintBottom_toBottomOf="@id/ivOrderIcon" />
+
+                <View
+                    android:id="@+id/divider1"
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_marginTop="12dp"
+                    android:background="#F0F0F0" 
+                    app:layout_constraintTop_toBottomOf="@id/ivOrderIcon"/>
+
+                <!-- Technician Details -->
+                <de.hdodenhof.circleimageview.CircleImageView
+                    android:id="@+id/ivTechnicianAvatar"
+                    android:layout_width="52dp"
+                    android:layout_height="52dp"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="14dp"
+                    android:src="@drawable/ic_person"
+                    app:civ_border_width="2dp"
+                    app:civ_border_color="?attr/colorPrimary" 
+                    app:layout_constraintTop_toBottomOf="@id/divider1"
+                    app:layout_constraintStart_toStartOf="parent"/>
+
+                <TextView
+                    android:id="@+id/tvTechnicianName"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="12dp"
+                    android:text="Nguyễn Văn A"
+                    android:textSize="15sp"
+                    android:textStyle="bold"
+                    android:textColor="?attr/colorOnSurface" 
+                    app:layout_constraintTop_toTopOf="@id/ivTechnicianAvatar"
+                    app:layout_constraintStart_toEndOf="@id/ivTechnicianAvatar"
+                    app:layout_constraintEnd_toStartOf="@id/layoutRating"/>
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/layoutRating"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/bg_badge_yellow_light"
+                    android:paddingHorizontal="8dp"
+                    android:paddingVertical="3dp"
+                    android:layout_marginEnd="16dp"
+                    app:layout_constraintTop_toTopOf="@id/tvTechnicianName"
+                    app:layout_constraintBottom_toBottomOf="@id/tvTechnicianName"
+                    app:layout_constraintEnd_toEndOf="parent">
+                    <ImageView
+                        android:id="@+id/ivStar"
+                        android:layout_width="12dp"
+                        android:layout_height="12dp"
+                        android:src="@drawable/ic_lucide_star"
+                        app:tint="#F59E0B" 
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"/>
+                    <TextView
+                        android:id="@+id/tvRating"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="4dp"
+                        android:text="4.2"
+                        android:textSize="12sp"
+                        android:textStyle="bold"
+                        android:textColor="#F59E0B" 
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintStart_toEndOf="@id/ivStar"/>
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+                <TextView
+                    android:id="@+id/tvTechnicianDesc"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:text="Thợ chuyên nghiệp • 5 năm kinh nghiệm"
+                    android:textSize="12sp"
+                    android:textColor="#64748B" 
+                    app:layout_constraintTop_toBottomOf="@id/tvTechnicianName"
+                    app:layout_constraintStart_toStartOf="@id/tvTechnicianName"
+                    app:layout_constraintEnd_toEndOf="parent"/>
+
+                <!-- Buttons Call/Message -->
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnCall"
+                    android:layout_width="0dp"
+                    android:layout_height="40dp"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="12dp"
+                    android:layout_marginEnd="5dp"
+                    android:text="Gọi điện"
+                    android:textSize="13sp"
+                    android:textStyle="bold"
+                    android:textColor="@android:color/white"
+                    app:cornerRadius="20dp"
+                    android:backgroundTint="?attr/colorPrimary" 
+                    app:layout_constraintTop_toBottomOf="@id/tvTechnicianDesc"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toStartOf="@id/btnMessage"/>
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnMessage"
+                    style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                    android:layout_width="0dp"
+                    android:layout_height="40dp"
+                    android:layout_marginStart="5dp"
+                    android:layout_marginEnd="16dp"
+                    android:layout_marginTop="12dp"
+                    android:text="Nhắn tin"
+                    android:textSize="13sp"
+                    android:textStyle="bold"
+                    android:textColor="?attr/colorPrimary"
+                    app:cornerRadius="20dp"
+                    app:strokeColor="?attr/colorPrimary"
+                    app:strokeWidth="1dp"
+                    android:backgroundTint="@android:color/transparent" 
+                    app:layout_constraintTop_toBottomOf="@id/tvTechnicianDesc"
+                    app:layout_constraintStart_toEndOf="@id/btnCall"
+                    app:layout_constraintEnd_toEndOf="parent"/>
+
+                <View
+                    android:id="@+id/divider2"
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_marginTop="14dp"
+                    android:background="#F0F0F0" 
+                    app:layout_constraintTop_toBottomOf="@id/btnCall"/>
+
+                <!-- Estimated Cost & Warranty -->
+                <ImageView
+                    android:id="@+id/ivCostIcon"
+                    android:layout_width="16dp"
+                    android:layout_height="16dp"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="12dp"
+                    android:src="@drawable/ic_lucide_check_circle"
+                    app:tint="#3B82F6" 
+                    app:layout_constraintTop_toBottomOf="@id/divider2"
+                    app:layout_constraintStart_toStartOf="parent"/>
+
+                <TextView
+                    android:id="@+id/tvCostLabel"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:text="Chi phí dự kiến"
+                    android:textSize="13sp"
+                    android:textColor="?attr/colorOnSurface" 
+                    app:layout_constraintTop_toTopOf="@id/ivCostIcon"
+                    app:layout_constraintBottom_toBottomOf="@id/ivCostIcon"
+                    app:layout_constraintStart_toEndOf="@id/ivCostIcon"
+                    app:layout_constraintEnd_toStartOf="@id/tvEstimatedCost"/>
+
+                <TextView
+                    android:id="@+id/tvEstimatedCost"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="16dp"
+                    android:text="150,000 - 500,000đ"
+                    android:textSize="13sp"
+                    android:textStyle="bold"
+                    android:textColor="#1D4ED8" 
+                    app:layout_constraintTop_toTopOf="@id/ivCostIcon"
+                    app:layout_constraintBottom_toBottomOf="@id/ivCostIcon"
+                    app:layout_constraintEnd_toEndOf="parent"/>
+
+                <ImageView
+                    android:id="@+id/ivWarrantyIcon"
+                    android:layout_width="16dp"
+                    android:layout_height="16dp"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="10dp"
+                    android:src="@drawable/ic_shield"
+                    app:tint="#22C55E" 
+                    app:layout_constraintTop_toBottomOf="@id/ivCostIcon"
+                    app:layout_constraintStart_toStartOf="parent"/>
+
+                <TextView
+                    android:id="@+id/tvWarrantyLabel"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:text="Bảo hành bởi Vua Thợ"
+                    android:textSize="13sp"
+                    android:textColor="?attr/colorOnSurface" 
+                    app:layout_constraintTop_toTopOf="@id/ivWarrantyIcon"
+                    app:layout_constraintBottom_toBottomOf="@id/ivWarrantyIcon"
+                    app:layout_constraintStart_toEndOf="@id/ivWarrantyIcon"
+                    app:layout_constraintEnd_toStartOf="@id/tvWarrantyFee"/>
+
+                <TextView
+                    android:id="@+id/tvWarrantyFee"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="16dp"
+                    android:text="+5,000đ"
+                    android:textSize="13sp"
+                    android:textStyle="bold"
+                    android:textColor="#22C55E" 
+                    app:layout_constraintTop_toTopOf="@id/ivWarrantyIcon"
+                    app:layout_constraintBottom_toBottomOf="@id/ivWarrantyIcon"
+                    app:layout_constraintEnd_toEndOf="parent"/>
+
+                <View
+                    android:id="@+id/divider3"
+                    android:layout_width="match_parent"
+                    android:layout_height="6dp"
+                    android:background="#F5F5F5"
+                    android:layout_marginTop="12dp" 
+                    app:layout_constraintTop_toBottomOf="@id/ivWarrantyIcon"/>
+
+                <!-- Service Info -->
+                <ImageView
+                    android:id="@+id/ivServiceIcon"
+                    android:layout_width="18dp"
+                    android:layout_height="18dp"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="12dp"
+                    android:src="@drawable/ic_lucide_briefcase"
+                    app:tint="#F59E0B" 
+                    app:layout_constraintTop_toBottomOf="@id/divider3"
+                    app:layout_constraintStart_toStartOf="parent"/>
+                
+                <TextView
+                    android:id="@+id/tvServiceLabel"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="12dp"
+                    android:text="Dịch vụ"
+                    android:textSize="11sp"
+                    android:textColor="#64748B" 
+                    app:layout_constraintTop_toTopOf="@id/ivServiceIcon"
+                    app:layout_constraintStart_toEndOf="@id/ivServiceIcon"
+                    app:layout_constraintEnd_toEndOf="parent"/>
+
+                <TextView
+                    android:id="@+id/tvServiceName"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="2dp"
+                    android:layout_marginEnd="16dp"
+                    android:text="Sửa máy lạnh"
+                    android:textSize="14sp"
+                    android:textStyle="bold"
+                    android:textColor="?attr/colorOnSurface" 
+                    app:layout_constraintTop_toBottomOf="@id/tvServiceLabel"
+                    app:layout_constraintStart_toStartOf="@id/tvServiceLabel"
+                    app:layout_constraintEnd_toEndOf="parent"/>
+
+                <!-- Note Info -->
+                <ImageView
+                    android:id="@+id/ivNoteIconInfo"
+                    android:layout_width="18dp"
+                    android:layout_height="18dp"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="14dp"
+                    android:src="@drawable/ic_note"
+                    app:tint="#8B5CF6" 
+                    app:layout_constraintTop_toBottomOf="@id/tvServiceName"
+                    app:layout_constraintStart_toStartOf="parent"/>
+                
+                <TextView
+                    android:id="@+id/tvNoteLabelInfo"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="12dp"
+                    android:text="Ghi chú khách hàng"
+                    android:textSize="11sp"
+                    android:textColor="#64748B" 
+                    app:layout_constraintTop_toTopOf="@id/ivNoteIconInfo"
+                    app:layout_constraintStart_toEndOf="@id/ivNoteIconInfo"
+                    app:layout_constraintEnd_toEndOf="parent"/>
+
+                <TextView
+                    android:id="@+id/tvNote"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="2dp"
+                    android:layout_marginEnd="16dp"
+                    android:text="Cần kiểm tra cục nóng kĩ ra"
+                    android:textSize="14sp"
+                    android:textColor="?attr/colorOnSurface" 
+                    app:layout_constraintTop_toBottomOf="@id/tvNoteLabelInfo"
+                    app:layout_constraintStart_toStartOf="@id/tvNoteLabelInfo"
+                    app:layout_constraintEnd_toEndOf="parent"/>
+
+                <!-- Schedule Info -->
+                <ImageView
+                    android:id="@+id/ivScheduleIcon"
+                    android:layout_width="18dp"
+                    android:layout_height="18dp"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="14dp"
+                    android:src="@drawable/ic_lucide_clock"
+                    app:tint="#3B82F6" 
+                    app:layout_constraintTop_toBottomOf="@id/tvNote"
+                    app:layout_constraintStart_toStartOf="parent"/>
+                
+                <TextView
+                    android:id="@+id/tvScheduleLabel"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="12dp"
+                    android:text="Thời gian hẹn"
+                    android:textSize="11sp"
+                    android:textColor="#64748B" 
+                    app:layout_constraintTop_toTopOf="@id/ivScheduleIcon"
+                    app:layout_constraintStart_toEndOf="@id/ivScheduleIcon"
+                    app:layout_constraintEnd_toEndOf="parent"/>
+
+                <TextView
+                    android:id="@+id/tvSchedule"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="2dp"
+                    android:layout_marginEnd="16dp"
+                    android:text="Hôm nay, 14:30"
+                    android:textSize="14sp"
+                    android:textColor="?attr/colorOnSurface" 
+                    app:layout_constraintTop_toBottomOf="@id/tvScheduleLabel"
+                    app:layout_constraintStart_toStartOf="@id/tvScheduleLabel"
+                    app:layout_constraintEnd_toEndOf="parent"/>
+
+                <!-- Address Info -->
+                <ImageView
+                    android:id="@+id/ivAddressIconInfo"
+                    android:layout_width="18dp"
+                    android:layout_height="18dp"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="14dp"
+                    android:src="@drawable/ic_lucide_map_pin"
+                    app:tint="#EF4444" 
+                    app:layout_constraintTop_toBottomOf="@id/tvSchedule"
+                    app:layout_constraintStart_toStartOf="parent"/>
+                
+                <TextView
+                    android:id="@+id/tvAddressLabel"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="12dp"
+                    android:text="Địa điểm"
+                    android:textSize="11sp"
+                    android:textColor="#64748B" 
+                    app:layout_constraintTop_toTopOf="@id/ivAddressIconInfo"
+                    app:layout_constraintStart_toEndOf="@id/ivAddressIconInfo"
+                    app:layout_constraintEnd_toEndOf="parent"/>
+
+                <TextView
+                    android:id="@+id/tvAddress"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="2dp"
+                    android:layout_marginEnd="16dp"
+                    android:lineSpacingExtra="3dp"
+                    android:text="207/17B Bùi Xương Trạch, Khương Đình, Thanh Xuân, Hà Nội"
+                    android:textSize="14sp"
+                    android:textColor="?attr/colorOnSurface" 
+                    app:layout_constraintTop_toBottomOf="@id/tvAddressLabel"
+                    app:layout_constraintStart_toStartOf="@id/tvAddressLabel"
+                    app:layout_constraintEnd_toEndOf="parent"/>
+
+                <!-- Cancel Button -->
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnCancelOrder"
+                    style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                    android:layout_width="match_parent"
+                    android:layout_height="52dp"
+                    android:layout_marginHorizontal="16dp"
+                    android:layout_marginTop="20dp"
+                    android:layout_marginBottom="20dp"
+                    android:text="Hủy đơn dịch vụ"
+                    android:textColor="#EF4444"
+                    android:textSize="15sp"
+                    android:textStyle="bold"
+                    app:cornerRadius="26dp"
+                    app:strokeColor="#FECDD3"
+                    app:strokeWidth="1dp"
+                    android:backgroundTint="#FFF1F2" 
+                    app:layout_constraintTop_toBottomOf="@id/tvAddress"
+                    app:layout_constraintBottom_toBottomOf="parent"/>
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+        </androidx.core.widget.NestedScrollView>
+    </com.google.android.material.card.MaterialCardView>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,0 +1,762 @@
+[
+    {
+        "merged": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-debug-52:\\drawable_ic_lucide_search.xml.flat",
+        "source": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-main-54:\\drawable\\ic_lucide_search.xml"
+    },
+    {
+        "merged": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-debug-52:\\mipmap-mdpi_ic_launcher_round.xml.flat",
+        "source": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-main-54:\\mipmap-mdpi\\ic_launcher_round.xml"
+    },
+    {
+        "merged": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-debug-52:\\drawable_ic_flash.xml.flat",
+        "source": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-main-54:\\drawable\\ic_flash.xml"
+    },
+    {
+        "merged": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-debug-52:\\drawable_ic_lucide_star.xml.flat",
+        "source": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-main-54:\\drawable\\ic_lucide_star.xml"
+    },
+    {
+        "merged": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-debug-52:\\layout_fragment_worker_kyc_pending.xml.flat",
+        "source": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-main-54:\\layout\\fragment_worker_kyc_pending.xml"
+    },
+    {
+        "merged": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-debug-52:\\drawable_bg_badge_blue.xml.flat",
+        "source": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-main-54:\\drawable\\bg_badge_blue.xml"
+    },
+    {
+        "merged": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-debug-52:\\layout_fragment_worker_invoice.xml.flat",
+        "source": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-main-54:\\layout\\fragment_worker_invoice.xml"
+    },
+    {
+        "merged": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-debug-52:\\drawable_bg_circle_green.xml.flat",
+        "source": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-main-54:\\drawable\\bg_circle_green.xml"
+    },
+    {
+        "merged": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-debug-52:\\drawable_ic_send.xml.flat",
+        "source": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-main-54:\\drawable\\ic_send.xml"
+    },
+    {
+        "merged": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-debug-52:\\drawable_ic_lucide_menu.xml.flat",
+        "source": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-main-54:\\drawable\\ic_lucide_menu.xml"
+    },
+    {
+        "merged": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-debug-52:\\drawable_circle_primary_light.xml.flat",
+        "source": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-main-54:\\drawable\\circle_primary_light.xml"
+    },
+    {
+        "merged": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-debug-52:\\layout_item_msg_sent.xml.flat",
+        "source": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-main-54:\\layout\\item_msg_sent.xml"
+    },
+    {
+        "merged": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-debug-52:\\drawable_bg_bottom_sheet.xml.flat",
+        "source": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-main-54:\\drawable\\bg_bottom_sheet.xml"
+    },
+    {
+        "merged": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-debug-52:\\layout_fragment_customer_search.xml.flat",
+        "source": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-main-54:\\layout\\fragment_customer_search.xml"
+    },
+    {
+        "merged": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-debug-52:\\layout_fragment_customer_order_detail.xml.flat",
+        "source": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-main-54:\\layout\\fragment_customer_order_detail.xml"
+    },
+    {
+        "merged": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-debug-52:\\layout_item_customer_service.xml.flat",
+        "source": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-main-54:\\layout\\item_customer_service.xml"
+    },
+    {
+        "merged": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-debug-52:\\drawable_bg_dashed_border.xml.flat",
+        "source": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-main-54:\\drawable\\bg_dashed_border.xml"
+    },
+    {
+        "merged": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-debug-52:\\drawable_ic_note.xml.flat",
+        "source": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-main-54:\\drawable\\ic_note.xml"
+    },
+    {
+        "merged": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-debug-52:\\layout_bottom_sheet_cancel_reason.xml.flat",
+        "source": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-main-54:\\layout\\bottom_sheet_cancel_reason.xml"
+    },
+    {
+        "merged": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-debug-52:\\layout_fragment_register.xml.flat",
+        "source": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-main-54:\\layout\\fragment_register.xml"
+    },
+    {
+        "merged": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-debug-52:\\layout_fragment_worker_order_detail.xml.flat",
+        "source": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-main-54:\\layout\\fragment_worker_order_detail.xml"
+    },
+    {
+        "merged": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-debug-52:\\drawable_bg_chip_reward.xml.flat",
+        "source": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-main-54:\\drawable\\bg_chip_reward.xml"
+    },
+    {
+        "merged": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-debug-52:\\layout_fragment_worker_profile.xml.flat",
+        "source": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-main-54:\\layout\\fragment_worker_profile.xml"
+    },
+    {
+        "merged": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-debug-52:\\drawable_bg_header_bottom_rounded.xml.flat",
+        "source": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-main-54:\\drawable\\bg_header_bottom_rounded.xml"
+    },
+    {
+        "merged": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-debug-52:\\layout_fragment_worker_extra_cost.xml.flat",
+        "source": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-main-54:\\layout\\fragment_worker_extra_cost.xml"
+    },
+    {
+        "merged": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-debug-52:\\layout_item_message_sent.xml.flat",
+        "source": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-main-54:\\layout\\item_message_sent.xml"
+    },
+    {
+        "merged": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-debug-52:\\layout_item_chat_worker.xml.flat",
+        "source": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-main-54:\\layout\\item_chat_worker.xml"
+    },
+    {
+        "merged": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-debug-52:\\drawable_chip_online_bg.xml.flat",
+        "source": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-main-54:\\drawable\\chip_online_bg.xml"
+    },
+    {
+        "merged": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-debug-52:\\layout_activity_auth.xml.flat",
+        "source": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-main-54:\\layout\\activity_auth.xml"
+    },
+    {
+        "merged": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-debug-52:\\drawable_ic_lucide_check_circle.xml.flat",
+        "source": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-main-54:\\drawable\\ic_lucide_check_circle.xml"
+    },
+    {
+        "merged": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-debug-52:\\drawable_bg_badge_orange_light.xml.flat",
+        "source": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-main-54:\\drawable\\bg_badge_orange_light.xml"
+    },
+    {
+        "merged": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-debug-52:\\drawable_ic_lucide_camera.xml.flat",
+        "source": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-main-54:\\drawable\\ic_lucide_camera.xml"
+    },
+    {
+        "merged": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-debug-52:\\mipmap-xxhdpi_ic_launcher.xml.flat",
+        "source": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-main-54:\\mipmap-xxhdpi\\ic_launcher.xml"
+    },
+    {
+        "merged": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-debug-52:\\drawable_img_map_placeholder.xml.flat",
+        "source": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-main-54:\\drawable\\img_map_placeholder.xml"
+    },
+    {
+        "merged": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-debug-52:\\mipmap-xhdpi_ic_launcher.xml.flat",
+        "source": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-main-54:\\mipmap-xhdpi\\ic_launcher.xml"
+    },
+    {
+        "merged": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-debug-52:\\layout_item_invoice_row.xml.flat",
+        "source": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-main-54:\\layout\\item_invoice_row.xml"
+    },
+    {
+        "merged": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-debug-52:\\drawable_chip_warning_bg.xml.flat",
+        "source": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-main-54:\\drawable\\chip_warning_bg.xml"
+    },
+    {
+        "merged": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-debug-52:\\drawable_bg_circle_white.xml.flat",
+        "source": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-main-54:\\drawable\\bg_circle_white.xml"
+    },
+    {
+        "merged": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-debug-52:\\layout_item_favorite_worker.xml.flat",
+        "source": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-main-54:\\layout\\item_favorite_worker.xml"
+    },
+    {
+        "merged": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-debug-52:\\drawable_ic_lucide_briefcase.xml.flat",
+        "source": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-main-54:\\drawable\\ic_lucide_briefcase.xml"
+    },
+    {
+        "merged": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-debug-52:\\drawable_ic_lucide_lock.xml.flat",
+        "source": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-main-54:\\drawable\\ic_lucide_lock.xml"
+    },
+    {
+        "merged": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-debug-52:\\layout_item_wallet_transaction.xml.flat",
+        "source": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-main-54:\\layout\\item_wallet_transaction.xml"
+    },
+    {
+        "merged": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-debug-52:\\drawable_bg_input_border.xml.flat",
+        "source": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-main-54:\\drawable\\bg_input_border.xml"
+    },
+    {
+        "merged": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-debug-52:\\layout_fragment_order_history.xml.flat",
+        "source": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-main-54:\\layout\\fragment_order_history.xml"
+    },
+    {
+        "merged": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-debug-52:\\drawable_ic_lucide_chevron_right.xml.flat",
+        "source": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-main-54:\\drawable\\ic_lucide_chevron_right.xml"
+    },
+    {
+        "merged": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-debug-52:\\drawable_ic_edit.xml.flat",
+        "source": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-main-54:\\drawable\\ic_edit.xml"
+    },
+    {
+        "merged": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-debug-52:\\drawable_ic_lucide_calendar.xml.flat",
+        "source": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-main-54:\\drawable\\ic_lucide_calendar.xml"
+    },
+    {
+        "merged": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-debug-52:\\mipmap-xhdpi_ic_launcher_round.xml.flat",
+        "source": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-main-54:\\mipmap-xhdpi\\ic_launcher_round.xml"
+    },
+    {
+        "merged": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-debug-52:\\layout_fragment_worker_edit_specialization.xml.flat",
+        "source": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-main-54:\\layout\\fragment_worker_edit_specialization.xml"
+    },
+    {
+        "merged": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-debug-52:\\drawable_selector_heart_toggle.xml.flat",
+        "source": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-main-54:\\drawable\\selector_heart_toggle.xml"
+    },
+    {
+        "merged": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-debug-52:\\layout_dialog_add_service.xml.flat",
+        "source": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-main-54:\\layout\\dialog_add_service.xml"
+    },
+    {
+        "merged": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-debug-52:\\drawable_bg_warning_light.xml.flat",
+        "source": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-main-54:\\drawable\\bg_warning_light.xml"
+    },
+    {
+        "merged": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-debug-52:\\menu_menu_worker_bottom_nav.xml.flat",
+        "source": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-main-54:\\menu\\menu_worker_bottom_nav.xml"
+    },
+    {
+        "merged": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-debug-52:\\drawable_bg_info_warning.xml.flat",
+        "source": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-main-54:\\drawable\\bg_info_warning.xml"
+    },
+    {
+        "merged": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-debug-52:\\layout_fragment_worker_questionnaire.xml.flat",
+        "source": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-main-54:\\layout\\fragment_worker_questionnaire.xml"
+    },
+    {
+        "merged": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-debug-52:\\drawable_ic_lucide_alert_circle.xml.flat",
+        "source": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-main-54:\\drawable\\ic_lucide_alert_circle.xml"
+    },
+    {
+        "merged": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-debug-52:\\layout_layout_worker_topbar.xml.flat",
+        "source": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-main-54:\\layout\\layout_worker_topbar.xml"
+    },
+    {
+        "merged": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-debug-52:\\layout_fragment_worker_orders.xml.flat",
+        "source": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-main-54:\\layout\\fragment_worker_orders.xml"
+    },
+    {
+        "merged": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-debug-52:\\layout_fragment_worker_edit_profile.xml.flat",
+        "source": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-main-54:\\layout\\fragment_worker_edit_profile.xml"
+    },
+    {
+        "merged": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-debug-52:\\layout_fragment_customer_home.xml.flat",
+        "source": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-main-54:\\layout\\fragment_customer_home.xml"
+    },
+    {
+        "merged": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-debug-52:\\drawable_bg_circle_radar_ripple.xml.flat",
+        "source": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-main-54:\\drawable\\bg_circle_radar_ripple.xml"
+    },
+    {
+        "merged": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-debug-52:\\drawable_ic_lucide_message_circle.xml.flat",
+        "source": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-main-54:\\drawable\\ic_lucide_message_circle.xml"
+    },
+    {
+        "merged": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-debug-52:\\layout_fragment_worker_stats.xml.flat",
+        "source": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-main-54:\\layout\\fragment_worker_stats.xml"
+    },
+    {
+        "merged": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-debug-52:\\mipmap-hdpi_ic_launcher.xml.flat",
+        "source": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-main-54:\\mipmap-hdpi\\ic_launcher.xml"
+    },
+    {
+        "merged": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-debug-52:\\layout_item_extra_cost.xml.flat",
+        "source": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-main-54:\\layout\\item_extra_cost.xml"
+    },
+    {
+        "merged": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-debug-52:\\drawable_ic_emoticon.xml.flat",
+        "source": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-main-54:\\drawable\\ic_emoticon.xml"
+    },
+    {
+        "merged": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-debug-52:\\drawable_ic_lucide_user.xml.flat",
+        "source": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-main-54:\\drawable\\ic_lucide_user.xml"
+    },
+    {
+        "merged": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-debug-52:\\layout_fragment_verification.xml.flat",
+        "source": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-main-54:\\layout\\fragment_verification.xml"
+    },
+    {
+        "merged": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-debug-52:\\layout_layout_empty_state.xml.flat",
+        "source": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-main-54:\\layout\\layout_empty_state.xml"
+    },
+    {
+        "merged": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-debug-52:\\drawable_ic_launcher_foreground.xml.flat",
+        "source": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-main-54:\\drawable\\ic_launcher_foreground.xml"
+    },
+    {
+        "merged": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-debug-52:\\drawable_bg_badge_light_blue.xml.flat",
+        "source": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-main-54:\\drawable\\bg_badge_light_blue.xml"
+    },
+    {
+        "merged": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-debug-52:\\layout_activity_customer.xml.flat",
+        "source": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-main-54:\\layout\\activity_customer.xml"
+    },
+    {
+        "merged": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-debug-52:\\layout_fragment_customer_booking.xml.flat",
+        "source": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-main-54:\\layout\\fragment_customer_booking.xml"
+    },
+    {
+        "merged": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-debug-52:\\drawable_ic_lucide_image.xml.flat",
+        "source": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-main-54:\\drawable\\ic_lucide_image.xml"
+    },
+    {
+        "merged": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-debug-52:\\layout_fragment_customer_order_container.xml.flat",
+        "source": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-main-54:\\layout\\fragment_customer_order_container.xml"
+    },
+    {
+        "merged": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-debug-52:\\drawable_ic_lucide_radar.xml.flat",
+        "source": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-main-54:\\drawable\\ic_lucide_radar.xml"
+    },
+    {
+        "merged": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-debug-52:\\mipmap-xxxhdpi_ic_launcher_round.xml.flat",
+        "source": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-main-54:\\mipmap-xxxhdpi\\ic_launcher_round.xml"
+    },
+    {
+        "merged": "com.fixit.app-debug-52:/layout_fragment_customer_cancel_order.xml.flat",
+        "source": "com.fixit.app-main-54:/layout/fragment_customer_cancel_order.xml"
+    },
+    {
+        "merged": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-debug-52:\\drawable_ic_shield.xml.flat",
+        "source": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-main-54:\\drawable\\ic_shield.xml"
+    },
+    {
+        "merged": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-debug-52:\\layout_fragment_change_password.xml.flat",
+        "source": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-main-54:\\layout\\fragment_change_password.xml"
+    },
+    {
+        "merged": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-debug-52:\\layout_dialog_time_selection.xml.flat",
+        "source": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-main-54:\\layout\\dialog_time_selection.xml"
+    },
+    {
+        "merged": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-debug-52:\\drawable_bg_icon_light_blue.xml.flat",
+        "source": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-main-54:\\drawable\\bg_icon_light_blue.xml"
+    },
+    {
+        "merged": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-debug-52:\\drawable_bg_price_badge_blue.xml.flat",
+        "source": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-main-54:\\drawable\\bg_price_badge_blue.xml"
+    },
+    {
+        "merged": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-debug-52:\\mipmap-mdpi_ic_launcher.xml.flat",
+        "source": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-main-54:\\mipmap-mdpi\\ic_launcher.xml"
+    },
+    {
+        "merged": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-debug-52:\\drawable_ic_search.xml.flat",
+        "source": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-main-54:\\drawable\\ic_search.xml"
+    },
+    {
+        "merged": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-debug-52:\\drawable_ic_lucide_award.xml.flat",
+        "source": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-main-54:\\drawable\\ic_lucide_award.xml"
+    },
+    {
+        "merged": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-debug-52:\\layout_layout_worker_public_header.xml.flat",
+        "source": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-main-54:\\layout\\layout_worker_public_header.xml"
+    },
+    {
+        "merged": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-debug-52:\\drawable_ic_location.xml.flat",
+        "source": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-main-54:\\drawable\\ic_location.xml"
+    },
+    {
+        "merged": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-debug-52:\\layout_fragment_worker_complaint.xml.flat",
+        "source": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-main-54:\\layout\\fragment_worker_complaint.xml"
+    },
+    {
+        "merged": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-debug-52:\\layout_fragment_worker_list_msg.xml.flat",
+        "source": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-main-54:\\layout\\fragment_worker_list_msg.xml"
+    },
+    {
+        "merged": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-debug-52:\\layout_fragment_worker_job.xml.flat",
+        "source": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-main-54:\\layout\\fragment_worker_job.xml"
+    },
+    {
+        "merged": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-debug-52:\\drawable_ic_lucide_users.xml.flat",
+        "source": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-main-54:\\drawable\\ic_lucide_users.xml"
+    },
+    {
+        "merged": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-debug-52:\\layout_layout_card_active_order.xml.flat",
+        "source": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-main-54:\\layout\\layout_card_active_order.xml"
+    },
+    {
+        "merged": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-debug-52:\\drawable_ic_lucide_log_out.xml.flat",
+        "source": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-main-54:\\drawable\\ic_lucide_log_out.xml"
+    },
+    {
+        "merged": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-debug-52:\\color_bottom_nav_color_state.xml.flat",
+        "source": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-main-54:\\color\\bottom_nav_color_state.xml"
+    },
+    {
+        "merged": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-debug-52:\\drawable_ic_lucide_info.xml.flat",
+        "source": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-main-54:\\drawable\\ic_lucide_info.xml"
+    },
+    {
+        "merged": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-debug-52:\\drawable_bg_input_field.xml.flat",
+        "source": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-main-54:\\drawable\\bg_input_field.xml"
+    },
+    {
+        "merged": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-debug-52:\\mipmap-anydpi-v26_ic_launcher.xml.flat",
+        "source": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-main-54:\\mipmap-anydpi-v26\\ic_launcher.xml"
+    },
+    {
+        "merged": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-debug-52:\\layout_fragment_customer_list_msg.xml.flat",
+        "source": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-main-54:\\layout\\fragment_customer_list_msg.xml"
+    },
+    {
+        "merged": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-debug-52:\\layout_item_appointment.xml.flat",
+        "source": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-main-54:\\layout\\item_appointment.xml"
+    },
+    {
+        "merged": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-debug-52:\\layout_fragment_worker_home.xml.flat",
+        "source": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-main-54:\\layout\\fragment_worker_home.xml"
+    },
+    {
+        "merged": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-debug-52:\\drawable_bg_chip_inactive.xml.flat",
+        "source": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-main-54:\\drawable\\bg_chip_inactive.xml"
+    },
+    {
+        "merged": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-debug-52:\\drawable_ic_home_repair.xml.flat",
+        "source": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-main-54:\\drawable\\ic_home_repair.xml"
+    },
+    {
+        "merged": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-debug-52:\\color_bottom_nav_color.xml.flat",
+        "source": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-main-54:\\color\\bottom_nav_color.xml"
+    },
+    {
+        "merged": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-debug-52:\\layout_fragment_account_info.xml.flat",
+        "source": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-main-54:\\layout\\fragment_account_info.xml"
+    },
+    {
+        "merged": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-debug-52:\\layout_dialog_gender_selection.xml.flat",
+        "source": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-main-54:\\layout\\dialog_gender_selection.xml"
+    },
+    {
+        "merged": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-debug-52:\\layout_fragment_favorite_workers.xml.flat",
+        "source": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-main-54:\\layout\\fragment_favorite_workers.xml"
+    },
+    {
+        "merged": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-debug-52:\\layout_fragment_profile_customer.xml.flat",
+        "source": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-main-54:\\layout\\fragment_profile_customer.xml"
+    },
+    {
+        "merged": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-debug-52:\\layout_fragment_forgotpassword.xml.flat",
+        "source": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-main-54:\\layout\\fragment_forgotpassword.xml"
+    },
+    {
+        "merged": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-debug-52:\\layout_item_chat_customer.xml.flat",
+        "source": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-main-54:\\layout\\item_chat_customer.xml"
+    },
+    {
+        "merged": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-debug-52:\\drawable_ic_lucide_bell.xml.flat",
+        "source": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-main-54:\\drawable\\ic_lucide_bell.xml"
+    },
+    {
+        "merged": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-debug-52:\\drawable_ic_lucide_map_pin.xml.flat",
+        "source": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-main-54:\\drawable\\ic_lucide_map_pin.xml"
+    },
+    {
+        "merged": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-debug-52:\\drawable_selector_heart.xml.flat",
+        "source": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-main-54:\\drawable\\selector_heart.xml"
+    },
+    {
+        "merged": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-debug-52:\\layout_item_appointment_horizontal.xml.flat",
+        "source": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-main-54:\\layout\\item_appointment_horizontal.xml"
+    },
+    {
+        "merged": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-debug-52:\\drawable_ic_lucide_headphones.xml.flat",
+        "source": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-main-54:\\drawable\\ic_lucide_headphones.xml"
+    },
+    {
+        "merged": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-debug-52:\\layout_layout_stats_overview.xml.flat",
+        "source": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-main-54:\\layout\\layout_stats_overview.xml"
+    },
+    {
+        "merged": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-debug-52:\\drawable_bg_badge_yellow_light.xml.flat",
+        "source": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-main-54:\\drawable\\bg_badge_yellow_light.xml"
+    },
+    {
+        "merged": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-debug-52:\\mipmap-hdpi_ic_launcher_round.xml.flat",
+        "source": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-main-54:\\mipmap-hdpi\\ic_launcher_round.xml"
+    },
+    {
+        "merged": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-debug-52:\\drawable_ic_lucide_arrow_left.xml.flat",
+        "source": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-main-54:\\drawable\\ic_lucide_arrow_left.xml"
+    },
+    {
+        "merged": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-debug-52:\\drawable_chip_primary_light_bg.xml.flat",
+        "source": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-main-54:\\drawable\\chip_primary_light_bg.xml"
+    },
+    {
+        "merged": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-debug-52:\\drawable_bg_button_rounded_primary.xml.flat",
+        "source": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-main-54:\\drawable\\bg_button_rounded_primary.xml"
+    },
+    {
+        "merged": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-debug-52:\\layout_fragment_worker_wallet.xml.flat",
+        "source": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-main-54:\\layout\\fragment_worker_wallet.xml"
+    },
+    {
+        "merged": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-debug-52:\\color_selector_chip_text.xml.flat",
+        "source": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-main-54:\\color\\selector_chip_text.xml"
+    },
+    {
+        "merged": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-debug-52:\\drawable_bg_circle_light_blue.xml.flat",
+        "source": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-main-54:\\drawable\\bg_circle_light_blue.xml"
+    },
+    {
+        "merged": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-debug-52:\\drawable_ic_heart_outline.xml.flat",
+        "source": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-main-54:\\drawable\\ic_heart_outline.xml"
+    },
+    {
+        "merged": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-debug-52:\\drawable_ic_lucide_wallet.xml.flat",
+        "source": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-main-54:\\drawable\\ic_lucide_wallet.xml"
+    },
+    {
+        "merged": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-debug-52:\\drawable_ic_arrow_right.xml.flat",
+        "source": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-main-54:\\drawable\\ic_arrow_right.xml"
+    },
+    {
+        "merged": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-debug-52:\\layout_item_service_category.xml.flat",
+        "source": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-main-54:\\layout\\item_service_category.xml"
+    },
+    {
+        "merged": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-debug-52:\\drawable_ic_lucide_wrench.xml.flat",
+        "source": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-main-54:\\drawable\\ic_lucide_wrench.xml"
+    },
+    {
+        "merged": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-debug-52:\\layout_fragment_customer_finding_worker.xml.flat",
+        "source": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-main-54:\\layout\\fragment_customer_finding_worker.xml"
+    },
+    {
+        "merged": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-debug-52:\\drawable_bg_input_selectable.xml.flat",
+        "source": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-main-54:\\drawable\\bg_input_selectable.xml"
+    },
+    {
+        "merged": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-debug-52:\\layout_fragment_customer_account_info.xml.flat",
+        "source": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-main-54:\\layout\\fragment_customer_account_info.xml"
+    },
+    {
+        "merged": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-debug-52:\\drawable_ic_lucide_bar_chart.xml.flat",
+        "source": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-main-54:\\drawable\\ic_lucide_bar_chart.xml"
+    },
+    {
+        "merged": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-debug-52:\\drawable_bg_complaint_bubble.xml.flat",
+        "source": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-main-54:\\drawable\\bg_complaint_bubble.xml"
+    },
+    {
+        "merged": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-debug-52:\\layout_fragment_chat_customer.xml.flat",
+        "source": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-main-54:\\layout\\fragment_chat_customer.xml"
+    },
+    {
+        "merged": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-debug-52:\\drawable_bg_badge_green_light.xml.flat",
+        "source": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-main-54:\\drawable\\bg_badge_green_light.xml"
+    },
+    {
+        "merged": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-debug-52:\\layout_fragment_login.xml.flat",
+        "source": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-main-54:\\layout\\fragment_login.xml"
+    },
+    {
+        "merged": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-debug-52:\\mipmap-xxxhdpi_ic_launcher.xml.flat",
+        "source": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-main-54:\\mipmap-xxxhdpi\\ic_launcher.xml"
+    },
+    {
+        "merged": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-debug-52:\\drawable_ic_lucide_clipboard_list.xml.flat",
+        "source": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-main-54:\\drawable\\ic_lucide_clipboard_list.xml"
+    },
+    {
+        "merged": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-debug-52:\\layout_fragment_note_input.xml.flat",
+        "source": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-main-54:\\layout\\fragment_note_input.xml"
+    },
+    {
+        "merged": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-debug-52:\\layout_item_worker_order_card.xml.flat",
+        "source": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-main-54:\\layout\\item_worker_order_card.xml"
+    },
+    {
+        "merged": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-debug-52:\\drawable_bg_badge_red.xml.flat",
+        "source": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-main-54:\\drawable\\bg_badge_red.xml"
+    },
+    {
+        "merged": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-debug-52:\\drawable_bg_chip_active.xml.flat",
+        "source": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-main-54:\\drawable\\bg_chip_active.xml"
+    },
+    {
+        "merged": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-debug-52:\\drawable_bg_circle_blue.xml.flat",
+        "source": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-main-54:\\drawable\\bg_circle_blue.xml"
+    },
+    {
+        "merged": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-debug-52:\\layout_item_customer_promo.xml.flat",
+        "source": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-main-54:\\layout\\item_customer_promo.xml"
+    },
+    {
+        "merged": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-debug-52:\\color_selector_chip_bg.xml.flat",
+        "source": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-main-54:\\color\\selector_chip_bg.xml"
+    },
+    {
+        "merged": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-debug-52:\\layout_dialog_add_fee.xml.flat",
+        "source": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-main-54:\\layout\\dialog_add_fee.xml"
+    },
+    {
+        "merged": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-debug-52:\\layout_fragment_auth_role.xml.flat",
+        "source": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-main-54:\\layout\\fragment_auth_role.xml"
+    },
+    {
+        "merged": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-debug-52:\\drawable_ic_lucide_trash_2.xml.flat",
+        "source": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-main-54:\\drawable\\ic_lucide_trash_2.xml"
+    },
+    {
+        "merged": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-debug-52:\\drawable_ic_lucide_timer.xml.flat",
+        "source": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-main-54:\\drawable\\ic_lucide_timer.xml"
+    },
+    {
+        "merged": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-debug-52:\\drawable_ic_add.xml.flat",
+        "source": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-main-54:\\drawable\\ic_add.xml"
+    },
+    {
+        "merged": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-debug-52:\\layout_fragment_order_detail_finished.xml.flat",
+        "source": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-main-54:\\layout\\fragment_order_detail_finished.xml"
+    },
+    {
+        "merged": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-debug-52:\\drawable_bg_button_rounded_outlined.xml.flat",
+        "source": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-main-54:\\drawable\\bg_button_rounded_outlined.xml"
+    },
+    {
+        "merged": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-debug-52:\\layout_item_search_service.xml.flat",
+        "source": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-main-54:\\layout\\item_search_service.xml"
+    },
+    {
+        "merged": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-debug-52:\\drawable_ic_lucide_edit.xml.flat",
+        "source": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-main-54:\\drawable\\ic_lucide_edit.xml"
+    },
+    {
+        "merged": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-debug-52:\\layout_fragment_chat_worker.xml.flat",
+        "source": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-main-54:\\layout\\fragment_chat_worker.xml"
+    },
+    {
+        "merged": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-debug-52:\\drawable_ic_lucide_receipt.xml.flat",
+        "source": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-main-54:\\drawable\\ic_lucide_receipt.xml"
+    },
+    {
+        "merged": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-debug-52:\\layout_fragment_description_input.xml.flat",
+        "source": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-main-54:\\layout\\fragment_description_input.xml"
+    },
+    {
+        "merged": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-debug-52:\\drawable_circular_progress_bar.xml.flat",
+        "source": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-main-54:\\drawable\\circular_progress_bar.xml"
+    },
+    {
+        "merged": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-debug-52:\\layout_fragment_customer_location_picker.xml.flat",
+        "source": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-main-54:\\layout\\fragment_customer_location_picker.xml"
+    },
+    {
+        "merged": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-debug-52:\\drawable_ic_lucide_alert_triangle.xml.flat",
+        "source": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-main-54:\\drawable\\ic_lucide_alert_triangle.xml"
+    },
+    {
+        "merged": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-debug-52:\\drawable_selector_radio_button.xml.flat",
+        "source": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-main-54:\\drawable\\selector_radio_button.xml"
+    },
+    {
+        "merged": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-debug-52:\\layout_item_worker_specialization.xml.flat",
+        "source": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-main-54:\\layout\\item_worker_specialization.xml"
+    },
+    {
+        "merged": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-debug-52:\\drawable_bg_chip_success.xml.flat",
+        "source": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-main-54:\\drawable\\bg_chip_success.xml"
+    },
+    {
+        "merged": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-debug-52:\\layout_fragment_worker_kyc.xml.flat",
+        "source": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-main-54:\\layout\\fragment_worker_kyc.xml"
+    },
+    {
+        "merged": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-debug-52:\\layout_layout_worker_public_resume.xml.flat",
+        "source": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-main-54:\\layout\\layout_worker_public_resume.xml"
+    },
+    {
+        "merged": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-debug-52:\\drawable_bg_badge_gray.xml.flat",
+        "source": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-main-54:\\drawable\\bg_badge_gray.xml"
+    },
+    {
+        "merged": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-debug-52:\\drawable_ic_lucide_trending_up.xml.flat",
+        "source": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-main-54:\\drawable\\ic_lucide_trending_up.xml"
+    },
+    {
+        "merged": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-debug-52:\\layout_dialog_incoming_order.xml.flat",
+        "source": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-main-54:\\layout\\dialog_incoming_order.xml"
+    },
+    {
+        "merged": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-debug-52:\\layout_item_order_history.xml.flat",
+        "source": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-main-54:\\layout\\item_order_history.xml"
+    },
+    {
+        "merged": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-debug-52:\\layout_layout_standard_appbar.xml.flat",
+        "source": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-main-54:\\layout\\layout_standard_appbar.xml"
+    },
+    {
+        "merged": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-debug-52:\\drawable_ic_lucide_clock.xml.flat",
+        "source": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-main-54:\\drawable\\ic_lucide_clock.xml"
+    },
+    {
+        "merged": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-debug-52:\\layout_layout_income_chart.xml.flat",
+        "source": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-main-54:\\layout\\layout_income_chart.xml"
+    },
+    {
+        "merged": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-debug-52:\\drawable_bg_kpi_gradient.xml.flat",
+        "source": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-main-54:\\drawable\\bg_kpi_gradient.xml"
+    },
+    {
+        "merged": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-debug-52:\\mipmap-xxhdpi_ic_launcher_round.xml.flat",
+        "source": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-main-54:\\mipmap-xxhdpi\\ic_launcher_round.xml"
+    },
+    {
+        "merged": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-debug-52:\\drawable_circle_background.xml.flat",
+        "source": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-main-54:\\drawable\\circle_background.xml"
+    },
+    {
+        "merged": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-debug-52:\\drawable_ic_launcher_background.xml.flat",
+        "source": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-main-54:\\drawable\\ic_launcher_background.xml"
+    },
+    {
+        "merged": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-debug-52:\\drawable_ic_person.xml.flat",
+        "source": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-main-54:\\drawable\\ic_person.xml"
+    },
+    {
+        "merged": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-debug-52:\\drawable_ic_heart_filled.xml.flat",
+        "source": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-main-54:\\drawable\\ic_heart_filled.xml"
+    },
+    {
+        "merged": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-debug-52:\\drawable_bg_search_bar_rounded.xml.flat",
+        "source": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-main-54:\\drawable\\bg_search_bar_rounded.xml"
+    },
+    {
+        "merged": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-debug-52:\\layout_activity_worker.xml.flat",
+        "source": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-main-54:\\layout\\activity_worker.xml"
+    },
+    {
+        "merged": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-debug-52:\\drawable_ic_lucide_message.xml.flat",
+        "source": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-main-54:\\drawable\\ic_lucide_message.xml"
+    },
+    {
+        "merged": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-debug-52:\\drawable_ic_arrow_back.xml.flat",
+        "source": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-main-54:\\drawable\\ic_arrow_back.xml"
+    },
+    {
+        "merged": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-debug-52:\\layout_item_message_received.xml.flat",
+        "source": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-main-54:\\layout\\item_message_received.xml"
+    },
+    {
+        "merged": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-debug-52:\\drawable_ic_camera.xml.flat",
+        "source": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-main-54:\\drawable\\ic_camera.xml"
+    },
+    {
+        "merged": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-debug-52:\\drawable_ic_lucide_home.xml.flat",
+        "source": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-main-54:\\drawable\\ic_lucide_home.xml"
+    },
+    {
+        "merged": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-debug-52:\\mipmap-anydpi-v26_ic_launcher_round.xml.flat",
+        "source": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-main-54:\\mipmap-anydpi-v26\\ic_launcher_round.xml"
+    },
+    {
+        "merged": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-debug-52:\\menu_bottom_nav_customer.xml.flat",
+        "source": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-main-54:\\menu\\bottom_nav_customer.xml"
+    },
+    {
+        "merged": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-debug-52:\\drawable_badge_background.xml.flat",
+        "source": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-main-54:\\drawable\\badge_background.xml"
+    },
+    {
+        "merged": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-debug-52:\\layout_fragment_cancel_order.xml.flat",
+        "source": "C:\\Users\\ASUS\\.gradle\\daemon\\9.4.1\\com.fixit.app-main-54:\\layout\\fragment_cancel_order.xml"
+    }
+]
