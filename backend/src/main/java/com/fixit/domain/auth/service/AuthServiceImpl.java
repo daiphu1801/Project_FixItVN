@@ -4,7 +4,7 @@ import com.fixit.domain.auth.dto.AuthResponse;
 import com.fixit.domain.auth.dto.LoginRequest;
 import com.fixit.domain.auth.dto.RegisterRequest;
 import com.fixit.domain.auth.repository.UserRepository;
-import com.fixit.entity.User;
+import com.fixit.domain.user.entity.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
