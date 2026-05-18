@@ -128,21 +128,25 @@
             app:layout_constraintTop_toBottomOf="@id/btnLogin"
             app:strokeColor="#e2e8f0" />
 
-        <LinearLayout
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginBottom="24dp"
-            android:orientation="horizontal"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent">
 
             <TextView
+                android:id="@+id/tvNoAccount"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/no_account_yet"
                 android:textColor="#4a5568"
-                android:textSize="14sp" />
+                android:textSize="14sp" 
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/tvRegister"/>
 
             <TextView
                 android:id="@+id/tvRegister"
@@ -151,8 +155,12 @@
                 android:text="@string/register_now"
                 android:textColor="#42c2ff"
                 android:textSize="14sp"
-                android:textStyle="bold" />
-        </LinearLayout>
+                android:textStyle="bold" 
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toEndOf="@id/tvNoAccount"
+                app:layout_constraintEnd_toEndOf="parent"/>
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

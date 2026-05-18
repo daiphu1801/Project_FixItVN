@@ -51,18 +51,19 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/layoutHeader">
 
-        <LinearLayout
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
             android:padding="16dp">
 
             <com.google.android.material.card.MaterialCardView
+                android:id="@+id/cardServiceDetails"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 app:cardCornerRadius="16dp"
                 app:cardElevation="2dp"
-                app:strokeWidth="0dp">
+                app:strokeWidth="0dp"
+                app:layout_constraintTop_toTopOf="parent">
 
                 <androidx.constraintlayout.widget.ConstraintLayout
                     android:layout_width="match_parent"
@@ -122,12 +123,14 @@
             </com.google.android.material.card.MaterialCardView>
 
             <com.google.android.material.card.MaterialCardView
+                android:id="@+id/cardWorkerInfo"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
                 app:cardCornerRadius="16dp"
                 app:cardElevation="2dp"
-                app:strokeWidth="0dp">
+                app:strokeWidth="0dp"
+                app:layout_constraintTop_toBottomOf="@id/cardServiceDetails">
 
                 <androidx.constraintlayout.widget.ConstraintLayout
                     android:layout_width="match_parent"
@@ -189,128 +192,138 @@
             </com.google.android.material.card.MaterialCardView>
 
             <com.google.android.material.card.MaterialCardView
+                android:id="@+id/cardJobDetails"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
                 app:cardCornerRadius="16dp"
                 app:cardElevation="2dp"
-                app:strokeWidth="0dp">
+                app:strokeWidth="0dp"
+                app:layout_constraintTop_toBottomOf="@id/cardWorkerInfo">
 
-                <LinearLayout
+                <androidx.constraintlayout.widget.ConstraintLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical"
                     android:padding="16dp">
 
                     <TextView
+                        android:id="@+id/tvJobDetailsTitle"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Chi tiết công việc"
                         android:textColor="#1E293B"
                         android:textSize="18sp"
-                        android:textStyle="bold" />
+                        android:textStyle="bold" 
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"/>
 
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
+                    <ImageView
+                        android:id="@+id/ivClockIcon"
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
                         android:layout_marginTop="16dp"
-                        android:gravity="center_vertical">
+                        android:src="@drawable/ic_lucide_clock"
+                        app:tint="#0284C7" 
+                        app:layout_constraintTop_toBottomOf="@id/tvJobDetailsTitle"
+                        app:layout_constraintStart_toStartOf="parent"/>
 
-                        <ImageView
-                            android:layout_width="20dp"
-                            android:layout_height="20dp"
-                            android:src="@drawable/ic_lucide_clock"
-                            app:tint="#0284C7" />
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginStart="12dp"
-                            android:text="Hôm nay, 14:30"
-                            android:textColor="#1E293B" />
-                    </LinearLayout>
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
+                    <TextView
+                        android:id="@+id/tvJobTime"
+                        android:layout_width="0dp"
                         android:layout_height="wrap_content"
+                        android:layout_marginStart="12dp"
+                        android:text="Hôm nay, 14:30"
+                        android:textColor="#1E293B" 
+                        app:layout_constraintTop_toTopOf="@id/ivClockIcon"
+                        app:layout_constraintBottom_toBottomOf="@id/ivClockIcon"
+                        app:layout_constraintStart_toEndOf="@id/ivClockIcon"
+                        app:layout_constraintEnd_toEndOf="parent"/>
+
+                    <ImageView
+                        android:id="@+id/ivLocationIcon"
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
                         android:layout_marginTop="12dp"
-                        android:gravity="top">
+                        android:src="@drawable/ic_lucide_map_pin"
+                        app:tint="#0284C7" 
+                        app:layout_constraintTop_toBottomOf="@id/ivClockIcon"
+                        app:layout_constraintStart_toStartOf="parent"/>
 
-                        <ImageView
-                            android:layout_width="20dp"
-                            android:layout_height="20dp"
-                            android:layout_marginTop="2dp"
-                            android:src="@drawable/ic_lucide_map_pin"
-                            app:tint="#0284C7" />
+                    <TextView
+                        android:id="@+id/tvJobLocation"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="12dp"
+                        android:text="123 Đường Nguyễn Huệ, Quận 1, HCM"
+                        android:textColor="#1E293B" 
+                        app:layout_constraintTop_toTopOf="@id/ivLocationIcon"
+                        app:layout_constraintStart_toEndOf="@id/ivLocationIcon"
+                        app:layout_constraintEnd_toEndOf="parent"/>
 
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginStart="12dp"
-                            android:text="123 Đường Nguyễn Huệ, Quận 1, HCM"
-                            android:textColor="#1E293B" />
-                    </LinearLayout>
-
-                    <LinearLayout
+                    <androidx.constraintlayout.widget.ConstraintLayout
+                        android:id="@+id/layoutPriceList"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="16dp"
                         android:background="#F8FAFC"
-                        android:orientation="vertical"
-                        android:padding="12dp">
+                        android:padding="12dp"
+                        app:layout_constraintTop_toBottomOf="@id/tvJobLocation">
 
-                        <RelativeLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content">
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="Vệ sinh dàn nóng &amp; lạnh"
-                                android:textColor="#475569" />
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_alignParentEnd="true"
-                                android:text="150.000đ"
-                                android:textColor="#1E293B"
-                                android:textStyle="bold" />
-                        </RelativeLayout>
-
-                        <RelativeLayout
-                            android:layout_width="match_parent"
+                        <TextView
+                            android:id="@+id/tvItem1Title"
+                            android:layout_width="0dp"
                             android:layout_height="wrap_content"
-                            android:layout_marginTop="8dp">
+                            android:text="Vệ sinh dàn nóng &amp; lạnh"
+                            android:textColor="#475569" 
+                            app:layout_constraintTop_toTopOf="parent"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintEnd_toStartOf="@id/tvItem1Price"/>
 
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="Bơm gas R32 bổ sung"
-                                android:textColor="#475569" />
+                        <TextView
+                            android:id="@+id/tvItem1Price"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="150.000đ"
+                            android:textColor="#1E293B"
+                            android:textStyle="bold" 
+                            app:layout_constraintTop_toTopOf="@id/tvItem1Title"
+                            app:layout_constraintBottom_toBottomOf="@id/tvItem1Title"
+                            app:layout_constraintEnd_toEndOf="parent"/>
 
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_alignParentEnd="true"
-                                android:text="100.000đ"
-                                android:textColor="#1E293B"
-                                android:textStyle="bold" />
-                        </RelativeLayout>
-                    </LinearLayout>
-                </LinearLayout>
+                        <TextView
+                            android:id="@+id/tvItem2Title"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="8dp"
+                            android:text="Bơm gas R32 bổ sung"
+                            android:textColor="#475569" 
+                            app:layout_constraintTop_toBottomOf="@id/tvItem1Title"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintEnd_toStartOf="@id/tvItem2Price"/>
+
+                        <TextView
+                            android:id="@+id/tvItem2Price"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="100.000đ"
+                            android:textColor="#1E293B"
+                            android:textStyle="bold" 
+                            app:layout_constraintTop_toTopOf="@id/tvItem2Title"
+                            app:layout_constraintBottom_toBottomOf="@id/tvItem2Title"
+                            app:layout_constraintEnd_toEndOf="parent"/>
+                    </androidx.constraintlayout.widget.ConstraintLayout>
+                </androidx.constraintlayout.widget.ConstraintLayout>
             </com.google.android.material.card.MaterialCardView>
 
-        </LinearLayout>
+        </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.core.widget.NestedScrollView>
 
-    <LinearLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/layoutBottomActions"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="#FFFFFF"
         android:elevation="8dp"
-        android:orientation="vertical"
         android:padding="16dp"
         app:layout_constraintBottom_toBottomOf="parent">
 
@@ -323,7 +336,8 @@
             android:textAllCaps="false"
             android:textSize="16sp"
             android:textStyle="bold"
-            app:cornerRadius="12dp" />
+            app:cornerRadius="12dp" 
+            app:layout_constraintTop_toTopOf="parent"/>
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btnRate"
@@ -336,7 +350,9 @@
             android:textColor="#086788"
             android:textSize="16sp"
             app:cornerRadius="12dp"
-            app:strokeColor="#086788" />
-    </LinearLayout>
+            app:strokeColor="#086788" 
+            app:layout_constraintTop_toBottomOf="@id/btnReorder"
+            app:layout_constraintBottom_toBottomOf="parent"/>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

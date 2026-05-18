@@ -25,30 +25,36 @@
             <!-- ═══════════════════════════════════════════════
                  BANNER CẢNH BÁO (Tone đỏ)
                  ═══════════════════════════════════════════════ -->
-            <LinearLayout
+            <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="#fef2f2"
-                android:gravity="center_vertical"
-                android:orientation="horizontal"
                 android:paddingHorizontal="16dp"
                 android:paddingVertical="12dp">
 
                 <ImageView
+                    android:id="@+id/ivAlert"
                     android:layout_width="20dp"
                     android:layout_height="20dp"
                     android:src="@drawable/ic_lucide_alert_circle"
-                    app:tint="#ef4444" />
+                    app:tint="#ef4444" 
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"/>
 
                 <TextView
+                    android:id="@+id/tvAlertText"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="10dp"
-                    android:layout_weight="1"
                     android:text="Có khiếu nại mới cần phản hồi"
                     android:textColor="#991b1b"
                     android:textSize="14sp"
-                    android:textStyle="bold" />
+                    android:textStyle="bold" 
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toEndOf="@id/ivAlert"
+                    app:layout_constraintEnd_toStartOf="@id/tvCountdown"/>
 
                 <TextView
                     android:id="@+id/tvCountdown"
@@ -57,8 +63,11 @@
                     android:text="18:42:00"
                     android:textColor="#ef4444"
                     android:textSize="14sp"
-                    android:textStyle="bold" />
-            </LinearLayout>
+                    android:textStyle="bold" 
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"/>
+            </androidx.constraintlayout.widget.ConstraintLayout>
 
             <!-- ═══════════════════════════════════════════════
                  THÔNG TIN ĐƠN HÀNG & KHIẾU NẠI
@@ -170,18 +179,20 @@
                 app:strokeColor="#fde68a"
                 app:strokeWidth="1dp">
 
-                <LinearLayout
+                <androidx.constraintlayout.widget.ConstraintLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical"
                     android:padding="16dp">
 
                     <TextView
+                        android:id="@+id/tvFrozenLabel"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Tiền đang bị đóng băng:"
                         android:textColor="#92400e"
-                        android:textSize="14sp" />
+                        android:textSize="14sp" 
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"/>
 
                     <TextView
                         android:id="@+id/tvFrozenAmount"
@@ -191,16 +202,21 @@
                         android:text="350,000đ"
                         android:textColor="#d97706"
                         android:textSize="24sp"
-                        android:textStyle="bold" />
+                        android:textStyle="bold" 
+                        app:layout_constraintTop_toBottomOf="@id/tvFrozenLabel"
+                        app:layout_constraintStart_toStartOf="parent"/>
 
                     <TextView
+                        android:id="@+id/tvFrozenDesc"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="4dp"
                         android:text="Chờ phán quyết của Admin FixIt"
                         android:textColor="#b45309"
-                        android:textSize="12sp" />
-                </LinearLayout>
+                        android:textSize="12sp" 
+                        app:layout_constraintTop_toBottomOf="@id/tvFrozenAmount"
+                        app:layout_constraintStart_toStartOf="parent"/>
+                </androidx.constraintlayout.widget.ConstraintLayout>
             </com.google.android.material.card.MaterialCardView>
 
             <!-- ═══════════════════════════════════════════════
@@ -255,20 +271,21 @@
             <!-- ═══════════════════════════════════════════════
                  NÚT HÀNH ĐỘNG
                  ═══════════════════════════════════════════════ -->
-            <LinearLayout
+            <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="24dp"
-                android:orientation="vertical"
                 android:paddingHorizontal="16dp">
 
                 <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnRefund"
                     style="@style/Widget.MaterialComponents.Button.OutlinedButton"
                     android:layout_width="match_parent"
                     android:layout_height="56dp"
                     android:text="Đề xuất hoàn tiền một phần"
                     android:textColor="#d97706"
-                    app:strokeColor="#fde68a" />
+                    app:strokeColor="#fde68a" 
+                    app:layout_constraintTop_toTopOf="parent"/>
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/btnSubmitResponse"
@@ -278,8 +295,9 @@
                     android:layout_marginTop="12dp"
                     android:text="Gửi phản hồi bảo vệ quyền lợi"
                     android:textAllCaps="false"
-                    android:textStyle="bold" />
-            </LinearLayout>
+                    android:textStyle="bold" 
+                    app:layout_constraintTop_toBottomOf="@id/btnRefund"/>
+            </androidx.constraintlayout.widget.ConstraintLayout>
 
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>

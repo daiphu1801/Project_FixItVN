@@ -91,39 +91,50 @@
         app:cardElevation="0dp"
         app:layout_constraintBottom_toTopOf="@id/tvSlogan">
 
-        <LinearLayout
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:gravity="center_vertical"
-            android:orientation="horizontal"
             android:padding="16dp">
 
             <ImageView
+                android:id="@+id/ivTipIcon"
                 android:layout_width="24dp"
                 android:layout_height="24dp"
                 android:src="@drawable/ic_location"
-                app:tint="#42C2FF" /> <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="12dp"
-            android:orientation="vertical">
+                app:tint="#42C2FF" 
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"/>
 
             <TextView
-                android:layout_width="wrap_content"
+                android:id="@+id/tvTipTitle"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:layout_marginStart="12dp"
                 android:text="Mẹo nhỏ cho bạn"
                 android:textColor="#111827"
                 android:textSize="14sp"
-                android:textStyle="bold" />
+                android:textStyle="bold" 
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintStart_toEndOf="@id/ivTipIcon"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintBottom_toTopOf="@id/tvTipDesc"
+                app:layout_constraintVertical_chainStyle="packed"/>
 
             <TextView
-                android:layout_width="wrap_content"
+                android:id="@+id/tvTipDesc"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:layout_marginStart="12dp"
                 android:text="Bạn có thể đính kèm hình ảnh hoặc video sau bước này để kỹ thuật viên nắm rõ tình hình hơn."
                 android:textColor="#4B5563"
-                android:textSize="13sp" />
-        </LinearLayout>
-        </LinearLayout>
+                android:textSize="13sp" 
+                app:layout_constraintTop_toBottomOf="@id/tvTipTitle"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toEndOf="@id/ivTipIcon"
+                app:layout_constraintEnd_toEndOf="parent"/>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
     </com.google.android.material.card.MaterialCardView>
 
     <TextView
