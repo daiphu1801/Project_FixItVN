@@ -1,8 +1,17 @@
-// backend/src/main/java/com/fixit/entity/Category.java
-package com.fixit.entity;
+package com.fixit.domain.service.entity;
 
-import jakarta.persistence.*;
-import lombok.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.PrePersist;
+import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
 import java.util.UUID;
 
 @Entity
@@ -32,6 +41,8 @@ public class Category {
 
     @PrePersist
     protected void onCreate() {
-        if (active == null) active = true;
+        if (active == null) {
+            active = true;
+        }
     }
 }

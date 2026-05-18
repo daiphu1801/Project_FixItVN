@@ -43,6 +43,14 @@ android/gradle.properties
 google-services.json
 firebase.json
 
+# ===================== Database Dumps =====================
+*.sql
+
+# ===================== Spring Boot Config (Nhạy cảm) =====================
+# application-dev.yml và application-prod.yml chứa credentials thật — KHÔNG commit
+backend/src/main/resources/application-dev.yml
+backend/src/main/resources/application-prod.yml
+
 # ===================== OS (System) =====================
 .DS_Store
 Thumbs.db

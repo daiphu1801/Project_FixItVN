@@ -6,6 +6,8 @@ import com.fixit.domain.auth.dto.RegisterRequest;
 import com.fixit.domain.auth.repository.UserRepository;
 import com.fixit.entity.User;
 import com.fixit.security.JwtService;
+import com.fixit.domain.user.entity.User;
+import com.fixit.domain.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;

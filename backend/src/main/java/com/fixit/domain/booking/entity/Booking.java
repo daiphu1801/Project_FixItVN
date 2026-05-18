@@ -1,8 +1,24 @@
-// backend/src/main/java/com/fixit/entity/Booking.java
-package com.fixit.entity;
+package com.fixit.domain.booking.entity;
 
-import jakarta.persistence.*;
-import lombok.*;
+import com.fixit.domain.user.entity.User;
+import com.fixit.domain.worker.entity.Worker;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.PrePersist;
+import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -49,6 +65,8 @@ public class Booking {
     @PrePersist
     protected void onCreate() {
         createdAt = LocalDateTime.now();
-        if (status == null) status = Status.PENDING;
+        if (status == null) {
+            status = Status.PENDING;
+        }
     }
 }
