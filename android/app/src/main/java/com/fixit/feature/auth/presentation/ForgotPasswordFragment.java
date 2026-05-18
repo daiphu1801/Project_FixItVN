@@ -1,59 +1,62 @@
 package com.fixit.feature.auth.presentation;
 
-import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
-import androidx.navigation.Navigation;
+import com.fixit.core.ui.BaseFragment;
 import com.fixit.databinding.FragmentForgotpasswordBinding;
 
 import dagger.hilt.android.AndroidEntryPoint;
 
+/**
+ * FILE ĐIỀU KHIỂN MÀN HÌNH QUÊN MẬT KHẨU
+ * Mục đích: Giúp người dùng lấy lại mật khẩu qua Email và mã OTP.
+ */
 @AndroidEntryPoint
-public class ForgotPasswordFragment extends Fragment {
+public class ForgotPasswordFragment extends BaseFragment<FragmentForgotpasswordBinding> {
 
-    private FragmentForgotpasswordBinding binding;
-
-    @Nullable
+    @NonNull
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        binding = FragmentForgotpasswordBinding.inflate(inflater, container, false);
-        return binding.getRoot();
+    protected FragmentForgotpasswordBinding inflateViewBinding(@NonNull LayoutInflater inflater, ViewGroup container) {
+        // Kết nối giao diện fragment_forgotpassword.xml
+        return FragmentForgotpasswordBinding.inflate(inflater, container, false);
     }
 
     @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-
+    protected void setupViews() {
+        // Xử lý nút quay lại
         binding.btnBack.setOnClickListener(v -> {
             if (binding.layoutStepOTP.getVisibility() == View.VISIBLE) {
-                // Nếu đang ở bước OTP, nhấn Back sẽ quay lại bước Email
+                // Nếu đang ở bước nhập OTP, nhấn Back sẽ quay lại bước nhập Email
                 showEmailStep();
             } else {
-                // Nếu đang ở bước Email, nhấn Back sẽ thoát màn hình
-                Navigation.findNavController(v).navigateUp();
+                // Nếu đang ở bước Email, nhấn Back sẽ thoát màn hình để về trang Đăng nhập
+                if (navController != null) {
+                    navController.navigateUp();
+                }
             }
         });
 
+        // Xử lý nút gửi mã xác thực / xác thực OTP
         binding.btnSendCode.setOnClickListener(v -> {
             if (binding.layoutStepEmail.getVisibility() == View.VISIBLE) {
-                // Giả lập gửi mã thành công, chuyển sang bước OTP
+                // Giả lập gửi mã thành công, chuyển sang bước nhập OTP
                 showOTPStep();
             } else {
-                // Xử lý xác thực mã OTP
+                // Nơi viết code xử lý xác thực mã OTP thực tế
             }
         });
     }
 
+    // Hiển thị giao diện nhập Email
     private void showEmailStep() {
         binding.layoutStepEmail.setVisibility(View.VISIBLE);
         binding.layoutStepOTP.setVisibility(View.GONE);
         binding.btnSendCode.setText("Gửi mã xác thực");
     }
 
+    // Hiển thị giao diện nhập mã OTP
     private void showOTPStep() {
         binding.layoutStepEmail.setVisibility(View.GONE);
         binding.layoutStepOTP.setVisibility(View.VISIBLE);
@@ -61,8 +64,7 @@ public class ForgotPasswordFragment extends Fragment {
     }
 
     @Override
-    public void onDestroyView() {
-        super.onDestroyView();
-        binding = null;
+    protected void observeData() {
+        // Lắng nghe kết quả từ Server (gửi mail thành công, OTP đúng/sai)
     }
 }
