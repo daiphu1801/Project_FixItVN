@@ -3,6 +3,9 @@ package com.fixit.domain.auth.service;
 import com.fixit.domain.auth.dto.AuthResponse;
 import com.fixit.domain.auth.dto.LoginRequest;
 import com.fixit.domain.auth.dto.RegisterRequest;
+import com.fixit.domain.auth.repository.UserRepository;
+import com.fixit.entity.User;
+import com.fixit.security.JwtService;
 import com.fixit.domain.user.entity.User;
 import com.fixit.domain.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -19,7 +22,7 @@ public class AuthServiceImpl implements AuthService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
-    // JWT service will be added later
+    private final JwtService jwtService;
 
     @Override
     @Transactional
@@ -38,10 +41,12 @@ public class AuthServiceImpl implements AuthService {
 
         userRepository.save(user);
 
-        // Placeholder for token generation
+        String accessToken = jwtService.generateToken(user);
+        String refreshToken = jwtService.generateRefreshToken(user);
+
         return AuthResponse.builder()
-                .accessToken("dummy-access-token")
-                .refreshToken("dummy-refresh-token")
+                .accessToken(accessToken)
+                .refreshToken(refreshToken)
                 .user(AuthResponse.UserInfo.builder()
                         .id(user.getId())
                         .phone(user.getPhone())
@@ -60,10 +65,12 @@ public class AuthServiceImpl implements AuthService {
         User user = userRepository.findByPhone(request.getPhone())
                 .orElseThrow(() -> new RuntimeException("Người dùng không tồn tại"));
 
-        // Placeholder for token generation
+        String accessToken = jwtService.generateToken(user);
+        String refreshToken = jwtService.generateRefreshToken(user);
+
         return AuthResponse.builder()
-                .accessToken("dummy-access-token")
-                .refreshToken("dummy-refresh-token")
+                .accessToken(accessToken)
+                .refreshToken(refreshToken)
                 .user(AuthResponse.UserInfo.builder()
                         .id(user.getId())
                         .phone(user.getPhone())
