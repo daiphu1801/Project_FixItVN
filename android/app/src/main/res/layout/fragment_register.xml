@@ -48,19 +48,21 @@
         app:layout_constraintTop_toBottomOf="@id/tvRegisterSubtitle"
         app:layout_constraintBottom_toTopOf="@id/btnRegister">
 
-        <LinearLayout
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:layout_height="wrap_content">
 
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/tilFullName"
                 style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-                android:layout_width="match_parent"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:hint="@string/full_name"
                 app:boxStrokeColor="#42c2ff"
-                app:hintTextColor="#42c2ff">
+                app:hintTextColor="#42c2ff"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/etFullName"
@@ -72,12 +74,15 @@
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/tilPhone"
                 style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-                android:layout_width="match_parent"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
                 android:hint="@string/phone_number"
                 app:boxStrokeColor="#42c2ff"
-                app:hintTextColor="#42c2ff">
+                app:hintTextColor="#42c2ff"
+                app:layout_constraintTop_toBottomOf="@id/tilFullName"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/etPhone"
@@ -89,13 +94,16 @@
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/tilPassword"
                 style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-                android:layout_width="match_parent"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
                 android:hint="@string/password"
                 app:passwordToggleEnabled="true"
                 app:boxStrokeColor="#42c2ff"
-                app:hintTextColor="#42c2ff">
+                app:hintTextColor="#42c2ff"
+                app:layout_constraintTop_toBottomOf="@id/tilPhone"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/etPassword"
@@ -107,13 +115,16 @@
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/tilConfirmPassword"
                 style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-                android:layout_width="match_parent"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
                 android:hint="@string/confirm_password"
                 app:passwordToggleEnabled="true"
                 app:boxStrokeColor="#42c2ff"
-                app:hintTextColor="#42c2ff">
+                app:hintTextColor="#42c2ff"
+                app:layout_constraintTop_toBottomOf="@id/tilPassword"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/etConfirmPassword"
@@ -122,7 +133,7 @@
                     android:inputType="textPassword" />
             </com.google.android.material.textfield.TextInputLayout>
 
-        </LinearLayout>
+        </androidx.constraintlayout.widget.ConstraintLayout>
     </ScrollView>
 
     <com.google.android.material.button.MaterialButton
@@ -138,22 +149,26 @@
         android:backgroundTint="#42c2ff"
         app:layout_constraintBottom_toTopOf="@id/llFooter" />
 
-    <LinearLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/llFooter"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="24dp"
-        android:orientation="horizontal"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
 
         <TextView
+            android:id="@+id/tvAlreadyHaveAccount"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/already_have_account"
             android:textColor="#4a5568"
-            android:textSize="14sp" />
+            android:textSize="14sp" 
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/tvLogin"/>
 
         <TextView
             android:id="@+id/tvLogin"
@@ -162,7 +177,11 @@
             android:text="@string/login_now"
             android:textColor="#42c2ff"
             android:textSize="14sp"
-            android:textStyle="bold" />
-    </LinearLayout>
+            android:textStyle="bold" 
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toEndOf="@id/tvAlreadyHaveAccount"
+            app:layout_constraintEnd_toEndOf="parent"/>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

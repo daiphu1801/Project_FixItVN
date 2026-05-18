@@ -14,6 +14,9 @@ import com.fixit.databinding.ActivityCustomerBinding;
 
 import dagger.hilt.android.AndroidEntryPoint;
 
+/**
+ * CẬP NHẬT: KẾT NỐI THANH ĐIỀU HƯỚNG 5 MỤC (TRANG CHỦ, ĐƠN HÀNG, LỊCH SỬ, THỢ QUEN, CÁ NHÂN)
+ */
 @AndroidEntryPoint
 public class CustomerActivity extends BaseActivity<ActivityCustomerBinding> {
 
@@ -27,32 +30,28 @@ public class CustomerActivity extends BaseActivity<ActivityCustomerBinding> {
     @Override
     protected void setupViews() {
         setupNavigation();
-        setupFab();
     }
 
     private void setupNavigation() {
+        // 1. Tìm NavHostFragment (Cái khung dùng để chứa và hiển thị các màn hình Fragment)
         NavHostFragment navHostFragment = (NavHostFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.navHostFragmentCustomer);
         
         if (navHostFragment != null) {
+            // 2. Lấy bộ điều hướng (navController) - đây là 'người lái xe' cho ứng dụng
             navController = navHostFragment.getNavController();
+            
+            // 3. TỰ ĐỘNG KẾT NỐI: Lệnh này giúp thanh Menu bên dưới tự động nhận diện 5 nút bấm
+            // Nó sẽ so khớp ID của nút bấm trong file Menu và ID của màn hình trong file Navigation.
             NavigationUI.setupWithNavController(binding.bottomNavigationView, navController);
             
-            MenuItem placeholderItem = binding.bottomNavigationView.getMenu().findItem(R.id.placeholder);
-            if (placeholderItem != null) {
-                placeholderItem.setEnabled(false);
-            }
+            // Chú thích: Tôi đã loại bỏ phần code liên quan đến nút tròn FAB và Placeholder 
+            // để phù hợp với giao diện 5 mục dàn hàng ngang như ảnh bạn vừa gửi.
         }
-    }
-
-    private void setupFab() {
-        binding.fabFindWorker.setOnClickListener(v -> {
-            Toast.makeText(this, "Chức năng Tìm thợ quanh đây đang phát triển", Toast.LENGTH_SHORT).show();
-        });
     }
 
     @Override
     protected void observeData() {
-        // Observe Customer Data
+        // Quan sát dữ liệu khách hàng (nếu có)
     }
 }
