@@ -5,12 +5,97 @@
     android:id="@+id/nav_customer"
     app:startDestination="@id/nav_customer_home">
 
+    <!-- TRANG CHỦ -->
     <fragment
         android:id="@+id/nav_customer_home"
         android:name="com.fixit.feature.customer.home.presentation.CustomerHomeFragment"
         android:label="Trang chủ"
         tools:layout="@layout/fragment_customer_home" />
 
-    <!-- Add other fragments here later when they are created -->
-    
+    <!-- TRANG TÌM KIẾM DỊCH VỤ -->
+    <fragment
+        android:id="@+id/nav_customer_search"
+        android:name="com.fixit.feature.customer.search.presentation.CustomerSearchFragment"
+        android:label="Tìm kiếm"
+        tools:layout="@layout/fragment_customer_search" />
+
+    <!-- TRANG ĐƠN HÀNG THÔNG MINH (CẬP NHẬT MỚI) -->
+    <!-- Đây là trang trung gian sẽ tự quyết định hiển thị Radar, Chi tiết đơn hoặc Trạng thái trống -->
+    <fragment
+        android:id="@+id/nav_customer_order"
+        android:name="com.fixit.feature.customer.order.presentation.CustomerOrderContainerFragment"
+        android:label="Đơn hàng"
+        tools:layout="@layout/fragment_customer_order_container" />
+
+    <!-- TRANG LỊCH SỬ -->
+    <fragment
+        android:id="@+id/nav_customer_history"
+        android:name="com.fixit.feature.customer.history.presentation.OrderHistoryFragment"
+        android:label="Lịch sử"
+        tools:layout="@layout/fragment_order_history" />
+
+    <!-- TRANG THỢ QUEN -->
+    <fragment
+        android:id="@+id/nav_customer_contacts"
+        android:name="com.fixit.feature.customer.favorite.presentation.FavoriteWorkersFragment"
+        android:label="Thợ quen"
+        tools:layout="@layout/fragment_favorite_workers" />
+
+    <!-- TRANG CÁ NHÂN -->
+    <fragment
+        android:id="@+id/nav_customer_profile"
+        android:name="com.fixit.feature.customer.profile.presentation.ProfileCustomerFragment"
+        android:label="Cá nhân"
+        tools:layout="@layout/fragment_profile_customer" />
+
+    <fragment
+        android:id="@+id/nav_customer_account_info"
+        android:name="com.fixit.feature.customer.profile.presentation.CustomerAccountInfoFragment"
+        android:label="Thông tin tài khoản"
+        tools:layout="@layout/fragment_customer_account_info" />
+
+    <!-- TRANG ĐẶT THỢ (BOOKING) -->
+    <fragment
+        android:id="@+id/nav_customer_booking"
+        android:name="com.fixit.feature.customer.booking.presentation.CustomerBookingFragment"
+        android:label="Đặt thợ"
+        tools:layout="@layout/fragment_customer_booking" />
+
+    <fragment
+        android:id="@+id/nav_customer_note_input"
+        android:name="com.fixit.feature.customer.booking.presentation.NoteInputFragment"
+        android:label="Ghi chú"
+        tools:layout="@layout/fragment_note_input" />
+
+    <fragment
+        android:id="@+id/nav_customer_location_picker"
+        android:name="com.fixit.feature.customer.booking.presentation.CustomerLocationPickerFragment"
+        android:label="Chọn địa điểm"
+        tools:layout="@layout/fragment_customer_location_picker" />
+
+    <!-- CÁC ĐIỂM ĐẾN PHỤ TRỢ (DÙNG ĐỂ CHUYỂN TRANG RIÊNG BIỆT KHI CẦN) -->
+    <fragment
+        android:id="@+id/nav_customer_finding_worker"
+        android:name="com.fixit.feature.customer.booking.presentation.CustomerFindingWorkerFragment"
+        android:label="Đang tìm thợ"
+        tools:layout="@layout/fragment_customer_finding_worker" />
+
+    <fragment
+        android:id="@+id/nav_customer_order_detail_finished"
+        android:name="com.fixit.feature.customer.history.presentation.OrderDetailFinishedFragment"
+        android:label="Chi tiết đơn hàng"
+        tools:layout="@layout/fragment_order_detail_finished" />
+
+    <fragment
+        android:id="@+id/nav_customer_order_detail"
+        android:name="com.fixit.feature.customer.order.presentation.CustomerOrderDetailFragment"
+        android:label="Chi tiết đơn hàng"
+        tools:layout="@layout/fragment_customer_order_detail" />
+
+    <fragment
+        android:id="@+id/nav_customer_cancel_order"
+        android:name="com.fixit.feature.customer.order.presentation.CustomerCancelOrderFragment"
+        android:label="Hủy đơn hàng"
+        tools:layout="@layout/fragment_customer_cancel_order" />
+
 </navigation>

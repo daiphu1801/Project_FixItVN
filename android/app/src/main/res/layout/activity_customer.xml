@@ -14,50 +14,20 @@
         app:defaultNavHost="true"
         app:navGraph="@navigation/nav_customer"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toTopOf="@id/coordinatorLayout" />
+        app:layout_constraintBottom_toTopOf="@id/bottomNavigationView" />
 
-    <androidx.coordinatorlayout.widget.CoordinatorLayout
-        android:id="@+id/coordinatorLayout"
+    <!-- Thanh điều hướng dưới cùng (Bottom Navigation) tiêu chuẩn -->
+    <!-- Tôi đã bỏ CoordinatorLayout và BottomAppBar cũ để thanh menu hiển thị được 5 mục như ảnh bạn gửi -->
+    <com.google.android.material.bottomnavigation.BottomNavigationView
+        android:id="@+id/bottomNavigationView"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:clipChildren="false"
-        app:layout_constraintBottom_toBottomOf="parent">
-
-        <com.google.android.material.bottomappbar.BottomAppBar
-            android:id="@+id/bottomAppBar"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="bottom"
-            app:fabCradleMargin="8dp"
-            app:fabCradleRoundedCornerRadius="16dp"
-            app:fabCradleVerticalOffset="8dp">
-
-            <com.google.android.material.bottomnavigation.BottomNavigationView
-                android:id="@+id/bottomNavigationView"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_marginEnd="16dp"
-                android:background="@android:color/transparent"
-                app:backgroundTint="@android:color/transparent"
-                app:elevation="0dp"
-                app:itemIconTint="@color/bottom_nav_color"
-                app:itemTextColor="@color/bottom_nav_color"
-                app:labelVisibilityMode="labeled"
-                app:menu="@menu/bottom_nav_customer" />
-
-        </com.google.android.material.bottomappbar.BottomAppBar>
-
-        <com.google.android.material.floatingactionbutton.FloatingActionButton
-            android:id="@+id/fabFindWorker"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@drawable/ic_lucide_radar"
-            app:backgroundTint="#42c2ff"
-            app:tint="#ffffff"
-            app:layout_anchor="@id/bottomAppBar"
-            app:elevation="12dp"
-            android:contentDescription="Tìm thợ" />
-
-    </androidx.coordinatorlayout.widget.CoordinatorLayout>
+        android:layout_height="64dp"
+        android:background="#FFFFFF"
+        app:elevation="8dp"
+        app:itemIconTint="@color/bottom_nav_color"
+        app:itemTextColor="@color/bottom_nav_color"
+        app:labelVisibilityMode="labeled"
+        app:menu="@menu/bottom_nav_customer"
+        app:layout_constraintBottom_toBottomOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

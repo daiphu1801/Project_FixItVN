@@ -22,23 +22,26 @@
             android:padding="16dp">
 
             <!-- Avatar Section (Optional) -->
-            <LinearLayout
+            <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:gravity="center"
-                android:layout_marginBottom="24dp"
-                android:orientation="vertical">
+                android:layout_marginBottom="24dp">
 
                 <ImageView
+                    android:id="@+id/ivAvatar"
                     android:layout_width="80dp"
                     android:layout_height="80dp"
                     android:src="@drawable/ic_lucide_user"
                     android:background="@drawable/circle_background"
                     android:backgroundTint="#e2e8f0"
                     android:padding="16dp"
-                    app:tint="#64748b"/>
+                    app:tint="#64748b"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent" />
                 
                 <TextView
+                    android:id="@+id/tvChangeAvatar"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Thay đổi ảnh đại diện"
@@ -47,8 +50,11 @@
                     android:layout_marginTop="8dp"
                     android:textStyle="bold"
                     android:clickable="true"
-                    android:focusable="true"/>
-            </LinearLayout>
+                    android:focusable="true"
+                    app:layout_constraintTop_toBottomOf="@id/ivAvatar"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
 
             <!-- Form Fields -->
             <TextView

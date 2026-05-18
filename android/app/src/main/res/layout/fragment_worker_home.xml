@@ -13,11 +13,9 @@
         android:padding="16dp">
 
         <!-- Home Header (Merged from layout_worker_home_header) -->
-        <LinearLayout
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:gravity="center_vertical"
-            android:orientation="horizontal"
             android:paddingBottom="16dp">
 
             <ImageView
@@ -27,34 +25,46 @@
                 android:layout_marginEnd="12dp"
                 android:background="@drawable/circle_background"
                 android:src="@drawable/ic_lucide_user"
-                app:tint="#42c2ff" />
+                app:tint="#42c2ff" 
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"/>
 
-            <LinearLayout
+            <TextView
+                android:id="@+id/tvGreeting"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:orientation="vertical">
+                android:layout_marginStart="12dp"
+                android:text="Xin chào,"
+                android:textColor="#94a3b8"
+                android:textSize="12sp" 
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintStart_toEndOf="@id/ivWorkerAvatar"
+                app:layout_constraintEnd_toStartOf="@id/flBell"
+                app:layout_constraintBottom_toTopOf="@id/tvWorkerName"
+                app:layout_constraintVertical_chainStyle="packed"/>
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Xin chào,"
-                    android:textColor="#94a3b8"
-                    android:textSize="12sp" />
-
-                <TextView
-                    android:id="@+id/tvWorkerName"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Nguyễn Văn A"
-                    android:textColor="#0d1b2a"
-                    android:textSize="18sp"
-                    android:textStyle="bold" />
-            </LinearLayout>
+            <TextView
+                android:id="@+id/tvWorkerName"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="12dp"
+                android:text="Nguyễn Văn A"
+                android:textColor="#0d1b2a"
+                android:textSize="18sp"
+                android:textStyle="bold" 
+                app:layout_constraintTop_toBottomOf="@id/tvGreeting"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toEndOf="@id/ivWorkerAvatar"
+                app:layout_constraintEnd_toStartOf="@id/flBell"/>
 
             <FrameLayout
+                android:id="@+id/flBell"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent">
                 
                 <ImageView
                     android:layout_width="28dp"
@@ -70,7 +80,7 @@
                     android:layout_marginTop="2dp"
                     android:layout_marginEnd="2dp" />
             </FrameLayout>
-        </LinearLayout>
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
         <!-- Trạng thái nhận việc (read-only) — click → sang tab Tìm việc -->
         <com.google.android.material.card.MaterialCardView
@@ -86,11 +96,9 @@
             app:strokeColor="#e2e8f0"
             app:strokeWidth="2dp">
 
-            <LinearLayout
+            <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:gravity="center_vertical"
-                android:orientation="horizontal"
                 android:padding="16dp">
 
                 <!-- Chấm trạng thái -->
@@ -99,44 +107,56 @@
                     android:layout_width="12dp"
                     android:layout_height="12dp"
                     android:layout_marginEnd="12dp"
-                    android:background="#94a3b8" />
+                    android:background="#94a3b8" 
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"/>
 
-                <LinearLayout
+                <TextView
+                    android:id="@+id/tvStatusDesc"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:orientation="vertical">
+                    android:layout_marginStart="12dp"
+                    android:text="OFFLINE"
+                    android:textColor="#94a3b8"
+                    android:textSize="14sp"
+                    android:textStyle="bold" 
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toTopOf="@id/tvStatusHelp"
+                    app:layout_constraintStart_toEndOf="@id/viewStatusDot"
+                    app:layout_constraintEnd_toStartOf="@id/ivChevron"
+                    app:layout_constraintVertical_chainStyle="packed"/>
 
-                    <TextView
-                        android:id="@+id/tvStatusDesc"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="OFFLINE"
-                        android:textColor="#94a3b8"
-                        android:textSize="14sp"
-                        android:textStyle="bold" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="2dp"
-                        android:text="Nhấn để thay đổi trạng thái →"
-                        android:textColor="#42c2ff"
-                        android:textSize="12sp" />
-                </LinearLayout>
+                <TextView
+                    android:id="@+id/tvStatusHelp"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="12dp"
+                    android:layout_marginTop="2dp"
+                    android:text="Nhấn để thay đổi trạng thái →"
+                    android:textColor="#42c2ff"
+                    android:textSize="12sp" 
+                    app:layout_constraintTop_toBottomOf="@id/tvStatusDesc"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toEndOf="@id/viewStatusDot"
+                    app:layout_constraintEnd_toStartOf="@id/ivChevron"/>
 
                 <ImageView
+                    android:id="@+id/ivChevron"
                     android:layout_width="20dp"
                     android:layout_height="20dp"
                     android:src="@drawable/ic_lucide_chevron_right"
-                    app:tint="#cbd5e1" />
-            </LinearLayout>
+                    app:tint="#cbd5e1" 
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"/>
+            </androidx.constraintlayout.widget.ConstraintLayout>
         </com.google.android.material.card.MaterialCardView>
 
         <!-- Reusable Shared Components -->
         <include android:id="@+id/layoutActiveOrder" layout="@layout/layout_card_active_order" />
         
-        <RelativeLayout
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="8dp">
@@ -144,28 +164,32 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_alignParentStart="true"
                 android:text="Thống kê thu nhập"
                 android:textColor="#0d1b2a"
                 android:textSize="18sp"
-                android:textStyle="bold" />
+                android:textStyle="bold" 
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"/>
                 
             <TextView
                 android:id="@+id/tvViewStatsDetail"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_alignParentEnd="true"
                 android:text="Xem chi tiết"
                 android:textColor="#42c2ff"
                 android:textSize="14sp"
-                android:textStyle="bold" />
-        </RelativeLayout>
+                android:textStyle="bold" 
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"/>
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
         <include android:id="@+id/layoutStats" layout="@layout/layout_stats_overview" />
         <include android:id="@+id/layoutChart" layout="@layout/layout_income_chart" />
 
         <!-- UC-W08: Lịch hẹn hôm nay -->
-        <RelativeLayout
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="12dp">
@@ -173,22 +197,26 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_alignParentStart="true"
                 android:text="Lịch hẹn hôm nay"
                 android:textColor="#0d1b2a"
                 android:textSize="18sp"
-                android:textStyle="bold" />
+                android:textStyle="bold" 
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"/>
                 
             <TextView
                 android:id="@+id/tvViewAllAppointments"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_alignParentEnd="true"
                 android:text="Xem tất cả"
                 android:textColor="#42c2ff"
                 android:textSize="14sp"
-                android:textStyle="bold" />
-        </RelativeLayout>
+                android:textStyle="bold" 
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"/>
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rvAppointments"
