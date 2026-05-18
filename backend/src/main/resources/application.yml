@@ -19,6 +19,10 @@ spring:
       write-dates-as-timestamps: false
     default-property-inclusion: non_null
 
+  data:
+    mongodb:
+      uri: mongodb://localhost:27017/fixit_chat_db
+
 server:
   port: 8080
   servlet:
