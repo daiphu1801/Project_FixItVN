@@ -37,6 +37,8 @@ android/gradle.properties
 # ===================== Environment & Secrets =====================
 *.env
 .env.*
+application-dev.yml
+application-prod.yml
 *.jks
 *.keystore
 # Lưu ý: Các file dưới đây nên được chia sẻ qua kênh bảo mật khác thay vì Git
