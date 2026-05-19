@@ -1,13 +1,13 @@
 package com.fixit.domain.worker.mapper;
 
 import com.fixit.domain.worker.dto.response.WorkerHomeResponse;
-import com.fixit.domain.worker.repository.projection.WorkerHomeProjection;
+import com.fixit.domain.worker.repository.projection.WorkerDashboardSummaryProjection;
 import org.springframework.stereotype.Component;
 
 @Component
 public class WorkerHomeMapper {
 
-    public WorkerHomeResponse toResponse(WorkerHomeProjection projection) {
+    public WorkerHomeResponse toResponse(WorkerDashboardSummaryProjection projection) {
         return WorkerHomeResponse.builder()
                 .workerId(projection.getWorkerId())
                 .fullName(projection.getFullName())

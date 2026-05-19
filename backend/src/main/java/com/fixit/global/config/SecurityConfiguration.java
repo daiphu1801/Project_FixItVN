@@ -52,8 +52,10 @@ package com.fixit.global.config;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 
 @Configuration
@@ -64,8 +66,27 @@ public class SecurityConfiguration {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .csrf(AbstractHttpConfigurer::disable)
+                .cors(Customizer.withDefaults())
+                .sessionManagement(session ->
+                        session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                )
                 .authorizeHttpRequests(auth -> auth
-                        .anyRequest().permitAll()
+                        .requestMatchers(
+                                "/api/v1/auth/**",
+                                "/v3/api-docs/**",
+                                "/swagger-ui/**",
+                                "/swagger-ui.html"
+                        ).permitAll()
+
+                        // DEV ONLY: cho phép test assignment bằng X-Debug-Worker-Id
+                        .requestMatchers(
+                                "/api/v1/workers/me/assignments/pending",
+                                "/api/v1/bookings/*/assignments/*/accept",
+                                "/api/v1/bookings/*/assignments/*/reject",
+                                "/api/v1/bookings/*/assignments/*/miss"
+                        ).permitAll()
+
+                        .anyRequest().authenticated()
                 );
 
         return http.build();

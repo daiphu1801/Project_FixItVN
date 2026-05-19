@@ -77,6 +77,13 @@ public class CustomerHomeFragment extends BaseFragment<FragmentCustomerHomeBindi
                 navController.navigate(R.id.nav_customer_search);
             }
         });
+
+        // Icon Chat ở góc phải header → mở danh sách tin nhắn
+        binding.ivChatIcon.setOnClickListener(v -> {
+            if (navController != null) {
+                navController.navigate(R.id.nav_customer_list_msg);
+            }
+        });
     }
 
     private void navigateToFindingWorker(String serviceName) {
