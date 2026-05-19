@@ -32,7 +32,7 @@
                 android:textSize="14sp"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintEnd_toStartOf="@id/iv_user_avatar"
+                app:layout_constraintEnd_toStartOf="@id/iv_chat_icon"
                 android:layout_marginEnd="16dp"/>
 
             <TextView
@@ -45,9 +45,24 @@
                 android:textStyle="bold"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/tv_greeting"
-                app:layout_constraintEnd_toStartOf="@id/iv_user_avatar"
+                app:layout_constraintEnd_toStartOf="@id/iv_chat_icon"
                 android:layout_marginEnd="16dp"/>
 
+            <!-- Icon Chat (chuông tin nhắn) -->
+            <ImageView
+                android:id="@+id/iv_chat_icon"
+                android:layout_width="28dp"
+                android:layout_height="28dp"
+                android:src="@drawable/ic_lucide_message_circle"
+                android:padding="2dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                app:tint="#ffffff"
+                app:layout_constraintEnd_toStartOf="@id/iv_user_avatar"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                android:layout_marginEnd="12dp"/>
+
+            <!-- Avatar người dùng -->
             <ImageView
                 android:id="@+id/iv_user_avatar"
                 android:layout_width="32dp"

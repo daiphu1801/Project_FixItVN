@@ -20,10 +20,40 @@
         android:name="com.fixit.feature.worker.job.presentation.WorkerJobFragment"
         android:label="Tìm việc" />
 
+    <!-- Tab Tin nhắn (danh sách hội thoại) -->
     <fragment
         android:id="@+id/workerChatFragment"
-        android:name="com.fixit.feature.worker.chat.presentation.WorkerChatFragment"
-        android:label="Chat" />
+        android:name="com.fixit.feature.worker.chat.presentation.WorkerListMsgFragment"
+        android:label="Tin nhắn"
+        tools:layout="@layout/fragment_list_msg">
+        <argument
+            android:name="isTopLevel"
+            app:argType="boolean"
+            android:defaultValue="true" />
+        <action
+            android:id="@+id/action_worker_list_msg_to_chat"
+            app:destination="@id/nav_worker_chat_detail"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right" />
+    </fragment>
+
+    <!-- Màn hình chat 1-1 (dùng chung ChatCustomerFragment) -->
+    <fragment
+        android:id="@+id/nav_worker_chat_detail"
+        android:name="com.fixit.feature.customer.chat.presentation.ChatCustomerFragment"
+        android:label="Chat"
+        tools:layout="@layout/fragment_chat_customer">
+        <argument
+            android:name="workerName"
+            app:argType="string"
+            android:defaultValue="Khách hàng" />
+        <argument
+            android:name="workerId"
+            app:argType="string"
+            android:defaultValue="" />
+    </fragment>
 
     <fragment
         android:id="@+id/workerWalletFragment"

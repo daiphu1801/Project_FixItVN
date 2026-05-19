@@ -47,6 +47,13 @@ public class WorkerHomeFragment extends BaseFragment<FragmentWorkerHomeBinding> 
                 androidx.navigation.Navigation.findNavController(v)
                         .navigate(com.fixit.R.id.workerStatsFragment));
 
+        // Icon Chat ở góc phải header → mở danh sách tin nhắn
+        binding.ivChatWorker.setOnClickListener(v -> {
+            if (navController != null) {
+                navController.navigate(com.fixit.R.id.workerChatFragment);
+            }
+        });
+
         setupAppointmentList();
     }
 

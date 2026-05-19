@@ -1,69 +1,70 @@
-// backend/src/main/java/com/fixit/entity/Worker.java
 package com.fixit.domain.worker.entity;
 
+import com.fixit.domain.auth.entity.User;
 import jakarta.persistence.*;
 import lombok.*;
-import java.time.LocalDateTime;
+
+import java.math.BigDecimal;
+import java.time.OffsetDateTime;
 import java.util.UUID;
 
 @Entity
 @Table(name = "workers")
-@Data
+@Getter
+@Setter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class Worker {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    private UUID id;
+    @Column(name = "worker_id")
+    private UUID workerId;
 
     @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", nullable = false, unique = true)
+    @MapsId
+    @JoinColumn(name = "worker_id")
     private User user;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "category_id", nullable = false)
-    private Category category;
+    @Column(name = "full_name", length = 100)
+    private String fullName;
 
-    @Column(columnDefinition = "TEXT")
-    private String bio;
+    @Column(name = "identity_card", length = 20, unique = true)
+    private String identityCard;
 
-    private Integer experienceYears;
+    @Builder.Default
+    @Enumerated(EnumType.STRING)
+    @Column(name = "verification_status", length = 50)
+    private WorkerVerificationStatus verificationStatus = WorkerVerificationStatus.Pending;
 
-    private Double latitude;
+    @Column(name = "latitude", precision = 10, scale = 8)
+    private BigDecimal latitude;
 
-    private Double longitude;
+    @Column(name = "longitude", precision = 11, scale = 8)
+    private BigDecimal longitude;
 
-    @Column(nullable = false)
-    private Double rating;
+    @Builder.Default
+    @Column(name = "is_available")
+    private Boolean available = false;
 
-    @Column(nullable = false)
-    private Integer totalJobs;
+    @Builder.Default
+    @Column(name = "reputation_score", precision = 3, scale = 1)
+    private BigDecimal reputationScore = BigDecimal.valueOf(5.0);
 
-    @Column(nullable = false)
-    private Boolean available;
+    @Builder.Default
+    @Column(name = "missed_count")
+    private Integer missedCount = 0;
 
-    @Column(nullable = false)
-    private Boolean verified;
+    @Builder.Default
+    @Column(name = "rejection_count")
+    private Integer rejectionCount = 0;
 
-    @Column(nullable = false, updatable = false)
-    private LocalDateTime createdAt;
+    @Column(name = "rejected_priority_until")
+    private OffsetDateTime rejectedPriorityUntil;
 
-    private LocalDateTime updatedAt;
+    @Column(name = "experience_description", columnDefinition = "text")
+    private String experienceDescription;
 
-    @PrePersist
-    protected void onCreate() {
-        createdAt = LocalDateTime.now();
-        updatedAt = LocalDateTime.now();
-        if (rating == null) rating = 0.0;
-        if (totalJobs == null) totalJobs = 0;
-        if (available == null) available = true;
-        if (verified == null) verified = false;
-    }
-
-    @PreUpdate
-    protected void onUpdate() {
-        updatedAt = LocalDateTime.now();
-    }
+    @Column(name = "service_area")
+    private String serviceArea;
 }
