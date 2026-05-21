@@ -13,6 +13,8 @@ public class Constants {
     public static final String PREF_REFRESH_TOKEN = "refresh_token";
     public static final String PREF_USER_ID       = "user_id";
     public static final String PREF_USER_ROLE     = "user_role"; // "CUSTOMER" | "WORKER"
+    public static final String PREF_USER_NAME     = "user_name";
+    public static final String PREF_USER_PHONE    = "user_phone";
     public static final String PREF_IS_ONLINE     = "worker_is_online";
 
     // User Roles
