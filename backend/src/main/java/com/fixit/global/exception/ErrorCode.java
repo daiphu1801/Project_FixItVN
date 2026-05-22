@@ -23,6 +23,11 @@ public enum ErrorCode {
     INTERNAL_SERVER_ERROR(500, HttpStatus.INTERNAL_SERVER_ERROR, "Internal server error"),
     INVALID_REQUEST_PARAMETER(400, HttpStatus.BAD_REQUEST, "Invalid request parameter"),
 
+    // Worker profile & skills
+    WORKER_NOT_FOUND(404, HttpStatus.NOT_FOUND, "Không tìm thấy thợ hiện tại"),
+    SERVICE_CATEGORY_NOT_FOUND(404, HttpStatus.NOT_FOUND, "Không tìm thấy danh mục dịch vụ"),
+    WORKER_SKILL_DUPLICATED(409, HttpStatus.CONFLICT, "Danh sách kỹ năng có serviceId bị trùng"),
+
     // Booking action
     BOOKING_NOT_FOUND(404, HttpStatus.NOT_FOUND, "Không tìm thấy đơn của thợ hiện tại"),
     BOOKING_INVALID_STATUS_TRANSITION(409, HttpStatus.CONFLICT, "Trạng thái đơn hiện tại không cho phép thực hiện hành động này"),

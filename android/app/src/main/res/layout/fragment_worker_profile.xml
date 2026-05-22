@@ -28,7 +28,9 @@
         <!-- ═══════════════════════════════════════════════
              PROFILE HEADER CARD (Avatar + tên + rating)
              ═══════════════════════════════════════════════ -->
-        <include layout="@layout/layout_worker_public_header" />
+        <include
+            android:id="@+id/layoutProfileHeader"
+            layout="@layout/layout_worker_public_header" />
 
         <!-- ═══════════════════════════════════════════════
              VÍ TIỀN CARD (nổi bật – lối vào nhanh sang Ví)
@@ -68,7 +70,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="4dp"
-                        android:text="1.250.000 đ"
+                        android:text="-- đ"
                         android:textColor="#ffffff"
                         android:textSize="26sp"
                         android:textStyle="bold" />
@@ -148,7 +150,7 @@
                         android:id="@+id/tvPhoneNumber"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="0901 234 567"
+                        android:text="..."
                         android:textColor="#0d1b2a"
                         android:textSize="14sp"
                         android:textStyle="bold" />
@@ -171,7 +173,7 @@
                         android:id="@+id/tvEmail"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="nguyen.vana@gmail.com"
+                        android:text="..."
                         android:textColor="#0d1b2a"
                         android:textSize="14sp" />
                 </LinearLayout>
@@ -193,7 +195,7 @@
                         android:id="@+id/tvAddress"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="123 Trần Duy Hưng, Cầu Giấy"
+                        android:text="..."
                         android:textColor="#0d1b2a"
                         android:textSize="14sp" />
                 </LinearLayout>
@@ -214,7 +216,7 @@
                         android:id="@+id/tvIdCard"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="001090123456"
+                        android:text="..."
                         android:textColor="#0d1b2a"
                         android:textSize="14sp"
                         android:textStyle="bold" />
@@ -241,7 +243,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="12dp"
                     android:lineSpacingExtra="4dp"
-                    android:text="Hơn 10 năm kinh nghiệm trong lĩnh vực điện nước dân dụng. Chuyên xử lý các ca khó về rò rỉ nước ngầm và chập điện âm tường."
+                    android:text="..."
                     android:textColor="#0d1b2a"
                     android:textSize="14sp" />
 
@@ -258,7 +260,7 @@
                     android:id="@+id/tvServiceArea"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Quận Cầu Giấy, Nam Từ Liêm, Thanh Xuân, Đống Đa"
+                    android:text="..."
                     android:textColor="#0d1b2a"
                     android:textSize="14sp" />
             </LinearLayout>
