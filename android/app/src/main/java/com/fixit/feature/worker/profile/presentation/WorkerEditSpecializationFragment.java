@@ -14,6 +14,7 @@ import com.fixit.core.ui.BaseFragment;
 import com.fixit.databinding.FragmentWorkerEditSpecializationBinding;
 import com.fixit.feature.worker.profile.data.remote.mapper.WorkerSkillMapper;
 import com.fixit.feature.worker.profile.domain.model.WorkerSkill;
+import com.fixit.feature.worker.profile.domain.model.ServiceCategory;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,6 +27,8 @@ public class WorkerEditSpecializationFragment extends BaseFragment<FragmentWorke
     private WorkerProfileViewModel viewModel;
     private WorkerSpecializationAdapter adapter;
     private final List<SpecializationItem> myServices = new ArrayList<>();
+    private final List<ServiceCategory> availableCategories = new ArrayList<>();
+    private Integer selectedCategoryId = null;
 
     @Override
     protected FragmentWorkerEditSpecializationBinding inflateViewBinding(
@@ -83,7 +86,15 @@ public class WorkerEditSpecializationFragment extends BaseFragment<FragmentWorke
             }
         });
 
+        viewModel.categories.observe(getViewLifecycleOwner(), categories -> {
+            availableCategories.clear();
+            if (categories != null) {
+                availableCategories.addAll(categories);
+            }
+        });
+
         viewModel.loadSkills();
+        viewModel.loadServiceCategories();
     }
 
     private void saveSkills() {
@@ -102,19 +113,40 @@ public class WorkerEditSpecializationFragment extends BaseFragment<FragmentWorke
     }
 
     private void showAddServiceDialog() {
-        /*
-         * Giai đoạn dev:
-         * API PUT /workers/me/skills cần serviceId.
-         * UI hiện tại chưa nối GET /services/categories để chọn dịch vụ từ danh mục.
-         *
-         * Vì vậy tạm dùng ô "Tên dịch vụ" trong dialog để nhập serviceId.
-         * Sau khi nối API danh mục dịch vụ, nên thay dialog này bằng BottomSheet chọn service thật.
-         */
+        selectedCategoryId = null;
         View dialogView = LayoutInflater.from(requireContext()).inflate(R.layout.dialog_add_service, null);
-        EditText edtServiceId = dialogView.findViewById(R.id.edtDialogServiceName);
+        EditText edtServiceName = dialogView.findViewById(R.id.edtDialogServiceName);
         EditText edtPrice = dialogView.findViewById(R.id.edtDialogBasePrice);
 
-        edtServiceId.setHint("Nhập serviceId đã có trong bảng service_categories");
+        edtServiceName.setFocusable(false);
+        edtServiceName.setClickable(true);
+        edtServiceName.setHint("Chạm để chọn dịch vụ từ danh mục...");
+
+        edtServiceName.setOnClickListener(v -> {
+            if (availableCategories.isEmpty()) {
+                Toast.makeText(requireContext(), "Đang tải danh mục dịch vụ từ server...", Toast.LENGTH_SHORT).show();
+                viewModel.loadServiceCategories();
+                return;
+            }
+
+            String[] items = new String[availableCategories.size()];
+            for (int i = 0; i < availableCategories.size(); i++) {
+                items[i] = availableCategories.get(i).getServiceName();
+            }
+
+            new androidx.appcompat.app.AlertDialog.Builder(
+                    requireContext(),
+                    com.google.android.material.R.style.ThemeOverlay_MaterialComponents_MaterialAlertDialog
+            )
+                    .setTitle("Chọn dịch vụ từ danh mục")
+                    .setItems(items, (dialog, which) -> {
+                        ServiceCategory selected = availableCategories.get(which);
+                        selectedCategoryId = selected.getId();
+                        edtServiceName.setText(selected.getServiceName());
+                        edtServiceName.setError(null);
+                    })
+                    .show();
+        });
 
         new androidx.appcompat.app.AlertDialog.Builder(
                 requireContext(),
@@ -122,33 +154,32 @@ public class WorkerEditSpecializationFragment extends BaseFragment<FragmentWorke
         )
                 .setView(dialogView)
                 .setPositiveButton("Thêm", (dialog, which) -> {
-                    String serviceIdText = edtServiceId.getText() != null
-                            ? edtServiceId.getText().toString().trim()
+                    String serviceNameText = edtServiceName.getText() != null
+                            ? edtServiceName.getText().toString().trim()
                             : "";
 
                     String priceText = edtPrice.getText() != null
                             ? edtPrice.getText().toString().trim()
                             : "";
 
-                    if (serviceIdText.isEmpty()) {
-                        Toast.makeText(requireContext(), "Vui lòng nhập serviceId", Toast.LENGTH_SHORT).show();
+                    if (selectedCategoryId == null || serviceNameText.isEmpty()) {
+                        Toast.makeText(requireContext(), "Vui lòng chọn dịch vụ từ danh mục", Toast.LENGTH_SHORT).show();
                         return;
                     }
 
                     try {
-                        int serviceId = Integer.parseInt(serviceIdText);
                         double price = priceText.isEmpty() ? 0.0 : Double.parseDouble(priceText);
 
                         myServices.add(new SpecializationItem(
-                                serviceId,
-                                "Dịch vụ #" + serviceId,
+                                selectedCategoryId,
+                                serviceNameText,
                                 true,
                                 price
                         ));
 
                         adapter.notifyItemInserted(myServices.size() - 1);
                     } catch (NumberFormatException e) {
-                        Toast.makeText(requireContext(), "serviceId hoặc giá không hợp lệ", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(requireContext(), "Giá không hợp lệ", Toast.LENGTH_SHORT).show();
                     }
                 })
                 .setNegativeButton("Huỷ", null)

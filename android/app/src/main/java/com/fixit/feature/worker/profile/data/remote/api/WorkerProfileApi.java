@@ -5,6 +5,9 @@ import com.fixit.feature.worker.profile.data.remote.dto.response.WorkerProfileRe
 import com.fixit.feature.worker.profile.data.remote.dto.request.WorkerProfileUpdateRequest;
 import com.fixit.feature.worker.profile.data.remote.dto.response.WorkerSkillsResponse;
 import com.fixit.feature.worker.profile.data.remote.dto.request.WorkerSkillsUpdateRequest;
+import com.fixit.feature.worker.profile.data.remote.dto.response.ServiceCategoryResponse;
+
+import java.util.List;
 
 import retrofit2.Call;
 import retrofit2.http.Body;
@@ -29,4 +32,7 @@ public interface WorkerProfileApi {
     Call<ApiResponse<WorkerSkillsResponse>> updateSkills(
             @Body WorkerSkillsUpdateRequest request
     );
+
+    @GET("api/v1/services/categories")
+    Call<ApiResponse<List<ServiceCategoryResponse>>> getServiceCategories();
 }

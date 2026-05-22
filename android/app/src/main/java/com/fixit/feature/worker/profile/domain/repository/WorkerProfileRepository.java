@@ -4,6 +4,7 @@ import com.fixit.core.common.ResultCallback;
 import com.fixit.feature.worker.profile.domain.model.WorkerProfile;
 import com.fixit.feature.worker.profile.domain.model.WorkerProfileUpdateInput;
 import com.fixit.feature.worker.profile.domain.model.WorkerSkill;
+import com.fixit.feature.worker.profile.domain.model.ServiceCategory;
 
 import java.util.List;
 
@@ -22,4 +23,6 @@ public interface WorkerProfileRepository {
             List<WorkerSkill> skills,
             ResultCallback<List<WorkerSkill>> callback
     );
+
+    void getServiceCategories(ResultCallback<List<ServiceCategory>> callback);
 }

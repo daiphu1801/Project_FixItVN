@@ -9,11 +9,14 @@ import com.fixit.feature.worker.profile.data.remote.dto.response.WorkerProfileRe
 import com.fixit.feature.worker.profile.data.remote.dto.request.WorkerProfileUpdateRequest;
 import com.fixit.feature.worker.profile.data.remote.dto.response.WorkerSkillsResponse;
 import com.fixit.feature.worker.profile.data.remote.dto.request.WorkerSkillsUpdateRequest;
+import com.fixit.feature.worker.profile.data.remote.dto.response.ServiceCategoryResponse;
 import com.fixit.feature.worker.profile.data.remote.mapper.WorkerProfileMapper;
 import com.fixit.feature.worker.profile.data.remote.mapper.WorkerSkillMapper;
+import com.fixit.feature.worker.profile.data.remote.mapper.ServiceCategoryMapper;
 import com.fixit.feature.worker.profile.domain.model.WorkerProfile;
 import com.fixit.feature.worker.profile.domain.model.WorkerProfileUpdateInput;
 import com.fixit.feature.worker.profile.domain.model.WorkerSkill;
+import com.fixit.feature.worker.profile.domain.model.ServiceCategory;
 import com.fixit.feature.worker.profile.domain.repository.WorkerProfileRepository;
 
 import java.util.List;
@@ -195,6 +198,43 @@ public class WorkerProfileRepositoryImpl implements WorkerProfileRepository {
             public void onFailure(Call<ApiResponse<WorkerSkillsResponse>> call, Throwable t) {
                 callback.onResult(Result.error(new AppError(
                         "Lỗi kết nối API cập nhật skills: " + t.getMessage(),
+                        t
+                )));
+            }
+        });
+    }
+
+    @Override
+    public void getServiceCategories(ResultCallback<List<ServiceCategory>> callback) {
+        api.getServiceCategories().enqueue(new Callback<ApiResponse<List<ServiceCategoryResponse>>>() {
+            @Override
+            public void onResponse(
+                    Call<ApiResponse<List<ServiceCategoryResponse>>> call,
+                    Response<ApiResponse<List<ServiceCategoryResponse>>> response
+            ) {
+                if (!response.isSuccessful()) {
+                    callback.onResult(Result.error(new AppError(
+                            "Không tải được danh mục dịch vụ. HTTP " + response.code()
+                    )));
+                    return;
+                }
+
+                ApiResponse<List<ServiceCategoryResponse>> body = response.body();
+                if (body == null || !body.isSuccess()) {
+                    callback.onResult(Result.error(new AppError(
+                            body != null ? body.getMessage() : "Response danh mục dịch vụ rỗng"
+                    )));
+                    return;
+                }
+
+                List<ServiceCategory> categories = ServiceCategoryMapper.toDomainList(body.getData());
+                callback.onResult(Result.success(categories));
+            }
+
+            @Override
+            public void onFailure(Call<ApiResponse<List<ServiceCategoryResponse>>> call, Throwable t) {
+                callback.onResult(Result.error(new AppError(
+                        "Lỗi kết nối API danh mục dịch vụ: " + t.getMessage(),
                         t
                 )));
             }

@@ -8,10 +8,12 @@ import com.fixit.feature.auth.domain.usecase.LogoutUseCase;
 import com.fixit.feature.worker.profile.domain.model.WorkerProfile;
 import com.fixit.feature.worker.profile.domain.model.WorkerProfileUpdateInput;
 import com.fixit.feature.worker.profile.domain.model.WorkerSkill;
+import com.fixit.feature.worker.profile.domain.model.ServiceCategory;
 import com.fixit.feature.worker.profile.domain.usecase.GetWorkerProfileUseCase;
 import com.fixit.feature.worker.profile.domain.usecase.GetWorkerSkillsUseCase;
 import com.fixit.feature.worker.profile.domain.usecase.UpdateWorkerProfileUseCase;
 import com.fixit.feature.worker.profile.domain.usecase.UpdateWorkerSkillsUseCase;
+import com.fixit.feature.worker.profile.domain.usecase.GetServiceCategoriesUseCase;
 
 import java.util.List;
 
@@ -27,6 +29,7 @@ public class WorkerProfileViewModel extends BaseViewModel {
     private final UpdateWorkerProfileUseCase updateWorkerProfileUseCase;
     private final GetWorkerSkillsUseCase getWorkerSkillsUseCase;
     private final UpdateWorkerSkillsUseCase updateWorkerSkillsUseCase;
+    private final GetServiceCategoriesUseCase getServiceCategoriesUseCase;
 
     private final MutableLiveData<Boolean> _logoutSuccess = new MutableLiveData<>();
     public LiveData<Boolean> logoutSuccess = _logoutSuccess;
@@ -43,19 +46,24 @@ public class WorkerProfileViewModel extends BaseViewModel {
     private final MutableLiveData<Boolean> _skillsUpdated = new MutableLiveData<>();
     public LiveData<Boolean> skillsUpdated = _skillsUpdated;
 
+    private final MutableLiveData<List<ServiceCategory>> _categories = new MutableLiveData<>();
+    public LiveData<List<ServiceCategory>> categories = _categories;
+
     @Inject
     public WorkerProfileViewModel(
             LogoutUseCase logoutUseCase,
             GetWorkerProfileUseCase getWorkerProfileUseCase,
             UpdateWorkerProfileUseCase updateWorkerProfileUseCase,
             GetWorkerSkillsUseCase getWorkerSkillsUseCase,
-            UpdateWorkerSkillsUseCase updateWorkerSkillsUseCase
+            UpdateWorkerSkillsUseCase updateWorkerSkillsUseCase,
+            GetServiceCategoriesUseCase getServiceCategoriesUseCase
     ) {
         this.logoutUseCase = logoutUseCase;
         this.getWorkerProfileUseCase = getWorkerProfileUseCase;
         this.updateWorkerProfileUseCase = updateWorkerProfileUseCase;
         this.getWorkerSkillsUseCase = getWorkerSkillsUseCase;
         this.updateWorkerSkillsUseCase = updateWorkerSkillsUseCase;
+        this.getServiceCategoriesUseCase = getServiceCategoriesUseCase;
     }
 
     public void loadProfile() {
@@ -110,6 +118,20 @@ public class WorkerProfileViewModel extends BaseViewModel {
             if (result.isSuccess()) {
                 _skills.postValue(result.getData());
                 _skillsUpdated.postValue(true);
+            } else if (result.getError() != null) {
+                setError(result.getError().getMessage());
+            }
+        });
+    }
+
+    public void loadServiceCategories() {
+        setLoading(true);
+
+        getServiceCategoriesUseCase.execute(result -> {
+            setLoading(false);
+
+            if (result.isSuccess()) {
+                _categories.postValue(result.getData());
             } else if (result.getError() != null) {
                 setError(result.getError().getMessage());
             }
