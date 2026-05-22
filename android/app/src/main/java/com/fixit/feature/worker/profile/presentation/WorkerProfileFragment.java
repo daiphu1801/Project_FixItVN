@@ -71,6 +71,13 @@ public class WorkerProfileFragment extends BaseFragment<FragmentWorkerProfileBin
 
         viewModel.profile.observe(getViewLifecycleOwner(), this::bindProfile);
 
+        viewModel.skills.observe(getViewLifecycleOwner(), skills -> {
+            if (skills != null) {
+                WorkerProfileSpecializationAdapter adapter = new WorkerProfileSpecializationAdapter(skills);
+                binding.layoutResume.recyclerSpecializations.setAdapter(adapter);
+            }
+        });
+
         viewModel.logoutSuccess.observe(getViewLifecycleOwner(), success -> {
             if (Boolean.TRUE.equals(success)) {
                 navigateToAuth();
@@ -84,6 +91,7 @@ public class WorkerProfileFragment extends BaseFragment<FragmentWorkerProfileBin
         });
 
         viewModel.loadProfile();
+        viewModel.loadSkills();
     }
 
     private void bindProfile(WorkerProfile profile) {
