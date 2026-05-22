@@ -18,6 +18,7 @@
         android:padding="16dp">
 
         <TextView
+            android:id="@+id/tvActiveOrderStatus"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Đang thực hiện"
@@ -26,6 +27,7 @@
             android:textStyle="bold" />
 
         <TextView
+            android:id="@+id/tvActiveOrderTitle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
@@ -35,6 +37,7 @@
             android:textStyle="bold" />
 
         <TextView
+            android:id="@+id/tvActiveOrderAddress"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="4dp"

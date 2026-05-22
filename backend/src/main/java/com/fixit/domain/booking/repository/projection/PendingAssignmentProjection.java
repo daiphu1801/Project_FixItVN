@@ -1,6 +1,7 @@
 package com.fixit.domain.booking.repository.projection;
 
 import java.math.BigDecimal;
+import java.time.OffsetDateTime;
 import java.util.UUID;
 
 public interface PendingAssignmentProjection {
@@ -17,9 +18,9 @@ public interface PendingAssignmentProjection {
 
     String getIssueDescription();
 
-    String getScheduledTime();
+    OffsetDateTime getScheduledTime();
 
-    String getAssignedAt();
+    OffsetDateTime getAssignedAt();
 
     BigDecimal getDestinationLat();
 

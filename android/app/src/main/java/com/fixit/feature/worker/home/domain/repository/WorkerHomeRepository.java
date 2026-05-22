@@ -1,9 +1,9 @@
 package com.fixit.feature.worker.home.domain.repository;
 
-import com.fixit.feature.worker.home.domain.model.Appointment;
-
-import java.util.List;
+import com.fixit.core.common.ResultCallback;
+import com.fixit.feature.worker.home.domain.model.WorkerHome;
 
 public interface WorkerHomeRepository {
-    List<Appointment> getTodayAppointments();
+
+    void getWorkerHome(ResultCallback<WorkerHome> callback);
 }

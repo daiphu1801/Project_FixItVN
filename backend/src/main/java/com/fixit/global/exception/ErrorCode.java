@@ -21,7 +21,13 @@ public enum ErrorCode {
 
     // System
     INTERNAL_SERVER_ERROR(500, HttpStatus.INTERNAL_SERVER_ERROR, "Internal server error"),
-    INVALID_REQUEST_PARAMETER(400, HttpStatus.BAD_REQUEST, "Invalid request parameter");
+    INVALID_REQUEST_PARAMETER(400, HttpStatus.BAD_REQUEST, "Invalid request parameter"),
+
+    // Booking action
+    BOOKING_NOT_FOUND(404, HttpStatus.NOT_FOUND, "Không tìm thấy đơn của thợ hiện tại"),
+    BOOKING_INVALID_STATUS_TRANSITION(409, HttpStatus.CONFLICT, "Trạng thái đơn hiện tại không cho phép thực hiện hành động này"),
+    BOOKING_PREVIOUS_ACTION_REQUIRED(409, HttpStatus.CONFLICT, "Chưa hoàn thành bước trước đó"),
+    BOOKING_ACTION_ALREADY_DONE(409, HttpStatus.CONFLICT, "Hành động này đã được thực hiện trước đó");
 
     private final int code;
     private final HttpStatus httpStatus;

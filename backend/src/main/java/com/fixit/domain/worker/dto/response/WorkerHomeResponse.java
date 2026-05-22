@@ -56,7 +56,7 @@ public class WorkerHomeResponse {
         private String address;
         private String status;
         private String statusText;
-        private OffsetDateTime scheduledTime;
+        private String scheduledTime;
         private BigDecimal finalPrice;
         private String nextAction;
     }
@@ -92,7 +92,7 @@ public class WorkerHomeResponse {
         private String address;
         private String status;
         private String statusText;
-        private OffsetDateTime scheduledTime;
+        private String scheduledTime;
         private BigDecimal finalPrice;
     }
 }

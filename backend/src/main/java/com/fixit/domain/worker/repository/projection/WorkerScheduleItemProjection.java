@@ -16,7 +16,7 @@ public interface WorkerScheduleItemProjection {
 
     String getStatus();
 
-    OffsetDateTime getScheduledTime();
+    String getScheduledTime();
 
     BigDecimal getFinalPrice();
 

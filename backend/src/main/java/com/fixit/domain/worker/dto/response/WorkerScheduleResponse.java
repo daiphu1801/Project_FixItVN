@@ -30,7 +30,7 @@ public class WorkerScheduleResponse {
         private String address;
         private String status;
         private String statusText;
-        private OffsetDateTime scheduledTime;
+        private String scheduledTime;
         private BigDecimal finalPrice;
         private String paymentMethod;
         private String issueDescription;

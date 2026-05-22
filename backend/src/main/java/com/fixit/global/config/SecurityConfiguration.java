@@ -80,10 +80,19 @@ public class SecurityConfiguration {
 
                         // DEV ONLY: cho phép test assignment bằng X-Debug-Worker-Id
                         .requestMatchers(
+                                "/api/v1/workers/me/home",
+                                "/api/v1/workers/me/status",
+                                "/api/v1/workers/me/location",
+                                "/api/v1/workers/me/schedule",
                                 "/api/v1/workers/me/assignments/pending",
                                 "/api/v1/bookings/*/assignments/*/accept",
                                 "/api/v1/bookings/*/assignments/*/reject",
-                                "/api/v1/bookings/*/assignments/*/miss"
+                                "/api/v1/bookings/*/assignments/*/miss",
+                                "/api/v1/bookings/*/start-moving",
+                                "/api/v1/bookings/*/arrive",
+                                "/api/v1/bookings/*/start-survey",
+                                "/api/v1/bookings/*/start-repair",
+                                "/api/v1/bookings/*/worker-complete"
                         ).permitAll()
 
                         .anyRequest().authenticated()

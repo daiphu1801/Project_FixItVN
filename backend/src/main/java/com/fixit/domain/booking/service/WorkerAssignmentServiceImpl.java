@@ -25,20 +25,15 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.UUID;
-import java.sql.Timestamp;
 import java.time.Duration;
-import java.time.OffsetDateTime;
 import java.time.ZoneId;
-
-import java.time.Duration;
 import java.time.LocalDateTime;
-import java.time.OffsetDateTime;
-import java.time.ZoneId;
+
 
 @Service
 @RequiredArgsConstructor
 public class WorkerAssignmentServiceImpl implements WorkerAssignmentService {
-    private static final ZoneId APP_ZONE = ZoneId.of("Asia/Bangkok");
+    private static final ZoneId APP_ZONE = ZoneId.of("Asia/Ho_Chi_Minh");
     /**
      * Thời gian thợ được phép phản hồi assignment.
      * Theo use case hiện tại: 3 phút.
@@ -264,8 +259,9 @@ public class WorkerAssignmentServiceImpl implements WorkerAssignmentService {
     }
 
     private PendingAssignmentItemResponse toPendingItem(PendingAssignmentProjection p) {
-        OffsetDateTime assignedAt = parseBangkokDateTime(p.getAssignedAt());
-        OffsetDateTime scheduledTime = parseBangkokDateTime(p.getScheduledTime());
+        // Trong WorkerAssignmentServiceImpl.java, đổi thành:
+        OffsetDateTime assignedAt = p.getAssignedAt();
+        OffsetDateTime scheduledTime = p.getScheduledTime();
 
         OffsetDateTime expiresAt = assignedAt != null
                 ? assignedAt.plusMinutes(ASSIGNMENT_TIMEOUT_MINUTES)

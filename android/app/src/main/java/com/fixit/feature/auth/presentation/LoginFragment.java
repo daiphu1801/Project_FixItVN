@@ -66,7 +66,7 @@ public class LoginFragment extends Fragment {
             String password = binding.etPassword.getText().toString().trim();
 
             if (phone.isEmpty() || password.isEmpty()) {
-                Toast.makeText(getContext(), "Vui long nhap day du thong tin", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getContext(), "Vui lòng nhập đầy đủ thông tin", Toast.LENGTH_SHORT).show();
                 return;
             }
 
@@ -81,7 +81,7 @@ public class LoginFragment extends Fragment {
             String fullName = event.getSession() != null && event.getSession().getUser() != null
                     ? event.getSession().getUser().getFullName()
                     : "";
-            Toast.makeText(getContext(), "Dang nhap thanh cong! Chao " + fullName, Toast.LENGTH_SHORT).show();
+            Toast.makeText(getContext(), "Đăng nhập thành công! Chào " + fullName, Toast.LENGTH_SHORT).show();
 
             Class<?> destination = event.getType() == AuthEvent.Type.NAVIGATE_TO_WORKER
                     ? com.fixit.feature.worker.presentation.WorkerActivity.class
@@ -97,7 +97,7 @@ public class LoginFragment extends Fragment {
                 return;
             }
             binding.btnLogin.setEnabled(!state.isLoading());
-            binding.btnLogin.setText(state.isLoading() ? "Dang xu ly..." : "Dang nhap");
+            binding.btnLogin.setText(state.isLoading() ? "Đang xử lý..." : "Đăng nhập");
             if (state.getErrorMessage() != null) {
                 Toast.makeText(getContext(), state.getErrorMessage(), Toast.LENGTH_LONG).show();
             }

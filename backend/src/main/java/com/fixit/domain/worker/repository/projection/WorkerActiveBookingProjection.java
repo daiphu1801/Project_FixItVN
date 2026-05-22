@@ -16,7 +16,7 @@ public interface WorkerActiveBookingProjection {
 
     String getStatus();
 
-    OffsetDateTime getScheduledTime();
+    String getScheduledTime();
 
     BigDecimal getFinalPrice();
 }

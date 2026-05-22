@@ -20,8 +20,9 @@ public interface WorkerAssignmentQueryRepository extends Repository<BookingWorke
                 b.address AS "addressPreview",
                 b.issue_description AS "issueDescription",
 
-                to_char(b.scheduled_time AT TIME ZONE 'Asia/Bangkok', 'YYYY-MM-DD"T"HH24:MI:SS') AS "scheduledTime",
-                to_char(bwa.assigned_at AT TIME ZONE 'Asia/Bangkok', 'YYYY-MM-DD"T"HH24:MI:SS') AS "assignedAt",
+                -- Hãy sửa lại thành trực tiếp tên cột:
+                b.scheduled_time AS "scheduledTime",
+                bwa.assigned_at AS "assignedAt",
 
                 b.destination_lat AS "destinationLat",
                 b.destination_lng AS "destinationLng",
