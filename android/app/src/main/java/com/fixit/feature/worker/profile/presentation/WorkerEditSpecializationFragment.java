@@ -120,7 +120,6 @@ public class WorkerEditSpecializationFragment extends BaseFragment<FragmentWorke
 
         edtServiceName.setFocusable(false);
         edtServiceName.setClickable(true);
-        edtServiceName.setHint("Chạm để chọn dịch vụ từ danh mục...");
 
         edtServiceName.setOnClickListener(v -> {
             if (availableCategories.isEmpty()) {
