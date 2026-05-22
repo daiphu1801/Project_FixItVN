@@ -40,9 +40,8 @@ public class WorkerOrderDetailFragment extends BaseFragment<FragmentWorkerOrderD
         // Setup Toolbar
         if (binding.appBarLayout.toolbar != null) {
             binding.appBarLayout.toolbar.setTitle("Chi tiết đơn hàng");
-            binding.appBarLayout.toolbar.setNavigationOnClickListener(v -> 
-                androidx.navigation.Navigation.findNavController(v).navigateUp()
-            );
+            binding.appBarLayout.toolbar.setNavigationOnClickListener(
+                    v -> androidx.navigation.Navigation.findNavController(v).navigateUp());
         }
 
         // Action Buttons
@@ -54,9 +53,8 @@ public class WorkerOrderDetailFragment extends BaseFragment<FragmentWorkerOrderD
             androidx.navigation.Navigation.findNavController(v).navigate(com.fixit.R.id.workerChatFragment, args);
         });
 
-        binding.btnCancelOrderDetail.setOnClickListener(v -> 
-            Toast.makeText(requireContext(), "Hủy đơn hàng", Toast.LENGTH_SHORT).show()
-        );
+        binding.btnCancelOrderDetail
+                .setOnClickListener(v -> Toast.makeText(requireContext(), "Hủy đơn hàng", Toast.LENGTH_SHORT).show());
 
         binding.btnCompleteOrderDetail.setOnClickListener(v -> {
             JobStatus current = viewModel.currentStatus.getValue();
@@ -65,22 +63,22 @@ public class WorkerOrderDetailFragment extends BaseFragment<FragmentWorkerOrderD
                 String orderId = getArguments() != null ? getArguments().getString("orderId") : "ORD001";
                 android.os.Bundle args = new android.os.Bundle();
                 args.putString("orderId", orderId);
-                androidx.navigation.Navigation.findNavController(v).navigate(com.fixit.R.id.workerInvoiceFragment, args);
+                androidx.navigation.Navigation.findNavController(v).navigate(com.fixit.R.id.workerInvoiceFragment,
+                        args);
             } else {
                 viewModel.advanceStatus();
                 Toast.makeText(requireContext(), "Đã cập nhật trạng thái mới", Toast.LENGTH_SHORT).show();
             }
         });
 
-        binding.btnAddExtraFee.setOnClickListener(v -> 
-            androidx.navigation.Navigation.findNavController(v).navigate(com.fixit.R.id.workerExtraCostFragment)
-        );
+        binding.btnAddExtraFee.setOnClickListener(v -> androidx.navigation.Navigation.findNavController(v)
+                .navigate(com.fixit.R.id.workerExtraCostFragment));
     }
 
     @Override
     protected void observeData() {
         String orderId = getArguments() != null ? getArguments().getString("orderId") : null;
-        
+
         if (orderId != null) {
             com.fixit.feature.worker.orders.domain.model.WorkerOrder order = viewModel.getOrderById(orderId);
             if (order != null) {
@@ -163,13 +161,15 @@ public class WorkerOrderDetailFragment extends BaseFragment<FragmentWorkerOrderD
         // Tùy biến icon và line theo từng bước (Dựa trên ID đã đặt trong XML)
         switch (stepIndex) {
             case 1:
-                binding.step1Icon.setImageResource(isDone ? com.fixit.R.drawable.ic_lucide_check_circle : com.fixit.R.drawable.ic_lucide_check_circle);
+                binding.step1Icon.setImageResource(isDone ? com.fixit.R.drawable.ic_lucide_check_circle
+                        : com.fixit.R.drawable.ic_lucide_check_circle);
                 binding.step1Icon.setImageTintList(ColorStateList.valueOf(color));
                 binding.step1Line.setBackgroundColor(color);
                 binding.step1Title.setTextColor(textColor);
                 break;
             case 2:
-                binding.step2Icon.setImageResource(isDone ? com.fixit.R.drawable.ic_lucide_check_circle : com.fixit.R.drawable.ic_lucide_check_circle);
+                binding.step2Icon.setImageResource(isDone ? com.fixit.R.drawable.ic_lucide_check_circle
+                        : com.fixit.R.drawable.ic_lucide_check_circle);
                 binding.step2Icon.setImageTintList(ColorStateList.valueOf(color));
                 binding.step2Line.setBackgroundColor(color);
                 binding.step2Title.setTextColor(textColor);
