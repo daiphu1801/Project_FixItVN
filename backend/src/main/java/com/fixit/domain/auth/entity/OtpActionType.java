@@ -2,6 +2,6 @@ package com.fixit.domain.auth.entity;
 
 public enum OtpActionType {
     Register,
-    Forgot_Password,
+    FORGOT_PASSWORD,
     Withdraw_Money
 }

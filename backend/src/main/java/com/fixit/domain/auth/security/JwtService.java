@@ -1,8 +1,8 @@
-package com.fixit.global.security;
+package com.fixit.domain.auth.security;
 
+import com.fixit.domain.auth.entity.User;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -15,15 +15,15 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
 
-// @Service
+@Service
 public class JwtService {
 
     @Value("${jwt.secret}")
     private String secretKey;
-
+    
     @Value("${jwt.expiration-ms}")
     private long jwtExpiration;
-
+    
     @Value("${jwt.refresh-expiration-ms}")
     private long refreshExpiration;
 
@@ -40,11 +40,16 @@ public class JwtService {
         return generateToken(new HashMap<>(), userDetails);
     }
 
-    public String generateToken(Map<String, Object> extraClaims, UserDetails userDetails) {
+    public String generateToken(
+            Map<String, Object> extraClaims,
+            UserDetails userDetails
+    ) {
         return buildToken(extraClaims, userDetails, jwtExpiration);
     }
 
-    public String generateRefreshToken(UserDetails userDetails) {
+    public String generateRefreshToken(
+            UserDetails userDetails
+    ) {
         return buildToken(new HashMap<>(), userDetails, refreshExpiration);
     }
 
@@ -53,13 +58,18 @@ public class JwtService {
             UserDetails userDetails,
             long expiration
     ) {
+        if (userDetails instanceof User) {
+            extraClaims.put("userId", ((User) userDetails).getId().toString());
+            extraClaims.put("role", ((User) userDetails).getRole().name());
+        }
+
         return Jwts
                 .builder()
                 .claims(extraClaims)
                 .subject(userDetails.getUsername())
                 .issuedAt(new Date(System.currentTimeMillis()))
                 .expiration(new Date(System.currentTimeMillis() + expiration))
-                .signWith(getSignInKey())
+                .signWith(getSignInKey(), Jwts.SIG.HS256)
                 .compact();
     }
 
