@@ -8,6 +8,7 @@ import com.fixit.domain.worker.entity.Worker;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import java.time.OffsetDateTime;
 
 import java.util.List;
 import java.util.Optional;
@@ -22,7 +23,10 @@ public interface WorkerHomeQueryRepository extends JpaRepository<Worker, UUID> {
                 c.full_name AS "customerName",
                 b.address AS "address",
                 b.status AS "status",
-                b.scheduled_time AS "scheduledTime",
+                TO_CHAR(
+                    b.scheduled_time AT TIME ZONE 'Asia/Ho_Chi_Minh',
+                    'YYYY-MM-DD"T"HH24:MI:SS'
+                ) AS "scheduledTime",
                 b.final_price AS "finalPrice"
             FROM bookings b
             LEFT JOIN service_categories sc ON sc.id = b.service_id
@@ -52,20 +56,25 @@ public interface WorkerHomeQueryRepository extends JpaRepository<Worker, UUID> {
                 c.full_name AS "customerName",
                 b.address AS "address",
                 b.status AS "status",
-                b.scheduled_time AS "scheduledTime",
+                TO_CHAR(b.scheduled_time AT TIME ZONE 'Asia/Bangkok',
+                        'YYYY-MM-DD"T"HH24:MI:SS') AS "scheduledTime",
                 b.final_price AS "finalPrice"
             FROM bookings b
             LEFT JOIN service_categories sc ON sc.id = b.service_id
             LEFT JOIN customers c ON c.customer_id = b.customer_id
             WHERE b.worker_id = :workerId
-              AND DATE(b.scheduled_time) = CURRENT_DATE
+              AND b.scheduled_time >= :startOfDay
+              AND b.scheduled_time < :endOfDay
               AND b.status IN ('Accepted', 'Surveying', 'Waiting_Approval', 'In_Progress')
             ORDER BY b.scheduled_time ASC NULLS LAST
             """, nativeQuery = true)
     List<WorkerScheduleItemProjection> findTodayAppointments(
-            @Param("workerId") UUID workerId
+            @Param("workerId") UUID workerId,
+            @Param("startOfDay") OffsetDateTime startOfDay,
+            @Param("endOfDay") OffsetDateTime endOfDay
     );
 
+    // SỬA LẠI TRONG: WorkerHomeQueryRepository.java
     @Query(value = """
             SELECT
                 CAST(COALESCE((
@@ -73,26 +82,26 @@ public interface WorkerHomeQueryRepository extends JpaRepository<Worker, UUID> {
                     FROM bookings b
                     WHERE b.worker_id = :workerId
                       AND b.status = 'Completed'
-                      AND DATE(b.created_at) = CURRENT_DATE
+                      -- TỐI ƯU: So sánh trực tiếp cột với mốc thời gian không dùng hàm DATE()
+                      AND b.created_at >= CURRENT_DATE
                 ), 0) AS int) AS "completedJobsToday",
-
                 CAST(COALESCE((
                     SELECT COUNT(*)
                     FROM bookings b
                     WHERE b.worker_id = :workerId
                       AND b.status = 'Completed'
-                      AND DATE_TRUNC('month', b.created_at) = DATE_TRUNC('month', CURRENT_DATE)
+                      -- TỐI ƯU: Tránh dùng DATE_TRUNC lên cột dữ liệu bên trái
+                      AND b.created_at >= DATE_TRUNC('month', CURRENT_DATE)
                 ), 0) AS int) AS "completedJobsThisMonth",
-
                 COALESCE((
                     SELECT SUM(th.amount)
                     FROM transaction_histories th
                     WHERE th.wallet_id = :workerId
                       AND th.transaction_type = 'Release'
                       AND th.status = 'Success'
-                      AND DATE(th.transaction_time) = CURRENT_DATE
+                      -- TỐI ƯU
+                      AND th.transaction_time >= CURRENT_DATE
                 ), 0) AS "incomeToday",
-
                 COALESCE((
                     SELECT SUM(th.amount)
                     FROM transaction_histories th
@@ -101,7 +110,6 @@ public interface WorkerHomeQueryRepository extends JpaRepository<Worker, UUID> {
                       AND th.status = 'Success'
                       AND th.transaction_time >= DATE_TRUNC('week', CURRENT_DATE)
                 ), 0) AS "incomeThisWeek",
-
                 COALESCE((
                     SELECT SUM(th.amount)
                     FROM transaction_histories th
@@ -110,14 +118,12 @@ public interface WorkerHomeQueryRepository extends JpaRepository<Worker, UUID> {
                       AND th.status = 'Success'
                       AND th.transaction_time >= DATE_TRUNC('month', CURRENT_DATE)
                 ), 0) AS "incomeThisMonth",
-
                 COALESCE((
                     SELECT AVG(r.rating)
                     FROM reviews r
                     JOIN bookings b ON b.id = r.booking_id
                     WHERE b.worker_id = :workerId
                 ), 0) AS "averageRating",
-
                 CAST(COALESCE((
                     SELECT COUNT(*)
                     FROM reviews r
@@ -128,6 +134,7 @@ public interface WorkerHomeQueryRepository extends JpaRepository<Worker, UUID> {
     WorkerPerformanceStatsProjection findStatsOverview(
             @Param("workerId") UUID workerId
     );
+
 
     @Query(value = """
             SELECT
@@ -140,7 +147,9 @@ public interface WorkerHomeQueryRepository extends JpaRepository<Worker, UUID> {
                 INTERVAL '1 day'
             ) AS days(day)
             LEFT JOIN transaction_histories th
-                ON DATE(th.transaction_time) = DATE(days.day)
+                -- TỐI ƯU: Đổi sang so sánh khoảng (Range check) để dùng được Index trên th.transaction_time
+                ON th.transaction_time >= days.day
+               AND th.transaction_time < days.day + INTERVAL '1 day'
                AND th.wallet_id = :workerId
                AND th.transaction_type = 'Release'
                AND th.status = 'Success'

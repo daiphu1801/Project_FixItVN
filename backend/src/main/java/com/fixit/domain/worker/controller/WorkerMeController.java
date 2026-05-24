@@ -36,11 +36,14 @@ public class WorkerMeController {
     }
 
     @PatchMapping("/location")
-    public ApiResponse<WorkerHomeResponse> updateLocation(
+    public ApiResponse<Void> updateLocation(
             @Valid @RequestBody WorkerLocationUpdateRequest request
     ) {
-        WorkerHomeResponse response = workerHomeService.updateLocation(request);
-        return ApiResponse.success(response, "Cập nhật vị trí thành công");
+        // Chỉ cập nhật vị trí vào Redis, không lấy lại thông tin màn hình Home
+        workerHomeService.updateLocation(request);
+
+        // Trả về kết quả thành công gọn nhẹ
+        return ApiResponse.success(null, "Cập nhật vị trí thành công");
     }
 
     @GetMapping("/schedule")

@@ -10,5 +10,5 @@ public interface WorkerHomeService {
 
     WorkerHomeResponse updateStatus(WorkerStatusUpdateRequest request);
 
-    WorkerHomeResponse updateLocation(WorkerLocationUpdateRequest request);
+    void updateLocation(WorkerLocationUpdateRequest request);
 }

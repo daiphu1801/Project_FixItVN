@@ -7,11 +7,19 @@ import com.fixit.domain.worker.repository.query.WorkerHomeQueryRepository;
 import com.fixit.domain.worker.repository.WorkerRepository;
 import com.fixit.domain.worker.repository.projection.*;
 import com.fixit.domain.worker.support.CurrentWorkerResolver;
+
+import org.springframework.data.geo.Point;
+import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.transaction.annotation.Propagation;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.OffsetDateTime;
+import java.time.ZoneId;
 import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
@@ -23,6 +31,13 @@ public class WorkerHomeServiceImpl implements WorkerHomeService {
     private final WorkerRepository workerRepository;
     private final WorkerHomeQueryRepository workerHomeQueryRepository;
     private final CurrentWorkerResolver currentWorkerResolver;
+
+
+    // 1. Inject StringRedisTemplate của Spring
+    private final StringRedisTemplate redisTemplate;
+
+    // 2. Định nghĩa Key lưu tọa độ thợ trên Redis
+    private static final String WORKERS_LOCATION_KEY = "workers:locations";
 
     @Override
     @Transactional(readOnly = true)
@@ -52,21 +67,24 @@ public class WorkerHomeServiceImpl implements WorkerHomeService {
     }
 
     @Override
-    @Transactional
-    public WorkerHomeResponse updateLocation(WorkerLocationUpdateRequest request) {
+    public void updateLocation(WorkerLocationUpdateRequest request) {
         UUID workerId = currentWorkerResolver.getCurrentWorkerId();
-
-        int updatedRows = workerRepository.updateLocation(
-                workerId,
-                request.getLatitude(),
-                request.getLongitude()
+        double latitude = request.getLatitude().doubleValue();
+        double longitude = request.getLongitude().doubleValue();
+        /*
+         * LƯU Ý QUAN TRỌNG:
+         * Trong thư viện Geo của Spring/Redis:
+         * - Tham số thứ nhất của Point là LONGITUDE (Kinh độ - Trục X)
+         * - Tham số thứ hai của Point là LATITUDE (Vĩ độ - Trục Y)
+         * Truyền ngược sẽ dẫn tới tính sai khoảng cách địa lý.
+         */
+        Point location = new Point(longitude, latitude);
+        // Ghi vị trí của thợ vào Redis Geospatial
+        redisTemplate.opsForGeo().add(
+                WORKERS_LOCATION_KEY,
+                location,
+                workerId.toString()
         );
-
-        if (updatedRows == 0) {
-            throw new IllegalArgumentException("Không thể cập nhật vị trí thợ");
-        }
-
-        return buildHomeResponse(workerId);
     }
 
     private WorkerHomeResponse buildHomeResponse(UUID workerId) {
@@ -81,8 +99,16 @@ public class WorkerHomeServiceImpl implements WorkerHomeService {
         List<WorkerIncomeChartPointProjection> chart = workerHomeQueryRepository
                 .findIncomeChartLast7Days(workerId);
 
+        ZoneId zoneId = ZoneId.of("Asia/Ho_Chi_Minh");
+
+        OffsetDateTime startOfDay = LocalDate.now(zoneId)
+                .atStartOfDay(zoneId)
+                .toOffsetDateTime();
+
+        OffsetDateTime endOfDay = startOfDay.plusDays(1);
+
         List<WorkerScheduleItemProjection> appointments = workerHomeQueryRepository
-                .findTodayAppointments(workerId);
+                .findTodayAppointments(workerId, startOfDay, endOfDay);
 
         boolean canReceiveJob = calculateCanReceiveJob(summary);
         String blockedReason = buildBlockedReason(summary);
@@ -109,7 +135,7 @@ public class WorkerHomeServiceImpl implements WorkerHomeService {
                 .canReceiveJob(canReceiveJob)
                 .receiveJobBlockedReason(blockedReason)
 
-                .todayAppointmentCount(summary.getTodayAppointmentCount())
+                .todayAppointmentCount(appointments.size())
                 .pendingAssignmentCount(summary.getPendingAssignmentCount())
 
                 .availableBalance(defaultMoney(summary.getAvailableBalance()))
