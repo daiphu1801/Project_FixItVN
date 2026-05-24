@@ -40,15 +40,17 @@ public class ChatRepositoryImpl implements ChatRepository {
                              ResultCallback<Void> callback) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
 
-        // Tách conversationId để xác định customerId và workerId
-        // Định dạng conversationId là customerId_workerId
-        String[] parts = conversationId.split("_");
-        if (parts.length < 2) {
-            callback.onResult(Result.error(new AppError("ID hội thoại không hợp lệ")));
-            return;
+        // Xác định customerId và workerId dựa vào conversationId và senderId/receiverId.
+        // Định dạng conversationId luôn là customerId_workerId.
+        String customerId;
+        String workerId;
+        if (conversationId.startsWith(senderId + "_")) {
+            customerId = senderId;
+            workerId = receiverId;
+        } else {
+            customerId = receiverId;
+            workerId = senderId;
         }
-        String customerId = parts[0];
-        String workerId = parts[1];
 
         // Cập nhật thông tin phòng hội thoại chính
         Map<String, Object> conversationUpdates = new HashMap<>();

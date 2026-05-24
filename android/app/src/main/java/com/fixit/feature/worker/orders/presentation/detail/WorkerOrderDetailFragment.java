@@ -45,14 +45,6 @@ public class WorkerOrderDetailFragment extends BaseFragment<FragmentWorkerOrderD
         }
 
         // Action Buttons
-        binding.btnChatCustomer.setOnClickListener(v -> {
-            String orderId = getArguments() != null ? getArguments().getString("orderId") : "ORD001";
-            android.os.Bundle args = new android.os.Bundle();
-            args.putString("orderId", orderId);
-            args.putString("chatTitle", binding.tvOrderDetailCustomerName.getText().toString());
-            androidx.navigation.Navigation.findNavController(v).navigate(com.fixit.R.id.workerChatFragment, args);
-        });
-
         binding.btnCancelOrderDetail
                 .setOnClickListener(v -> Toast.makeText(requireContext(), "Hủy đơn hàng", Toast.LENGTH_SHORT).show());
 
@@ -101,6 +93,13 @@ public class WorkerOrderDetailFragment extends BaseFragment<FragmentWorkerOrderD
         binding.tvOrderDetailAddress.setText(order.getAddress());
         binding.tvOrderDetailScheduledTime.setText(order.getTimeSlot());
         binding.tvOrderDetailPrice.setText(order.getPrice());
+
+        binding.btnChatCustomer.setOnClickListener(v -> {
+            android.os.Bundle args = new android.os.Bundle();
+            args.putString("workerId", order.getCustomerId()); // key 'workerId' maps to receiverId in ChatCustomerFragment
+            args.putString("workerName", order.getCustomerName()); // key 'workerName' maps to receiverName in ChatCustomerFragment
+            androidx.navigation.Navigation.findNavController(v).navigate(com.fixit.R.id.nav_worker_chat_detail, args);
+        });
 
         // Cập nhật nhãn trạng thái (Badge)
         String status = order.getStatus();

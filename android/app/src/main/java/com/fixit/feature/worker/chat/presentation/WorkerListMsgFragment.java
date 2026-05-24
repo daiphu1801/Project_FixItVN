@@ -47,6 +47,16 @@ public class WorkerListMsgFragment extends BaseFragment<FragmentListMsgBinding> 
         configureTopBar();
         setupRecyclerView();
         viewModel.startListening();
+
+        // Cấu hình sự kiện cho nút FAB (dấu cộng) để mở chat với khách hàng mẫu phục vụ việc test
+        binding.fabNewChat.setOnClickListener(v -> {
+            Bundle args = new Bundle();
+            args.putString("workerId", "customer_b_id"); // key giữ nguyên làm receiverId trong ChatCustomerFragment
+            args.putString("workerName", "Trần Thị B (Khách hàng Test)");
+            if (navController != null) {
+                navController.navigate(R.id.action_worker_list_msg_to_chat, args);
+            }
+        });
     }
 
     /**

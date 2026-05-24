@@ -12,6 +12,7 @@ package com.fixit.feature.worker.orders.domain.model;
 public class WorkerOrder {
 
     private String orderId;
+    private String customerId;
     private String serviceTitle;
     private String address;
     private String timeSlot; // Ví dụ: "Hôm nay 14:30"
@@ -22,15 +23,20 @@ public class WorkerOrder {
     private String complaintReason;
     private String complaintDeadline; // Countdown timer string
 
-    public WorkerOrder(String orderId, String serviceTitle, String address,
+    public WorkerOrder(String orderId, String customerId, String serviceTitle, String address,
             String timeSlot, String price, String status, String customerName) {
         this.orderId = orderId;
+        this.customerId = customerId;
         this.serviceTitle = serviceTitle;
         this.address = address;
         this.timeSlot = timeSlot;
         this.price = price;
         this.status = status;
         this.customerName = customerName;
+    }
+
+    public String getCustomerId() {
+        return customerId;
     }
 
     public String getOrderId() {
