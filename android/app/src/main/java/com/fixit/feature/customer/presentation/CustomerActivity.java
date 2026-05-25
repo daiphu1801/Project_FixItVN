@@ -44,6 +44,20 @@ public class CustomerActivity extends BaseActivity<ActivityCustomerBinding> {
             // 3. TỰ ĐỘNG KẾT NỐI: Lệnh này giúp thanh Menu bên dưới tự động nhận diện 5 nút bấm
             // Nó sẽ so khớp ID của nút bấm trong file Menu và ID của màn hình trong file Navigation.
             NavigationUI.setupWithNavController(binding.bottomNavigationView, navController);
+
+            // Xử lý khi người dùng nhấn lại vào các mục trên Bottom Navigation
+            binding.bottomNavigationView.setOnItemSelectedListener(item -> {
+                int itemId = item.getItemId();
+                
+                // Nếu đang ở màn hình khác và ấn vào "Trang chủ", quay về màn hình Home
+                if (itemId == R.id.nav_customer_home) {
+                    navController.popBackStack(R.id.nav_customer_home, false);
+                    return true;
+                }
+                
+                // Các mục khác sử dụng mặc định của NavigationUI
+                return NavigationUI.onNavDestinationSelected(item, navController);
+            });
             
             // Chú thích: Tôi đã loại bỏ phần code liên quan đến nút tròn FAB và Placeholder 
             // để phù hợp với giao diện 5 mục dàn hàng ngang như ảnh bạn vừa gửi.
