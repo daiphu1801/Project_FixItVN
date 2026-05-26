@@ -4,9 +4,11 @@ import android.view.LayoutInflater;
 import android.view.ViewGroup;
 import android.widget.Toast;
 import androidx.annotation.NonNull;
+import androidx.lifecycle.ViewModelProvider;
 import com.fixit.R;
 import com.fixit.core.ui.BaseFragment;
 import com.fixit.databinding.FragmentCustomerCancelOrderBinding;
+
 import dagger.hilt.android.AndroidEntryPoint;
 
 @AndroidEntryPoint
@@ -20,6 +22,8 @@ public class CustomerCancelOrderFragment extends BaseFragment<FragmentCustomerCa
 
     @Override
     protected void setupViews() {
+        CustomerOrderViewModel orderViewModel = new ViewModelProvider(requireActivity()).get(CustomerOrderViewModel.class);
+
         binding.ivBack.setOnClickListener(v -> {
             if (navController != null) {
                 navController.popBackStack();
@@ -51,16 +55,18 @@ public class CustomerCancelOrderFragment extends BaseFragment<FragmentCustomerCa
             int workerCheckedId = binding.rgReasonWorker.getCheckedRadioButtonId();
 
             if (customerCheckedId != -1) {
-                // THAY ĐỔI TỪ PHÍA TÔI -> Quay về Trang chủ
+                // THAY ĐỔI TỪ PHÍA TÔI -> Quay về Trang chủ và Hủy đơn
+                orderViewModel.cancelOrder();
                 Toast.makeText(requireContext(), "Đã hủy đơn thành công", Toast.LENGTH_SHORT).show();
                 if (navController != null) {
                     navController.navigate(R.id.nav_customer_home);
                 }
             } else if (workerCheckedId != -1) {
-                // VẤN ĐỀ TỪ PHÍA THỢ -> Quay về màn hình Finding Worker (Radar)
+                // VẤN ĐỀ TỪ PHÍA THỢ -> Quay về màn hình Finding Worker (Radar) trong tab Order
+                orderViewModel.startFinding();
                 Toast.makeText(requireContext(), "Đang tìm thợ khác cho bạn", Toast.LENGTH_SHORT).show();
                 if (navController != null) {
-                    navController.navigate(R.id.nav_customer_finding_worker);
+                    navController.navigate(R.id.nav_customer_order);
                 }
             } else {
                 Toast.makeText(requireContext(), "Vui lòng chọn lý do hủy", Toast.LENGTH_SHORT).show();

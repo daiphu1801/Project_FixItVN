@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:clipChildren="false"
-    android:background="#f0faff">
+    android:background="#F8FAFC">
 
     <androidx.fragment.app.FragmentContainerView
         android:id="@+id/navHostFragmentCustomer"
@@ -14,20 +14,33 @@
         app:defaultNavHost="true"
         app:navGraph="@navigation/nav_customer"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toTopOf="@id/bottomNavigationView" />
+        app:layout_constraintBottom_toTopOf="@id/bottomNavCard" />
 
-    <!-- Thanh điều hướng dưới cùng (Bottom Navigation) tiêu chuẩn -->
-    <!-- Tôi đã bỏ CoordinatorLayout và BottomAppBar cũ để thanh menu hiển thị được 5 mục như ảnh bạn gửi -->
-    <com.google.android.material.bottomnavigation.BottomNavigationView
-        android:id="@+id/bottomNavigationView"
+    <!-- Thanh điều hướng thiết kế dạng Floating Card để trông gọn gàng và hiện đại hơn -->
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/bottomNavCard"
         android:layout_width="match_parent"
-        android:layout_height="64dp"
-        android:background="#FFFFFF"
-        app:elevation="8dp"
-        app:itemIconTint="@color/bottom_nav_color"
-        app:itemTextColor="@color/bottom_nav_color"
-        app:labelVisibilityMode="labeled"
-        app:menu="@menu/bottom_nav_customer"
-        app:layout_constraintBottom_toBottomOf="parent" />
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="12dp"
+        android:layout_marginBottom="12dp"
+        app:cardCornerRadius="20dp"
+        app:cardElevation="12dp"
+        app:strokeWidth="0dp"
+        app:layout_constraintBottom_toBottomOf="parent">
+
+        <com.google.android.material.bottomnavigation.BottomNavigationView
+            android:id="@+id/bottomNavigationView"
+            android:layout_width="match_parent"
+            android:layout_height="72dp"
+            android:background="@android:color/transparent"
+            app:elevation="0dp"
+            app:itemIconSize="22dp"
+            app:itemIconTint="@color/bottom_nav_color"
+            app:itemTextColor="@color/bottom_nav_color"
+            app:itemRippleColor="#1525A9EF"
+            app:labelVisibilityMode="labeled"
+            app:menu="@menu/bottom_nav_customer" />
+
+    </com.google.android.material.card.MaterialCardView>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
