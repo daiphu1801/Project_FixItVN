@@ -19,4 +19,6 @@ public interface WorkerAssignmentService {
     );
 
     AssignmentActionResponse miss(UUID bookingId, UUID assignmentId);
+
+    int markExpiredAssignmentsAsMissed();
 }

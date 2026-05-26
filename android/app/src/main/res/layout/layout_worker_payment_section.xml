@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/cardPaymentSection"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="8dp"
+    android:layout_marginBottom="16dp"
+    app:cardBackgroundColor="@android:color/white"
+    app:cardCornerRadius="16dp"
+    app:cardElevation="0dp"
+    app:strokeColor="#e2e8f0"
+    app:strokeWidth="1dp">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="16dp">
+
+        <!-- Header -->
+        <TextView
+            android:id="@+id/tvPaymentHeader"
+            style="@style/FixIt.Text.SectionHeader"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Thanh toán đơn hàng"
+            android:textColor="#0d1b2a"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <!-- Status label + badge -->
+        <TextView
+            android:id="@+id/tvPaymentStatusLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:text="Trạng thái:"
+            android:textColor="#475569"
+            android:textSize="14sp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tvPaymentHeader" />
+
+        <TextView
+            android:id="@+id/tvPaymentStatus"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:background="@drawable/circle_background"
+            android:backgroundTint="#fef3c7"
+            android:paddingHorizontal="10dp"
+            android:paddingVertical="4dp"
+            android:text="Chờ khách thanh toán"
+            android:textColor="#d97706"
+            android:textSize="12sp"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="@id/tvPaymentStatusLabel"
+            app:layout_constraintStart_toEndOf="@id/tvPaymentStatusLabel"
+            app:layout_constraintTop_toTopOf="@id/tvPaymentStatusLabel" />
+
+        <!-- QR Container (hidden by default) -->
+        <LinearLayout
+            android:id="@+id/llQrContainer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:layout_marginTop="12dp"
+            android:orientation="vertical"
+            android:visibility="gone"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tvPaymentStatusLabel">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp"
+                android:text="Khách quét mã này để thanh toán"
+                android:textColor="#64748b"
+                android:textSize="12sp" />
+
+            <FrameLayout
+                android:layout_width="200dp"
+                android:layout_height="200dp"
+                android:background="#f8fafc"
+                android:padding="8dp">
+
+                <ImageView
+                    android:id="@+id/ivPaymentQr"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:scaleType="fitCenter" />
+
+                <ProgressBar
+                    android:id="@+id/pbQrLoading"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:visibility="gone" />
+            </FrameLayout>
+
+            <TextView
+                android:id="@+id/tvPaymentSimulationHint"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="Đang chờ khách quét và thanh toán... (Tự động cập nhật)"
+                android:textColor="#0ea5e9"
+                android:textSize="11sp"
+                android:textStyle="italic" />
+        </LinearLayout>
+
+        <!-- Buttons -->
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnShowQr"
+            style="@style/FixIt.Button.Action"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="Hiển thị QR cho khách quét"
+            android:textColor="@android:color/white"
+            android:visibility="gone"
+            app:backgroundTint="#0ea5e9"
+            app:icon="@drawable/ic_lucide_receipt"
+            app:iconTint="@android:color/white"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/llQrContainer" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnConfirmCash"
+            style="@style/FixIt.Button.Action.Outlined"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="Xác nhận khách trả tiền mặt"
+            android:textColor="#10b981"
+            android:visibility="gone"
+            app:icon="@drawable/ic_lucide_wallet"
+            app:iconTint="#10b981"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/btnShowQr"
+            app:strokeColor="#10b981" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</com.google.android.material.card.MaterialCardView>

@@ -98,7 +98,19 @@ public class SecurityConfiguration {
                                 "/api/v1/workers/me/profile",
                                 "/api/v1/workers/me/skills",
 
-                                "/api/v1/bookings/*/worker-complete"
+                                "/api/v1/bookings/*/worker-complete",
+                                "/api/v1/workers/me/history",
+                                "/api/v1/workers/me/stats",
+
+                                "/api/v1/workers/me/wallet",
+                                "/api/v1/workers/me/wallet/transactions",
+                                "/api/v1/workers/me/wallet/deposits",
+                                "/api/v1/workers/me/wallet/deposits/*",
+                                "/api/v1/workers/me/wallet/deposits/*/qr",
+
+                                "/api/v1/workers/me/bank-accounts",
+                                "/api/v1/workers/me/bank-accounts/*",
+                                "/api/v1/workers/me/bank-accounts/*/default"
                         ).permitAll()
 
                         .anyRequest().authenticated()

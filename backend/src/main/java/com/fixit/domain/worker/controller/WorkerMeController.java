@@ -12,6 +12,11 @@ import com.fixit.domain.worker.dto.response.WorkerSkillsResponse;
 import com.fixit.domain.worker.service.WorkerHomeService;
 import com.fixit.domain.worker.service.WorkerProfileService;
 import com.fixit.domain.worker.service.WorkerScheduleService;
+import com.fixit.domain.worker.dto.response.WorkerHistoryResponse;
+import com.fixit.domain.worker.dto.response.WorkerStatsResponse;
+import com.fixit.domain.worker.service.WorkerHistoryService;
+import com.fixit.domain.worker.service.WorkerStatsService;
+
 import com.fixit.global.response.ApiResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -28,6 +33,8 @@ public class WorkerMeController {
     private final WorkerHomeService workerHomeService;
     private final WorkerScheduleService workerScheduleService;
     private final WorkerProfileService workerProfileService;
+    private final WorkerHistoryService workerHistoryService;
+    private final WorkerStatsService workerStatsService;
 
     @GetMapping("/home")
     public ApiResponse<WorkerHomeResponse> getHome() {
@@ -88,4 +95,21 @@ public class WorkerMeController {
         WorkerSkillsResponse response = workerProfileService.updateMySkills(request);
         return ApiResponse.success(response, "Cập nhật kỹ năng thợ thành công");
     }
+
+    @GetMapping("/history")
+    public ApiResponse<WorkerHistoryResponse> getHistory(
+            @RequestParam(required = false) String status,
+            @RequestParam(defaultValue = "0") Integer page,
+            @RequestParam(defaultValue = "20") Integer size
+    ) {
+        WorkerHistoryResponse response = workerHistoryService.getMyHistory(status, page, size);
+        return ApiResponse.success(response);
+    }
+
+    @GetMapping("/stats")
+    public ApiResponse<WorkerStatsResponse> getStats() {
+        WorkerStatsResponse response = workerStatsService.getMyStats();
+        return ApiResponse.success(response);
+    }
+
 }

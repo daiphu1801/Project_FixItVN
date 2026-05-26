@@ -20,7 +20,7 @@ public class WorkerSkillMapper {
         }
 
         return new WorkerSkill(
-                response.getServiceId() == null ? 0 : response.getServiceId(),
+                response.getServiceId(),
                 response.getServiceName() == null ? "" : response.getServiceName(),
                 response.getBasePrice() == null ? 0.0 : response.getBasePrice().doubleValue()
         );
@@ -46,6 +46,7 @@ public class WorkerSkillMapper {
     public static WorkerSkillUpsertItemRequest toRequestItem(WorkerSkill skill) {
         return new WorkerSkillUpsertItemRequest(
                 skill.getServiceId(),
+                skill.getCustomServiceName(),
                 BigDecimal.valueOf(skill.getBasePrice())
         );
     }
@@ -69,7 +70,8 @@ public class WorkerSkillMapper {
                 skill.getServiceId(),
                 skill.getServiceName(),
                 true,
-                skill.getBasePrice()
+                skill.getBasePrice(),
+                skill.getCustomServiceName()
         );
     }
 
@@ -77,7 +79,8 @@ public class WorkerSkillMapper {
         return new WorkerSkill(
                 item.getId(),
                 item.getName(),
-                item.getBasePrice() == null ? 0.0 : item.getBasePrice()
+                item.getBasePrice() == null ? 0.0 : item.getBasePrice(),
+                item.getCustomServiceName()
         );
     }
 }

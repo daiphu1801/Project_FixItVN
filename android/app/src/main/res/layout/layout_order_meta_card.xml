@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    style="@style/FixIt.Card.Content"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="16dp">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="16dp">
+
+        <!-- Row 1: Địa chỉ -->
+        <ImageView
+            android:id="@+id/icAddress"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:src="@drawable/ic_lucide_map_pin"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:tint="#94a3b8" />
+
+        <TextView
+            android:id="@+id/tvOrderDetailAddress"
+            style="@style/FixIt.Text.InfoRow"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
+            android:layout_marginBottom="16dp"
+            android:text="123 Nguyễn Văn Linh, Quận 7, TP.HCM"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/icAddress"
+            app:layout_constraintTop_toTopOf="@id/icAddress" />
+
+        <!-- Row 2: Thời gian -->
+        <ImageView
+            android:id="@+id/icTime"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:layout_marginTop="16dp"
+            android:src="@drawable/ic_lucide_clock"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tvOrderDetailAddress"
+            app:tint="#94a3b8" />
+
+        <TextView
+            android:id="@+id/tvOrderDetailScheduledTime"
+            style="@style/FixIt.Text.InfoRow"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
+            android:layout_marginBottom="16dp"
+            android:text="Hôm nay, 14:30 (10/05/2026)"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/icTime"
+            app:layout_constraintTop_toTopOf="@id/icTime" />
+
+        <!-- Row 3: Phương thức thanh toán -->
+        <ImageView
+            android:id="@+id/icPayment"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:layout_marginTop="16dp"
+            android:src="@drawable/ic_lucide_wallet"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tvOrderDetailScheduledTime"
+            app:tint="#94a3b8" />
+
+        <TextView
+            android:id="@+id/tvOrderDetailPaymentMethod"
+            style="@style/FixIt.Text.InfoRow"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
+            android:text="Thanh toán: Tiền mặt (CASH)"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/icPayment"
+            app:layout_constraintTop_toTopOf="@id/icPayment" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</com.google.android.material.card.MaterialCardView>

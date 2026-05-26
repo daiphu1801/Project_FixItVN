@@ -300,4 +300,37 @@ public class WorkerAssignmentServiceImpl implements WorkerAssignmentService {
         LocalDateTime localDateTime = LocalDateTime.parse(value);
         return localDateTime.atZone(APP_ZONE).toOffsetDateTime();
     }
+
+    @Override
+    @Transactional
+    public int markExpiredAssignmentsAsMissed() {
+        OffsetDateTime now = OffsetDateTime.now(APP_ZONE);
+        OffsetDateTime expiredBefore = now.minusMinutes(ASSIGNMENT_TIMEOUT_MINUTES);
+
+        List<BookingWorkerAssignment> expiredAssignments =
+                assignmentRepository.findExpiredPendingAssignmentsForUpdate(expiredBefore);
+
+        int handledCount = 0;
+
+        for (BookingWorkerAssignment assignment : expiredAssignments) {
+            if (assignment.getStatus() != AssignmentStatus.Pending) {
+                continue;
+            }
+
+            assignment.setStatus(AssignmentStatus.Missed);
+            assignment.setRespondedAt(now);
+
+            UUID workerId = assignment.getWorker().getWorkerId();
+
+            workerRepository.recordMissedAssignment(
+                    workerId,
+                    AUTO_OFFLINE_MISSED_THRESHOLD
+            );
+
+            handledCount++;
+        }
+
+        return handledCount;
+    }
+
 }

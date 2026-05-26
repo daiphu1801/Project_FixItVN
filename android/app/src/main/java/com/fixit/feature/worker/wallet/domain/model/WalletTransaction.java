@@ -11,27 +11,42 @@ package com.fixit.feature.worker.wallet.domain.model;
  * amountSign:
  *   true  → Cộng tiền (+)
  *   false → Trừ tiền (-)
+ * 
+ * status:
+ *   "SUCCESS"   → Thành công
+ *   "PENDING"   → Chờ duyệt (đối với rút tiền)
+ *   "CANCELLED" → Đã hủy
  */
 public class WalletTransaction {
 
+    private String id;
     private String title;       // VD: "Nhận tiền đơn ORD001"
     private String date;        // VD: "08/05/2026 - 14:30"
     private String amount;      // VD: "500.000 đ"
     private boolean isCredit;   // true = cộng (+), false = trừ (-)
     private String walletType;  // "available" | "held" | "debt"
+    private String status;      // "SUCCESS" | "PENDING" | "CANCELLED"
 
-    public WalletTransaction(String title, String date, String amount,
-                              boolean isCredit, String walletType) {
+    public WalletTransaction(String id, String title, String date, String amount,
+                              boolean isCredit, String walletType, String status) {
+        this.id = id;
         this.title = title;
         this.date = date;
         this.amount = amount;
         this.isCredit = isCredit;
         this.walletType = walletType;
+        this.status = status;
     }
 
+    public String getId()         { return id; }
     public String getTitle()      { return title; }
     public String getDate()       { return date; }
     public String getAmount()     { return amount; }
     public boolean isCredit()     { return isCredit; }
     public String getWalletType() { return walletType; }
+    public String getStatus()     { return status; }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
 }

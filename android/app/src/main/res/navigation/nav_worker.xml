@@ -58,7 +58,58 @@
     <fragment
         android:id="@+id/workerWalletFragment"
         android:name="com.fixit.feature.worker.wallet.presentation.WorkerWalletFragment"
-        android:label="Ví" />
+        android:label="Ví">
+        <action
+            android:id="@+id/action_wallet_to_bank_list"
+            app:destination="@id/workerBankListFragment" />
+        <action
+            android:id="@+id/action_wallet_to_withdraw"
+            app:destination="@id/workerWithdrawFragment" />
+        <action
+            android:id="@+id/action_wallet_to_deposit"
+            app:destination="@id/workerDepositFragment" />
+        <action
+            android:id="@+id/action_wallet_to_tx_detail"
+            app:destination="@id/workerTransactionDetailFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/workerBankListFragment"
+        android:name="com.fixit.feature.worker.wallet.presentation.WorkerBankListFragment"
+        android:label="Liên kết ngân hàng">
+        <action
+            android:id="@+id/action_bank_list_to_add_edit"
+            app:destination="@id/workerBankAddEditFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/workerBankAddEditFragment"
+        android:name="com.fixit.feature.worker.wallet.presentation.WorkerBankAddEditFragment"
+        android:label="Liên kết tài khoản">
+        <argument
+            android:name="bankAccountId"
+            app:argType="string"
+            android:defaultValue="" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/workerWithdrawFragment"
+        android:name="com.fixit.feature.worker.wallet.presentation.WorkerWithdrawFragment"
+        android:label="Rút tiền" />
+
+    <fragment
+        android:id="@+id/workerDepositFragment"
+        android:name="com.fixit.feature.worker.wallet.presentation.WorkerDepositFragment"
+        android:label="Nạp tiền" />
+
+    <fragment
+        android:id="@+id/workerTransactionDetailFragment"
+        android:name="com.fixit.feature.worker.wallet.presentation.WorkerTransactionDetailFragment"
+        android:label="Chi tiết giao dịch">
+        <argument
+            android:name="transactionId"
+            app:argType="string" />
+    </fragment>
 
     <fragment
         android:id="@+id/workerStatsFragment"

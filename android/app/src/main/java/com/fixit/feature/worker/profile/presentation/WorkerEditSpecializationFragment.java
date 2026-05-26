@@ -52,7 +52,27 @@ public class WorkerEditSpecializationFragment extends BaseFragment<FragmentWorke
 
         binding.recyclerSpecializations.setAdapter(adapter);
 
-        binding.btnAddService.setOnClickListener(v -> showAddServiceDialog());
+        binding.btnAddService.setOnClickListener(v -> {
+            WorkerSelectServiceBottomSheet bottomSheet = new WorkerSelectServiceBottomSheet();
+            bottomSheet.setOnServicesSelectedListener(selectedList -> {
+                if (selectedList != null && !selectedList.isEmpty()) {
+                    for (SpecializationItem newItem : selectedList) {
+                        boolean exists = false;
+                        for (SpecializationItem existing : myServices) {
+                            if (existing.getName().equalsIgnoreCase(newItem.getName())) {
+                                exists = true;
+                                break;
+                            }
+                        }
+                        if (!exists) {
+                            myServices.add(newItem);
+                        }
+                    }
+                    adapter.notifyDataSetChanged();
+                }
+            });
+            bottomSheet.show(getChildFragmentManager(), "SelectServiceBottomSheet");
+        });
 
         binding.btnSave.setOnClickListener(v -> saveSkills());
     }
@@ -101,8 +121,11 @@ public class WorkerEditSpecializationFragment extends BaseFragment<FragmentWorke
         List<WorkerSkill> skills = new ArrayList<>();
 
         for (SpecializationItem item : myServices) {
-            if (item.getId() <= 0) {
-                Toast.makeText(requireContext(), "serviceId không hợp lệ", Toast.LENGTH_SHORT).show();
+            boolean hasValidId = item.getId() != null && item.getId() > 0;
+            boolean hasValidCustomName = item.getCustomServiceName() != null && !item.getCustomServiceName().trim().isEmpty();
+
+            if (!hasValidId && !hasValidCustomName) {
+                Toast.makeText(requireContext(), "Danh mục dịch vụ không hợp lệ", Toast.LENGTH_SHORT).show();
                 return;
             }
 
@@ -112,130 +135,6 @@ public class WorkerEditSpecializationFragment extends BaseFragment<FragmentWorke
         viewModel.updateSkills(skills);
     }
 
-    private void showAddServiceDialog() {
-        selectedCategoryId = null;
-        View dialogView = LayoutInflater.from(requireContext()).inflate(R.layout.dialog_add_service, null);
-        EditText edtServiceName = dialogView.findViewById(R.id.edtDialogServiceName);
-        EditText edtItemName = dialogView.findViewById(R.id.edtDialogItemName);
-        EditText edtPrice = dialogView.findViewById(R.id.edtDialogBasePrice);
-
-        edtServiceName.setFocusable(false);
-        edtServiceName.setClickable(true);
-
-        edtItemName.setFocusable(false);
-        edtItemName.setClickable(true);
-
-        edtServiceName.setOnClickListener(v -> {
-            if (availableCategories.isEmpty()) {
-                Toast.makeText(requireContext(), "Đang tải danh mục dịch vụ từ server...", Toast.LENGTH_SHORT).show();
-                viewModel.loadServiceCategories();
-                return;
-            }
-
-            String[] items = new String[availableCategories.size()];
-            for (int i = 0; i < availableCategories.size(); i++) {
-                items[i] = availableCategories.get(i).getServiceName();
-            }
-
-            new androidx.appcompat.app.AlertDialog.Builder(
-                    requireContext(),
-                    com.google.android.material.R.style.ThemeOverlay_MaterialComponents_MaterialAlertDialog
-            )
-                    .setTitle("Chọn danh mục dịch vụ")
-                    .setItems(items, (dialog, which) -> {
-                        ServiceCategory selected = availableCategories.get(which);
-                        selectedCategoryId = selected.getId();
-                        edtServiceName.setText(selected.getServiceName());
-                        edtServiceName.setError(null);
-                        
-                        // Clear the item selection and price
-                        edtItemName.setText("");
-                        edtPrice.setText("");
-                    })
-                    .show();
-        });
-
-        edtItemName.setOnClickListener(v -> {
-            if (selectedCategoryId == null || edtServiceName.getText().toString().trim().isEmpty()) {
-                Toast.makeText(requireContext(), "Vui lòng chọn danh mục dịch vụ trước!", Toast.LENGTH_SHORT).show();
-                return;
-            }
-
-            String categoryName = edtServiceName.getText().toString().trim();
-            List<LocalServiceItem> subItems = getLocalServiceItems(categoryName);
-            if (subItems.isEmpty()) {
-                Toast.makeText(requireContext(), "Không tìm thấy chi tiết dịch vụ", Toast.LENGTH_SHORT).show();
-                return;
-            }
-
-            String[] subItemNames = new String[subItems.size()];
-            for (int i = 0; i < subItems.size(); i++) {
-                subItemNames[i] = subItems.get(i).itemName + " (Đề xuất: " + String.format("%,.0f", subItems.get(i).suggestedPrice) + "đ)";
-            }
-
-            new androidx.appcompat.app.AlertDialog.Builder(
-                    requireContext(),
-                    com.google.android.material.R.style.ThemeOverlay_MaterialComponents_MaterialAlertDialog
-            )
-                    .setTitle("Chọn dịch vụ chi tiết (item_name)")
-                    .setItems(subItemNames, (dialog, which) -> {
-                        LocalServiceItem selectedSub = subItems.get(which);
-                        edtItemName.setText(selectedSub.itemName);
-                        edtItemName.setError(null);
-                        
-                        // Auto-populate recommended price
-                        edtPrice.setText(String.valueOf((int) selectedSub.suggestedPrice));
-                        edtPrice.setError(null);
-                    })
-                    .show();
-        });
-
-        new androidx.appcompat.app.AlertDialog.Builder(
-                requireContext(),
-                com.google.android.material.R.style.ThemeOverlay_MaterialComponents_MaterialAlertDialog
-        )
-                .setView(dialogView)
-                .setPositiveButton("Thêm", (dialog, which) -> {
-                    String serviceNameText = edtServiceName.getText() != null
-                            ? edtServiceName.getText().toString().trim()
-                            : "";
-                    String itemNameText = edtItemName.getText() != null
-                            ? edtItemName.getText().toString().trim()
-                            : "";
-                    String priceText = edtPrice.getText() != null
-                            ? edtPrice.getText().toString().trim()
-                            : "";
-
-                    if (selectedCategoryId == null || serviceNameText.isEmpty()) {
-                        Toast.makeText(requireContext(), "Vui lòng chọn danh mục dịch vụ", Toast.LENGTH_SHORT).show();
-                        return;
-                    }
-
-                    if (itemNameText.isEmpty()) {
-                        Toast.makeText(requireContext(), "Vui lòng chọn dịch vụ chi tiết", Toast.LENGTH_SHORT).show();
-                        return;
-                    }
-
-                    try {
-                        double price = priceText.isEmpty() ? 0.0 : Double.parseDouble(priceText);
-
-                        String finalDisplayName = serviceNameText + " - " + itemNameText;
-
-                        myServices.add(new SpecializationItem(
-                                selectedCategoryId,
-                                finalDisplayName,
-                                true,
-                                price
-                        ));
-
-                        adapter.notifyItemInserted(myServices.size() - 1);
-                    } catch (NumberFormatException e) {
-                        Toast.makeText(requireContext(), "Giá không hợp lệ", Toast.LENGTH_SHORT).show();
-                    }
-                })
-                .setNegativeButton("Huỷ", null)
-                .show();
-     }
 
      private static class LocalServiceItem {
          String itemName;
