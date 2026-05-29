@@ -32,7 +32,7 @@
         android:id="@+id/nav_customer_history"
         android:name="com.fixit.feature.customer.history.presentation.OrderHistoryFragment"
         android:label="Lịch sử"
-        tools:layout="@layout/fragment_order_history" />
+        tools:layout="@layout/fragment_customer_order_history" />
 
     <!-- TRANG THỢ QUEN -->
     <fragment

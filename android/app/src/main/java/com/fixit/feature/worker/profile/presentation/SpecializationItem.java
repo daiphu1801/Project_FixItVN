@@ -1,23 +1,32 @@
 package com.fixit.feature.worker.profile.presentation;
 
 public class SpecializationItem {
-    private int id;
+    private Integer id;
     private String name;
     private boolean isSelected;
     private Double basePrice;
+    private String customServiceName;
 
-    public SpecializationItem(int id, String name, boolean isSelected, Double basePrice) {
+    public SpecializationItem(Integer id, String name, boolean isSelected, Double basePrice) {
         this.id = id;
         this.name = name;
         this.isSelected = isSelected;
         this.basePrice = basePrice;
     }
 
-    public int getId() {
+    public SpecializationItem(Integer id, String name, boolean isSelected, Double basePrice, String customServiceName) {
+        this.id = id;
+        this.name = name;
+        this.isSelected = isSelected;
+        this.basePrice = basePrice;
+        this.customServiceName = customServiceName;
+    }
+
+    public Integer getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 
@@ -43,5 +52,13 @@ public class SpecializationItem {
 
     public void setBasePrice(Double basePrice) {
         this.basePrice = basePrice;
+    }
+
+    public String getCustomServiceName() {
+        return customServiceName;
+    }
+
+    public void setCustomServiceName(String customServiceName) {
+        this.customServiceName = customServiceName;
     }
 }

@@ -19,7 +19,7 @@
             android:id="@+id/tvAppointmentTime"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="14:30 Hôm nay"
+            android:text="..."
             android:textColor="#42c2ff"
             android:textSize="12sp"
             android:textStyle="bold" />
@@ -29,7 +29,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="4dp"
-            android:text="Sửa máy lạnh không mát"
+            android:text="..."
             android:textColor="#333333"
             android:textSize="16sp"
             android:textStyle="bold" />
@@ -39,7 +39,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="4dp"
-            android:text="456 Lê Văn Sỹ, Quận 3, TP.HCM"
+            android:text="..."
             android:textColor="#666666"
             android:textSize="14sp" />
     </LinearLayout>

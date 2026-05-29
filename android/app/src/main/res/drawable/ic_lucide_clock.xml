@@ -4,18 +4,18 @@
     android:height="24dp"
     android:viewportWidth="24"
     android:viewportHeight="24">
+    <!-- Vẽ hình tròn (mặt đồng hồ) tại tâm (12, 12) -->
     <path
-        android:pathData="M12,22m-10,0a10,10 0,1 1,20 0a10,10 0,1 1,-20 0"
+        android:pathData="M12,12m-10,0a10,10 0,1 1,20 0a10,10 0,1 1,-20 0"
         android:strokeLineJoin="round"
         android:strokeWidth="2"
-        android:fillColor="#00000000"
         android:strokeColor="#000000"
         android:strokeLineCap="round"/>
+    <!-- Vẽ kim đồng hồ xuất phát từ tâm (12, 12) -->
     <path
-        android:pathData="M12,6v6l4,2"
+        android:pathData="M12,7v5l3,2"
         android:strokeLineJoin="round"
         android:strokeWidth="2"
-        android:fillColor="#00000000"
         android:strokeColor="#000000"
         android:strokeLineCap="round"/>
 </vector>

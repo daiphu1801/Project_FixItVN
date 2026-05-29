@@ -305,6 +305,86 @@ CREATE TABLE user_devices (
 );
 
 -- ==========================================
+-- UPLOAD FILES
+-- Bảng trung gian quản lý vòng đời upload ảnh/file
+-- ==========================================
+
+CREATE TABLE uploaded_files (
+    id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+
+    -- User nào tạo upload này
+    owner_user_id uuid NOT NULL REFERENCES users(id),
+
+    -- Upload dùng cho mục đích gì
+    purpose varchar(50) NOT NULL
+        CHECK (
+            purpose IN (
+                'AVATAR',
+                'WORKER_KYC_FRONT',
+                'WORKER_KYC_BACK',
+                'WORKER_CERTIFICATE',
+                'BOOKING_ISSUE_IMAGE',
+                'PROOF_BEFORE_REPAIR',
+                'PROOF_AFTER_REPAIR',
+                'CHAT_IMAGE',
+                'COMPLAINT_EVIDENCE'
+            )
+        ),
+
+    -- Thông tin file gốc
+    original_file_name varchar(255),
+    content_type varchar(100) NOT NULL,
+    file_size bigint NOT NULL CHECK (file_size > 0),
+
+    -- Provider lưu trữ: MVP có thể dùng CLOUDINARY
+    storage_provider varchar(30) NOT NULL DEFAULT 'CLOUDINARY'
+        CHECK (storage_provider IN ('CLOUDINARY', 'S3', 'LOCAL')),
+
+    -- Với Cloudinary: object_key có thể hiểu là public_id
+    -- Với S3: object_key là key/path trong bucket
+    object_key text NOT NULL UNIQUE,
+
+    -- URL public/secure để app hiển thị ảnh
+    file_url text NOT NULL,
+
+    -- Trạng thái vòng đời upload
+    status varchar(30) NOT NULL DEFAULT 'PENDING'
+        CHECK (status IN ('PENDING', 'CONFIRMED', 'EXPIRED', 'FAILED')),
+
+    -- File này đã được gắn vào nghiệp vụ nào chưa
+    -- Ví dụ: USER_AVATAR, WORKER_KYC, PROOF_OF_WORK, CHAT_MESSAGE, COMPLAINT
+    linked_entity_type varchar(50),
+
+    -- UUID của bản ghi nghiệp vụ, ví dụ booking_id, complaint_id, user_id
+    linked_entity_id uuid,
+
+    -- Thời gian
+    expires_at timestamptz,
+    confirmed_at timestamptz,
+    used_at timestamptz,
+    created_at timestamptz DEFAULT now(),
+
+    -- Không cho file_size quá lớn ở DB-level nếu muốn.
+    -- Ví dụ giới hạn 10MB = 10485760 bytes.
+    CHECK (file_size <= 10485760)
+);
+
+CREATE INDEX idx_uploaded_files_owner_user_id
+    ON uploaded_files(owner_user_id);
+
+CREATE INDEX idx_uploaded_files_purpose
+    ON uploaded_files(purpose);
+
+CREATE INDEX idx_uploaded_files_status
+    ON uploaded_files(status);
+
+CREATE INDEX idx_uploaded_files_created_at
+    ON uploaded_files(created_at);
+
+CREATE INDEX idx_uploaded_files_linked_entity
+    ON uploaded_files(linked_entity_type, linked_entity_id);
+
+-- ==========================================
 -- INDEXES FOR FOREIGN KEYS
 -- ==========================================
 

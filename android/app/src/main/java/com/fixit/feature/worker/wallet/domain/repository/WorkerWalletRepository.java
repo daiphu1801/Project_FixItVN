@@ -9,4 +9,15 @@ public interface WorkerWalletRepository {
     WalletBalance getWalletBalance();
 
     List<WalletTransaction> getTransactions(String walletType);
+
+    // Bổ sung các phương thức theo API
+    String createDeposit(long amount, String note);
+
+    String getDepositQr(String transactionId);
+
+    void createWithdrawal(long amount, String bankAccountId);
+
+    void cancelWithdrawal(String transactionId);
+
+    void simulateDepositSuccess(String transactionId);
 }

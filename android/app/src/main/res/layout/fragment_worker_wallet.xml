@@ -16,10 +16,9 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <LinearLayout
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
             android:paddingBottom="32dp">
 
             <!-- ═══════════════════════════════════════════════
@@ -27,46 +26,47 @@
                  Màu xanh chủ đạo, to nhất, nổi bật nhất
                  ═══════════════════════════════════════════════ -->
             <com.google.android.material.card.MaterialCardView
+                android:id="@+id/cardAvailable"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="16dp"
                 android:layout_marginTop="16dp"
-                app:cardBackgroundColor="#42c2ff"
+                app:cardBackgroundColor="@android:color/transparent"
                 app:cardCornerRadius="20dp"
-                app:cardElevation="6dp"
-                app:strokeWidth="0dp">
+                app:cardElevation="4dp"
+                app:strokeWidth="0dp"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent">
 
-                <LinearLayout
+                <androidx.constraintlayout.widget.ConstraintLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical"
+                    android:background="@drawable/bg_wallet_card_gradient"
                     android:padding="24dp">
 
-                    <!-- Tiêu đề -->
-                    <LinearLayout
-                        android:layout_width="match_parent"
+                    <TextView
+                        android:id="@+id/tvAvailableTitle"
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:gravity="center_vertical"
-                        android:orientation="horizontal">
+                        android:text="💳  Ví khả dụng"
+                        android:textColor="#d0f4ff"
+                        android:textSize="14sp"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintStart_toStartOf="parent" />
 
-                        <TextView
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:text="💳  Ví khả dụng"
-                            android:textColor="#d0f4ff"
-                            android:textSize="14sp" />
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:background="#33ffffff"
-                            android:paddingHorizontal="10dp"
-                            android:paddingVertical="4dp"
-                            android:text="Có thể rút"
-                            android:textColor="#ffffff"
-                            android:textSize="11sp" />
-                    </LinearLayout>
+                    <TextView
+                        android:id="@+id/tvAvailableBadge"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:background="#33ffffff"
+                        android:paddingHorizontal="10dp"
+                        android:paddingVertical="4dp"
+                        android:text="Có thể rút"
+                        android:textColor="#ffffff"
+                        android:textSize="11sp"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent" />
 
                     <!-- Số dư lớn -->
                     <TextView
@@ -78,7 +78,25 @@
                         android:textColor="#ffffff"
                         android:textSize="36sp"
                         android:textStyle="bold"
+                        app:layout_constraintTop_toBottomOf="@id/tvAvailableTitle"
+                        app:layout_constraintStart_toStartOf="parent"
                         tools:ignore="HardcodedText" />
+
+                    <!-- Eye toggle for privacy -->
+                    <ImageView
+                        android:id="@+id/btnToggleBalance"
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:layout_marginStart="12dp"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:background="?attr/selectableItemBackgroundBorderless"
+                        android:src="@drawable/ic_eye"
+                        android:contentDescription="Ẩn/Hiện số dư"
+                        app:tint="#d0f4ff"
+                        app:layout_constraintTop_toTopOf="@id/tvAvailableBalance"
+                        app:layout_constraintBottom_toBottomOf="@id/tvAvailableBalance"
+                        app:layout_constraintStart_toEndOf="@id/tvAvailableBalance" />
 
                     <!-- Nút hành động: chỉ Rút tiền -->
                     <com.google.android.material.button.MaterialButton
@@ -87,154 +105,251 @@
                         android:layout_width="match_parent"
                         android:layout_marginTop="20dp"
                         android:text="Rút tiền về ngân hàng"
-                        android:textColor="#42c2ff"
-                        app:backgroundTint="#ffffff" />
-                </LinearLayout>
+                        android:textColor="#2563eb"
+                        app:backgroundTint="#ffffff"
+                        app:layout_constraintTop_toBottomOf="@id/tvAvailableBalance"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent" />
+                </androidx.constraintlayout.widget.ConstraintLayout>
             </com.google.android.material.card.MaterialCardView>
 
             <!-- ═══════════════════════════════════════════════
                  HÀNG 2 CARD NHỎ: Tạm giữ & Ghi nợ (cạnh nhau)
                  ═══════════════════════════════════════════════ -->
-            <LinearLayout
+
+            <!-- ── CARD Ví Tạm giữ (tone vàng cảnh báo) ── -->
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/cardHeld"
+                style="@style/FixIt.Card.Content"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="6dp"
+                android:layout_marginBottom="0dp"
+                app:cardBackgroundColor="#fffbeb"
+                app:strokeColor="#fde68a"
+                app:strokeWidth="1dp"
+                app:layout_constraintTop_toBottomOf="@id/cardAvailable"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/cardDebt"
+                app:layout_constraintHorizontal_chainStyle="spread">
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:padding="16dp">
+
+                    <TextView
+                        android:id="@+id/tvHeldTitle"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="⏳  Tạm giữ"
+                        android:textColor="#92400e"
+                        android:textSize="13sp"
+                        android:textStyle="bold"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintStart_toStartOf="parent" />
+
+                    <TextView
+                        android:id="@+id/tvHeldBalance"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:text="320.000 đ"
+                        android:textColor="#b45309"
+                        android:textSize="22sp"
+                        android:textStyle="bold"
+                        app:layout_constraintTop_toBottomOf="@id/tvHeldTitle"
+                        app:layout_constraintStart_toStartOf="parent" />
+
+                    <TextView
+                        android:id="@+id/tvHeldDesc"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="4dp"
+                        android:text="Bảo hành 96 giờ"
+                        android:textColor="#d97706"
+                        android:textSize="11sp"
+                        app:layout_constraintTop_toBottomOf="@id/tvHeldBalance"
+                        app:layout_constraintStart_toStartOf="parent" />
+
+                    <!-- Nút xem chi tiết -->
+                    <TextView
+                        android:id="@+id/btnHeldDetail"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp"
+                        android:background="@drawable/chip_primary_light_bg"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:paddingHorizontal="12dp"
+                        android:paddingVertical="5dp"
+                        android:text="Xem chi tiết →"
+                        android:textColor="#b45309"
+                        android:textSize="12sp"
+                        android:textStyle="bold"
+                        app:layout_constraintTop_toBottomOf="@id/tvHeldDesc"
+                        app:layout_constraintStart_toStartOf="parent" />
+                </androidx.constraintlayout.widget.ConstraintLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- ── CARD Ví Ghi nợ (tone đỏ cảnh báo) ── -->
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/cardDebt"
+                style="@style/FixIt.Card.Content"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:layout_marginStart="6dp"
+                android:layout_marginEnd="16dp"
+                android:layout_marginBottom="0dp"
+                app:cardBackgroundColor="#fff5f5"
+                app:strokeColor="#fca5a5"
+                app:strokeWidth="1dp"
+                app:layout_constraintTop_toBottomOf="@id/cardAvailable"
+                app:layout_constraintStart_toEndOf="@id/cardHeld"
+                app:layout_constraintEnd_toEndOf="parent">
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:padding="16dp">
+
+                    <TextView
+                        android:id="@+id/tvDebtTitle"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="⚠️  Ghi nợ"
+                        android:textColor="#991b1b"
+                        android:textSize="13sp"
+                        android:textStyle="bold"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintStart_toStartOf="parent" />
+
+                    <TextView
+                        android:id="@+id/tvDebtBalance"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:text="75.000 đ"
+                        android:textColor="#dc2626"
+                        android:textSize="22sp"
+                        android:textStyle="bold"
+                        app:layout_constraintTop_toBottomOf="@id/tvDebtTitle"
+                        app:layout_constraintStart_toStartOf="parent" />
+
+                    <TextView
+                        android:id="@+id/tvDebtDesc"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="4dp"
+                        android:text="Hoa hồng tích lũy (15%)"
+                        android:textColor="#ef4444"
+                        android:textSize="11sp"
+                        app:layout_constraintTop_toBottomOf="@id/tvDebtBalance"
+                        app:layout_constraintStart_toStartOf="parent" />
+
+                    <!-- Nút nạp tiền -->
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btnTopUp"
+                        android:layout_width="match_parent"
+                        android:layout_height="36dp"
+                        android:layout_marginTop="10dp"
+                        android:text="Nạp tiền"
+                        android:textSize="12sp"
+                        app:backgroundTint="#ef4444"
+                        app:cornerRadius="10dp"
+                        app:elevation="0dp"
+                        app:layout_constraintTop_toBottomOf="@id/tvDebtDesc"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent" />
+                </androidx.constraintlayout.widget.ConstraintLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- Nút Quản lý ngân hàng liên kết -->
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/btnManageBank"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="16dp"
-                android:layout_marginTop="12dp"
-                android:orientation="horizontal">
+                android:layout_marginTop="16dp"
+                app:cardBackgroundColor="@android:color/white"
+                app:cardCornerRadius="12dp"
+                app:cardElevation="2dp"
+                app:strokeColor="#e2e8f0"
+                app:strokeWidth="1dp"
+                app:layout_constraintTop_toBottomOf="@id/cardHeld"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent">
 
-                <!-- ── CARD Ví Tạm giữ (tone vàng cảnh báo) ── -->
-                <com.google.android.material.card.MaterialCardView
-                    style="@style/FixIt.Card.Content"
-                    android:layout_width="0dp"
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginEnd="6dp"
-                    android:layout_weight="1"
-                    android:layout_marginBottom="0dp"
-                    app:cardBackgroundColor="#fffbeb"
-                    app:strokeColor="#fde68a"
-                    app:strokeWidth="1dp">
+                    android:padding="16dp">
 
-                    <LinearLayout
-                        android:layout_width="match_parent"
+                    <ImageView
+                        android:id="@+id/ivBankIcon"
+                        android:layout_width="32dp"
+                        android:layout_height="32dp"
+                        android:src="@android:drawable/ic_menu_agenda"
+                        app:tint="#2563eb"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintStart_toStartOf="parent" />
+
+                    <TextView
+                        android:id="@+id/tvManageBankTitle"
+                        android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:orientation="vertical"
-                        android:padding="16dp">
+                        android:layout_marginStart="12dp"
+                        android:text="Tài khoản ngân hàng liên kết"
+                        android:textColor="#1e293b"
+                        android:textSize="14sp"
+                        android:textStyle="bold"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintStart_toEndOf="@id/ivBankIcon"
+                        app:layout_constraintEnd_toStartOf="@id/ivArrowIcon" />
 
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="⏳  Tạm giữ"
-                            android:textColor="#92400e"
-                            android:textSize="13sp"
-                            android:textStyle="bold" />
-
-                        <TextView
-                            android:id="@+id/tvHeldBalance"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="8dp"
-                            android:text="320.000 đ"
-                            android:textColor="#b45309"
-                            android:textSize="22sp"
-                            android:textStyle="bold" />
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="4dp"
-                            android:text="Bảo hành 96 giờ"
-                            android:textColor="#d97706"
-                            android:textSize="11sp" />
-
-                        <!-- Nút xem chi tiết -->
-                        <TextView
-                            android:id="@+id/btnHeldDetail"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="10dp"
-                            android:background="@drawable/chip_primary_light_bg"
-                            android:clickable="true"
-                            android:focusable="true"
-                            android:paddingHorizontal="12dp"
-                            android:paddingVertical="5dp"
-                            android:text="Xem chi tiết →"
-                            android:textColor="#b45309"
-                            android:textSize="12sp"
-                            android:textStyle="bold" />
-                    </LinearLayout>
-                </com.google.android.material.card.MaterialCardView>
-
-                <!-- ── CARD Ví Ghi nợ (tone đỏ cảnh báo) ── -->
-                <com.google.android.material.card.MaterialCardView
-                    style="@style/FixIt.Card.Content"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="6dp"
-                    android:layout_weight="1"
-                    android:layout_marginBottom="0dp"
-                    app:cardBackgroundColor="#fff5f5"
-                    app:strokeColor="#fca5a5"
-                    app:strokeWidth="1dp">
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
+                    <TextView
+                        android:id="@+id/tvManageBankDesc"
+                        android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:orientation="vertical"
-                        android:padding="16dp">
+                        android:layout_marginTop="2dp"
+                        android:layout_marginStart="12dp"
+                        android:text="Quản lý và thiết lập tài khoản nhận tiền"
+                        android:textColor="#64748b"
+                        android:textSize="12sp"
+                        app:layout_constraintTop_toBottomOf="@id/tvManageBankTitle"
+                        app:layout_constraintStart_toEndOf="@id/ivBankIcon"
+                        app:layout_constraintEnd_toStartOf="@id/ivArrowIcon" />
 
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="⚠️  Ghi nợ"
-                            android:textColor="#991b1b"
-                            android:textSize="13sp"
-                            android:textStyle="bold" />
-
-                        <TextView
-                            android:id="@+id/tvDebtBalance"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="8dp"
-                            android:text="75.000 đ"
-                            android:textColor="#dc2626"
-                            android:textSize="22sp"
-                            android:textStyle="bold" />
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="4dp"
-                            android:text="Hoa hồng tích lũy (15%)"
-                            android:textColor="#ef4444"
-                            android:textSize="11sp" />
-
-                        <!-- Nút nạp tiền -->
-                        <com.google.android.material.button.MaterialButton
-                            android:id="@+id/btnTopUp"
-                            android:layout_width="match_parent"
-                            android:layout_height="36dp"
-                            android:layout_marginTop="10dp"
-                            android:text="Nạp tiền"
-                            android:textSize="12sp"
-                            app:backgroundTint="#ef4444"
-                            app:cornerRadius="10dp"
-                            app:elevation="0dp" />
-                    </LinearLayout>
-                </com.google.android.material.card.MaterialCardView>
-            </LinearLayout>
+                    <ImageView
+                        android:id="@+id/ivArrowIcon"
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:src="@android:drawable/ic_media_play"
+                        app:tint="#64748b"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent" />
+                </androidx.constraintlayout.widget.ConstraintLayout>
+            </com.google.android.material.card.MaterialCardView>
 
             <!-- ═══════════════════════════════════════════════
                  LỊCH SỬ GIAO DỊCH + TAB PHÂN LOẠI
                  ═══════════════════════════════════════════════ -->
             <TextView
+                android:id="@+id/tvTxHistoryTitle"
                 style="@style/FixIt.Text.SectionHeader"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="16dp"
                 android:layout_marginTop="24dp"
-                android:layout_marginBottom="8dp"
                 android:text="Lịch sử giao dịch"
-                android:textSize="18sp" />
+                android:textSize="18sp"
+                app:layout_constraintTop_toBottomOf="@id/btnManageBank"
+                app:layout_constraintStart_toStartOf="parent" />
 
             <!-- Tab phân loại giao dịch -->
             <com.google.android.material.tabs.TabLayout
@@ -242,12 +357,16 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="16dp"
+                android:layout_marginTop="8dp"
                 android:background="@android:color/white"
                 app:tabIndicatorColor="#42c2ff"
                 app:tabSelectedTextColor="#42c2ff"
                 app:tabTextColor="#888888"
                 app:tabMode="fixed"
-                app:tabGravity="fill">
+                app:tabGravity="fill"
+                app:layout_constraintTop_toBottomOf="@id/tvTxHistoryTitle"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent">
 
                 <com.google.android.material.tabs.TabItem
                     android:layout_width="wrap_content"
@@ -273,11 +392,23 @@
                 android:layout_marginHorizontal="16dp"
                 android:layout_marginTop="8dp"
                 android:nestedScrollingEnabled="false"
+                app:layout_constraintTop_toBottomOf="@id/tabLayoutTx"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
                 tools:listitem="@layout/item_wallet_transaction" />
 
-            <include layout="@layout/layout_empty_state" />
+            <include
+                android:id="@+id/layoutEmptyState"
+                layout="@layout/layout_empty_state"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="16dp"
+                android:layout_marginTop="8dp"
+                app:layout_constraintTop_toBottomOf="@id/tabLayoutTx"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent" />
 
-        </LinearLayout>
+        </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.core.widget.NestedScrollView>
 
 </LinearLayout>

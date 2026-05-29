@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    style="@style/FixIt.Card.Content"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="20dp">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="16dp">
+
+        <TextView
+            android:id="@+id/tvCustomerLabel"
+            style="@style/FixIt.Text.SectionHeader"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Thông tin khách hàng"
+            android:textColor="#94a3b8"
+            android:textSize="12sp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <ImageView
+            android:id="@+id/ivCustomerAvatar"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_marginTop="8dp"
+            android:background="@drawable/circle_background"
+            android:backgroundTint="#f1f5f9"
+            android:padding="8dp"
+            android:src="@drawable/ic_lucide_user"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tvCustomerLabel"
+            app:tint="#64748b" />
+
+        <TextView
+            android:id="@+id/tvOrderDetailCustomerName"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="12dp"
+            android:text="Nguyễn Văn B"
+            android:textColor="#0d1b2a"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toTopOf="@id/tvOrderDetailCustomerPhone"
+            app:layout_constraintEnd_toStartOf="@id/btnChatCustomer"
+            app:layout_constraintStart_toEndOf="@id/ivCustomerAvatar"
+            app:layout_constraintTop_toTopOf="@id/ivCustomerAvatar"
+            app:layout_constraintVertical_chainStyle="packed" />
+
+        <TextView
+            android:id="@+id/tvOrderDetailCustomerPhone"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="0912 345 678"
+            android:textColor="#64748b"
+            android:textSize="14sp"
+            app:layout_constraintBottom_toBottomOf="@id/ivCustomerAvatar"
+            app:layout_constraintEnd_toStartOf="@id/btnChatCustomer"
+            app:layout_constraintStart_toStartOf="@id/tvOrderDetailCustomerName"
+            app:layout_constraintTop_toBottomOf="@id/tvOrderDetailCustomerName" />
+
+        <ImageView
+            android:id="@+id/btnChatCustomer"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:background="@drawable/circle_background"
+            android:backgroundTint="#f0f9ff"
+            android:padding="10dp"
+            android:src="@drawable/ic_lucide_message"
+            app:layout_constraintBottom_toBottomOf="@id/ivCustomerAvatar"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@id/ivCustomerAvatar"
+            app:tint="#0ea5e9" />
+
+        <!-- invisible bottom anchor to give card correct height -->
+        <androidx.constraintlayout.widget.Barrier
+            android:id="@+id/barrierBottom"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:barrierDirection="bottom"
+            app:constraint_referenced_ids="ivCustomerAvatar,btnChatCustomer" />
+
+        <View
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/barrierBottom"
+            app:layout_constraintStart_toStartOf="parent" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</com.google.android.material.card.MaterialCardView>

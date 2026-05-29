@@ -84,8 +84,7 @@
                     android:id="@+id/etFullName"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:inputType="textPersonName"
-                    android:text="Nguyễn Văn A" />
+                    android:inputType="textPersonName" />
             </com.google.android.material.textfield.TextInputLayout>
 
             <!-- Số điện thoại -->
@@ -105,8 +104,7 @@
                     android:id="@+id/etPhone"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:inputType="phone"
-                    android:text="0912345678" />
+                    android:inputType="phone" />
             </com.google.android.material.textfield.TextInputLayout>
 
             <!-- Email -->
@@ -126,8 +124,7 @@
                     android:id="@+id/etEmail"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:inputType="textEmailAddress"
-                    android:text="nguyenvana@example.com" />
+                    android:inputType="textEmailAddress" />
             </com.google.android.material.textfield.TextInputLayout>
 
             <!-- Địa chỉ -->
@@ -148,8 +145,7 @@
                     android:id="@+id/etAddress"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:inputType="textPostalAddress"
-                    android:text="123 Nguyễn Văn Linh, Đà Nẵng" />
+                    android:inputType="textPostalAddress" />
             </com.google.android.material.textfield.TextInputLayout>
 
             <!-- Giới thiệu bản thân -->
@@ -171,8 +167,7 @@
                     android:layout_height="wrap_content"
                     android:gravity="top"
                     android:inputType="textMultiLine"
-                    android:minLines="3"
-                    android:text="Thợ điện nước dày dặn kinh nghiệm, chuyên sửa chữa các thiết bị gia dụng..." />
+                    android:minLines="3" />
             </com.google.android.material.textfield.TextInputLayout>
 
             <!-- Khu vực hoạt động -->
@@ -192,8 +187,7 @@
                     android:id="@+id/etServiceArea"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:inputType="textCapSentences"
-                    android:text="Quận Hải Châu, Thanh Khê, Liên Chiểu" />
+                    android:inputType="textCapSentences" />
             </com.google.android.material.textfield.TextInputLayout>
 
             <TextView
@@ -233,7 +227,6 @@
                     android:cursorVisible="false"
                     android:longClickable="false"
                     android:inputType="textPassword"
-                    android:text="001090123456"
                     android:textColor="#64748b" />
             </com.google.android.material.textfield.TextInputLayout>
             

@@ -30,7 +30,7 @@
                 android:id="@+id/tvAppointTime"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="14:00 - 15:30"
+                android:text="..."
                 android:textColor="#42c2ff"
                 android:textSize="16sp"
                 android:textStyle="bold" />
@@ -40,7 +40,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="4dp"
-                android:text="Sửa máy giặt"
+                android:text="..."
                 android:textColor="#0d1b2a"
                 android:textSize="14sp"
                 android:textStyle="bold" />
@@ -52,7 +52,7 @@
                 android:layout_marginTop="4dp"
                 android:ellipsize="end"
                 android:maxLines="1"
-                android:text="123 Xuân Thủy, Cầu Giấy"
+                android:text="..."
                 android:textColor="#94a3b8"
                 android:textSize="12sp" />
 
@@ -64,7 +64,7 @@
                 android:background="@drawable/chip_warning_bg"
                 android:paddingHorizontal="10dp"
                 android:paddingVertical="4dp"
-                android:text="Còn 2 giờ nữa"
+                android:text="..."
                 android:textColor="#d97706"
                 android:textSize="11sp"
                 android:textStyle="bold" />

@@ -21,7 +21,12 @@ public class FavoriteWorkersFragment extends BaseFragment<FragmentFavoriteWorker
 
     @Override
     protected void setupViews() {
-        // Setup UI components here
+        // Nút quay lại (Back)
+        binding.btnBack.setOnClickListener(v -> {
+            if (navController != null) {
+                navController.popBackStack();
+            }
+        });
     }
 
     @Override

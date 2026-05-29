@@ -58,8 +58,10 @@ import org.springframework.security.config.annotation.web.configurers.AbstractHt
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 
-@Configuration
-@Profile("dev")
+// @Configuration
+@EnableWebSecurity
+@RequiredArgsConstructor
+@EnableMethodSecurity
 public class SecurityConfiguration {
 
     @Bean
@@ -84,15 +86,33 @@ public class SecurityConfiguration {
                                 "/api/v1/workers/me/status",
                                 "/api/v1/workers/me/location",
                                 "/api/v1/workers/me/schedule",
+
                                 "/api/v1/workers/me/assignments/pending",
                                 "/api/v1/bookings/*/assignments/*/accept",
                                 "/api/v1/bookings/*/assignments/*/reject",
                                 "/api/v1/bookings/*/assignments/*/miss",
+
                                 "/api/v1/bookings/*/start-moving",
                                 "/api/v1/bookings/*/arrive",
                                 "/api/v1/bookings/*/start-survey",
                                 "/api/v1/bookings/*/start-repair",
-                                "/api/v1/bookings/*/worker-complete"
+
+                                "/api/v1/workers/me/profile",
+                                "/api/v1/workers/me/skills",
+
+                                "/api/v1/bookings/*/worker-complete",
+                                "/api/v1/workers/me/history",
+                                "/api/v1/workers/me/stats",
+
+                                "/api/v1/workers/me/wallet",
+                                "/api/v1/workers/me/wallet/transactions",
+                                "/api/v1/workers/me/wallet/deposits",
+                                "/api/v1/workers/me/wallet/deposits/*",
+                                "/api/v1/workers/me/wallet/deposits/*/qr",
+
+                                "/api/v1/workers/me/bank-accounts",
+                                "/api/v1/workers/me/bank-accounts/*",
+                                "/api/v1/workers/me/bank-accounts/*/default"
                         ).permitAll()
 
                         .anyRequest().authenticated()
