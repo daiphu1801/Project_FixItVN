@@ -44,6 +44,11 @@ public class WorkerWalletViewModel extends BaseViewModel {
         _filteredTx.setValue(getWalletTransactionsUseCase.execute(walletType));
     }
 
+    public void refresh(String walletType) {
+        loadBalance();
+        filterByWallet(walletType);
+    }
+
     private void loadBalance() {
         WalletBalance balance = getWalletBalanceUseCase.execute();
         _availableBalance.setValue(balance.getAvailableBalance());

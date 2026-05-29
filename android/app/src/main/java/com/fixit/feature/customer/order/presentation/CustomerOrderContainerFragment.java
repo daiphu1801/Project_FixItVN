@@ -5,10 +5,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
 import com.fixit.R;
 import com.fixit.core.ui.BaseFragment;
 import com.fixit.databinding.FragmentCustomerOrderContainerBinding;
 import com.fixit.feature.customer.booking.presentation.CustomerFindingWorkerFragment;
+import com.fixit.feature.customer.order.presentation.CustomerOrderDetailFragment;
 
 import dagger.hilt.android.AndroidEntryPoint;
 
@@ -19,9 +21,7 @@ import dagger.hilt.android.AndroidEntryPoint;
 @AndroidEntryPoint
 public class CustomerOrderContainerFragment extends BaseFragment<FragmentCustomerOrderContainerBinding> {
 
-    // Giả lập trạng thái đơn hàng (Bạn sẽ thay thế bằng logic thực tế sau này)
-    // 0: Trống, 1: Đang tìm thợ (Radar), 2: Đã có thợ (Chi tiết)
-    private int orderStatus = 2;
+    private CustomerOrderViewModel viewModel;
 
     @NonNull
     @Override
@@ -31,33 +31,31 @@ public class CustomerOrderContainerFragment extends BaseFragment<FragmentCustome
 
     @Override
     protected void setupViews() {
-        // Tạm thời tôi tạo một hàm giả lập để bạn dễ hình dung
-        checkOrderStatusAndDisplay();
+        viewModel = new ViewModelProvider(requireActivity()).get(CustomerOrderViewModel.class);
 
         // Nút đặt thợ ngay khi trang trống
         binding.btnOrderNow.setOnClickListener(v -> {
-            // Chuyển sang trang chủ để người dùng đặt thợ
+            // Chuyển sang trang Tìm kiếm để người dùng tìm dịch vụ
             if (navController != null) {
-                navController.navigate(R.id.nav_customer_home);
+                navController.navigate(R.id.nav_customer_search);
             }
         });
     }
 
-    private void checkOrderStatusAndDisplay() {
-        if (orderStatus == 0) {
-            // TRƯỜNG HỢP 1: KHÔNG CÓ ĐƠN HÀNG
+    private void checkOrderStatusAndDisplay(int status) {
+        if (status == 0) {
+            // TRƯỜNG HỢP 1: KHÔNG CÓ ĐƠN HÀNG -> Hiện thông báo trống
             binding.layoutEmptyOrder.setVisibility(View.VISIBLE);
             binding.orderContainer.setVisibility(View.GONE);
-        } else if (orderStatus == 1) {
-            // TRƯỜNG HỢP 2: ĐANG TÌM THỢ (Hiện màn hình Radar)
+        } else if (status == 1) {
+            // TRƯỜNG HỢP 2: ĐANG TÌM THỢ -> Hiện Radar
             showSubFragment(new CustomerFindingWorkerFragment());
-        } else if (orderStatus == 2) {
-            // TRƯỜNG HỢP 3: ĐÃ CÓ THỢ (Hiện màn hình Chi tiết)
+        } else if (status == 2) {
+            // TRƯỜNG HỢP 3: ĐÃ CÓ THỢ -> Hiện Chi tiết đơn
             showSubFragment(new CustomerOrderDetailFragment());
         }
     }
 
-    // Hàm dùng để lồng các Fragment con vào trong Container
     private void showSubFragment(Fragment fragment) {
         binding.layoutEmptyOrder.setVisibility(View.GONE);
         binding.orderContainer.setVisibility(View.VISIBLE);
@@ -69,6 +67,8 @@ public class CustomerOrderContainerFragment extends BaseFragment<FragmentCustome
 
     @Override
     protected void observeData() {
-        // Sau này bạn sẽ lắng nghe dữ liệu từ Server tại đây để tự động cập nhật orderStatus
+        if (viewModel != null) {
+            viewModel.orderStatus.observe(getViewLifecycleOwner(), this::checkOrderStatusAndDisplay);
+        }
     }
 }

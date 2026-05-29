@@ -27,17 +27,17 @@ public class NetworkModule {
         return interceptor;
     }
 
-    @Provides
-    @Singleton
-    public OkHttpClient provideOkHttpClient(AuthInterceptor authInterceptor, HttpLoggingInterceptor loggingInterceptor) {
-        return new OkHttpClient.Builder()
-                .addInterceptor(authInterceptor)
-                .addInterceptor(loggingInterceptor)
-                .connectTimeout(30, TimeUnit.SECONDS)
-                .readTimeout(30, TimeUnit.SECONDS)
-                .writeTimeout(30, TimeUnit.SECONDS)
-                .build();
-    }
+@Provides
+@Singleton
+public OkHttpClient provideOkHttpClient(AuthInterceptor authInterceptor, HttpLoggingInterceptor loggingInterceptor) {
+    return new OkHttpClient.Builder()
+            .addInterceptor(authInterceptor)
+            .addInterceptor(loggingInterceptor)
+            .connectTimeout(30, TimeUnit.SECONDS)
+            .readTimeout(30, TimeUnit.SECONDS)
+            .writeTimeout(30, TimeUnit.SECONDS)
+            .build();
+}
 
     @Provides
     @Singleton

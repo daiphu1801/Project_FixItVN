@@ -13,9 +13,11 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import com.bumptech.glide.Glide;
+import androidx.lifecycle.ViewModelProvider;
 import com.fixit.R;
 import com.fixit.core.ui.BaseFragment;
 import com.fixit.databinding.FragmentCustomerBookingBinding;
+import com.fixit.feature.customer.order.presentation.CustomerOrderViewModel;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.android.material.datepicker.MaterialDatePicker;
 import com.google.android.material.timepicker.MaterialTimePicker;
@@ -91,6 +93,8 @@ public class CustomerBookingFragment extends BaseFragment<FragmentCustomerBookin
 
     @Override
     protected void setupViews() {
+        CustomerOrderViewModel orderViewModel = new ViewModelProvider(requireActivity()).get(CustomerOrderViewModel.class);
+
         binding.btnBack.setOnClickListener(v -> {
             if (navController != null) navController.popBackStack();
         });
@@ -108,7 +112,13 @@ public class CustomerBookingFragment extends BaseFragment<FragmentCustomerBookin
         binding.cardTime.setOnClickListener(v -> showTimeSelectionDialog());
 
         binding.btnFindWorker.setOnClickListener(v -> {
-            if (navController != null) navController.navigate(R.id.nav_customer_finding_worker);
+            // 1. Cập nhật trạng thái: Đang tìm thợ
+            orderViewModel.startFinding();
+            
+            // 2. Chuyển sang Tab Đơn hàng
+            if (navController != null) {
+                navController.navigate(R.id.nav_customer_order);
+            }
         });
 
         updateProblemUI();

@@ -34,6 +34,19 @@
         <!-- Navigation bar màu trắng -->
         <item name="android:navigationBarColor">#ffffff</item>
 
+        <!-- Tùy chỉnh Bottom Navigation cho nhỏ gọn -->
+        <item name="bottomNavigationStyle">@style/Widget.FixIt.BottomNavigationView</item>
+
+    </style>
+
+    <style name="Widget.FixIt.BottomNavigationView" parent="Widget.MaterialComponents.BottomNavigationView">
+        <item name="itemTextAppearanceActive">@style/TextAppearance.FixIt.BottomNav</item>
+        <item name="itemTextAppearanceInactive">@style/TextAppearance.FixIt.BottomNav</item>
+    </style>
+
+    <style name="TextAppearance.FixIt.BottomNav" parent="TextAppearance.MaterialComponents.Caption">
+        <item name="android:textSize">10sp</item>
+        <item name="android:fontFamily">sans-serif-medium</item>
     </style>
 
 </resources>

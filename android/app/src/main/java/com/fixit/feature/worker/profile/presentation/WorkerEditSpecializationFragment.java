@@ -12,6 +12,12 @@ import androidx.navigation.Navigation;
 import com.fixit.R;
 import com.fixit.core.ui.BaseFragment;
 import com.fixit.databinding.FragmentWorkerEditSpecializationBinding;
+import com.fixit.feature.worker.profile.data.remote.mapper.WorkerSkillMapper;
+import com.fixit.feature.worker.profile.domain.model.WorkerSkill;
+import com.fixit.feature.worker.profile.domain.model.ServiceCategory;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import dagger.hilt.android.AndroidEntryPoint;
 
@@ -20,69 +26,166 @@ public class WorkerEditSpecializationFragment extends BaseFragment<FragmentWorke
 
     private WorkerProfileViewModel viewModel;
     private WorkerSpecializationAdapter adapter;
-    private java.util.List<SpecializationItem> myServices = new java.util.ArrayList<>();
+    private final List<SpecializationItem> myServices = new ArrayList<>();
+    private final List<ServiceCategory> availableCategories = new ArrayList<>();
+    private Integer selectedCategoryId = null;
 
     @Override
-    protected FragmentWorkerEditSpecializationBinding inflateViewBinding(LayoutInflater inflater, ViewGroup container) {
+    protected FragmentWorkerEditSpecializationBinding inflateViewBinding(
+            LayoutInflater inflater,
+            ViewGroup container
+    ) {
         return FragmentWorkerEditSpecializationBinding.inflate(inflater, container, false);
     }
 
     @Override
     protected void setupViews() {
-        // Xử lý nút Back trên Toolbar
-        binding.toolbarEditSpecialization.setNavigationOnClickListener(v -> {
-            Navigation.findNavController(v).navigateUp();
-        });
-
-        // Mock data khởi tạo (sau này sẽ lấy từ ViewModel/DB)
-        myServices.add(new SpecializationItem(1, "Sửa chữa Điện - Nước", true, 150000.0));
-        myServices.add(new SpecializationItem(2, "Sửa chữa Điện lạnh", true, 200000.0));
+        binding.toolbarEditSpecialization.setNavigationOnClickListener(v ->
+                Navigation.findNavController(v).navigateUp()
+        );
 
         adapter = new WorkerSpecializationAdapter(myServices, position -> {
             myServices.remove(position);
             adapter.notifyItemRemoved(position);
             adapter.notifyItemRangeChanged(position, myServices.size());
         });
+
         binding.recyclerSpecializations.setAdapter(adapter);
 
-        // Nút thêm dịch vụ mới
-        binding.btnAddService.setOnClickListener(v -> showAddServiceDialog());
-
-        // Xử lý nút Lưu thay đổi
-        binding.btnSave.setOnClickListener(v -> {
-            // TODO: Gửi danh sách myServices lên Server
-            Toast.makeText(requireContext(), "Đã cập nhật danh sách dịch vụ", Toast.LENGTH_SHORT).show();
-            Navigation.findNavController(v).navigateUp();
-        });
-    }
-
-    private void showAddServiceDialog() {
-        View dialogView = LayoutInflater.from(requireContext()).inflate(R.layout.dialog_add_service, null);
-        EditText edtName = dialogView.findViewById(R.id.edtDialogServiceName);
-        EditText edtPrice = dialogView.findViewById(R.id.edtDialogBasePrice);
-
-        new androidx.appcompat.app.AlertDialog.Builder(requireContext(), com.google.android.material.R.style.ThemeOverlay_MaterialComponents_MaterialAlertDialog)
-                .setView(dialogView)
-                .setPositiveButton("Thêm", (dialog, which) -> {
-                    String name = edtName.getText().toString().trim();
-                    String priceStr = edtPrice.getText().toString().trim();
-
-                    if (!name.isEmpty()) {
-                        Double price = priceStr.isEmpty() ? 0.0 : Double.parseDouble(priceStr);
-                        // Tạo ID giả cho bản mock
-                        int newId = myServices.size() + 1;
-                        myServices.add(new SpecializationItem(newId, name, true, price));
-                        adapter.notifyItemInserted(myServices.size() - 1);
-                    } else {
-                        Toast.makeText(requireContext(), "Vui lòng nhập tên dịch vụ", Toast.LENGTH_SHORT).show();
+        binding.btnAddService.setOnClickListener(v -> {
+            WorkerSelectServiceBottomSheet bottomSheet = new WorkerSelectServiceBottomSheet();
+            bottomSheet.setOnServicesSelectedListener(selectedList -> {
+                if (selectedList != null && !selectedList.isEmpty()) {
+                    for (SpecializationItem newItem : selectedList) {
+                        boolean exists = false;
+                        for (SpecializationItem existing : myServices) {
+                            if (existing.getName().equalsIgnoreCase(newItem.getName())) {
+                                exists = true;
+                                break;
+                            }
+                        }
+                        if (!exists) {
+                            myServices.add(newItem);
+                        }
                     }
-                })
-                .setNegativeButton("Huỷ", null)
-                .show();
+                    adapter.notifyDataSetChanged();
+                }
+            });
+            bottomSheet.show(getChildFragmentManager(), "SelectServiceBottomSheet");
+        });
+
+        binding.btnSave.setOnClickListener(v -> saveSkills());
     }
 
     @Override
     protected void observeData() {
         viewModel = new ViewModelProvider(this).get(WorkerProfileViewModel.class);
+
+        viewModel.skills.observe(getViewLifecycleOwner(), skills -> {
+            myServices.clear();
+
+            if (skills != null) {
+                for (WorkerSkill skill : skills) {
+                    myServices.add(WorkerSkillMapper.toPresentationItem(skill));
+                }
+            }
+
+            adapter.notifyDataSetChanged();
+        });
+
+        viewModel.skillsUpdated.observe(getViewLifecycleOwner(), updated -> {
+            if (Boolean.TRUE.equals(updated)) {
+                Toast.makeText(requireContext(), "Đã cập nhật danh sách dịch vụ", Toast.LENGTH_SHORT).show();
+                Navigation.findNavController(requireView()).navigateUp();
+            }
+        });
+
+        viewModel.errorMessage.observe(getViewLifecycleOwner(), message -> {
+            if (message != null && !message.trim().isEmpty()) {
+                Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        viewModel.categories.observe(getViewLifecycleOwner(), categories -> {
+            availableCategories.clear();
+            if (categories != null) {
+                availableCategories.addAll(categories);
+            }
+        });
+
+        viewModel.loadSkills();
+        viewModel.loadServiceCategories();
     }
+
+    private void saveSkills() {
+        List<WorkerSkill> skills = new ArrayList<>();
+
+        for (SpecializationItem item : myServices) {
+            boolean hasValidId = item.getId() != null && item.getId() > 0;
+            boolean hasValidCustomName = item.getCustomServiceName() != null && !item.getCustomServiceName().trim().isEmpty();
+
+            if (!hasValidId && !hasValidCustomName) {
+                Toast.makeText(requireContext(), "Danh mục dịch vụ không hợp lệ", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            skills.add(WorkerSkillMapper.fromPresentationItem(item));
+        }
+
+        viewModel.updateSkills(skills);
+    }
+
+
+     private static class LocalServiceItem {
+         String itemName;
+         double suggestedPrice;
+
+         LocalServiceItem(String itemName, double suggestedPrice) {
+             this.itemName = itemName;
+             this.suggestedPrice = suggestedPrice;
+         }
+     }
+
+     private List<LocalServiceItem> getLocalServiceItems(String categoryName) {
+         List<LocalServiceItem> items = new ArrayList<>();
+         if (categoryName == null) return items;
+
+         switch (categoryName.trim()) {
+             case "Sửa điện lạnh":
+                 items.add(new LocalServiceItem("Vệ sinh & Bảo dưỡng điều hoà", 180000));
+                 items.add(new LocalServiceItem("Bơm ga điều hoà công suất nhỏ", 200000));
+                 items.add(new LocalServiceItem("Sửa tủ lạnh không làm đá", 350000));
+                 items.add(new LocalServiceItem("Sửa tủ lạnh chảy nước", 250000));
+                 items.add(new LocalServiceItem("Vệ sinh lồng giặt máy giặt", 220000));
+                 items.add(new LocalServiceItem("Sửa máy giặt không vắt", 400000));
+                 break;
+             case "Sửa điện nước":
+                 items.add(new LocalServiceItem("Lắp đặt & Sửa vòi nước", 150000));
+                 items.add(new LocalServiceItem("Thông tắc chậu rửa bát/Lavabo", 200000));
+                 items.add(new LocalServiceItem("Sửa đường ống nước rò rỉ", 250000));
+                 items.add(new LocalServiceItem("Lắp đặt bồn cầu mới", 400000));
+                 items.add(new LocalServiceItem("Đi đường dây điện âm/nổi", 300000));
+                 items.add(new LocalServiceItem("Lắp đặt bóng đèn/Quạt trần", 120000));
+                 break;
+             case "Thi công xây dựng":
+                 items.add(new LocalServiceItem("Sơn nước nội thất / Ngoại thất", 80000));
+                 items.add(new LocalServiceItem("Chống thấm trần & Tường nhà", 500000));
+                 items.add(new LocalServiceItem("Khoan tường treo tranh/Kệ sách", 50000));
+                 items.add(new LocalServiceItem("Lát gạch nền nhà vệ sinh", 350000));
+                 items.add(new LocalServiceItem("Xây trát tường gạch ngăn phòng", 450000));
+                 break;
+             case "Sửa khóa & Cửa":
+                 items.add(new LocalServiceItem("Thay ổ khóa tròn tay gạt", 150000));
+                 items.add(new LocalServiceItem("Làm mới chìa khóa cơ", 50000));
+                 items.add(new LocalServiceItem("Sửa chữa motor cửa cuốn", 800000));
+                 items.add(new LocalServiceItem("Thay thế bản lề cửa gỗ", 100000));
+                 break;
+             default:
+                 items.add(new LocalServiceItem("Kiểm tra & Khảo sát lỗi tận nơi", 50000));
+                 items.add(new LocalServiceItem("Sửa chữa thiết bị theo yêu cầu", 150000));
+                 items.add(new LocalServiceItem("Lắp ráp thiết bị mới", 200000));
+                 break;
+         }
+         return items;
+     }
 }

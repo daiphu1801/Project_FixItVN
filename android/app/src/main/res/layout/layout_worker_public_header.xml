@@ -28,7 +28,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
-            android:text="Nguyễn Văn A"
+            android:text="..."
             android:textColor="#0d1b2a"
             android:textSize="20sp"
             android:textStyle="bold" />
@@ -44,7 +44,7 @@
                 android:id="@+id/tvRating"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="4.9 ★"
+                android:text="-- ★"
                 android:textColor="#f59e0b"
                 android:textSize="15sp"
                 android:textStyle="bold" />
