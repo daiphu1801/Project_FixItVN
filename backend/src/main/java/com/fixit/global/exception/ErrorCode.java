@@ -38,6 +38,15 @@ public enum ErrorCode {
     WORKER_BANK_ACCOUNT_NOT_FOUND(404, HttpStatus.NOT_FOUND, "Không tìm thấy tài khoản ngân hàng của thợ hiện tại"),
     WORKER_BANK_ACCOUNT_IN_USE(409, HttpStatus.CONFLICT, "Tài khoản ngân hàng đã phát sinh giao dịch nên không thể xóa"),
 
+    // File upload
+    UPLOAD_INVALID_CONTENT_TYPE(400, HttpStatus.BAD_REQUEST, "Định dạng file không được hỗ trợ"),
+    UPLOAD_FILE_TOO_LARGE(400, HttpStatus.BAD_REQUEST, "Dung lượng file vượt quá giới hạn cho phép"),
+    UPLOAD_NOT_FOUND(404, HttpStatus.NOT_FOUND, "Không tìm thấy upload"),
+    UPLOAD_INVALID_STATUS(409, HttpStatus.CONFLICT, "Trạng thái upload không hợp lệ"),
+    UPLOAD_EXPIRED(409, HttpStatus.CONFLICT, "Upload URL đã hết hạn"),
+    UPLOAD_PUBLIC_ID_MISMATCH(400, HttpStatus.BAD_REQUEST, "Public ID không khớp với upload đã cấp"),
+    UPLOAD_STORAGE_ERROR(500, HttpStatus.INTERNAL_SERVER_ERROR, "Lỗi khi làm việc với hệ thống lưu trữ file"),
+
     // Worker wallet
     WALLET_NOT_FOUND(404, HttpStatus.NOT_FOUND, "Không tìm thấy ví của thợ hiện tại"),
     WALLET_DEBT_NOT_FOUND(409, HttpStatus.CONFLICT, "Không có khoản nợ cần thanh toán"),

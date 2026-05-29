@@ -22,6 +22,8 @@ import com.bumptech.glide.load.engine.GlideException;
 import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.target.Target;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import com.fixit.core.ui.BaseFragment;
 import com.fixit.databinding.FragmentWorkerOrderDetailBinding;
 import com.fixit.databinding.LayoutOrderCustomerCardBinding;
@@ -29,6 +31,7 @@ import com.fixit.databinding.LayoutOrderMetaCardBinding;
 import com.fixit.databinding.LayoutOrderTimelineCardBinding;
 import com.fixit.databinding.LayoutPricingSummaryCardBinding;
 import com.fixit.databinding.LayoutWorkerPaymentSectionBinding;
+import com.fixit.databinding.LayoutProofOfWorkSectionBinding;
 
 import dagger.hilt.android.AndroidEntryPoint;
 
@@ -44,6 +47,30 @@ public class WorkerOrderDetailFragment extends BaseFragment<FragmentWorkerOrderD
     private LayoutOrderTimelineCardBinding timelineBinding;
     private LayoutPricingSummaryCardBinding pricingBinding;
     private LayoutWorkerPaymentSectionBinding paymentBinding;
+    private LayoutProofOfWorkSectionBinding proofBinding;
+
+    private android.net.Uri proofBeforeUri;
+    private android.net.Uri proofAfterUri;
+
+    private final ActivityResultLauncher<String> pickBeforeImageLauncher = registerForActivityResult(
+            new ActivityResultContracts.GetContent(),
+            uri -> {
+                if (uri != null) {
+                    proofBeforeUri = uri;
+                    displayProofBeforeImage(uri);
+                }
+            }
+    );
+
+    private final ActivityResultLauncher<String> pickAfterImageLauncher = registerForActivityResult(
+            new ActivityResultContracts.GetContent(),
+            uri -> {
+                if (uri != null) {
+                    proofAfterUri = uri;
+                    displayProofAfterImage(uri);
+                }
+            }
+    );
 
     @Override
     public void onCreate(android.os.Bundle savedInstanceState) {
@@ -64,6 +91,11 @@ public class WorkerOrderDetailFragment extends BaseFragment<FragmentWorkerOrderD
         timelineBinding  = LayoutOrderTimelineCardBinding.bind(binding.cardTimeline.getRoot());
         pricingBinding   = LayoutPricingSummaryCardBinding.bind(binding.cardPricingSummary.getRoot());
         paymentBinding   = LayoutWorkerPaymentSectionBinding.bind(binding.sectionPayment.getRoot());
+        proofBinding     = LayoutProofOfWorkSectionBinding.bind(binding.sectionProofOfWork.getRoot());
+
+        // Chọn ảnh bằng chứng công việc
+        proofBinding.cardProofBefore.setOnClickListener(v -> pickBeforeImageLauncher.launch("image/*"));
+        proofBinding.cardProofAfter.setOnClickListener(v -> pickAfterImageLauncher.launch("image/*"));
 
         // Setup Toolbar
         if (binding.appBarLayout.toolbar != null) {
@@ -349,5 +381,21 @@ public class WorkerOrderDetailFragment extends BaseFragment<FragmentWorkerOrderD
                 timelineBinding.step5Title.setTextColor(textColor);
                 break;
         }
+    }
+
+    private void displayProofBeforeImage(android.net.Uri uri) {
+        if (proofBinding == null) return;
+        proofBinding.ivProofBeforeImage.setVisibility(View.VISIBLE);
+        proofBinding.icProofBeforeCamera.setVisibility(View.GONE);
+        proofBinding.tvProofBeforeLabel.setVisibility(View.GONE);
+        Glide.with(this).load(uri).into(proofBinding.ivProofBeforeImage);
+    }
+
+    private void displayProofAfterImage(android.net.Uri uri) {
+        if (proofBinding == null) return;
+        proofBinding.ivProofAfterImage.setVisibility(View.VISIBLE);
+        proofBinding.icProofAfterCamera.setVisibility(View.GONE);
+        proofBinding.tvProofAfterLabel.setVisibility(View.GONE);
+        Glide.with(this).load(uri).into(proofBinding.ivProofAfterImage);
     }
 }
