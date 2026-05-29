@@ -25,7 +25,7 @@ public class User implements UserDetails {
     @Column(name = "id", nullable = false, updatable = false)
     private UUID id;
 
-    @Column(name = "phone_number", length = 15, nullable = false, unique = true)
+    @Column(name = "phone_number", length = 15, unique = true)
     private String phoneNumber;
 
     @Column(name = "email", unique = true)
@@ -87,3 +87,4 @@ public class User implements UserDetails {
         return Boolean.TRUE.equals(active);
     }
 }
+
