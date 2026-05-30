@@ -9,6 +9,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.time.OffsetDateTime;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -34,6 +35,25 @@ public interface BookingWorkerAssignmentRepository extends JpaRepository<Booking
             @Param("assignmentId") UUID assignmentId,
             @Param("bookingId") UUID bookingId,
             @Param("workerId") UUID workerId
+    );
+
+    /**
+     * Tìm các assignment Pending đã quá thời gian phản hồi.
+     *
+     * Scheduler dùng method này để tự động chuyển Pending -> Missed.
+     * PESSIMISTIC_WRITE giúp giảm race condition với accept/reject/miss.
+     */
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
+    @Query("""
+        SELECT assignment
+        FROM BookingWorkerAssignment assignment
+        JOIN FETCH assignment.booking booking
+        JOIN FETCH assignment.worker worker
+        WHERE assignment.status = com.fixit.domain.booking.entity.AssignmentStatus.Pending
+          AND assignment.assignedAt <= :expiredBefore
+        """)
+    List<BookingWorkerAssignment> findExpiredPendingAssignmentsForUpdate(
+            @Param("expiredBefore") OffsetDateTime expiredBefore
     );
 
     /**

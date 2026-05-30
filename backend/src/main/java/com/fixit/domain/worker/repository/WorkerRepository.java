@@ -56,8 +56,7 @@ public interface WorkerRepository extends JpaRepository<Worker, UUID> {
             WHERE w.worker_id = :workerId
             """, nativeQuery = true)
     Optional<WorkerDashboardSummaryProjection> findHomeSummaryByWorkerId(
-            @Param("workerId") UUID workerId
-    );
+            @Param("workerId") UUID workerId);
 
     @Modifying(clearAutomatically = true, flushAutomatically = true)
     @Query(value = """
@@ -67,8 +66,7 @@ public interface WorkerRepository extends JpaRepository<Worker, UUID> {
             """, nativeQuery = true)
     int updateAvailability(
             @Param("workerId") UUID workerId,
-            @Param("available") Boolean available
-    );
+            @Param("available") Boolean available);
 
     @Modifying(clearAutomatically = true, flushAutomatically = true)
     @Query(value = """
@@ -80,41 +78,39 @@ public interface WorkerRepository extends JpaRepository<Worker, UUID> {
     int updateLocation(
             @Param("workerId") UUID workerId,
             @Param("latitude") BigDecimal latitude,
-            @Param("longitude") BigDecimal longitude
-    );
+            @Param("longitude") BigDecimal longitude);
 
     @Modifying(clearAutomatically = true, flushAutomatically = true)
     @Query(value = """
-        UPDATE workers
-        SET missed_count = 0
-        WHERE worker_id = :workerId
-        """, nativeQuery = true)
+            UPDATE workers
+            SET missed_count = 0
+            WHERE worker_id = :workerId
+            """, nativeQuery = true)
     int resetMissedCount(@Param("workerId") UUID workerId);
 
     @Modifying(clearAutomatically = true, flushAutomatically = true)
     @Query(value = """
-        UPDATE workers
-        SET missed_count = missed_count + 1,
-            is_available = CASE
-                WHEN missed_count + 1 >= :autoOfflineThreshold THEN false
-                ELSE is_available
-            END
-        WHERE worker_id = :workerId
-        """, nativeQuery = true)
+            UPDATE workers
+            SET missed_count = missed_count + 1,
+                is_available = CASE
+                    WHEN missed_count + 1 >= :autoOfflineThreshold THEN false
+                    ELSE is_available
+                END
+            WHERE worker_id = :workerId
+            """, nativeQuery = true)
     int recordMissedAssignment(
             @Param("workerId") UUID workerId,
-            @Param("autoOfflineThreshold") int autoOfflineThreshold
-    );
+            @Param("autoOfflineThreshold") int autoOfflineThreshold);
 
     @Modifying(clearAutomatically = true, flushAutomatically = true)
     @Query(value = """
-        UPDATE workers
-        SET rejection_count = rejection_count + 1,
-            rejected_priority_until = CASE
-                WHEN rejection_count + 1 >= 5 THEN now() + INTERVAL '24 hours'
-                ELSE rejected_priority_until
-            END
-        WHERE worker_id = :workerId
-        """, nativeQuery = true)
+            UPDATE workers
+            SET rejection_count = rejection_count + 1,
+                rejected_priority_until = CASE
+                    WHEN rejection_count + 1 >= 5 THEN now() + INTERVAL '24 hours'
+                    ELSE rejected_priority_until
+                END
+            WHERE worker_id = :workerId
+            """, nativeQuery = true)
     int recordRejectedAssignment(@Param("workerId") UUID workerId);
 }
