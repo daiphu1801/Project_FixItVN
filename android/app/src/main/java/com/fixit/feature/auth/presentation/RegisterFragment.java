@@ -45,11 +45,17 @@ public class RegisterFragment extends Fragment {
         binding.btnRegister.setOnClickListener(v -> {
             String fullName = binding.etFullName.getText().toString().trim();
             String phone = binding.etPhone.getText().toString().trim();
+            String email = binding.etEmail.getText().toString().trim();
             String password = binding.etPassword.getText().toString().trim();
             String confirmPass = binding.etConfirmPassword.getText().toString().trim();
 
-            if (fullName.isEmpty() || phone.isEmpty() || password.isEmpty()) {
+            if (fullName.isEmpty() || phone.isEmpty() || email.isEmpty() || password.isEmpty()) {
                 Toast.makeText(getContext(), "Vui lòng nhập đầy đủ thông tin", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            if (!android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+                Toast.makeText(getContext(), "Email không đúng định dạng", Toast.LENGTH_SHORT).show();
                 return;
             }
 
@@ -58,7 +64,7 @@ public class RegisterFragment extends Fragment {
                 return;
             }
 
-            viewModel.register(phone, password, fullName, selectedRole);
+            viewModel.register(phone, email, password, fullName, selectedRole);
         });
 
         viewModel.event.observe(getViewLifecycleOwner(), event -> {

@@ -131,6 +131,34 @@
                     android:paddingVertical="16dp" />
             </com.google.android.material.textfield.TextInputLayout>
 
+            <!-- Ô nhập Email -->
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/tilEmail"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:hint="Email"
+                app:boxStrokeColor="#42c2ff"
+                app:hintTextColor="#42c2ff"
+                app:boxCornerRadiusTopStart="16dp"
+                app:boxCornerRadiusTopEnd="16dp"
+                app:boxCornerRadiusBottomStart="16dp"
+                app:boxCornerRadiusBottomEnd="16dp"
+                app:startIconDrawable="@drawable/ic_lucide_mail"
+                app:startIconTint="#64748b"
+                app:layout_constraintTop_toBottomOf="@id/tilPhone"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/etEmail"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="textEmailAddress"
+                    android:paddingVertical="16dp" />
+            </com.google.android.material.textfield.TextInputLayout>
+
             <!-- Ô nhập Mật khẩu -->
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/tilPassword"
@@ -149,7 +177,7 @@
                 app:boxCornerRadiusBottomEnd="16dp"
                 app:startIconDrawable="@drawable/ic_lucide_lock"
                 app:startIconTint="#64748b"
-                app:layout_constraintTop_toBottomOf="@id/tilPhone"
+                app:layout_constraintTop_toBottomOf="@id/tilEmail"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent">
 

@@ -1,24 +1,37 @@
 package com.fixit.domain.worker.support;
 
-import jakarta.servlet.http.HttpServletRequest;
-import lombok.RequiredArgsConstructor;
+import com.fixit.domain.auth.entity.User;
+import com.fixit.domain.auth.entity.UserRole;
+import com.fixit.global.exception.AppException;
+import com.fixit.global.exception.ErrorCode;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
 import java.util.UUID;
 
 @Component
-@RequiredArgsConstructor
 public class CurrentWorkerResolver {
 
-    private final HttpServletRequest request;
-
     public UUID getCurrentWorkerId() {
-        String value = request.getHeader("X-Debug-Worker-Id");
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
-        if (value == null || value.isBlank()) {
-            throw new IllegalArgumentException("Thiếu header X-Debug-Worker-Id trong môi trường dev");
+        if (authentication == null
+                || !authentication.isAuthenticated()
+                || "anonymousUser".equals(authentication.getPrincipal())) {
+            throw new AppException(ErrorCode.UNAUTHORIZED);
         }
 
-        return UUID.fromString(value);
+        Object principal = authentication.getPrincipal();
+
+        if (!(principal instanceof User user)) {
+            throw new AppException(ErrorCode.UNAUTHORIZED);
+        }
+
+        if (user.getRole() != UserRole.Worker) {
+            throw new AppException(ErrorCode.FORBIDDEN);
+        }
+
+        return user.getId();
     }
 }

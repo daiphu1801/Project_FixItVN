@@ -1,4 +1,4 @@
-package com.fixit.domain.auth.security;
+package com.fixit.global.security;
 
 import com.fixit.domain.auth.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
