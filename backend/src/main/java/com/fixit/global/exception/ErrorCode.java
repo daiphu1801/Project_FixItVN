@@ -39,13 +39,21 @@ public enum ErrorCode {
     WORKER_BANK_ACCOUNT_IN_USE(409, HttpStatus.CONFLICT, "Tài khoản ngân hàng đã phát sinh giao dịch nên không thể xóa"),
 
     // File upload
+    UPLOAD_INVALID_PURPOSE(400, HttpStatus.BAD_REQUEST, "Mục đích upload không hợp lệ"),
     UPLOAD_INVALID_CONTENT_TYPE(400, HttpStatus.BAD_REQUEST, "Định dạng file không được hỗ trợ"),
     UPLOAD_FILE_TOO_LARGE(400, HttpStatus.BAD_REQUEST, "Dung lượng file vượt quá giới hạn cho phép"),
+    UPLOAD_FILE_SIZE_MISMATCH(400, HttpStatus.BAD_REQUEST, "Dung lượng file xác nhận không khớp với upload đã cấp"),
+    UPLOAD_INVALID_FILE_NAME(400, HttpStatus.BAD_REQUEST, "Tên file không hợp lệ"),
+    UPLOAD_INVALID_OBJECT_KEY(400, HttpStatus.BAD_REQUEST, "Object key không hợp lệ"),
+    UPLOAD_INVALID_FILE_URL(400, HttpStatus.BAD_REQUEST, "File URL không hợp lệ"),
     UPLOAD_NOT_FOUND(404, HttpStatus.NOT_FOUND, "Không tìm thấy upload"),
     UPLOAD_INVALID_STATUS(409, HttpStatus.CONFLICT, "Trạng thái upload không hợp lệ"),
     UPLOAD_EXPIRED(409, HttpStatus.CONFLICT, "Upload URL đã hết hạn"),
     UPLOAD_PUBLIC_ID_MISMATCH(400, HttpStatus.BAD_REQUEST, "Public ID không khớp với upload đã cấp"),
     UPLOAD_STORAGE_ERROR(500, HttpStatus.INTERNAL_SERVER_ERROR, "Lỗi khi làm việc với hệ thống lưu trữ file"),
+    UPLOAD_PROVIDER_OBJECT_NOT_FOUND(404, HttpStatus.NOT_FOUND, "Không tìm thấy file trên hệ thống lưu trữ"),
+    UPLOAD_PROVIDER_FILE_SIZE_MISMATCH(400, HttpStatus.BAD_REQUEST, "Dung lượng file trên storage không khớp với upload đã cấp"),
+    UPLOAD_PROVIDER_RESOURCE_TYPE_INVALID(400, HttpStatus.BAD_REQUEST, "Loại tài nguyên trên storage không hợp lệ"),
 
     // Worker wallet
     WALLET_NOT_FOUND(404, HttpStatus.NOT_FOUND, "Không tìm thấy ví của thợ hiện tại"),
@@ -55,7 +63,6 @@ public enum ErrorCode {
     WALLET_DEPOSIT_NOT_FOUND(404, HttpStatus.NOT_FOUND, "Không tìm thấy giao dịch nạp tiền của thợ hiện tại"),
     WALLET_DEPOSIT_INVALID_STATUS(409, HttpStatus.CONFLICT, "Trạng thái giao dịch nạp tiền không hợp lệ"),
     WALLET_DEPOSIT_PENDING_EXISTS(409, HttpStatus.CONFLICT, "Đang có giao dịch nạp tiền chờ thanh toán");
-
     private final int code;
     private final HttpStatus httpStatus;
     private final String message;

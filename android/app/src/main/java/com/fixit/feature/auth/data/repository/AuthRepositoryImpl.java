@@ -36,23 +36,42 @@ public class AuthRepositoryImpl implements AuthRepository {
     }
 
     @Override
-    public void login(String phone, String password, String role, ResultCallback<Session> callback) {
-        mainHandler.postDelayed(() -> {
-            User user = new User(
-                    "mock_id_123",
-                    phone,
-                    "NgÆ°á»i dÃ¹ng Thá»­ nghiá»‡m",
-                    UserRole.from(role)
-            );
-            Session session = new Session("mock_access_token_xyz", "mock_refresh_token_abc", user);
-            sessionStorage.saveSession(session);
-            callback.onResult(Result.success(session));
-        }, 1000);
+    public void login(String identifier, String password, String role, ResultCallback<Session> callback) {
+        authApi.login(new AuthRequest.Login(identifier, password))
+                .enqueue(new Callback<AuthResponse>() {
+                    @Override
+                    public void onResponse(Call<AuthResponse> call, Response<AuthResponse> response) {
+                        if (!response.isSuccessful()) {
+                            callback.onResult(Result.error(
+                                    new AppError("Đăng nhập thất bại. HTTP " + response.code())
+                            ));
+                            return;
+                        }
+
+                        Session session = AuthMapper.toSession(response.body());
+                        if (session == null) {
+                            callback.onResult(Result.error(
+                                    new AppError("Dữ liệu đăng nhập không hợp lệ")
+                            ));
+                            return;
+                        }
+
+                        sessionStorage.saveSession(session);
+                        callback.onResult(Result.success(session));
+                    }
+
+                    @Override
+                    public void onFailure(Call<AuthResponse> call, Throwable t) {
+                        callback.onResult(Result.error(
+                                new AppError("Lỗi kết nối đăng nhập: " + t.getMessage(), t)
+                        ));
+                    }
+                });
     }
 
     @Override
-    public void register(String phone, String password, String fullName, String role, ResultCallback<Session> callback) {
-        authApi.register(new AuthRequest.Register(phone, password, fullName, role)).enqueue(new Callback<AuthResponse>() {
+    public void register(String phone,String email ,String password, String fullName, String role, ResultCallback<Session> callback) {
+        authApi.register(new AuthRequest.Register(phone, email, password, fullName, role)).enqueue(new Callback<AuthResponse>() {
             @Override
             public void onResponse(Call<AuthResponse> call, Response<AuthResponse> response) {
                 if (response.isSuccessful()) {
