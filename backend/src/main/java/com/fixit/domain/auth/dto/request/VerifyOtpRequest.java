@@ -14,12 +14,12 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class VerifyOtpRequest {
 
-    @NotBlank(message = "Số điện thoại/Email không được để trống")
-    private String identifier; // phone or email
+    private String phoneNumber;
+    private String email;
 
     @NotBlank(message = "Mã OTP không được để trống")
     private String otpCode;
-    
+
     @NotNull(message = "Loại hành động không được để trống")
     private OtpActionType actionType;
 }

@@ -28,9 +28,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     protected void doFilterInternal(
             @NonNull HttpServletRequest request,
             @NonNull HttpServletResponse response,
-            @NonNull FilterChain filterChain
-    ) throws ServletException, IOException {
-        if (request.getServletPath().contains("/api/v1/auth")) {
+            @NonNull FilterChain filterChain) throws ServletException, IOException {
+        String path = request.getServletPath();
+        if (path.startsWith("/api/v1/auth")) {
             filterChain.doFilter(request, response);
             return;
         }
@@ -43,7 +43,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             filterChain.doFilter(request, response);
             return;
         }
-        
+
         jwt = authHeader.substring(7);
         try {
             identifier = jwtService.extractUsername(jwt);
@@ -53,16 +53,15 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                     UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
                             userDetails,
                             null,
-                            userDetails.getAuthorities()
-                    );
+                            userDetails.getAuthorities());
                     authToken.setDetails(
-                            new WebAuthenticationDetailsSource().buildDetails(request)
-                    );
+                            new WebAuthenticationDetailsSource().buildDetails(request));
                     SecurityContextHolder.getContext().setAuthentication(authToken);
                 }
             }
         } catch (Exception e) {
-            // Token is invalid, expired, etc. We just let it pass to Spring Security to handle unauthorized
+            // Token is invalid, expired, etc. We just let it pass to Spring Security to
+            // handle unauthorized
         }
 
         filterChain.doFilter(request, response);

@@ -18,6 +18,7 @@ public class CustomUserDetailsService implements UserDetailsService {
         // Identifier can be phone or email
         return userRepository.findByPhoneNumber(identifier)
                 .orElseGet(() -> userRepository.findByEmail(identifier)
-                        .orElseThrow(() -> new UsernameNotFoundException("User not found with identifier: " + identifier)));
+                        .orElseThrow(
+                                () -> new UsernameNotFoundException("User not found with identifier: " + identifier)));
     }
 }
