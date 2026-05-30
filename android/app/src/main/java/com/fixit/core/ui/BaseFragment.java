@@ -10,6 +10,7 @@ import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.viewbinding.ViewBinding;
+import android.widget.Toast;
 
 /**
  * ĐÂY LÀ FILE LỚP NỀN (BASE) - NƠI CHỨA CÁC CẤU HÌNH DÙNG CHUNG CHO TẤT CẢ MÀN HÌNH
@@ -61,4 +62,10 @@ public abstract class BaseFragment<VB extends ViewBinding> extends Fragment {
     protected abstract VB inflateViewBinding(LayoutInflater inflater, ViewGroup container);
     protected abstract void setupViews();
     protected abstract void observeData();
+
+    protected void showToast(String message) {
+        if (getContext() != null) {
+            Toast.makeText(getContext(), message, Toast.LENGTH_SHORT).show();
+        }
+    }
 }
