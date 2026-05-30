@@ -14,7 +14,7 @@ public class RegisterUseCase {
         this.authRepository = authRepository;
     }
 
-    public void execute(String phone, String password, String fullName, String role, ResultCallback<Session> callback) {
-        authRepository.register(phone, password, fullName, role, callback);
+    public void execute(String phone,String email, String password, String fullName, String role, ResultCallback<Session> callback) {
+        authRepository.register(phone,email ,password, fullName, role, callback);
     }
 }

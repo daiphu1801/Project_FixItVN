@@ -5,7 +5,10 @@ import com.fixit.domain.auth.dto.response.AuthResponse;
 import com.fixit.domain.auth.dto.response.NotificationResponse;
 import com.fixit.domain.auth.dto.response.UnreadCountResponse;
 import com.fixit.domain.auth.entity.*;
-import com.fixit.domain.auth.repository.*;
+import com.fixit.domain.auth.repository.OtpCodeRepository;
+import com.fixit.domain.auth.repository.RefreshTokenRepository;
+import com.fixit.domain.auth.repository.UserRepository;
+import com.fixit.domain.auth.repository.UserSocialLoginRepository;
 import com.fixit.domain.auth.security.JwtService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -19,6 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import java.math.BigDecimal;
 import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -31,6 +35,8 @@ import java.util.UUID;
 public class AuthServiceImpl implements AuthService {
 
     private final UserRepository userRepository;
+    private final WorkerRepository workerRepository;
+    private final WorkerWalletRepository workerWalletRepository;
     private final RefreshTokenRepository refreshTokenRepository;
     private final OtpCodeRepository otpCodeRepository;
     private final UserSocialLoginRepository userSocialLoginRepository;
@@ -39,7 +45,6 @@ public class AuthServiceImpl implements AuthService {
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
     private final JwtService jwtService;
-
 
     @Override
     @Transactional
@@ -55,47 +60,78 @@ public class AuthServiceImpl implements AuthService {
     @Override
     @Transactional
     public AuthResponse register(RegisterRequest request) {
-        if (request.getPhoneNumber() != null && !request.getPhoneNumber().trim().isEmpty() && userRepository.existsByPhoneNumber(request.getPhoneNumber())) {
-            throw new RuntimeException("Số điện thoại đã được đăng ký");
-        }
-        if (request.getEmail() != null && !request.getEmail().trim().isEmpty() && userRepository.existsByEmail(request.getEmail())) {
-            throw new RuntimeException("Email đã được đăng ký");
-        }
-        if ((request.getPhoneNumber() == null || request.getPhoneNumber().trim().isEmpty()) && (request.getEmail() == null || request.getEmail().trim().isEmpty())) {
-            throw new RuntimeException("Số điện thoại hoặc Email không được để trống");
+        if (userRepository.existsByPhoneNumber(request.getIdentifier())
+                || userRepository.existsByEmail(request.getIdentifier())) {
+            throw new RuntimeException("Tài khoản (SĐT/Email) đã được đăng ký");
         }
 
+        boolean isEmail = request.getIdentifier().contains("@");
+
         User user = User.builder()
-                .phoneNumber(request.getPhoneNumber())
-                .email(request.getEmail())
+                .phoneNumber(isEmail ? null : request.getIdentifier())
+                .email(isEmail ? request.getIdentifier() : null)
                 .passwordHash(passwordEncoder.encode(request.getPassword()))
                 .role(request.getRole())
                 .active(true)
                 .build();
 
-        userRepository.save(user);
-        return buildAuthResponse(user);
+        User savedUser = userRepository.save(user);
+
+        if (request.getRole() == UserRole.Worker) {
+            Worker worker = Worker.builder()
+                    .user(savedUser)
+                    .fullName(request.getFullName().trim())
+                    .verificationStatus(WorkerVerificationStatus.Pending)
+                    .available(false)
+                    .reputationScore(BigDecimal.valueOf(5.0))
+                    .missedCount(0)
+                    .rejectionCount(0)
+                    .build();
+
+            Worker savedWorker = workerRepository.save(worker);
+
+            WorkerWallet wallet = WorkerWallet.builder()
+                    .worker(savedWorker)
+                    .availableBalance(BigDecimal.ZERO)
+                    .heldBalance(BigDecimal.ZERO)
+                    .debtBalance(BigDecimal.ZERO)
+                    .build();
+
+            workerWalletRepository.save(wallet);
+        }
+
+        String accessToken = jwtService.generateToken(savedUser);
+        String refreshTokenValue = jwtService.generateRefreshToken(savedUser);
+
+        RefreshToken refreshToken = RefreshToken.builder()
+                .user(savedUser)
+                .token(refreshTokenValue)
+                .expiresAt(OffsetDateTime.now().plusDays(7))
+                .revoked(false)
+                .build();
+
+        refreshTokenRepository.save(refreshToken);
+
+        return buildAuthResponse(savedUser, accessToken, refreshTokenValue);
     }
 
     @Override
+    @Transactional
     public AuthResponse login(LoginRequest request) {
-        String identifier = request.getPhoneNumber();
-        
         authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(identifier, request.getPassword())
-        );
+                new UsernamePasswordAuthenticationToken(request.getIdentifier(), request.getPassword()));
 
-        User user = userRepository.findByPhoneNumber(identifier)
-                .orElseGet(() -> userRepository.findByEmail(identifier)
+        User user = userRepository.findByPhoneNumber(request.getIdentifier())
+                .orElseGet(() -> userRepository.findByEmail(request.getIdentifier())
                         .orElseThrow(() -> new RuntimeException("Người dùng không tồn tại")));
 
-        return buildAuthResponse(user);
+        return buildAuthResponse(user, accessToken, refreshTokenValue);
     }
 
     @Override
     @Transactional
     public AuthResponse googleLogin(GoogleLoginRequest request) {
-        String googleId = "mock-google-id-" + UUID.randomUUID().toString().substring(0,8);
+        String googleId = "mock-google-id-" + UUID.randomUUID().toString().substring(0, 8);
         String email = "mock@gmail.com";
 
         UserSocialLogin socialLogin = userSocialLoginRepository.findByProviderAndProviderId("GOOGLE", googleId)
@@ -130,7 +166,7 @@ public class AuthServiceImpl implements AuthService {
     public void sendOtp(SendOtpRequest request) {
         final String identifier;
         boolean exists = false;
-        
+
         if (request.getEmail() != null && !request.getEmail().trim().isEmpty()) {
             identifier = request.getEmail();
             exists = userRepository.existsByEmail(identifier);
@@ -232,7 +268,8 @@ public class AuthServiceImpl implements AuthService {
             throw new RuntimeException("Số điện thoại hoặc Email không được để trống");
         }
 
-        OtpCode otp = otpCodeRepository.findByPhoneNumberAndActionTypeAndUsedFalse(identifier, OtpActionType.FORGOT_PASSWORD)
+        OtpCode otp = otpCodeRepository
+                .findByPhoneNumberAndActionTypeAndUsedFalse(identifier, OtpActionType.FORGOT_PASSWORD)
                 .orElseThrow(() -> new RuntimeException("Mã OTP không tồn tại hoặc đã được sử dụng"));
 
         if (otp.getExpiresAt().isBefore(OffsetDateTime.now())) {
@@ -286,7 +323,7 @@ public class AuthServiceImpl implements AuthService {
 
         User user = savedToken.getUser();
         String newAccessToken = jwtService.generateToken(user);
-        
+
         return AuthResponse.builder()
                 .accessToken(newAccessToken)
                 .refreshToken(savedToken.getToken())
@@ -303,30 +340,33 @@ public class AuthServiceImpl implements AuthService {
         });
     }
 
+    private AuthResponse buildAuthResponse(User user, String accessToken, String refreshToken) {
+        return AuthResponse.builder()
+                .accessToken(accessToken)
+                .refreshToken(refreshToken)
+                .user(mapToUserInfo(user))
+                .build();
+    }
+
     private AuthResponse buildAuthResponse(User user) {
         String accessToken = jwtService.generateToken(user);
-        String refreshTokenStr = jwtService.generateRefreshToken(user);
+        String refreshTokenValue = jwtService.generateRefreshToken(user);
 
-        // Vô hiệu hóa tất cả các refresh token cũ
-        List<RefreshToken> tokens = refreshTokenRepository.findAllByUserId(user.getId());
-        if (!tokens.isEmpty()) {
-            tokens.forEach(t -> t.setRevoked(true));
-            refreshTokenRepository.saveAll(tokens);
-        }
+        refreshTokenRepository.findByUserId(user.getId()).ifPresent(token -> {
+            token.setRevoked(true);
+            refreshTokenRepository.save(token);
+        });
 
         RefreshToken refreshToken = RefreshToken.builder()
                 .user(user)
-                .token(refreshTokenStr)
+                .token(refreshTokenValue)
                 .expiresAt(OffsetDateTime.now().plusDays(7))
                 .revoked(false)
                 .build();
+
         refreshTokenRepository.save(refreshToken);
 
-        return AuthResponse.builder()
-                .accessToken(accessToken)
-                .refreshToken(refreshTokenStr)
-                .user(mapToUserInfo(user))
-                .build();
+        return buildAuthResponse(user, accessToken, refreshTokenValue);
     }
 
     private AuthResponse.UserInfo mapToUserInfo(User user) {
@@ -386,7 +426,8 @@ public class AuthServiceImpl implements AuthService {
     @Transactional(readOnly = true)
     public Page<NotificationResponse> getMyNotifications(String identifier, Pageable pageable) {
         User user = getUserByIdentifier(identifier);
-        Page<Notification> notifications = notificationRepository.findByUserIdOrderByCreatedAtDesc(user.getId(), pageable);
+        Page<Notification> notifications = notificationRepository.findByUserIdOrderByCreatedAtDesc(user.getId(),
+                pageable);
         return notifications.map(this::mapToNotificationResponse);
     }
 

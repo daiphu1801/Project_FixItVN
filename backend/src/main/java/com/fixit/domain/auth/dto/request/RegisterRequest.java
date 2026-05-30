@@ -14,7 +14,11 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class RegisterRequest {
 
-    private String phoneNumber;
+    // Identifier could be phone or email
+    @NotBlank(message = "Số điện thoại không được để trống")
+    private String phone;
+
+    @NotBlank(message = "Email không được để trống")
     private String email;
 
     @NotBlank(message = "Mật khẩu không được để trống")
