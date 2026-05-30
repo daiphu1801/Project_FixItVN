@@ -40,7 +40,7 @@
                 android:textSize="12sp" 
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintStart_toEndOf="@id/ivWorkerAvatar"
-                app:layout_constraintEnd_toStartOf="@id/flBell"
+                app:layout_constraintEnd_toStartOf="@id/ivChatWorker"
                 app:layout_constraintBottom_toTopOf="@id/tvWorkerName"
                 app:layout_constraintVertical_chainStyle="packed"/>
 
@@ -49,14 +49,28 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="12dp"
-                android:text="Nguyễn Văn A"
+                android:text="..."
                 android:textColor="#0d1b2a"
                 android:textSize="18sp"
                 android:textStyle="bold" 
                 app:layout_constraintTop_toBottomOf="@id/tvGreeting"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toEndOf="@id/ivWorkerAvatar"
-                app:layout_constraintEnd_toStartOf="@id/flBell"/>
+                app:layout_constraintEnd_toStartOf="@id/ivChatWorker"/>
+
+            <!-- Icon Chat ở header thợ -->
+            <ImageView
+                android:id="@+id/ivChatWorker"
+                android:layout_width="28dp"
+                android:layout_height="28dp"
+                android:src="@drawable/ic_lucide_message_circle"
+                android:padding="2dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                app:tint="#42c2ff"
+                android:layout_marginEnd="12dp"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/flBell" />
 
             <FrameLayout
                 android:id="@+id/flBell"
@@ -117,7 +131,7 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="12dp"
-                    android:text="OFFLINE"
+                    android:text="..."
                     android:textColor="#94a3b8"
                     android:textSize="14sp"
                     android:textStyle="bold" 
@@ -133,7 +147,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="12dp"
                     android:layout_marginTop="2dp"
-                    android:text="Nhấn để thay đổi trạng thái →"
+                    android:text="..."
                     android:textColor="#42c2ff"
                     android:textSize="12sp" 
                     app:layout_constraintTop_toBottomOf="@id/tvStatusDesc"

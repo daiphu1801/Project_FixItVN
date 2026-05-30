@@ -2,10 +2,15 @@ package com.fixit.core.common;
 
 public class Constants {
     // Network
-    // Dùng 10.0.2.2 cho máy ảo, hoặc IP máy tính cho máy thật (ví dụ: 192.168.1.5)
+    // Dùng 10.0.2.2 cho máy ảo, hoặc IP máy tính cho máy thật
     public static final String BASE_URL = "http://10.0.2.2:8080/";
-    public static final int CONNECT_TIMEOUT = 30; // seconds
-    public static final int READ_TIMEOUT = 30;    // seconds
+
+    // DEV ONLY: dùng khi backend chưa lấy worker từ JWT thật.
+    // Đổi thành worker_id thật trong bảng workers.
+    public static final String DEBUG_WORKER_ID = "11111111-1111-1111-1111-111111111111";
+
+    public static final int CONNECT_TIMEOUT = 30;
+    public static final int READ_TIMEOUT = 30;
 
     // Shared Preferences
     public static final String PREF_NAME = "fixit_prefs";

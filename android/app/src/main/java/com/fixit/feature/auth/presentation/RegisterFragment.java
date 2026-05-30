@@ -49,12 +49,12 @@ public class RegisterFragment extends Fragment {
             String confirmPass = binding.etConfirmPassword.getText().toString().trim();
 
             if (fullName.isEmpty() || phone.isEmpty() || password.isEmpty()) {
-                Toast.makeText(getContext(), "Vui long nhap day du thong tin", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getContext(), "Vui lòng nhập đầy đủ thông tin", Toast.LENGTH_SHORT).show();
                 return;
             }
 
             if (!password.equals(confirmPass)) {
-                Toast.makeText(getContext(), "Mat khau xac nhan khong khop", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getContext(), "Mật khẩu xác nhận không khớp", Toast.LENGTH_SHORT).show();
                 return;
             }
 
@@ -63,7 +63,7 @@ public class RegisterFragment extends Fragment {
 
         viewModel.event.observe(getViewLifecycleOwner(), event -> {
             if (event != null && event.getType() == AuthEvent.Type.REGISTER_SUCCESS) {
-                Toast.makeText(getContext(), "Dang ky thanh cong!", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getContext(), "Đăng ký thành công!", Toast.LENGTH_SHORT).show();
                 requireActivity().onBackPressed();
             }
         });
@@ -73,7 +73,7 @@ public class RegisterFragment extends Fragment {
                 return;
             }
             binding.btnRegister.setEnabled(!state.isLoading());
-            binding.btnRegister.setText(state.isLoading() ? "Dang xu ly..." : "Dang ky");
+            binding.btnRegister.setText(state.isLoading() ? "Đang xử lý..." : "Đăng ký");
             if (state.getErrorMessage() != null) {
                 Toast.makeText(getContext(), state.getErrorMessage(), Toast.LENGTH_LONG).show();
             }

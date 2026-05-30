@@ -4,16 +4,27 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#f0faff"
+    android:background="#f5fbff"
     android:padding="24dp">
+
+    <!-- Trang trí nền (Subtle Decorative Circle) -->
+    <View
+        android:layout_width="200dp"
+        android:layout_height="200dp"
+        android:background="@drawable/bg_circle_light_blue"
+        android:alpha="0.3"
+        android:layout_marginTop="-100dp"
+        android:layout_marginEnd="-100dp"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"/>
 
     <!-- Header / Logo Area -->
     <ImageView
         android:id="@+id/ivLogo"
-        android:layout_width="80dp"
-        android:layout_height="80dp"
-        android:layout_marginTop="32dp"
-        android:src="@drawable/ic_lucide_user"
+        android:layout_width="96dp"
+        android:layout_height="96dp"
+        android:layout_marginTop="56dp"
+        android:src="@drawable/ic_lucide_wrench"
         app:tint="#42c2ff"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -23,10 +34,10 @@
         android:id="@+id/tvWelcome"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="24dp"
+        android:layout_marginTop="28dp"
         android:text="Chào mừng đến với FixIt VN"
-        android:textColor="#0d1b2a"
-        android:textSize="24sp"
+        android:textColor="#0f172a"
+        android:textSize="26sp"
         android:textStyle="bold"
         android:gravity="center"
         app:layout_constraintTop_toBottomOf="@id/ivLogo"
@@ -37,29 +48,31 @@
         android:id="@+id/tvSubtitle"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:text="Vui lòng chọn vai trò của bạn để bắt đầu sử dụng dịch vụ."
-        android:textColor="#4a5568"
+        android:layout_marginTop="10dp"
+        android:text="Vui lòng chọn vai trò của bạn để bắt đầu hành trình cùng chúng tôi."
+        android:textColor="#64748b"
         android:textSize="14sp"
         android:gravity="center"
+        android:lineSpacingExtra="4sp"
         app:layout_constraintTop_toBottomOf="@id/tvWelcome"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"/>
 
-    <!-- Customer Role Card -->
+    <!-- Customer Role Card (Khách hàng) -->
     <com.google.android.material.card.MaterialCardView
         android:id="@+id/cardCustomer"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="48dp"
-        android:layout_marginBottom="16dp"
-        app:cardCornerRadius="16dp"
-        app:cardElevation="2dp"
+        app:cardCornerRadius="20dp"
+        app:cardElevation="6dp"
+        app:cardMaxElevation="10dp"
         app:cardBackgroundColor="@android:color/white"
-        app:strokeWidth="1dp"
+        app:strokeWidth="1.5dp"
         app:strokeColor="#e2e8f0"
         android:clickable="true"
         android:focusable="true"
+        app:rippleColor="#2042c2ff"
         app:layout_constraintTop_toBottomOf="@id/tvSubtitle"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
@@ -67,20 +80,21 @@
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:padding="20dp">
+            android:padding="22dp">
 
+            <!-- Frame Icon màu xanh sáng -->
             <FrameLayout
                 android:id="@+id/flIconCustomer"
-                android:layout_width="48dp"
-                android:layout_height="48dp"
-                android:background="@drawable/badge_background"
+                android:layout_width="56dp"
+                android:layout_height="56dp"
+                android:background="@drawable/bg_circle_light_blue"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent">
                 
                 <ImageView
-                    android:layout_width="24dp"
-                    android:layout_height="24dp"
+                    android:layout_width="28dp"
+                    android:layout_height="28dp"
                     android:layout_gravity="center"
                     android:src="@drawable/ic_lucide_home"
                     app:tint="#42c2ff" />
@@ -90,10 +104,10 @@
                 android:id="@+id/tvRoleCustomer"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="16dp"
+                android:layout_marginStart="18dp"
                 android:text="Khách hàng"
-                android:textColor="#0d1b2a"
-                android:textSize="18sp"
+                android:textColor="#0f172a"
+                android:textSize="20sp"
                 android:textStyle="bold"
                 app:layout_constraintTop_toTopOf="@id/flIconCustomer"
                 app:layout_constraintStart_toEndOf="@id/flIconCustomer"
@@ -102,11 +116,12 @@
             <TextView
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="16dp"
-                android:layout_marginTop="4dp"
-                android:text="Tìm kiếm thợ sửa chữa chuyên nghiệp, nhanh chóng và uy tín."
-                android:textColor="#4a5568"
+                android:layout_marginStart="18dp"
+                android:layout_marginTop="6dp"
+                android:text="Tìm kiếm thợ sửa chữa chuyên nghiệp, nhanh chóng và uy tín xung quanh bạn."
+                android:textColor="#64748b"
                 android:textSize="13sp"
+                android:lineSpacingExtra="2sp"
                 app:layout_constraintTop_toBottomOf="@id/tvRoleCustomer"
                 app:layout_constraintStart_toEndOf="@id/flIconCustomer"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -115,19 +130,21 @@
         </androidx.constraintlayout.widget.ConstraintLayout>
     </com.google.android.material.card.MaterialCardView>
 
-    <!-- Worker Role Card -->
+    <!-- Worker Role Card (Thợ sửa chữa) -->
     <com.google.android.material.card.MaterialCardView
         android:id="@+id/cardWorker"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        app:cardCornerRadius="16dp"
-        app:cardElevation="2dp"
+        android:layout_marginTop="20dp"
+        app:cardCornerRadius="20dp"
+        app:cardElevation="6dp"
+        app:cardMaxElevation="10dp"
         app:cardBackgroundColor="@android:color/white"
-        app:strokeWidth="1dp"
+        app:strokeWidth="1.5dp"
         app:strokeColor="#e2e8f0"
         android:clickable="true"
         android:focusable="true"
+        app:rippleColor="#2042c2ff"
         app:layout_constraintTop_toBottomOf="@id/cardCustomer"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
@@ -135,33 +152,34 @@
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:padding="20dp">
+            android:padding="22dp">
 
+            <!-- Frame Icon màu cam vàng kỹ thuật nổi bật -->
             <FrameLayout
                 android:id="@+id/flIconWorker"
-                android:layout_width="48dp"
-                android:layout_height="48dp"
-                android:background="@drawable/badge_background"
+                android:layout_width="56dp"
+                android:layout_height="56dp"
+                android:background="@drawable/bg_badge_orange_light"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent">
                 
                 <ImageView
-                    android:layout_width="24dp"
-                    android:layout_height="24dp"
+                    android:layout_width="28dp"
+                    android:layout_height="28dp"
                     android:layout_gravity="center"
                     android:src="@drawable/ic_lucide_briefcase"
-                    app:tint="#42c2ff" />
+                    app:tint="#f97316" />
             </FrameLayout>
 
             <TextView
                 android:id="@+id/tvRoleWorker"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="16dp"
+                android:layout_marginStart="18dp"
                 android:text="Thợ sửa chữa"
-                android:textColor="#0d1b2a"
-                android:textSize="18sp"
+                android:textColor="#0f172a"
+                android:textSize="20sp"
                 android:textStyle="bold"
                 app:layout_constraintTop_toTopOf="@id/flIconWorker"
                 app:layout_constraintStart_toEndOf="@id/flIconWorker"
@@ -170,11 +188,12 @@
             <TextView
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="16dp"
-                android:layout_marginTop="4dp"
-                android:text="Tìm kiếm công việc, nhận yêu cầu dịch vụ dễ dàng."
-                android:textColor="#4a5568"
+                android:layout_marginStart="18dp"
+                android:layout_marginTop="6dp"
+                android:text="Nhận yêu cầu công việc sửa chữa dễ dàng, tăng doanh thu mỗi ngày."
+                android:textColor="#64748b"
                 android:textSize="13sp"
+                android:lineSpacingExtra="2sp"
                 app:layout_constraintTop_toBottomOf="@id/tvRoleWorker"
                 app:layout_constraintStart_toEndOf="@id/flIconWorker"
                 app:layout_constraintEnd_toEndOf="parent"

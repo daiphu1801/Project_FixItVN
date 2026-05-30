@@ -1,0 +1,225 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    style="@style/FixIt.Card.Content"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="16dp">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="16dp">
+
+        <!-- ===== STEP 1 ===== -->
+        <ImageView
+            android:id="@+id/step1Icon"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:src="@drawable/ic_lucide_check_circle"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:tint="#0ea5e9" />
+
+        <View
+            android:id="@+id/step1Line"
+            android:layout_width="2dp"
+            android:layout_height="30dp"
+            android:background="#0ea5e9"
+            app:layout_constraintEnd_toEndOf="@id/step1Icon"
+            app:layout_constraintStart_toStartOf="@id/step1Icon"
+            app:layout_constraintTop_toBottomOf="@id/step1Icon" />
+
+        <TextView
+            android:id="@+id/step1Title"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="12dp"
+            android:text="Đã nhận đơn"
+            android:textColor="#0d1b2a"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toTopOf="@id/step1Time"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/step1Icon"
+            app:layout_constraintTop_toTopOf="@id/step1Icon"
+            app:layout_constraintVertical_chainStyle="packed" />
+
+        <TextView
+            android:id="@+id/step1Time"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="10:30, 10/05/2026"
+            android:textColor="#94a3b8"
+            android:textSize="12sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="@id/step1Title"
+            app:layout_constraintTop_toBottomOf="@id/step1Title" />
+
+        <!-- ===== STEP 2 ===== -->
+        <ImageView
+            android:id="@+id/step2Icon"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:layout_marginTop="4dp"
+            android:src="@drawable/ic_lucide_check_circle"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/step1Line"
+            app:tint="#0ea5e9" />
+
+        <View
+            android:id="@+id/step2Line"
+            android:layout_width="2dp"
+            android:layout_height="30dp"
+            android:background="#0ea5e9"
+            app:layout_constraintEnd_toEndOf="@id/step2Icon"
+            app:layout_constraintStart_toStartOf="@id/step2Icon"
+            app:layout_constraintTop_toBottomOf="@id/step2Icon" />
+
+        <TextView
+            android:id="@+id/step2Title"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="12dp"
+            android:text="Đang đến"
+            android:textColor="#0d1b2a"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toTopOf="@id/step2Time"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/step2Icon"
+            app:layout_constraintTop_toTopOf="@id/step2Icon"
+            app:layout_constraintVertical_chainStyle="packed" />
+
+        <TextView
+            android:id="@+id/step2Time"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="10:32, 10/05/2026"
+            android:textColor="#94a3b8"
+            android:textSize="12sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="@id/step2Title"
+            app:layout_constraintTop_toBottomOf="@id/step2Title" />
+
+        <!-- ===== STEP 3 (Active pulse dot) ===== -->
+        <FrameLayout
+            android:id="@+id/step3IconContainer"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:layout_marginTop="4dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/step2Line">
+
+            <View
+                android:id="@+id/step3Pulse"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:alpha="0.2"
+                android:background="@drawable/circle_background"
+                android:backgroundTint="#0ea5e9" />
+
+            <View
+                android:id="@+id/step3Dot"
+                android:layout_width="10dp"
+                android:layout_height="10dp"
+                android:layout_gravity="center"
+                android:background="@drawable/circle_background"
+                android:backgroundTint="#0ea5e9" />
+        </FrameLayout>
+
+        <View
+            android:id="@+id/step3Line"
+            android:layout_width="2dp"
+            android:layout_height="30dp"
+            android:background="#e2e8f0"
+            app:layout_constraintEnd_toEndOf="@id/step3IconContainer"
+            app:layout_constraintStart_toStartOf="@id/step3IconContainer"
+            app:layout_constraintTop_toBottomOf="@id/step3IconContainer" />
+
+        <TextView
+            android:id="@+id/step3Title"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="12dp"
+            android:text="Khảo sát &amp; Báo giá"
+            android:textColor="#0ea5e9"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toTopOf="@id/step3Time"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/step3IconContainer"
+            app:layout_constraintTop_toTopOf="@id/step3IconContainer"
+            app:layout_constraintVertical_chainStyle="packed" />
+
+        <TextView
+            android:id="@+id/step3Time"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="10:58, 10/05/2026"
+            android:textColor="#94a3b8"
+            android:textSize="12sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="@id/step3Title"
+            app:layout_constraintTop_toBottomOf="@id/step3Title" />
+
+        <!-- ===== STEP 4 ===== -->
+        <View
+            android:id="@+id/step4Dot"
+            android:layout_width="12dp"
+            android:layout_height="12dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginStart="4dp"
+            android:background="@drawable/circle_background"
+            android:backgroundTint="#e2e8f0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/step3Line" />
+
+        <View
+            android:id="@+id/step4Line"
+            android:layout_width="2dp"
+            android:layout_height="30dp"
+            android:layout_marginStart="5dp"
+            android:background="#e2e8f0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/step4Dot" />
+
+        <TextView
+            android:id="@+id/step4Title"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="12dp"
+            android:text="Đang tiến hành sửa chữa"
+            android:textColor="#94a3b8"
+            android:textSize="14sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/step4Dot"
+            app:layout_constraintTop_toTopOf="@id/step4Dot" />
+
+        <!-- ===== STEP 5 ===== -->
+        <View
+            android:id="@+id/step5Dot"
+            android:layout_width="12dp"
+            android:layout_height="12dp"
+            android:layout_marginTop="4dp"
+            android:layout_marginStart="4dp"
+            android:background="@drawable/circle_background"
+            android:backgroundTint="#e2e8f0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/step4Line" />
+
+        <TextView
+            android:id="@+id/step5Title"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="12dp"
+            android:text="Hoàn thành &amp; Bàn giao"
+            android:textColor="#94a3b8"
+            android:textSize="14sp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/step5Dot"
+            app:layout_constraintTop_toTopOf="@id/step5Dot" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</com.google.android.material.card.MaterialCardView>

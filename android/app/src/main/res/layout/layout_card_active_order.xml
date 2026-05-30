@@ -18,27 +18,30 @@
         android:padding="16dp">
 
         <TextView
+            android:id="@+id/tvActiveOrderStatus"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Đang thực hiện"
+            android:text="..."
             android:textColor="#1976D2"
             android:textSize="14sp"
             android:textStyle="bold" />
 
         <TextView
+            android:id="@+id/tvActiveOrderTitle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
-            android:text="Sửa rò rỉ ống nước bồn rửa chén"
+            android:text="..."
             android:textColor="#333333"
             android:textSize="16sp"
             android:textStyle="bold" />
 
         <TextView
+            android:id="@+id/tvActiveOrderAddress"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="4dp"
-            android:text="123 Nguyễn Văn Linh, Quận 7, TP.HCM"
+            android:text="..."
             android:textColor="#666666"
             android:textSize="12sp" />
 

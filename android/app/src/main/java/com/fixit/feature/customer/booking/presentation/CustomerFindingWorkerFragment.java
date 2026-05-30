@@ -3,8 +3,11 @@ package com.fixit.feature.customer.booking.presentation;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 import androidx.annotation.NonNull;
+import androidx.lifecycle.ViewModelProvider;
 import com.fixit.core.ui.BaseFragment;
 import com.fixit.databinding.FragmentCustomerFindingWorkerBinding;
+import com.fixit.feature.customer.order.presentation.CustomerOrderViewModel;
+
 import dagger.hilt.android.AndroidEntryPoint;
 
 /**
@@ -23,13 +26,20 @@ public class CustomerFindingWorkerFragment extends BaseFragment<FragmentCustomer
 
     @Override
     protected void setupViews() {
+        CustomerOrderViewModel orderViewModel = new ViewModelProvider(requireActivity()).get(CustomerOrderViewModel.class);
+
         // Nơi xử lý các hiệu ứng radar hoặc nút 'Hủy yêu cầu'
         binding.btnCancelSearch.setOnClickListener(v -> {
-            // Khi nhấn hủy, quay lại màn hình trước đó
-            if (navController != null) {
-                navController.popBackStack();
-            }
+            // Khi nhấn hủy, xóa trạng thái đơn hàng
+            orderViewModel.cancelOrder();
         });
+
+        // GIẢ LẬP: Sau 3 giây tìm thấy thợ (Dùng cho demo)
+        binding.getRoot().postDelayed(() -> {
+            if (orderViewModel.orderStatus.getValue() != null && orderViewModel.orderStatus.getValue() == 1) {
+                orderViewModel.onWorkerAccepted();
+            }
+        }, 3000);
     }
 
     @Override

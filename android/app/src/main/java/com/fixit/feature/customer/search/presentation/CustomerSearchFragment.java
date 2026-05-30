@@ -25,7 +25,12 @@ public class CustomerSearchFragment extends BaseFragment<FragmentCustomerSearchB
     // Ví dụ: Bắt sự kiện khi người dùng gõ từ khóa vào thanh tìm kiếm.
     @Override
     protected void setupViews() {
-        // Hiện tại trang này đang để trống, bạn có thể thêm logic xử lý tìm kiếm tại đây sau này.
+        // Sự kiện khi nhấn nút Quay lại (Back)
+        binding.btnBack.setOnClickListener(v -> {
+            if (navController != null) {
+                navController.popBackStack();
+            }
+        });
     }
 
     // Nơi nhận dữ liệu từ ViewModel để cập nhật lên màn hình
