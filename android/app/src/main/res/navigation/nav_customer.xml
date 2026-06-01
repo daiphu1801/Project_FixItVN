@@ -87,6 +87,21 @@
         tools:layout="@layout/fragment_order_detail_finished" />
 
     <fragment
+        android:id="@+id/nav_customer_worker_public_profile"
+        android:name="com.fixit.feature.customer.workerprofile.presentation.WorkerPublicProfileFragment"
+        android:label="Hồ sơ thợ"
+        tools:layout="@layout/fragment_worker_public_profile">
+        <argument
+            android:name="workerId"
+            app:argType="string"
+            android:defaultValue="" />
+        <argument
+            android:name="workerName"
+            app:argType="string"
+            android:defaultValue="Thợ" />
+    </fragment>
+
+    <fragment
         android:id="@+id/nav_customer_order_detail"
         android:name="com.fixit.feature.customer.order.presentation.CustomerOrderDetailFragment"
         android:label="Chi tiết đơn hàng"
