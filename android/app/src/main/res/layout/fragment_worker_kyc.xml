@@ -5,6 +5,7 @@
     android:layout_height="match_parent"
     android:background="#f0faff">
 
+    <!-- AppBar -->
     <include
         android:id="@+id/appBarLayout"
         layout="@layout/layout_standard_appbar" />
@@ -15,36 +16,40 @@
         android:fillViewport="true"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
-        <LinearLayout
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
             android:padding="16dp">
 
-            <!-- Progress Bar (Stepper) -->
+            <!-- Card chỉ số Tiến trình (Stepper) -->
             <com.google.android.material.card.MaterialCardView
+                android:id="@+id/cardStepper"
                 style="@style/FixIt.Card.Content"
-                android:layout_width="match_parent"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="24dp">
+                android:layout_marginBottom="16dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
 
                 <androidx.constraintlayout.widget.ConstraintLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:paddingVertical="16dp"
-                    android:paddingHorizontal="24dp">
+                    android:paddingHorizontal="32dp">
 
                     <!-- Step 1: KYC -->
                     <TextView
                         android:id="@+id/tvStep1Circle"
                         android:layout_width="32dp"
                         android:layout_height="32dp"
+                        android:layout_marginStart="8dp"
                         android:background="@drawable/circle_background"
                         android:backgroundTint="#0ea5e9"
                         android:gravity="center"
                         android:text="1"
                         android:textColor="@android:color/white"
-                        android:textSize="16sp"
+                        android:textSize="14sp"
                         android:textStyle="bold"
                         app:layout_constraintTop_toTopOf="parent"
                         app:layout_constraintStart_toStartOf="parent" />
@@ -62,19 +67,20 @@
                         app:layout_constraintStart_toStartOf="@id/tvStep1Circle"
                         app:layout_constraintEnd_toEndOf="@id/tvStep1Circle" />
 
-                    <!-- Step 2: Đợi duyệt -->
+                    <!-- Step 2: Tải hồ sơ -->
                     <TextView
                         android:id="@+id/tvStep2Circle"
                         android:layout_width="32dp"
                         android:layout_height="32dp"
                         android:background="@drawable/circle_background"
-                        android:backgroundTint="#f1f5f9"
+                        android:backgroundTint="#e2e8f0"
                         android:gravity="center"
                         android:text="2"
                         android:textColor="#94a3b8"
-                        android:textSize="16sp"
+                        android:textSize="14sp"
                         android:textStyle="bold"
                         app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintEnd_toEndOf="parent" />
 
                     <TextView
@@ -82,79 +88,152 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="4dp"
-                        android:text="Đợi duyệt"
+                        android:text="Tải hồ sơ"
                         android:textColor="#94a3b8"
                         android:textSize="12sp"
                         app:layout_constraintTop_toBottomOf="@id/tvStep2Circle"
                         app:layout_constraintStart_toStartOf="@id/tvStep2Circle"
                         app:layout_constraintEnd_toEndOf="@id/tvStep2Circle" />
 
-                    <!-- Divider -->
+                    <!-- Step 3: Đợi duyệt -->
+                    <TextView
+                        android:id="@+id/tvStep3Circle"
+                        android:layout_width="32dp"
+                        android:layout_height="32dp"
+                        android:layout_marginEnd="8dp"
+                        android:background="@drawable/circle_background"
+                        android:backgroundTint="#e2e8f0"
+                        android:gravity="center"
+                        android:text="3"
+                        android:textColor="#94a3b8"
+                        android:textSize="14sp"
+                        android:textStyle="bold"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent" />
+
+                    <TextView
+                        android:id="@+id/tvStep3Label"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="4dp"
+                        android:text="Đợi duyệt"
+                        android:textColor="#94a3b8"
+                        android:textSize="12sp"
+                        app:layout_constraintTop_toBottomOf="@id/tvStep3Circle"
+                        app:layout_constraintStart_toStartOf="@id/tvStep3Circle"
+                        app:layout_constraintEnd_toEndOf="@id/tvStep3Circle" />
+
+                    <!-- Thanh nối 1 (Step 1 -> Step 2) -->
                     <View
-                        android:id="@+id/vStepDivider"
+                        android:id="@+id/vStepDivider1"
                         android:layout_width="0dp"
                         android:layout_height="2dp"
-                        android:layout_marginHorizontal="16dp"
+                        android:layout_marginHorizontal="8dp"
                         android:background="#e2e8f0"
                         app:layout_constraintTop_toTopOf="@id/tvStep1Circle"
                         app:layout_constraintBottom_toBottomOf="@id/tvStep1Circle"
                         app:layout_constraintStart_toEndOf="@id/tvStep1Circle"
                         app:layout_constraintEnd_toStartOf="@id/tvStep2Circle" />
+
+                    <!-- Thanh nối 2 (Step 2 -> Step 3) -->
+                    <View
+                        android:id="@+id/vStepDivider2"
+                        android:layout_width="0dp"
+                        android:layout_height="2dp"
+                        android:layout_marginHorizontal="8dp"
+                        android:background="#e2e8f0"
+                        app:layout_constraintTop_toTopOf="@id/tvStep2Circle"
+                        app:layout_constraintBottom_toBottomOf="@id/tvStep2Circle"
+                        app:layout_constraintStart_toEndOf="@id/tvStep2Circle"
+                        app:layout_constraintEnd_toStartOf="@id/tvStep3Circle" />
+
                 </androidx.constraintlayout.widget.ConstraintLayout>
             </com.google.android.material.card.MaterialCardView>
 
-            <!-- Tại sao cần xác minh -->
+            <!-- Card giải thích lý do cần xác minh -->
             <com.google.android.material.card.MaterialCardView
-                android:layout_width="match_parent"
+                android:id="@+id/cardWhyVerify"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="16dp"
+                android:layout_marginTop="16dp"
                 app:cardBackgroundColor="#e0f2fe"
-                app:cardCornerRadius="12dp"
+                app:cardCornerRadius="14dp"
                 app:cardElevation="0dp"
-                app:strokeWidth="0dp">
+                app:strokeWidth="0dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/cardStepper">
 
-                <LinearLayout
+                <androidx.constraintlayout.widget.ConstraintLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical"
                     android:padding="16dp">
 
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginBottom="8dp"
-                        android:text="Tại sao cần xác minh?"
-                        android:textColor="#0369a1"
-                        android:textSize="16sp"
-                        android:textStyle="bold" />
+                    <ImageView
+                        android:id="@+id/ivShieldIcon"
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:src="@drawable/ic_shield"
+                        app:tint="#0369a1"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintStart_toStartOf="parent" />
 
                     <TextView
-                        android:layout_width="wrap_content"
+                        android:id="@+id/tvWhyTitle"
+                        android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:text="Xác minh danh tính giúp xây dựng lòng tin với khách hàng và mở khóa tính năng rút tiền từ ví FixIt của bạn."
+                        android:layout_marginStart="8dp"
+                        android:text="Tại sao cần xác minh danh tính?"
+                        android:textColor="#0369a1"
+                        android:textSize="15sp"
+                        android:textStyle="bold"
+                        app:layout_constraintBottom_toBottomOf="@id/ivShieldIcon"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toEndOf="@id/ivShieldIcon"
+                        app:layout_constraintTop_toTopOf="@id/ivShieldIcon" />
+
+                    <TextView
+                        android:id="@+id/tvWhyContent"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:text="Xác minh danh tính giúp tạo dựng lòng tin tối đa với khách hàng của FixIt và là bước bắt buộc để bạn có thể rút tiền doanh thu từ ví cá nhân."
                         android:textColor="#075985"
-                        android:textSize="14sp" />
-                </LinearLayout>
+                        android:textSize="13sp"
+                        android:lineSpacingExtra="2dp"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/tvWhyTitle" />
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
             </com.google.android.material.card.MaterialCardView>
 
+            <!-- Dropdown loại giấy tờ -->
             <TextView
+                android:id="@+id/tvLabelDocType"
                 style="@style/FixIt.Text.SectionHeader"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="12dp"
-                android:text="Chọn loại giấy tờ xác minh" />
+                android:layout_marginTop="24dp"
+                android:text="Chọn loại giấy tờ xác minh"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/cardWhyVerify" />
 
             <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/menuDocType"
                 style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
-                android:layout_width="match_parent"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="24dp"
+                android:layout_marginTop="8dp"
                 app:boxCornerRadiusBottomEnd="12dp"
                 app:boxCornerRadiusBottomStart="12dp"
                 app:boxCornerRadiusTopEnd="12dp"
                 app:boxCornerRadiusTopStart="12dp"
-                app:boxStrokeColor="#cbd5e1"
-                app:hintEnabled="false">
+                app:boxStrokeColor="#0ea5e9"
+                app:hintEnabled="false"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/tvLabelDocType">
 
                 <AutoCompleteTextView
                     android:id="@+id/actvDocType"
@@ -164,205 +243,260 @@
                     android:paddingTop="16dp"
                     android:paddingBottom="16dp"
                     android:textColor="#0d1b2a"
-                    android:textSize="16sp" />
+                    android:textSize="15sp" />
             </com.google.android.material.textfield.TextInputLayout>
 
+            <!-- Tải lên hình ảnh -->
             <TextView
+                android:id="@+id/tvLabelUpload"
                 style="@style/FixIt.Text.SectionHeader"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="12dp"
-                android:text="Tải lên hình ảnh" />
+                android:layout_marginTop="24dp"
+                android:text="Tải lên hình ảnh giấy tờ"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/menuDocType" />
 
-            <!-- Row 1: Mặt trước & Mặt sau -->
-            <androidx.constraintlayout.widget.ConstraintLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="12dp">
-
-                <com.google.android.material.card.MaterialCardView
-                    android:id="@+id/cardUploadFront"
-                    android:layout_width="0dp"
-                    android:layout_height="120dp"
-                    android:clickable="true"
-                    android:focusable="true"
-                    app:cardBackgroundColor="#f8fafc"
-                    app:cardCornerRadius="12dp"
-                    app:cardElevation="0dp"
-                    app:strokeColor="#cbd5e1"
-                    app:strokeWidth="1dp"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintEnd_toStartOf="@id/cardUploadBack"
-                    app:layout_constraintHorizontal_chainStyle="spread"
-                    android:layout_marginEnd="6dp">
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:gravity="center"
-                        android:orientation="vertical"
-                        android:padding="8dp">
-
-                        <ImageView
-                            android:layout_width="28dp"
-                            android:layout_height="28dp"
-                            android:layout_marginBottom="8dp"
-                            android:src="@drawable/ic_lucide_clipboard_list"
-                            app:tint="#64748b" />
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:gravity="center"
-                            android:text="Mặt trước"
-                            android:textColor="#64748b"
-                            android:textSize="13sp" />
-                    </LinearLayout>
-                </com.google.android.material.card.MaterialCardView>
-
-                <com.google.android.material.card.MaterialCardView
-                    android:id="@+id/cardUploadBack"
-                    android:layout_width="0dp"
-                    android:layout_height="120dp"
-                    android:clickable="true"
-                    android:focusable="true"
-                    app:cardBackgroundColor="#f8fafc"
-                    app:cardCornerRadius="12dp"
-                    app:cardElevation="0dp"
-                    app:strokeColor="#cbd5e1"
-                    app:strokeWidth="1dp"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintStart_toEndOf="@id/cardUploadFront"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    android:layout_marginStart="6dp">
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:gravity="center"
-                        android:orientation="vertical"
-                        android:padding="8dp">
-
-                        <ImageView
-                            android:layout_width="28dp"
-                            android:layout_height="28dp"
-                            android:layout_marginBottom="8dp"
-                            android:src="@drawable/ic_lucide_clipboard_list"
-                            app:tint="#64748b" />
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:gravity="center"
-                            android:text="Mặt sau"
-                            android:textColor="#64748b"
-                            android:textSize="13sp" />
-                    </LinearLayout>
-                </com.google.android.material.card.MaterialCardView>
-            </androidx.constraintlayout.widget.ConstraintLayout>
-
-            <!-- Row 2: Ảnh chân dung -->
+            <!-- Card Mặt trước -->
             <com.google.android.material.card.MaterialCardView
-                android:id="@+id/cardUploadPortrait"
-                android:layout_width="match_parent"
-                android:layout_height="120dp"
-                android:layout_marginBottom="24dp"
+                android:id="@+id/cardUploadFront"
+                android:layout_width="0dp"
+                android:layout_height="130dp"
+                android:layout_marginTop="12dp"
+                android:layout_marginEnd="6dp"
                 android:clickable="true"
                 android:focusable="true"
                 app:cardBackgroundColor="#f8fafc"
-                app:cardCornerRadius="12dp"
+                app:cardCornerRadius="14dp"
                 app:cardElevation="0dp"
                 app:strokeColor="#cbd5e1"
-                app:strokeWidth="1dp">
+                app:strokeWidth="1dp"
+                app:layout_constraintEnd_toStartOf="@id/cardUploadBack"
+                app:layout_constraintHorizontal_chainStyle="spread"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/tvLabelUpload">
 
-                <LinearLayout
+                <androidx.constraintlayout.widget.ConstraintLayout
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:gravity="center"
-                    android:orientation="vertical">
+                    android:layout_height="match_parent">
 
                     <ImageView
+                        android:id="@+id/ivKycFrontImage"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:scaleType="centerCrop"
+                        android:visibility="gone" />
+
+                    <ImageView
+                        android:id="@+id/icKycFrontIcon"
                         android:layout_width="28dp"
                         android:layout_height="28dp"
-                        android:layout_marginBottom="8dp"
-                        android:src="@drawable/ic_lucide_user"
-                        app:tint="#64748b" />
+                        android:layout_marginBottom="6dp"
+                        android:src="@drawable/ic_lucide_clipboard_list"
+                        app:tint="#64748b"
+                        app:layout_constraintBottom_toTopOf="@id/tvKycFrontLabel"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent" />
 
                     <TextView
+                        android:id="@+id/tvKycFrontLabel"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Chụp ảnh chân dung"
+                        android:text="Ảnh mặt trước"
                         android:textColor="#64748b"
-                        android:textSize="13sp" />
-                </LinearLayout>
+                        android:textSize="13sp"
+                        android:textStyle="bold"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintVertical_bias="0.65" />
+                </androidx.constraintlayout.widget.ConstraintLayout>
             </com.google.android.material.card.MaterialCardView>
 
-            <!-- Mẹo chụp ảnh rõ nét -->
+            <!-- Card Mặt sau -->
             <com.google.android.material.card.MaterialCardView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="24dp"
-                app:cardBackgroundColor="#fff7ed"
-                app:cardCornerRadius="12dp"
+                android:id="@+id/cardUploadBack"
+                android:layout_width="0dp"
+                android:layout_height="130dp"
+                android:layout_marginTop="12dp"
+                android:layout_marginStart="6dp"
+                android:clickable="true"
+                android:focusable="true"
+                app:cardBackgroundColor="#f8fafc"
+                app:cardCornerRadius="14dp"
                 app:cardElevation="0dp"
-                app:strokeWidth="0dp">
+                app:strokeColor="#cbd5e1"
+                app:strokeWidth="1dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@id/cardUploadFront"
+                app:layout_constraintTop_toBottomOf="@id/tvLabelUpload">
 
-                <LinearLayout
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+
+                    <ImageView
+                        android:id="@+id/ivKycBackImage"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:scaleType="centerCrop"
+                        android:visibility="gone" />
+
+                    <ImageView
+                        android:id="@+id/icKycBackIcon"
+                        android:layout_width="28dp"
+                        android:layout_height="28dp"
+                        android:layout_marginBottom="6dp"
+                        android:src="@drawable/ic_lucide_clipboard_list"
+                        app:tint="#64748b"
+                        app:layout_constraintBottom_toTopOf="@id/tvKycBackLabel"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent" />
+
+                    <TextView
+                        android:id="@+id/tvKycBackLabel"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Ảnh mặt sau"
+                        android:textColor="#64748b"
+                        android:textSize="13sp"
+                        android:textStyle="bold"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintVertical_bias="0.65" />
+                </androidx.constraintlayout.widget.ConstraintLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- Card Chân dung -->
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/cardUploadPortrait"
+                android:layout_width="0dp"
+                android:layout_height="120dp"
+                android:layout_marginTop="12dp"
+                android:clickable="true"
+                android:focusable="true"
+                app:cardBackgroundColor="#f8fafc"
+                app:cardCornerRadius="14dp"
+                app:cardElevation="0dp"
+                app:strokeColor="#cbd5e1"
+                app:strokeWidth="1dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/cardUploadFront">
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+
+                    <ImageView
+                        android:id="@+id/ivKycPortraitImage"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:scaleType="centerCrop"
+                        android:visibility="gone" />
+
+                    <ImageView
+                        android:id="@+id/icKycPortraitIcon"
+                        android:layout_width="28dp"
+                        android:layout_height="28dp"
+                        android:layout_marginBottom="6dp"
+                        android:src="@drawable/ic_lucide_user"
+                        app:tint="#64748b"
+                        app:layout_constraintBottom_toTopOf="@id/tvKycPortraitLabel"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent" />
+
+                    <TextView
+                        android:id="@+id/tvKycPortraitLabel"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Chụp ảnh chân dung của bạn"
+                        android:textColor="#64748b"
+                        android:textSize="13sp"
+                        android:textStyle="bold"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintVertical_bias="0.65" />
+                </androidx.constraintlayout.widget.ConstraintLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- Card Mẹo chụp ảnh rõ nét -->
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/cardTips"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                app:cardBackgroundColor="#fff7ed"
+                app:cardCornerRadius="14dp"
+                app:cardElevation="0dp"
+                app:strokeWidth="0dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/cardUploadPortrait">
+
+                <androidx.constraintlayout.widget.ConstraintLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical"
                     android:padding="16dp">
 
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginBottom="8dp"
-                        android:gravity="center_vertical"
-                        android:orientation="horizontal">
-
-                        <ImageView
-                            android:layout_width="20dp"
-                            android:layout_height="20dp"
-                            android:src="@drawable/ic_lucide_info"
-                            app:tint="#ea580c" />
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginStart="8dp"
-                            android:text="Mẹo chụp ảnh rõ nét"
-                            android:textColor="#ea580c"
-                            android:textSize="15sp"
-                            android:textStyle="bold" />
-                    </LinearLayout>
+                    <ImageView
+                        android:id="@+id/ivInfoIcon"
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:src="@drawable/ic_lucide_info"
+                        app:tint="#ea580c"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
 
                     <TextView
-                        android:layout_width="wrap_content"
+                        android:id="@+id/tvTipsTitle"
+                        android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:text="• Đảm bảo đủ ánh sáng, không bị lóa\n• Giấy tờ nằm gọn trong khung hình\n• Các thông tin trên giấy tờ phải đọc được rõ ràng"
-                        android:textColor="#9a3412"
-                        android:textSize="14sp" />
-                </LinearLayout>
-            </com.google.android.material.card.MaterialCardView>
+                        android:layout_marginStart="8dp"
+                        android:text="Mẹo chụp ảnh giấy tờ chuẩn xác"
+                        android:textColor="#ea580c"
+                        android:textSize="15sp"
+                        android:textStyle="bold"
+                        app:layout_constraintBottom_toBottomOf="@id/ivInfoIcon"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toEndOf="@id/ivInfoIcon"
+                        app:layout_constraintTop_toTopOf="@id/ivInfoIcon" />
 
-            <!-- Spacer để đẩy nút Gửi xuống dưới cùng -->
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:layout_weight="1" />
+                    <TextView
+                        android:id="@+id/tvTipsContent"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:lineSpacingExtra="4dp"
+                        android:text="• Đảm bảo đủ ánh sáng, không bị lóa mờ thông tin\n• Giấy tờ đặt phẳng, nằm trọn vẹn trong khung hình\n• Không bị mất góc, mờ nhòe hoặc chỉnh sửa kỹ thuật số"
+                        android:textColor="#9a3412"
+                        android:textSize="13sp"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/tvTipsTitle" />
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+            </com.google.android.material.card.MaterialCardView>
 
             <!-- Nút Gửi xét duyệt -->
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnSubmitKYC"
                 style="@style/FixIt.Button.Action.Primary"
-                android:layout_width="match_parent"
-                android:layout_marginTop="16dp"
-                android:text="Gửi xét duyệt" />
+                android:layout_width="0dp"
+                android:layout_height="56dp"
+                android:layout_marginTop="24dp"
+                android:text="Gửi xét duyệt"
+                android:textColor="@android:color/white"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/cardTips" />
 
-        </LinearLayout>
+        </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.core.widget.NestedScrollView>
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
