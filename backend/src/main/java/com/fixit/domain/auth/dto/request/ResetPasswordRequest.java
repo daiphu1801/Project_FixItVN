@@ -16,8 +16,7 @@ public class ResetPasswordRequest {
     @NotBlank(message = "Số điện thoại/Email không được để trống")
 
     private String phoneNumber;
-    private String Email;
-
+    private String email;
 
     @NotBlank(message = "Mã OTP không được để trống")
     private String otpCode;

@@ -12,5 +12,9 @@ public interface UserDeviceRepository extends JpaRepository<UserDevice, UUID> {
     
     Optional<UserDevice> findByDeviceToken(String deviceToken);
     
+    Optional<UserDevice> findByUserIdAndDeviceToken(UUID userId, String deviceToken);
+    
     void deleteByDeviceToken(String deviceToken);
+    
+    void deleteByUserIdAndDeviceToken(UUID userId, String deviceToken);
 }

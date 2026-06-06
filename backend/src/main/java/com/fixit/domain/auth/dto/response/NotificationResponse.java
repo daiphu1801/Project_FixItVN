@@ -16,6 +16,6 @@ public class NotificationResponse {
     private UUID id;
     private String title;
     private String content;
-    private boolean read;
+    private boolean is_read;
     private OffsetDateTime createdAt;
 }

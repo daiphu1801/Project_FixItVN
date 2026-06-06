@@ -5,27 +5,29 @@ import com.fixit.domain.auth.dto.response.AuthResponse;
 import com.fixit.domain.auth.dto.response.NotificationResponse;
 import com.fixit.domain.auth.dto.response.UnreadCountResponse;
 import com.fixit.domain.auth.entity.*;
+import com.fixit.domain.auth.repository.NotificationRepository;
 import com.fixit.domain.auth.repository.OtpCodeRepository;
 import com.fixit.domain.auth.repository.RefreshTokenRepository;
+import com.fixit.domain.auth.repository.UserDeviceRepository;
 import com.fixit.domain.auth.repository.UserRepository;
 import com.fixit.domain.auth.repository.UserSocialLoginRepository;
-import com.fixit.domain.auth.security.JwtService;
+import com.fixit.domain.wallet.entity.WorkerWallet;
+import com.fixit.domain.wallet.repository.WorkerWalletRepository;
+import com.fixit.domain.worker.entity.Worker;
+import com.fixit.domain.worker.entity.WorkerVerificationStatus;
+import com.fixit.domain.worker.repository.WorkerRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import com.fixit.global.security.JwtService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.mail.SimpleMailMessage;
-import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 
 import java.math.BigDecimal;
 import java.time.OffsetDateTime;
-import java.util.List;
-import java.util.Optional;
 import java.util.Random;
 import java.util.UUID;
 
@@ -48,28 +50,21 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     @Transactional
-    public void forgotPassword(ForgotPasswordRequest request) {
-        SendOtpRequest otpRequest = SendOtpRequest.builder()
-                .email(request.getEmail())
-                .phoneNumber(request.getPhoneNumber())
-                .actionType(OtpActionType.FORGOT_PASSWORD)
-                .build();
-        sendOtp(otpRequest);
-    }
-
-    @Override
-    @Transactional
     public AuthResponse register(RegisterRequest request) {
-        if (userRepository.existsByPhoneNumber(request.getIdentifier())
-                || userRepository.existsByEmail(request.getIdentifier())) {
-            throw new RuntimeException("Tài khoản (SĐT/Email) đã được đăng ký");
+        String phone = request.getPhone().trim();
+        String email = request.getEmail().trim().toLowerCase();
+
+        if (userRepository.existsByPhoneNumber(phone)) {
+            throw new RuntimeException("Số điện thoại đã được đăng ký");
         }
 
-        boolean isEmail = request.getIdentifier().contains("@");
+        if (userRepository.existsByEmail(email)) {
+            throw new RuntimeException("Email đã được đăng ký");
+        }
 
         User user = User.builder()
-                .phoneNumber(isEmail ? null : request.getIdentifier())
-                .email(isEmail ? request.getIdentifier() : null)
+                .phoneNumber(phone)
+                .email(email)
                 .passwordHash(passwordEncoder.encode(request.getPassword()))
                 .role(request.getRole())
                 .active(true)
@@ -118,12 +113,31 @@ public class AuthServiceImpl implements AuthService {
     @Override
     @Transactional
     public AuthResponse login(LoginRequest request) {
-        authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(request.getIdentifier(), request.getPassword()));
+        User user = userRepository
+                .findByPhoneNumber(request.getPhoneNumber())
+                .orElseThrow(() -> new RuntimeException("Tài khoản không tồn tại"));
 
-        User user = userRepository.findByPhoneNumber(request.getIdentifier())
-                .orElseGet(() -> userRepository.findByEmail(request.getIdentifier())
-                        .orElseThrow(() -> new RuntimeException("Người dùng không tồn tại")));
+        if (!Boolean.TRUE.equals(user.getActive())) {
+            throw new RuntimeException("Tài khoản đã bị khóa");
+        }
+
+        if (!passwordEncoder.matches(request.getPassword(), user.getPasswordHash())) {
+            throw new RuntimeException("Mật khẩu không đúng");
+        }
+
+        refreshTokenRepository.revokeAllActiveTokensByUserId(user.getId());
+
+        String accessToken = jwtService.generateToken(user);
+        String refreshTokenValue = jwtService.generateRefreshToken(user);
+
+        RefreshToken refreshToken = RefreshToken.builder()
+                .user(user)
+                .token(refreshTokenValue)
+                .expiresAt(OffsetDateTime.now().plusDays(7))
+                .revoked(false)
+                .build();
+
+        refreshTokenRepository.save(refreshToken);
 
         return buildAuthResponse(user, accessToken, refreshTokenValue);
     }
@@ -131,8 +145,9 @@ public class AuthServiceImpl implements AuthService {
     @Override
     @Transactional
     public AuthResponse googleLogin(GoogleLoginRequest request) {
-        String googleId = "mock-google-id-" + UUID.randomUUID().toString().substring(0, 8);
+        String googleId = "mock-google-id-" + UUID.randomUUID().toString().substring(0,8);
         String email = "mock@gmail.com";
+        String name = "Mock Google User";
 
         UserSocialLogin socialLogin = userSocialLoginRepository.findByProviderAndProviderId("GOOGLE", googleId)
                 .orElse(null);
@@ -143,7 +158,7 @@ public class AuthServiceImpl implements AuthService {
             if (user == null) {
                 user = User.builder()
                         .email(email)
-                        .phoneNumber("N/A")
+                        .role(UserRole.Customer)
                         .active(true)
                         .build();
                 userRepository.save(user);
@@ -164,77 +179,31 @@ public class AuthServiceImpl implements AuthService {
     @Override
     @Transactional
     public void sendOtp(SendOtpRequest request) {
-        final String identifier;
-        boolean exists = false;
-
-        if (request.getEmail() != null && !request.getEmail().trim().isEmpty()) {
-            identifier = request.getEmail();
-            exists = userRepository.existsByEmail(identifier);
-        } else if (request.getPhoneNumber() != null && !request.getPhoneNumber().trim().isEmpty()) {
-            identifier = request.getPhoneNumber();
-            exists = userRepository.existsByPhoneNumber(identifier);
-        } else {
-            throw new RuntimeException("Số điện thoại hoặc Email không được để trống");
-        }
-
-        if (request.getActionType() == OtpActionType.FORGOT_PASSWORD && !exists) {
-            throw new RuntimeException("Tài khoản không tồn tại");
-        } else if (request.getActionType() == OtpActionType.REGISTER && exists) {
-            throw new RuntimeException("Tài khoản đã được đăng ký");
-        }
-
+        String identifier = request.getPhoneNumber() != null ? request.getPhoneNumber() : request.getEmail();
         otpCodeRepository.findByPhoneNumberAndActionTypeAndUsedFalse(identifier, request.getActionType())
                 .ifPresent(otp -> {
                     otp.setUsed(true);
                     otpCodeRepository.save(otp);
                 });
 
-        String code = String.format("%06d", new Random().nextInt(1000000));
+        String code = String.format("%06d", new Random().nextInt(999999));
 
         OtpCode otpCode = OtpCode.builder()
                 .phoneNumber(identifier)
                 .otpCode(code)
                 .actionType(request.getActionType())
-                .expiresAt(OffsetDateTime.now().plusMinutes(5))
+                .expiresAt(OffsetDateTime.now().plusMinutes(2))
                 .used(false)
                 .build();
 
         otpCodeRepository.save(otpCode);
-
-        if (identifier.contains("@")) {
-            sendEmailOtp(identifier, code);
-        } else {
-            log.info("[SMS MOCK] Gửi OTP {} đến số điện thoại: {}", code, identifier);
-        }
-
         log.info("Mã OTP gửi đến {}: {}", identifier, code);
-    }
-
-    private void sendEmailOtp(String email, String code) {
-        try {
-            SimpleMailMessage message = new SimpleMailMessage();
-            message.setTo(email);
-            message.setSubject("Mã OTP xác thực FixItVN");
-            message.setText("Mã OTP của bạn là: " + code + ". Mã này có hiệu lực trong 5 phút.");
-
-            log.info("Đã gửi email OTP thành công đến: {}", email);
-        } catch (Exception e) {
-            log.error("Lỗi khi gửi email đến {}: {}", email, e.getMessage());
-        }
     }
 
     @Override
     @Transactional
     public AuthResponse verifyOtp(VerifyOtpRequest request) {
-        final String identifier;
-        if (request.getEmail() != null && !request.getEmail().trim().isEmpty()) {
-            identifier = request.getEmail();
-        } else if (request.getPhoneNumber() != null && !request.getPhoneNumber().trim().isEmpty()) {
-            identifier = request.getPhoneNumber();
-        } else {
-            throw new RuntimeException("Số điện thoại hoặc Email không được để trống");
-        }
-
+        String identifier = request.getPhoneNumber() != null ? request.getPhoneNumber() : request.getEmail();
         OtpCode otp = otpCodeRepository.findByPhoneNumberAndActionTypeAndUsedFalse(identifier, request.getActionType())
                 .orElseThrow(() -> new RuntimeException("Mã OTP không tồn tại hoặc đã được sử dụng"));
 
@@ -259,17 +228,8 @@ public class AuthServiceImpl implements AuthService {
     @Override
     @Transactional
     public void resetPassword(ResetPasswordRequest request) {
-        final String identifier;
-        if (request.getEmail() != null && !request.getEmail().trim().isEmpty()) {
-            identifier = request.getEmail();
-        } else if (request.getPhoneNumber() != null && !request.getPhoneNumber().trim().isEmpty()) {
-            identifier = request.getPhoneNumber();
-        } else {
-            throw new RuntimeException("Số điện thoại hoặc Email không được để trống");
-        }
-
-        OtpCode otp = otpCodeRepository
-                .findByPhoneNumberAndActionTypeAndUsedFalse(identifier, OtpActionType.FORGOT_PASSWORD)
+        String identifier = request.getPhoneNumber() != null ? request.getPhoneNumber() : request.getEmail();
+        OtpCode otp = otpCodeRepository.findByPhoneNumberAndActionTypeAndUsedFalse(identifier, OtpActionType.FORGOT_PASSWORD)
                 .orElseThrow(() -> new RuntimeException("Mã OTP không tồn tại hoặc đã được sử dụng"));
 
         if (otp.getExpiresAt().isBefore(OffsetDateTime.now())) {
@@ -340,6 +300,94 @@ public class AuthServiceImpl implements AuthService {
         });
     }
 
+    @Override
+    @Transactional
+    public void forgotPassword(ForgotPasswordRequest request) {
+        String identifier = request.getPhoneNumber() != null ? request.getPhoneNumber() : request.getEmail();
+        User user = userRepository.findByPhoneNumber(identifier)
+                .orElseGet(() -> userRepository.findByEmail(identifier)
+                        .orElseThrow(() -> new RuntimeException("Người dùng không tồn tại")));
+
+        SendOtpRequest sendOtpRequest = SendOtpRequest.builder()
+                .phoneNumber(request.getPhoneNumber())
+                .email(request.getEmail())
+                .actionType(OtpActionType.FORGOT_PASSWORD)
+                .build();
+        sendOtp(sendOtpRequest);
+    }
+
+    @Transactional
+    @Override
+    public void registerDeviceToken(String identifier, DeviceTokenRequest request) {
+        User user = userRepository.findByPhoneNumber(identifier)
+                .orElseGet(() -> userRepository.findByEmail(identifier)
+                        .orElseThrow(() -> new RuntimeException("Người dùng không tồn tại")));
+
+        UserDevice userDevice = userDeviceRepository.findByDeviceToken(request.getDeviceToken())
+                .orElseGet(() -> UserDevice.builder()
+                        .deviceToken(request.getDeviceToken())
+                        .build());
+        userDevice.setUser(user);
+        userDevice.setDeviceOs(request.getDeviceOs());
+        userDeviceRepository.save(userDevice);
+    }
+
+    @Override
+    @Transactional
+    public void removeDeviceToken(String deviceToken) {
+        userDeviceRepository.deleteByDeviceToken(deviceToken);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Page<NotificationResponse> getMyNotifications(String identifier, Pageable pageable) {
+        User user = userRepository.findByPhoneNumber(identifier)
+                .orElseGet(() -> userRepository.findByEmail(identifier)
+                        .orElseThrow(() -> new RuntimeException("Người dùng không tồn tại")));
+        return notificationRepository.findByUserIdOrderByCreatedAtDesc(user.getId(), pageable)
+                .map(notification -> NotificationResponse.builder()
+                        .id(notification.getId())
+                        .title(notification.getTitle())
+                        .content(notification.getContent())
+                        .is_read(notification.getRead())
+                        .createdAt(notification.getCreatedAt())
+                        .build());
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public UnreadCountResponse getMyUnreadCount(String identifier) {
+        User user = userRepository.findByPhoneNumber(identifier)
+                .orElseGet(() -> userRepository.findByEmail(identifier)
+                        .orElseThrow(() -> new RuntimeException("Người dùng không tồn tại")));
+        long count = notificationRepository.countByUserIdAndReadFalse(user.getId());
+        return UnreadCountResponse.builder().count(count).build();
+    }
+
+    @Override
+    @Transactional
+    public void markAsRead(String identifier, UUID notificationId) {
+        User user = userRepository.findByPhoneNumber(identifier)
+                .orElseGet(() -> userRepository.findByEmail(identifier)
+                        .orElseThrow(() -> new RuntimeException("Người dùng không tồn tại")));
+        Notification notification = notificationRepository.findById(notificationId)
+                .orElseThrow(() -> new RuntimeException("Thông báo không tồn tại"));
+        if (!notification.getUser().getId().equals(user.getId())) {
+            throw new RuntimeException("Không có quyền");
+        }
+        notification.setRead(true);
+        notificationRepository.save(notification);
+    }
+
+    @Override
+    @Transactional
+    public void markAllAsRead(String identifier) {
+        User user = userRepository.findByPhoneNumber(identifier)
+                .orElseGet(() -> userRepository.findByEmail(identifier)
+                        .orElseThrow(() -> new RuntimeException("Người dùng không tồn tại")));
+        notificationRepository.markAllAsReadByUserId(user.getId());
+    }
+
     private AuthResponse buildAuthResponse(User user, String accessToken, String refreshToken) {
         return AuthResponse.builder()
                 .accessToken(accessToken)
@@ -352,10 +400,7 @@ public class AuthServiceImpl implements AuthService {
         String accessToken = jwtService.generateToken(user);
         String refreshTokenValue = jwtService.generateRefreshToken(user);
 
-        refreshTokenRepository.findByUserId(user.getId()).ifPresent(token -> {
-            token.setRevoked(true);
-            refreshTokenRepository.save(token);
-        });
+        refreshTokenRepository.revokeAllActiveTokensByUserId(user.getId());
 
         RefreshToken refreshToken = RefreshToken.builder()
                 .user(user)
@@ -376,104 +421,6 @@ public class AuthServiceImpl implements AuthService {
                 .email(user.getEmail())
                 .role(user.getRole().name())
                 .avatarUrl(user.getAvatarUrl())
-                .build();
-    }
-
-    // =========================
-    // DEVICE TOKEN
-    // =========================
-
-    @Override
-    @Transactional
-    public void registerDeviceToken(String identifier, DeviceTokenRequest request) {
-        User user = userRepository.findByPhoneNumber(identifier)
-                .orElseGet(() -> userRepository.findByEmail(identifier)
-                        .orElseThrow(() -> new RuntimeException("Người dùng không tồn tại")));
-
-        Optional<UserDevice> existingDeviceOpt = userDeviceRepository.findByDeviceToken(request.getDeviceToken());
-
-        if (existingDeviceOpt.isPresent()) {
-            UserDevice existingDevice = existingDeviceOpt.get();
-            existingDevice.setUser(user);
-            existingDevice.setDeviceOs(request.getDeviceOs());
-            existingDevice.setLastActive(OffsetDateTime.now());
-            userDeviceRepository.save(existingDevice);
-            log.info("Cập nhật device token cho user: {}", user.getId());
-        } else {
-            UserDevice newDevice = UserDevice.builder()
-                    .user(user)
-                    .deviceToken(request.getDeviceToken())
-                    .deviceOs(request.getDeviceOs())
-                    .lastActive(OffsetDateTime.now())
-                    .build();
-            userDeviceRepository.save(newDevice);
-            log.info("Thêm mới device token cho user: {}", user.getId());
-        }
-    }
-
-    @Override
-    @Transactional
-    public void removeDeviceToken(String deviceToken) {
-        userDeviceRepository.deleteByDeviceToken(deviceToken);
-        log.info("Đã xóa device token: {}", deviceToken);
-    }
-
-    // =========================
-    // NOTIFICATION
-    // =========================
-
-    @Override
-    @Transactional(readOnly = true)
-    public Page<NotificationResponse> getMyNotifications(String identifier, Pageable pageable) {
-        User user = getUserByIdentifier(identifier);
-        Page<Notification> notifications = notificationRepository.findByUserIdOrderByCreatedAtDesc(user.getId(),
-                pageable);
-        return notifications.map(this::mapToNotificationResponse);
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public UnreadCountResponse getMyUnreadCount(String identifier) {
-        User user = getUserByIdentifier(identifier);
-        long count = notificationRepository.countByUserIdAndReadFalse(user.getId());
-        return new UnreadCountResponse(count);
-    }
-
-    @Override
-    @Transactional
-    public void markAsRead(String identifier, UUID notificationId) {
-        User user = getUserByIdentifier(identifier);
-        Notification notification = notificationRepository.findById(notificationId)
-                .orElseThrow(() -> new RuntimeException("Không tìm thấy thông báo"));
-
-        if (!notification.getUser().getId().equals(user.getId())) {
-            throw new RuntimeException("Không có quyền truy cập thông báo này");
-        }
-
-        notification.setRead(true);
-        notificationRepository.save(notification);
-    }
-
-    @Override
-    @Transactional
-    public void markAllAsRead(String identifier) {
-        User user = getUserByIdentifier(identifier);
-        notificationRepository.markAllAsReadByUserId(user.getId());
-    }
-
-    private User getUserByIdentifier(String identifier) {
-        return userRepository.findByPhoneNumber(identifier)
-                .orElseGet(() -> userRepository.findByEmail(identifier)
-                        .orElseThrow(() -> new RuntimeException("Người dùng không tồn tại")));
-    }
-
-    private NotificationResponse mapToNotificationResponse(Notification notification) {
-        return NotificationResponse.builder()
-                .id(notification.getId())
-                .title(notification.getTitle())
-                .content(notification.getContent())
-                .read(notification.getRead())
-                .createdAt(notification.getCreatedAt())
                 .build();
     }
 }

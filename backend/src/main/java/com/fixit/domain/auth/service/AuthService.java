@@ -6,6 +6,7 @@ import com.fixit.domain.auth.dto.response.NotificationResponse;
 import com.fixit.domain.auth.dto.response.UnreadCountResponse;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.UUID;
 
@@ -55,23 +56,16 @@ public interface AuthService {
             String identifier,
             ChangePasswordRequest request);
 
-    // =========================
-    // DEVICE TOKEN
-    // =========================
-    
+    @Transactional
     void registerDeviceToken(String identifier, DeviceTokenRequest request);
-    
+
     void removeDeviceToken(String deviceToken);
 
-    // =========================
-    // NOTIFICATION
-    // =========================
-    
     Page<NotificationResponse> getMyNotifications(String identifier, Pageable pageable);
-    
+
     UnreadCountResponse getMyUnreadCount(String identifier);
-    
+
     void markAsRead(String identifier, UUID notificationId);
-    
+
     void markAllAsRead(String identifier);
 }
