@@ -1,14 +1,21 @@
 package com.fixit.feature.worker.profile.presentation;
 
+import android.net.Uri;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.Navigation;
 
+import com.bumptech.glide.Glide;
 import com.fixit.core.ui.BaseFragment;
 import com.fixit.databinding.FragmentWorkerEditProfileBinding;
+import com.fixit.feature.upload.domain.model.UploadPurpose;
+import com.fixit.feature.upload.domain.model.UploadTargetType;
+import com.fixit.feature.upload.presentation.UploadViewModel;
 import com.fixit.feature.worker.profile.domain.model.WorkerProfile;
 import com.fixit.feature.worker.profile.domain.model.WorkerProfileUpdateInput;
 
@@ -18,7 +25,32 @@ import dagger.hilt.android.AndroidEntryPoint;
 public class WorkerEditProfileFragment extends BaseFragment<FragmentWorkerEditProfileBinding> {
 
     private WorkerProfileViewModel viewModel;
+    private UploadViewModel uploadViewModel;
     private String currentAvatarUrl;
+
+    // Image picker cho avatar
+    private final ActivityResultLauncher<String> pickAvatarLauncher = registerForActivityResult(
+            new ActivityResultContracts.GetContent(),
+            uri -> {
+                if (uri != null) {
+                    // Hiển thị ảnh mới ngay lập tức
+                    binding.ivAvatar.setPadding(0, 0, 0, 0);
+                    binding.ivAvatar.setImageTintList(null);
+                    Glide.with(this).load(uri).circleCrop().into(binding.ivAvatar);
+                    // Upload lên server
+                    uploadViewModel.upload(
+                            requireContext(),
+                            uri,
+                            UploadPurpose.AVATAR,
+                            UploadTargetType.USER_AVATAR,
+                            null,
+                            null,
+                            "avatar",
+                            null
+                    );
+                }
+            }
+    );
 
     @Override
     protected FragmentWorkerEditProfileBinding inflateViewBinding(
@@ -43,12 +75,17 @@ public class WorkerEditProfileFragment extends BaseFragment<FragmentWorkerEditPr
         binding.etPhone.setEnabled(false);
         binding.etCccd.setEnabled(false);
 
+        // Click avatar hoặc text "Thay đổi ảnh đại diện" → mở gallery
+        binding.ivAvatar.setOnClickListener(v -> pickAvatarLauncher.launch("image/*"));
+        binding.tvChangeAvatar.setOnClickListener(v -> pickAvatarLauncher.launch("image/*"));
+
         binding.btnSaveProfile.setOnClickListener(v -> saveProfile());
     }
 
     @Override
     protected void observeData() {
         viewModel = new ViewModelProvider(this).get(WorkerProfileViewModel.class);
+        uploadViewModel = new ViewModelProvider(this).get(UploadViewModel.class);
 
         viewModel.profile.observe(getViewLifecycleOwner(), this::bindProfile);
 
@@ -65,6 +102,16 @@ public class WorkerEditProfileFragment extends BaseFragment<FragmentWorkerEditPr
             }
         });
 
+        // Observe kết quả upload avatar
+        uploadViewModel.uploadResult.observe(getViewLifecycleOwner(), result -> {
+            if (result == null) return;
+            if (result.isSuccess() && UploadPurpose.AVATAR.equals(result.getPurpose())) {
+                Toast.makeText(requireContext(), "Ảnh đại diện đã vào hàng đợi cập nhật", Toast.LENGTH_SHORT).show();
+            } else if (!result.isSuccess()) {
+                Toast.makeText(requireContext(), result.getErrorMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
+
         viewModel.loadProfile();
     }
 
@@ -74,6 +121,21 @@ public class WorkerEditProfileFragment extends BaseFragment<FragmentWorkerEditPr
         }
 
         currentAvatarUrl = profile.getAvatarUrl();
+
+        // Hiển thị avatar hiện tại
+        if (currentAvatarUrl != null && !currentAvatarUrl.isEmpty()) {
+            binding.ivAvatar.setPadding(0, 0, 0, 0);
+            binding.ivAvatar.setImageTintList(null);
+            Glide.with(this).load(currentAvatarUrl).circleCrop().into(binding.ivAvatar);
+        } else {
+            // Khôi phục placeholder mặc định
+            int padding = (int) (16 * getResources().getDisplayMetrics().density);
+            binding.ivAvatar.setPadding(padding, padding, padding, padding);
+            binding.ivAvatar.setImageTintList(android.content.res.ColorStateList.valueOf(
+                    android.graphics.Color.parseColor("#64748b")
+            ));
+            binding.ivAvatar.setImageResource(com.fixit.R.drawable.ic_lucide_user);
+        }
 
         binding.etFullName.setText(profile.getFullName());
         binding.etPhone.setText(profile.getPhoneNumber());
@@ -115,7 +177,7 @@ public class WorkerEditProfileFragment extends BaseFragment<FragmentWorkerEditPr
         WorkerProfileUpdateInput input = new WorkerProfileUpdateInput(
                 fullName,
                 email,
-                currentAvatarUrl,
+                null,
                 bio,
                 serviceArea
         );

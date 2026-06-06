@@ -68,9 +68,7 @@ public class WorkerProfileServiceImpl implements WorkerProfileService {
                 user.setEmail(trimToNull(request.getEmail()));
             }
 
-            if (request.getAvatarUrl() != null) {
-                user.setAvatarUrl(trimToNull(request.getAvatarUrl()));
-            }
+            // Avatar is updated only through /api/v1/users/me/avatar with an uploadId.
         }
 
         return toProfileResponse(worker);
@@ -164,7 +162,7 @@ public class WorkerProfileServiceImpl implements WorkerProfileService {
                 .avatarUrl(user != null ? user.getAvatarUrl() : null)
                 .identityCard(worker.getIdentityCard())
                 .verificationStatus(worker.getVerificationStatus() != null
-                        ? worker.getVerificationStatus().name()
+                        ? worker.getVerificationStatus().name().toUpperCase(Locale.ROOT)
                         : null)
                 .available(worker.getAvailable())
                 .reputationScore(worker.getReputationScore())

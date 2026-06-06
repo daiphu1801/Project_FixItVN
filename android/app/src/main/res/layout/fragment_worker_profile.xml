@@ -371,41 +371,7 @@
                     app:layout_constraintBottom_toBottomOf="@id/ivCccdCheck"
                     app:layout_constraintEnd_toEndOf="parent" />
 
-                <!-- Bằng lái xe - Đang chờ -->
-                <ImageView
-                    android:id="@+id/ivLicenceClock"
-                    android:layout_width="22dp"
-                    android:layout_height="22dp"
-                    android:layout_marginTop="16dp"
-                    android:src="@drawable/ic_lucide_clock"
-                    app:tint="#f59e0b"
-                    app:layout_constraintTop_toBottomOf="@id/ivCccdCheck"
-                    app:layout_constraintStart_toStartOf="parent" />
 
-                <TextView
-                    android:id="@+id/tvLicenceLabel"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="12dp"
-                    android:text="Bằng lái xe"
-                    android:textColor="#0d1b2a"
-                    android:textSize="15sp"
-                    app:layout_constraintTop_toTopOf="@id/ivLicenceClock"
-                    app:layout_constraintBottom_toBottomOf="@id/ivLicenceClock"
-                    app:layout_constraintStart_toEndOf="@id/ivLicenceClock"
-                    app:layout_constraintEnd_toStartOf="@id/tvLicenceStatus" />
-
-                <TextView
-                    android:id="@+id/tvLicenceStatus"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Đang chờ"
-                    android:textColor="#f59e0b"
-                    android:textSize="13sp"
-                    android:textStyle="bold"
-                    app:layout_constraintTop_toTopOf="@id/ivLicenceClock"
-                    app:layout_constraintBottom_toBottomOf="@id/ivLicenceClock"
-                    app:layout_constraintEnd_toEndOf="parent" />
             </androidx.constraintlayout.widget.ConstraintLayout>
         </com.google.android.material.card.MaterialCardView>
 

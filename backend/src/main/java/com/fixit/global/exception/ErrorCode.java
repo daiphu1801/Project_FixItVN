@@ -54,6 +54,15 @@ public enum ErrorCode {
     UPLOAD_PROVIDER_OBJECT_NOT_FOUND(404, HttpStatus.NOT_FOUND, "Không tìm thấy file trên hệ thống lưu trữ"),
     UPLOAD_PROVIDER_FILE_SIZE_MISMATCH(400, HttpStatus.BAD_REQUEST, "Dung lượng file trên storage không khớp với upload đã cấp"),
     UPLOAD_PROVIDER_RESOURCE_TYPE_INVALID(400, HttpStatus.BAD_REQUEST, "Loại tài nguyên trên storage không hợp lệ"),
+    UPLOAD_NOT_CONFIRMED(409, HttpStatus.CONFLICT, "Upload chưa được xác nhận"),
+    UPLOAD_ALREADY_USED(409, HttpStatus.CONFLICT, "Upload đã được sử dụng"),
+    UPLOAD_PURPOSE_NOT_ALLOWED(400, HttpStatus.BAD_REQUEST, "Upload không đúng mục đích nghiệp vụ"),
+
+    //eKYC
+    WORKER_KYC_NOT_FOUND(404, HttpStatus.NOT_FOUND, "Không tìm thấy hồ sơ KYC của thợ hiện tại"),
+
+    //Proof of work
+    PROOF_OF_WORK_ALREADY_EXISTS(409, HttpStatus.CONFLICT, "Ảnh bằng chứng loại này đã tồn tại cho đơn hàng"),
 
     // Worker wallet
     WALLET_NOT_FOUND(404, HttpStatus.NOT_FOUND, "Không tìm thấy ví của thợ hiện tại"),
@@ -63,6 +72,7 @@ public enum ErrorCode {
     WALLET_DEPOSIT_NOT_FOUND(404, HttpStatus.NOT_FOUND, "Không tìm thấy giao dịch nạp tiền của thợ hiện tại"),
     WALLET_DEPOSIT_INVALID_STATUS(409, HttpStatus.CONFLICT, "Trạng thái giao dịch nạp tiền không hợp lệ"),
     WALLET_DEPOSIT_PENDING_EXISTS(409, HttpStatus.CONFLICT, "Đang có giao dịch nạp tiền chờ thanh toán");
+
     private final int code;
     private final HttpStatus httpStatus;
     private final String message;

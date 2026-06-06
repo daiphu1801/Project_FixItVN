@@ -43,9 +43,16 @@ public class WorkerHomeFragment extends BaseFragment<FragmentWorkerHomeBinding> 
             }
         });
 
-        binding.ivWorkerAvatar.setOnClickListener(v ->
+        binding.ivWorkerAvatar.setOnClickListener(v -> {
+            com.google.android.material.bottomnavigation.BottomNavigationView bottomNav =
+                    requireActivity().findViewById(com.fixit.R.id.bottomNavigationView);
+            if (bottomNav != null) {
+                bottomNav.setSelectedItemId(com.fixit.R.id.workerProfileFragment);
+            } else {
                 androidx.navigation.Navigation.findNavController(v)
-                        .navigate(com.fixit.R.id.workerProfileFragment));
+                        .navigate(com.fixit.R.id.workerProfileFragment);
+            }
+        });
 
         binding.tvViewStatsDetail.setOnClickListener(v ->
                 androidx.navigation.Navigation.findNavController(v)
@@ -102,6 +109,23 @@ public class WorkerHomeFragment extends BaseFragment<FragmentWorkerHomeBinding> 
 
         binding.tvGreeting.setText(nonBlank(home.getGreetingText(), "Xin chào,"));
         binding.tvWorkerName.setText(nonBlank(home.getFullName(), "Thợ FixIt"));
+
+        // Hiển thị avatar thợ ở trang chủ
+        String avatarUrl = home.getAvatarUrl();
+        if (avatarUrl != null && !avatarUrl.isEmpty()) {
+            binding.ivWorkerAvatar.setPadding(0, 0, 0, 0);
+            binding.ivWorkerAvatar.setImageTintList(null);
+            com.bumptech.glide.Glide.with(this)
+                    .load(avatarUrl)
+                    .circleCrop()
+                    .into(binding.ivWorkerAvatar);
+        } else {
+            binding.ivWorkerAvatar.setPadding(0, 0, 0, 0);
+            binding.ivWorkerAvatar.setImageTintList(android.content.res.ColorStateList.valueOf(
+                    android.graphics.Color.parseColor("#42c2ff")
+            ));
+            binding.ivWorkerAvatar.setImageResource(com.fixit.R.drawable.ic_lucide_user);
+        }
 
         bindStatus(home);
         bindStats(home.getStatsOverview());

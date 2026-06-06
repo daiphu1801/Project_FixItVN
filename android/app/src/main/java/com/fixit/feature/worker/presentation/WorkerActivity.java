@@ -31,6 +31,19 @@ public class WorkerActivity extends BaseActivity<ActivityWorkerBinding> {
             // Wire bottom nav (5 items: Trang chủ, Đơn hàng, Tìm việc, Chat, Tài khoản)
             NavigationUI.setupWithNavController(binding.bottomNavigationView, navController);
 
+            // Xử lý khi nhấn vào các mục trên Bottom Navigation để đồng bộ trải nghiệm
+            binding.bottomNavigationView.setOnItemSelectedListener(item -> {
+                int itemId = item.getItemId();
+                if (itemId == com.fixit.R.id.workerHomeFragment) {
+                    boolean popped = navController.popBackStack(com.fixit.R.id.workerHomeFragment, false);
+                    if (!popped) {
+                        navController.navigate(com.fixit.R.id.workerHomeFragment);
+                    }
+                    return true;
+                }
+                return NavigationUI.onNavDestinationSelected(item, navController);
+            });
+
             // FAB ở giữa → simulate click item "Tìm việc" trong bottom nav
             // Để NavigationUI tự xử lý popUpTo đúng cách (tránh conflict back stack)
             binding.fabWorkerOnline.setOnClickListener(v ->
