@@ -7,7 +7,12 @@ import com.fixit.domain.auth.repository.OtpCodeRepository;
 import com.fixit.domain.auth.repository.RefreshTokenRepository;
 import com.fixit.domain.auth.repository.UserRepository;
 import com.fixit.domain.auth.repository.UserSocialLoginRepository;
-import com.fixit.domain.auth.security.JwtService;
+import com.fixit.domain.wallet.entity.WorkerWallet;
+import com.fixit.domain.wallet.repository.WorkerWalletRepository;
+import com.fixit.domain.worker.entity.Worker;
+import com.fixit.domain.worker.entity.WorkerVerificationStatus;
+import com.fixit.domain.worker.repository.WorkerRepository;
+import com.fixit.global.security.JwtService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -16,6 +21,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.time.OffsetDateTime;
 import java.util.Random;
 import java.util.UUID;
@@ -26,6 +32,8 @@ import java.util.UUID;
 public class AuthServiceImpl implements AuthService {
 
     private final UserRepository userRepository;
+    private final WorkerRepository workerRepository;
+    private final WorkerWalletRepository workerWalletRepository;
     private final RefreshTokenRepository refreshTokenRepository;
     private final OtpCodeRepository otpCodeRepository;
     private final UserSocialLoginRepository userSocialLoginRepository;
@@ -36,35 +44,95 @@ public class AuthServiceImpl implements AuthService {
     @Override
     @Transactional
     public AuthResponse register(RegisterRequest request) {
-        if (userRepository.existsByPhoneNumber(request.getIdentifier()) || userRepository.existsByEmail(request.getIdentifier())) {
-            throw new RuntimeException("Tài khoản (SĐT/Email) đã được đăng ký");
+        String phone = request.getPhone().trim();
+        String email = request.getEmail().trim().toLowerCase();
+
+        if (userRepository.existsByPhoneNumber(phone)) {
+            throw new RuntimeException("Số điện thoại đã được đăng ký");
         }
 
-        boolean isEmail = request.getIdentifier().contains("@");
+        if (userRepository.existsByEmail(email)) {
+            throw new RuntimeException("Email đã được đăng ký");
+        }
 
         User user = User.builder()
-                .phoneNumber(isEmail ? null : request.getIdentifier())
-                .email(isEmail ? request.getIdentifier() : null)
+                .phoneNumber(phone)
+                .email(email)
                 .passwordHash(passwordEncoder.encode(request.getPassword()))
                 .role(request.getRole())
                 .active(true)
                 .build();
 
-        userRepository.save(user);
-        return buildAuthResponse(user);
+        User savedUser = userRepository.save(user);
+
+        if (request.getRole() == UserRole.Worker) {
+            Worker worker = Worker.builder()
+                    .user(savedUser)
+                    .fullName(request.getFullName().trim())
+                    .verificationStatus(WorkerVerificationStatus.Pending)
+                    .available(false)
+                    .reputationScore(BigDecimal.valueOf(5.0))
+                    .missedCount(0)
+                    .rejectionCount(0)
+                    .build();
+
+            Worker savedWorker = workerRepository.save(worker);
+
+            WorkerWallet wallet = WorkerWallet.builder()
+                    .worker(savedWorker)
+                    .availableBalance(BigDecimal.ZERO)
+                    .heldBalance(BigDecimal.ZERO)
+                    .debtBalance(BigDecimal.ZERO)
+                    .build();
+
+            workerWalletRepository.save(wallet);
+        }
+
+        String accessToken = jwtService.generateToken(savedUser);
+        String refreshTokenValue = jwtService.generateRefreshToken(savedUser);
+
+        RefreshToken refreshToken = RefreshToken.builder()
+                .user(savedUser)
+                .token(refreshTokenValue)
+                .expiresAt(OffsetDateTime.now().plusDays(7))
+                .revoked(false)
+                .build();
+
+        refreshTokenRepository.save(refreshToken);
+
+        return buildAuthResponse(savedUser, accessToken, refreshTokenValue);
     }
 
     @Override
+    @Transactional
     public AuthResponse login(LoginRequest request) {
-        authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(request.getIdentifier(), request.getPassword())
-        );
+        User user = userRepository
+                .findByPhoneNumber(request.getIdentifier())
+                .orElseThrow(() -> new RuntimeException("Tài khoản không tồn tại"));
 
-        User user = userRepository.findByPhoneNumber(request.getIdentifier())
-                .orElseGet(() -> userRepository.findByEmail(request.getIdentifier())
-                        .orElseThrow(() -> new RuntimeException("Người dùng không tồn tại")));
+        if (!Boolean.TRUE.equals(user.getActive())) {
+            throw new RuntimeException("Tài khoản đã bị khóa");
+        }
 
-        return buildAuthResponse(user);
+        if (!passwordEncoder.matches(request.getPassword(), user.getPasswordHash())) {
+            throw new RuntimeException("Mật khẩu không đúng");
+        }
+
+        refreshTokenRepository.revokeAllActiveTokensByUserId(user.getId());
+
+        String accessToken = jwtService.generateToken(user);
+        String refreshTokenValue = jwtService.generateRefreshToken(user);
+
+        RefreshToken refreshToken = RefreshToken.builder()
+                .user(user)
+                .token(refreshTokenValue)
+                .expiresAt(OffsetDateTime.now().plusDays(7))
+                .revoked(false)
+                .build();
+
+        refreshTokenRepository.save(refreshToken);
+
+        return buildAuthResponse(user, accessToken, refreshTokenValue);
     }
 
     @Override
@@ -222,28 +290,30 @@ public class AuthServiceImpl implements AuthService {
         });
     }
 
+    private AuthResponse buildAuthResponse(User user, String accessToken, String refreshToken) {
+        return AuthResponse.builder()
+                .accessToken(accessToken)
+                .refreshToken(refreshToken)
+                .user(mapToUserInfo(user))
+                .build();
+    }
+
     private AuthResponse buildAuthResponse(User user) {
         String accessToken = jwtService.generateToken(user);
-        String refreshTokenStr = jwtService.generateRefreshToken(user);
+        String refreshTokenValue = jwtService.generateRefreshToken(user);
 
-        refreshTokenRepository.findByUserId(user.getId()).ifPresent(token -> {
-            token.setRevoked(true);
-            refreshTokenRepository.save(token);
-        });
+        refreshTokenRepository.revokeAllActiveTokensByUserId(user.getId());
 
         RefreshToken refreshToken = RefreshToken.builder()
                 .user(user)
-                .token(refreshTokenStr)
+                .token(refreshTokenValue)
                 .expiresAt(OffsetDateTime.now().plusDays(7))
                 .revoked(false)
                 .build();
+
         refreshTokenRepository.save(refreshToken);
 
-        return AuthResponse.builder()
-                .accessToken(accessToken)
-                .refreshToken(refreshTokenStr)
-                .user(mapToUserInfo(user))
-                .build();
+        return buildAuthResponse(user, accessToken, refreshTokenValue);
     }
 
     private AuthResponse.UserInfo mapToUserInfo(User user) {

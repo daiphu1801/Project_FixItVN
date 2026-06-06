@@ -35,9 +35,9 @@ public class AuthViewModel extends ViewModel {
         loginUseCase.execute(phone, password, role, this::handleLoginResult);
     }
 
-    public void register(String phone, String password, String fullName, String role) {
+    public void register(String phone, String email, String password, String fullName, String role) {
         _uiState.setValue(AuthUiState.loading());
-        registerUseCase.execute(phone, password, fullName, role, this::handleRegisterResult);
+        registerUseCase.execute(phone, email, password, fullName, role, this::handleRegisterResult);
     }
 
     private void handleLoginResult(Result<Session> result) {

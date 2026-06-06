@@ -4,13 +4,14 @@ import com.google.gson.annotations.SerializedName;
 
 public class AuthRequest {
     public static class Login {
-        @SerializedName("phone")
-        private String phone;
+        @SerializedName("identifier")
+        private String identifier;
+
         @SerializedName("password")
         private String password;
 
-        public Login(String phone, String password) {
-            this.phone = phone;
+        public Login(String identifier, String password) {
+            this.identifier = identifier;
             this.password = password;
         }
     }
@@ -18,15 +19,22 @@ public class AuthRequest {
     public static class Register {
         @SerializedName("phone")
         private String phone;
+
+        @SerializedName("email")
+        private String email;
+
         @SerializedName("password")
         private String password;
+
         @SerializedName("fullName")
         private String fullName;
+
         @SerializedName("role")
         private String role;
 
-        public Register(String phone, String password, String fullName, String role) {
+        public Register(String phone, String email, String password, String fullName, String role) {
             this.phone = phone;
+            this.email = email;
             this.password = password;
             this.fullName = fullName;
             this.role = role;
