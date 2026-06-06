@@ -127,6 +127,11 @@
         android:label="Xác minh danh tính" />
 
     <fragment
+        android:id="@+id/workerKycUploadingFragment"
+        android:name="com.fixit.feature.worker.kyc.presentation.WorkerKycUploadingFragment"
+        android:label="Đang tải hồ sơ lên" />
+
+    <fragment
         android:id="@+id/workerKycPendingFragment"
         android:name="com.fixit.feature.worker.kyc.presentation.WorkerKycPendingFragment"
         android:label="Trạng thái hồ sơ" />

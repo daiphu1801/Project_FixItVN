@@ -20,8 +20,11 @@ public class UploadValidationPolicy {
 
     private static final Set<String> IMAGE_CONTENT_TYPES = Set.of(
             "image/jpeg",
+            "image/jpg",
             "image/png",
-            "image/webp"
+            "image/webp",
+            "image/heic",
+            "image/heif"
     );
 
     public UploadPurpose validatePurpose(String rawPurpose) {

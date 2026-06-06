@@ -69,7 +69,7 @@ public class AuthServiceImpl implements AuthService {
             Worker worker = Worker.builder()
                     .user(savedUser)
                     .fullName(request.getFullName().trim())
-                    .verificationStatus(WorkerVerificationStatus.Pending)
+                    .verificationStatus(WorkerVerificationStatus.Unverified)
                     .available(false)
                     .reputationScore(BigDecimal.valueOf(5.0))
                     .missedCount(0)

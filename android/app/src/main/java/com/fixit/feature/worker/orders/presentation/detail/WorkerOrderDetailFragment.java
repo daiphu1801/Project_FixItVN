@@ -32,6 +32,9 @@ import com.fixit.databinding.LayoutOrderTimelineCardBinding;
 import com.fixit.databinding.LayoutPricingSummaryCardBinding;
 import com.fixit.databinding.LayoutWorkerPaymentSectionBinding;
 import com.fixit.databinding.LayoutProofOfWorkSectionBinding;
+import com.fixit.feature.upload.domain.model.UploadPurpose;
+import com.fixit.feature.upload.domain.model.UploadTargetType;
+import com.fixit.feature.upload.presentation.UploadViewModel;
 
 import dagger.hilt.android.AndroidEntryPoint;
 
@@ -39,6 +42,7 @@ import dagger.hilt.android.AndroidEntryPoint;
 public class WorkerOrderDetailFragment extends BaseFragment<FragmentWorkerOrderDetailBinding> {
 
     private WorkerOrdersViewModel viewModel;
+    private UploadViewModel uploadViewModel;
     private WorkerOrder currentOrder;
 
     // Sub-layout bindings cho các section đã tách
@@ -58,6 +62,17 @@ public class WorkerOrderDetailFragment extends BaseFragment<FragmentWorkerOrderD
                 if (uri != null) {
                     proofBeforeUri = uri;
                     displayProofBeforeImage(uri);
+                    // Upload ảnh trước sửa chữa lên server
+                    uploadViewModel.upload(
+                            requireContext(),
+                            uri,
+                            UploadPurpose.PROOF_BEFORE_REPAIR,
+                            UploadTargetType.PROOF_OF_WORK,
+                            getCurrentOrderId(),
+                            null,
+                            "before",
+                            "{\"proofType\":\"BEFORE_REPAIR\"}"
+                    );
                 }
             }
     );
@@ -68,6 +83,17 @@ public class WorkerOrderDetailFragment extends BaseFragment<FragmentWorkerOrderD
                 if (uri != null) {
                     proofAfterUri = uri;
                     displayProofAfterImage(uri);
+                    // Upload ảnh sau sửa chữa lên server
+                    uploadViewModel.upload(
+                            requireContext(),
+                            uri,
+                            UploadPurpose.PROOF_AFTER_REPAIR,
+                            UploadTargetType.PROOF_OF_WORK,
+                            getCurrentOrderId(),
+                            null,
+                            "after",
+                            "{\"proofType\":\"AFTER_REPAIR\"}"
+                    );
                 }
             }
     );
@@ -76,6 +102,7 @@ public class WorkerOrderDetailFragment extends BaseFragment<FragmentWorkerOrderD
     public void onCreate(android.os.Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         viewModel = new ViewModelProvider(requireActivity()).get(WorkerOrdersViewModel.class);
+        uploadViewModel = new ViewModelProvider(this).get(UploadViewModel.class);
     }
 
     @Override
@@ -167,6 +194,20 @@ public class WorkerOrderDetailFragment extends BaseFragment<FragmentWorkerOrderD
         }
 
         viewModel.currentStatus.observe(getViewLifecycleOwner(), this::updateTimelineUI);
+
+        // Observe kết quả upload ảnh bằng chứng
+        uploadViewModel.uploadResult.observe(getViewLifecycleOwner(), result -> {
+            if (result == null) return;
+            if (result.isSuccess()) {
+                Toast.makeText(requireContext(), "Upload ảnh thành công", Toast.LENGTH_SHORT).show();
+            } else {
+                Toast.makeText(requireContext(), result.getErrorMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        uploadViewModel.isUploading.observe(getViewLifecycleOwner(), uploading -> {
+            // Có thể hiển thị/ẩn progress trên card ảnh tại đây
+        });
     }
 
     private void bindOrderData(WorkerOrder order) {
@@ -397,5 +438,12 @@ public class WorkerOrderDetailFragment extends BaseFragment<FragmentWorkerOrderD
         proofBinding.icProofAfterCamera.setVisibility(View.GONE);
         proofBinding.tvProofAfterLabel.setVisibility(View.GONE);
         Glide.with(this).load(uri).into(proofBinding.ivProofAfterImage);
+    }
+
+    private String getCurrentOrderId() {
+        if (currentOrder != null && currentOrder.getOrderId() != null) {
+            return currentOrder.getOrderId();
+        }
+        return getArguments() != null ? getArguments().getString("orderId") : null;
     }
 }

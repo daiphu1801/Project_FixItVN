@@ -35,7 +35,8 @@ public class CustomerHomeFragment extends BaseFragment<FragmentCustomerHomeBindi
             @Override
             public void onCategoryClick(ServiceCategory category) {
                 // Hiện BottomSheet để chọn dịch vụ con
-                ServiceCategoryBottomSheet bottomSheet = ServiceCategoryBottomSheet.newInstance(category.getId(), category.getName());
+                ServiceCategoryBottomSheet bottomSheet = ServiceCategoryBottomSheet.newInstance(category.getId(),
+                        category.getName());
                 bottomSheet.setOnServiceItemSelectedListener(item -> {
                     // Khi chọn xong 1 dịch vụ con -> Chuyển sang màn hình Đặt thợ
                     navigateToFindingWorker(item.getName());
@@ -46,7 +47,7 @@ public class CustomerHomeFragment extends BaseFragment<FragmentCustomerHomeBindi
         binding.rvServices.setAdapter(serviceAdapter);
 
         // --- XỬ LÝ SỰ KIỆN KHÁC ---
-        
+
         // Ô chọn vị trí phía trên
         binding.cardLocation.setOnClickListener(v -> {
             if (navController != null) {
@@ -61,8 +62,18 @@ public class CustomerHomeFragment extends BaseFragment<FragmentCustomerHomeBindi
             }
         });
 
-        // Gọi API lấy danh sách danh mục
-        viewModel.fetchCategories();
+        // Avatar người dùng → mở tab Cá nhân qua BottomNavigationView
+        binding.ivUserAvatar.setOnClickListener(v -> {
+            com.google.android.material.bottomnavigation.BottomNavigationView bottomNav = requireActivity()
+                    .findViewById(R.id.bottomNavigationView);
+            if (bottomNav != null) {
+                bottomNav.setSelectedItemId(R.id.nav_customer_profile);
+            } else {
+                if (navController != null) {
+                    navController.navigate(R.id.nav_customer_profile);
+                }
+            }
+        });
     }
 
     private void navigateToFindingWorker(String serviceName) {
@@ -77,7 +88,7 @@ public class CustomerHomeFragment extends BaseFragment<FragmentCustomerHomeBindi
         viewModel.categories.observe(getViewLifecycleOwner(), categories -> {
             serviceAdapter.submitList(categories);
         });
-        
+
         viewModel.getIsLoading().observe(getViewLifecycleOwner(), isLoading -> {
             // Có thể hiển thị ProgressBar nếu muốn
         });
