@@ -257,6 +257,7 @@
 
             <!-- Nút thêm ảnh -->
             <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnAddEvidence"
                 style="@style/Widget.MaterialComponents.Button.OutlinedButton"
                 android:layout_width="match_parent"
                 android:layout_height="56dp"
@@ -267,6 +268,23 @@
                 app:icon="@drawable/ic_lucide_camera"
                 app:iconTint="#4b5563"
                 app:strokeColor="#d1d5db" />
+
+            <!-- Danh sách ảnh bằng chứng đã chọn -->
+            <HorizontalScrollView
+                android:id="@+id/hsvEvidenceImages"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="16dp"
+                android:layout_marginTop="8dp"
+                android:scrollbars="none"
+                android:visibility="gone">
+
+                <LinearLayout
+                    android:id="@+id/llEvidenceImages"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal" />
+            </HorizontalScrollView>
 
             <!-- ═══════════════════════════════════════════════
                  NÚT HÀNH ĐỘNG

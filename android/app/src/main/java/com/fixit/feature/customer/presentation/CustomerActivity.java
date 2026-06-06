@@ -51,7 +51,10 @@ public class CustomerActivity extends BaseActivity<ActivityCustomerBinding> {
                 
                 // Nếu đang ở màn hình khác và ấn vào "Trang chủ", quay về màn hình Home
                 if (itemId == R.id.nav_customer_home) {
-                    navController.popBackStack(R.id.nav_customer_home, false);
+                    boolean popped = navController.popBackStack(R.id.nav_customer_home, false);
+                    if (!popped) {
+                        navController.navigate(R.id.nav_customer_home);
+                    }
                     return true;
                 }
                 

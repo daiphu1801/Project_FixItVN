@@ -28,6 +28,9 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Locale;
+import android.widget.Toast;
+import com.fixit.feature.upload.domain.model.UploadPurpose;
+import com.fixit.feature.upload.presentation.UploadViewModel;
 import dagger.hilt.android.AndroidEntryPoint;
 
 @AndroidEntryPoint
@@ -38,6 +41,7 @@ public class CustomerBookingFragment extends BaseFragment<FragmentCustomerBookin
     private String currentAddress = "207/17B Bùi Xương Trạch, Khương Đình, Thanh Xuân, Hà Nội";
     private String selectedTimeText = "Ngay bây giờ";
     private final List<Uri> selectedImages = new ArrayList<>();
+    private UploadViewModel uploadViewModel;
 
     private final ActivityResultLauncher<String> pickImageLauncher = registerForActivityResult(
             new ActivityResultContracts.GetContent(),
@@ -45,6 +49,8 @@ public class CustomerBookingFragment extends BaseFragment<FragmentCustomerBookin
                 if (uri != null) {
                     selectedImages.add(uri);
                     addImageToUI(uri);
+                    // Upload ảnh vấn đề lên server
+                    uploadViewModel.upload(requireContext(), uri, UploadPurpose.BOOKING_ISSUE_IMAGE);
                 }
             }
     );
@@ -58,7 +64,7 @@ public class CustomerBookingFragment extends BaseFragment<FragmentCustomerBookin
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        
+        uploadViewModel = new ViewModelProvider(this).get(UploadViewModel.class);        
         getParentFragmentManager().setFragmentResultListener(
             NoteInputFragment.REQUEST_KEY, 
             this, 
@@ -257,5 +263,15 @@ public class CustomerBookingFragment extends BaseFragment<FragmentCustomerBookin
     }
 
     @Override
-    protected void observeData() {}
+    protected void observeData() {
+        // Observe kết quả upload ảnh vấn đề
+        uploadViewModel.uploadResult.observe(getViewLifecycleOwner(), result -> {
+            if (result == null) return;
+            if (result.isSuccess()) {
+                Toast.makeText(requireContext(), "Ảnh đã tải lên thành công", Toast.LENGTH_SHORT).show();
+            } else {
+                Toast.makeText(requireContext(), result.getErrorMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
 }

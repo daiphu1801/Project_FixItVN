@@ -31,8 +31,8 @@ CREATE TABLE workers (
     worker_id uuid PRIMARY KEY REFERENCES users(id),
     full_name varchar(100),
     identity_card varchar(20) UNIQUE,
-    verification_status varchar(50) DEFAULT 'Pending'
-        CHECK (verification_status IN ('Pending', 'Approved', 'Rejected')),
+    verification_status varchar(50) DEFAULT 'Unverified'
+        CHECK (verification_status IN ('Unverified', 'Pending', 'Approved', 'Rejected')),
     latitude numeric(10,8),
     longitude numeric(11,8),
     is_available boolean DEFAULT false,

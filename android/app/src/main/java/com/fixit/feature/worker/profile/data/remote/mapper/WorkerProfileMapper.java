@@ -36,7 +36,7 @@ public class WorkerProfileMapper {
         return new WorkerProfileUpdateRequest(
                 trimToNull(input.getFullName()),
                 trimToNull(input.getEmail()),
-                trimToNull(input.getAvatarUrl()),
+                null,
                 trimToNull(input.getExperienceDescription()),
                 trimToNull(input.getServiceArea())
         );

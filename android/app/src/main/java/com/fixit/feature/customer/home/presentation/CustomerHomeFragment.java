@@ -84,6 +84,19 @@ public class CustomerHomeFragment extends BaseFragment<FragmentCustomerHomeBindi
                 navController.navigate(R.id.nav_customer_list_msg);
             }
         });
+
+        // Avatar người dùng → mở tab Cá nhân qua BottomNavigationView
+        binding.ivUserAvatar.setOnClickListener(v -> {
+            com.google.android.material.bottomnavigation.BottomNavigationView bottomNav =
+                    requireActivity().findViewById(R.id.bottomNavigationView);
+            if (bottomNav != null) {
+                bottomNav.setSelectedItemId(R.id.nav_customer_profile);
+            } else {
+                if (navController != null) {
+                    navController.navigate(R.id.nav_customer_profile);
+                }
+            }
+        });
     }
 
     private void navigateToFindingWorker(String serviceName) {

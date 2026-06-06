@@ -35,7 +35,7 @@ public class Worker {
     @Builder.Default
     @Enumerated(EnumType.STRING)
     @Column(name = "verification_status", length = 50)
-    private WorkerVerificationStatus verificationStatus = WorkerVerificationStatus.Pending;
+    private WorkerVerificationStatus verificationStatus = WorkerVerificationStatus.Unverified;
 
     @Column(name = "latitude", precision = 10, scale = 8)
     private BigDecimal latitude;
