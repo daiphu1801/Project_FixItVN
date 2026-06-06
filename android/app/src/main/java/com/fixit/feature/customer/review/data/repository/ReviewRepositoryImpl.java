@@ -30,7 +30,7 @@ import retrofit2.Response;
 
 @Singleton
 public class ReviewRepositoryImpl implements ReviewRepository {
-    private static final boolean USE_MOCK = true; // Bật true để test giao diện offline với mock data
+    private static final boolean USE_MOCK = false ; // Bật true để test giao diện offline với mock data
 
     private final ReviewApi reviewApi;
     private final List<Review> mockReviews = new ArrayList<>();
