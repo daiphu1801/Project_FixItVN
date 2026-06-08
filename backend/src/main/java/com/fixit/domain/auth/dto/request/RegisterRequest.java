@@ -13,7 +13,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class RegisterRequest {
-    
+
     // Identifier could be phone or email
     @NotBlank(message = "Số điện thoại không được để trống")
     private String phone;

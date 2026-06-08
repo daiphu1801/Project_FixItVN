@@ -19,7 +19,7 @@ public class OtpCode {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
-    @Column(name = "phone_number", length = 15)
+    @Column(name = "phone_number", length = 100)
     private String phoneNumber;
 
     @Column(name = "otp_code", length = 6)

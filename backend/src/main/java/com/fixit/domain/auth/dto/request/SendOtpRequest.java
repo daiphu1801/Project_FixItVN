@@ -13,10 +13,10 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class SendOtpRequest {
-    
-    @NotBlank(message = "Số điện thoại/Email không được để trống")
-    private String identifier; // phone or email
-    
+
+    private String phoneNumber;
+    private String email;
+
     @NotNull(message = "Loại hành động không được để trống")
     private OtpActionType actionType;
 }
