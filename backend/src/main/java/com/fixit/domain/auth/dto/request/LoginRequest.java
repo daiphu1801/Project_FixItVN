@@ -11,8 +11,8 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class LoginRequest {
-    @NotBlank(message = "Số điện thoại/Email không được để trống")
-    private String identifier; // phone or email
+    @NotBlank(message = "Số điện thoại không được để trống")
+    private String phoneNumber;
 
     @NotBlank(message = "Mật khẩu không được để trống")
     private String password;

@@ -12,6 +12,7 @@ public enum ErrorCode {
     USER_NOT_FOUND(404, HttpStatus.NOT_FOUND, "User not found"),
     INVALID_CREDENTIALS(400, HttpStatus.BAD_REQUEST, "Invalid phone number or password"),
     USER_ALREADY_EXISTS(409, HttpStatus.CONFLICT, "User already exists"),
+    NOTIFICATION_NOT_FOUND(404, HttpStatus.NOT_FOUND, "Notification not found"),
 
     // Worker assignment
     WORKER_ASSIGNMENT_NOT_FOUND(404, HttpStatus.NOT_FOUND, "Không tìm thấy đơn đang phát cho thợ hiện tại"),

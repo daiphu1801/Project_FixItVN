@@ -9,6 +9,7 @@
     <string name="password">Mật khẩu</string>
     <string name="confirm_password">Xác nhận mật khẩu</string>
     <string name="full_name">Họ và tên</string>
+    <string name="email">Email</string>
     <string name="forgot_password">Quên mật khẩu?</string>
     <string name="no_account_yet">Chưa có tài khoản? </string>
     <string name="register_now">Đăng ký ngay</string>

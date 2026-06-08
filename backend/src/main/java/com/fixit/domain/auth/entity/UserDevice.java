@@ -1,6 +1,5 @@
-package com.fixit.domain.notification.entity;
+package com.fixit.domain.auth.entity;
 
-import com.fixit.domain.auth.entity.User;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -27,7 +26,7 @@ public class UserDevice {
     @Column(name = "device_token", nullable = false)
     private String deviceToken;
 
-    @Enumerated(EnumType.STRING)
+    @Convert(converter = DeviceOsConverter.class)
     @Column(name = "device_os", length = 20)
     private DeviceOs deviceOs;
 
