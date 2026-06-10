@@ -70,7 +70,7 @@ public class AuthRepositoryImpl implements AuthRepository {
     }
 
     @Override
-    public void register(String phone,String email ,String password, String fullName, String role, ResultCallback<Session> callback) {
+    public void register(String phone, String email, String password, String fullName, String role, ResultCallback<Session> callback) {
         authApi.register(new AuthRequest.Register(phone, email, password, fullName, role)).enqueue(new Callback<AuthResponse>() {
             @Override
             public void onResponse(Call<AuthResponse> call, Response<AuthResponse> response) {
@@ -80,16 +80,16 @@ public class AuthRepositoryImpl implements AuthRepository {
                         sessionStorage.saveSession(session);
                         callback.onResult(Result.success(session));
                     } else {
-                        callback.onResult(Result.error(new AppError("ÄÄƒng kÃ½ tháº¥t báº¡i: dá»¯ liá»‡u pháº£n há»“i khÃ´ng há»£p lá»‡")));
+                        callback.onResult(Result.error(new AppError("Đăng ký thất bại: dữ liệu phản hồi không hợp lệ")));
                     }
                 } else {
-                    callback.onResult(Result.error(new AppError("ÄÄƒng kÃ½ tháº¥t báº¡i: " + response.code())));
+                    callback.onResult(Result.error(new AppError("Đăng ký thất bại: " + response.code())));
                 }
             }
 
             @Override
             public void onFailure(Call<AuthResponse> call, Throwable t) {
-                callback.onResult(Result.error(new AppError("Lá»—i káº¿t ná»‘i: " + t.getMessage(), t)));
+                callback.onResult(Result.error(new AppError("Lỗi kết nối: " + t.getMessage(), t)));
             }
         });
     }

@@ -56,3 +56,7 @@ Desktop.ini
 logs/
 .gradle/
 docs/
+
+# Firebase Secrets
+firebase-service-account.json
+google-services.json

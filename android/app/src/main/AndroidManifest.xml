@@ -4,6 +4,7 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
 
     <application
         android:name=".FixitApp"
@@ -37,6 +38,15 @@
             android:name=".feature.worker.presentation.WorkerActivity"
             android:exported="false"
             android:windowSoftInputMode="adjustResize" />
+
+        <!-- Firebase Messaging Service -->
+        <service
+            android:name=".core.fcm.MyFirebaseMessagingService"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="com.google.firebase.MESSAGING_EVENT" />
+            </intent-filter>
+        </service>
 
     </application>
 </manifest>

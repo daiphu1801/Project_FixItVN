@@ -14,11 +14,27 @@ import com.fixit.databinding.ActivityCustomerBinding;
 
 import dagger.hilt.android.AndroidEntryPoint;
 
+import android.Manifest;
+import android.content.pm.PackageManager;
+import android.os.Build;
+import android.util.Log;
+import androidx.annotation.NonNull;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
+import com.fixit.feature.notification.domain.usecase.RegisterDeviceTokenUseCase;
+import com.google.firebase.messaging.FirebaseMessaging;
+import javax.inject.Inject;
+
 /**
  * CẬP NHẬT: KẾT NỐI THANH ĐIỀU HƯỚNG 5 MỤC (TRANG CHỦ, ĐƠN HÀNG, LỊCH SỬ, THỢ QUEN, CÁ NHÂN)
  */
 @AndroidEntryPoint
 public class CustomerActivity extends BaseActivity<ActivityCustomerBinding> {
+
+    private static final int PERMISSION_REQUEST_CODE = 1001;
+
+    @Inject
+    RegisterDeviceTokenUseCase registerDeviceTokenUseCase;
 
     private NavController navController;
 
@@ -30,6 +46,7 @@ public class CustomerActivity extends BaseActivity<ActivityCustomerBinding> {
     @Override
     protected void setupViews() {
         setupNavigation();
+        checkNotificationPermission();
     }
 
     private void setupNavigation() {
@@ -70,5 +87,56 @@ public class CustomerActivity extends BaseActivity<ActivityCustomerBinding> {
     @Override
     protected void observeData() {
         // Quan sát dữ liệu khách hàng (nếu có)
+    }
+
+    private void checkNotificationPermission() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS)
+                    != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(this,
+                        new String[]{Manifest.permission.POST_NOTIFICATIONS},
+                        PERMISSION_REQUEST_CODE);
+            } else {
+                fetchAndRegisterFcmToken();
+            }
+        } else {
+            fetchAndRegisterFcmToken();
+        }
+    }
+
+    private void fetchAndRegisterFcmToken() {
+        try {
+            FirebaseMessaging.getInstance().getToken().addOnCompleteListener(task -> {
+                if (!task.isSuccessful()) {
+                    Log.w("CustomerActivity", "Fetching FCM registration token failed", task.getException());
+                    return;
+                }
+
+                String token = task.getResult();
+                Log.d("CustomerActivity", "FCM Token: " + token);
+
+                registerDeviceTokenUseCase.execute(token, "Android", result -> {
+                    if (result.isSuccess()) {
+                        Log.d("CustomerActivity", "Register FCM token success");
+                    } else {
+                        Log.e("CustomerActivity", "Register FCM token error: " + result.getError().getMessage());
+                    }
+                });
+            });
+        } catch (Exception e) {
+            Log.e("CustomerActivity", "Error initializing Firebase Messaging: " + e.getMessage());
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == PERMISSION_REQUEST_CODE) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                fetchAndRegisterFcmToken();
+            } else {
+                Log.w("CustomerActivity", "POST_NOTIFICATIONS permission denied by user");
+            }
+        }
     }
 }

@@ -8,6 +8,8 @@ import com.fixit.domain.auth.repository.RefreshTokenRepository;
 import com.fixit.domain.auth.repository.UserRepository;
 import com.fixit.domain.auth.repository.UserSocialLoginRepository;
 import com.fixit.domain.wallet.entity.WorkerWallet;
+import com.fixit.domain.customer.entity.Customer;
+import com.fixit.domain.customer.repository.CustomerRepository;
 import com.fixit.domain.wallet.repository.WorkerWalletRepository;
 import com.fixit.domain.worker.entity.Worker;
 import com.fixit.domain.worker.entity.WorkerVerificationStatus;
@@ -16,7 +18,6 @@ import com.fixit.global.security.JwtService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -40,6 +41,7 @@ public class AuthServiceImpl implements AuthService {
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
     private final JwtService jwtService;
+    private final CustomerRepository customerRepository;
 
     @Override
     @Transactional
@@ -86,6 +88,13 @@ public class AuthServiceImpl implements AuthService {
                     .build();
 
             workerWalletRepository.save(wallet);
+        } else if (request.getRole() == UserRole.Customer) {
+            Customer customer = Customer.builder()
+                    .user(savedUser)
+                    .fullName(request.getFullName().trim())
+                    .build();
+
+            customerRepository.save(customer);
         }
 
         String accessToken = jwtService.generateToken(savedUser);
@@ -107,7 +116,7 @@ public class AuthServiceImpl implements AuthService {
     @Transactional
     public AuthResponse login(LoginRequest request) {
         User user = userRepository
-                .findByPhoneNumber(request.getIdentifier())
+                .findByPhoneNumber(request.getPhoneNumber())
                 .orElseThrow(() -> new RuntimeException("Tài khoản không tồn tại"));
 
         if (!Boolean.TRUE.equals(user.getActive())) {
@@ -154,7 +163,14 @@ public class AuthServiceImpl implements AuthService {
                         .role(UserRole.Customer)
                         .active(true)
                         .build();
-                userRepository.save(user);
+                User savedUser = userRepository.save(user);
+
+                Customer customer = Customer.builder()
+                        .user(savedUser)
+                        .fullName(name)
+                        .build();
+                customerRepository.save(customer);
+                user = savedUser;
             }
             UserSocialLogin newSocialLogin = UserSocialLogin.builder()
                     .user(user)
@@ -172,30 +188,32 @@ public class AuthServiceImpl implements AuthService {
     @Override
     @Transactional
     public void sendOtp(SendOtpRequest request) {
-        otpCodeRepository.findByPhoneNumberAndActionTypeAndUsedFalse(request.getIdentifier(), request.getActionType())
+        String identifier = request.getPhoneNumber() != null ? request.getPhoneNumber() : request.getEmail();
+        otpCodeRepository.findByPhoneNumberAndActionTypeAndUsedFalse(identifier, request.getActionType())
                 .ifPresent(otp -> {
                     otp.setUsed(true);
                     otpCodeRepository.save(otp);
                 });
 
         String code = String.format("%06d", new Random().nextInt(999999));
-        
+
         OtpCode otpCode = OtpCode.builder()
-                .phoneNumber(request.getIdentifier())
+                .phoneNumber(identifier)
                 .otpCode(code)
                 .actionType(request.getActionType())
                 .expiresAt(OffsetDateTime.now().plusMinutes(2))
                 .used(false)
                 .build();
-                
+
         otpCodeRepository.save(otpCode);
-        log.info("Mã OTP gửi đến {}: {}", request.getIdentifier(), code);
+        log.info("Mã OTP gửi đến {}: {}", identifier, code);
     }
 
     @Override
     @Transactional
     public AuthResponse verifyOtp(VerifyOtpRequest request) {
-        OtpCode otp = otpCodeRepository.findByPhoneNumberAndActionTypeAndUsedFalse(request.getIdentifier(), request.getActionType())
+        String identifier = request.getPhoneNumber() != null ? request.getPhoneNumber() : request.getEmail();
+        OtpCode otp = otpCodeRepository.findByPhoneNumberAndActionTypeAndUsedFalse(identifier, request.getActionType())
                 .orElseThrow(() -> new RuntimeException("Mã OTP không tồn tại hoặc đã được sử dụng"));
 
         if (otp.getExpiresAt().isBefore(OffsetDateTime.now())) {
@@ -209,8 +227,8 @@ public class AuthServiceImpl implements AuthService {
         otp.setUsed(true);
         otpCodeRepository.save(otp);
 
-        User user = userRepository.findByPhoneNumber(request.getIdentifier())
-                .orElseGet(() -> userRepository.findByEmail(request.getIdentifier())
+        User user = userRepository.findByPhoneNumber(identifier)
+                .orElseGet(() -> userRepository.findByEmail(identifier)
                         .orElseThrow(() -> new RuntimeException("Người dùng không tồn tại")));
 
         return buildAuthResponse(user);
@@ -219,7 +237,8 @@ public class AuthServiceImpl implements AuthService {
     @Override
     @Transactional
     public void resetPassword(ResetPasswordRequest request) {
-        OtpCode otp = otpCodeRepository.findByPhoneNumberAndActionTypeAndUsedFalse(request.getIdentifier(), OtpActionType.FORGOT_PASSWORD)
+        String identifier = request.getPhoneNumber() != null ? request.getPhoneNumber() : request.getEmail();
+        OtpCode otp = otpCodeRepository.findByPhoneNumberAndActionTypeAndUsedFalse(identifier, OtpActionType.FORGOT_PASSWORD)
                 .orElseThrow(() -> new RuntimeException("Mã OTP không tồn tại hoặc đã được sử dụng"));
 
         if (otp.getExpiresAt().isBefore(OffsetDateTime.now())) {
@@ -233,8 +252,8 @@ public class AuthServiceImpl implements AuthService {
         otp.setUsed(true);
         otpCodeRepository.save(otp);
 
-        User user = userRepository.findByPhoneNumber(request.getIdentifier())
-                .orElseGet(() -> userRepository.findByEmail(request.getIdentifier())
+        User user = userRepository.findByPhoneNumber(identifier)
+                .orElseGet(() -> userRepository.findByEmail(identifier)
                         .orElseThrow(() -> new RuntimeException("Người dùng không tồn tại")));
 
         user.setPasswordHash(passwordEncoder.encode(request.getNewPassword()));
@@ -273,7 +292,7 @@ public class AuthServiceImpl implements AuthService {
 
         User user = savedToken.getUser();
         String newAccessToken = jwtService.generateToken(user);
-        
+
         return AuthResponse.builder()
                 .accessToken(newAccessToken)
                 .refreshToken(savedToken.getToken())
@@ -289,6 +308,24 @@ public class AuthServiceImpl implements AuthService {
             refreshTokenRepository.save(token);
         });
     }
+
+    @Override
+    @Transactional
+    public void forgotPassword(ForgotPasswordRequest request) {
+        String identifier = request.getPhoneNumber() != null ? request.getPhoneNumber() : request.getEmail();
+        User user = userRepository.findByPhoneNumber(identifier)
+                .orElseGet(() -> userRepository.findByEmail(identifier)
+                        .orElseThrow(() -> new RuntimeException("Người dùng không tồn tại")));
+
+        SendOtpRequest sendOtpRequest = SendOtpRequest.builder()
+                .phoneNumber(request.getPhoneNumber())
+                .email(request.getEmail())
+                .actionType(OtpActionType.FORGOT_PASSWORD)
+                .build();
+        sendOtp(sendOtpRequest);
+    }
+
+
 
     private AuthResponse buildAuthResponse(User user, String accessToken, String refreshToken) {
         return AuthResponse.builder()

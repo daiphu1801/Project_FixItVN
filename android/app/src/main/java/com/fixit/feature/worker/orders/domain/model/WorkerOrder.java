@@ -22,6 +22,8 @@ public class WorkerOrder {
     private String complaintStatus; // "none", "pending", "responded", "resolved"
     private String complaintReason;
     private String complaintDeadline; // Countdown timer string
+    private JobStatus jobStatus;
+    private String paymentMethod;
 
     public WorkerOrder(String orderId, String customerId, String serviceTitle, String address,
             String timeSlot, String price, String status, String customerName) {
@@ -89,5 +91,21 @@ public class WorkerOrder {
 
     public void setComplaintDeadline(String complaintDeadline) {
         this.complaintDeadline = complaintDeadline;
+    }
+
+    public JobStatus getJobStatus() {
+        return jobStatus;
+    }
+
+    public void setJobStatus(JobStatus jobStatus) {
+        this.jobStatus = jobStatus;
+    }
+
+    public String getPaymentMethod() {
+        return paymentMethod;
+    }
+
+    public void setPaymentMethod(String paymentMethod) {
+        this.paymentMethod = paymentMethod;
     }
 }
