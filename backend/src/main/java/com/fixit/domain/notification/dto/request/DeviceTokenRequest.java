@@ -1,6 +1,6 @@
-package com.fixit.domain.auth.dto.request;
+package com.fixit.domain.notification.dto.request;
 
-import com.fixit.domain.auth.entity.DeviceOs;
+import com.fixit.domain.notification.entity.DeviceOs;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;

@@ -1,6 +1,7 @@
 package com.fixit.domain.booking.service;
 
 import com.fixit.domain.booking.dto.response.BookingActionResponse;
+import com.fixit.domain.booking.dto.response.WorkerBookingDetailResponse;
 import com.fixit.domain.booking.entity.Booking;
 import com.fixit.domain.booking.entity.BookingHistory;
 import com.fixit.domain.booking.entity.BookingStatus;
@@ -10,14 +11,18 @@ import com.fixit.domain.worker.support.CurrentWorkerResolver;
 import com.fixit.global.exception.AppException;
 import com.fixit.global.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.OffsetDateTime;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
+import com.fixit.domain.notification.service.NotificationSenderService;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class WorkerBookingActionServiceImpl implements WorkerBookingActionService {
@@ -31,6 +36,46 @@ public class WorkerBookingActionServiceImpl implements WorkerBookingActionServic
     private final CurrentWorkerResolver currentWorkerResolver;
     private final BookingRepository bookingRepository;
     private final BookingHistoryRepository bookingHistoryRepository;
+    private final NotificationSenderService notificationSenderService;
+
+    @Override
+    @Transactional(readOnly = true)
+    public WorkerBookingDetailResponse getBookingDetails(UUID bookingId) {
+        UUID workerId = currentWorkerResolver.getCurrentWorkerId();
+        Booking booking = bookingRepository.findById(bookingId)
+                .orElseThrow(() -> new AppException(ErrorCode.BOOKING_NOT_FOUND));
+
+        if (booking.getWorker() == null || !booking.getWorker().getWorkerId().equals(workerId)) {
+            throw new AppException(ErrorCode.BOOKING_NOT_FOUND);
+        }
+
+        List<String> doneActions = getDoneActions(bookingId);
+
+        String scheduledTimeStr = null;
+        if (booking.getScheduledTime() != null) {
+            java.time.format.DateTimeFormatter formatter = java.time.format.DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
+            scheduledTimeStr = booking.getScheduledTime().atZoneSameInstant(java.time.ZoneId.of("Asia/Ho_Chi_Minh")).format(formatter);
+        }
+
+        return WorkerBookingDetailResponse.builder()
+                .bookingId(booking.getId())
+                .serviceName(booking.getServiceCategory() != null ? booking.getServiceCategory().getServiceName() : null)
+                .customerName(booking.getCustomer() != null ? booking.getCustomer().getFullName() : null)
+                .customerPhone(booking.getCustomer() != null && booking.getCustomer().getUser() != null ? booking.getCustomer().getUser().getPhoneNumber() : null)
+                .customerAvatar(booking.getCustomer() != null && booking.getCustomer().getUser() != null ? booking.getCustomer().getUser().getAvatarUrl() : null)
+                .address(booking.getAddress())
+                .destinationLat(booking.getDestinationLat())
+                .destinationLng(booking.getDestinationLng())
+                .issueDescription(booking.getIssueDescription())
+                .scheduledTime(scheduledTimeStr)
+                .paymentMethod(booking.getPaymentMethod() != null ? booking.getPaymentMethod().name() : null)
+                .finalPrice(booking.getFinalPrice())
+                .status(booking.getStatus().name())
+                .statusText(toBookingStatusText(booking.getStatus().name()))
+                .nextAction(toNextAction(booking.getStatus().name(), doneActions))
+                .doneActions(doneActions)
+                .build();
+    }
 
     @Override
     @Transactional
@@ -45,6 +90,13 @@ public class WorkerBookingActionServiceImpl implements WorkerBookingActionServic
 
         OffsetDateTime now = OffsetDateTime.now();
         saveHistory(booking, HISTORY_MOVING, now);
+
+        sendNotificationToCustomer(
+                booking,
+                "Thợ đang di chuyển",
+                "Thợ [Tên thợ] đang di chuyển đến địa chỉ của bạn.",
+                "WORKER_MOVING"
+        );
 
         return buildResponse(
                 booking,
@@ -69,6 +121,13 @@ public class WorkerBookingActionServiceImpl implements WorkerBookingActionServic
 
         OffsetDateTime now = OffsetDateTime.now();
         saveHistory(booking, HISTORY_ARRIVED, now);
+
+        sendNotificationToCustomer(
+                booking,
+                "Thợ đã đến nơi",
+                "Thợ [Tên thợ] đã có mặt tại điểm hẹn.",
+                "WORKER_ARRIVED"
+        );
 
         return buildResponse(
                 booking,
@@ -96,6 +155,13 @@ public class WorkerBookingActionServiceImpl implements WorkerBookingActionServic
         booking.setStatus(BookingStatus.Surveying);
         saveHistory(booking, HISTORY_SURVEYING, now);
 
+        sendNotificationToCustomer(
+                booking,
+                "Bắt đầu khảo sát",
+                "Thợ [Tên thợ] đang thực hiện khảo sát tình trạng hư hỏng.",
+                "START_SURVEY"
+        );
+
         return buildResponse(
                 booking,
                 HISTORY_SURVEYING,
@@ -122,6 +188,13 @@ public class WorkerBookingActionServiceImpl implements WorkerBookingActionServic
         booking.setStatus(BookingStatus.In_Progress);
         saveHistory(booking, HISTORY_IN_PROGRESS, now);
 
+        sendNotificationToCustomer(
+                booking,
+                "Bắt đầu sửa chữa",
+                "Thợ [Tên thợ] đã bắt đầu sửa chữa thiết bị.",
+                "START_REPAIR"
+        );
+
         return buildResponse(
                 booking,
                 HISTORY_IN_PROGRESS,
@@ -147,6 +220,13 @@ public class WorkerBookingActionServiceImpl implements WorkerBookingActionServic
 
         booking.setStatus(BookingStatus.Waiting_Approval);
         saveHistory(booking, HISTORY_WORKER_COMPLETED, now);
+
+        sendNotificationToCustomer(
+                booking,
+                "Công việc đã hoàn thành",
+                "Thợ [Tên thợ] báo cáo đã hoàn thành công việc. Vui lòng kiểm tra và duyệt nghiệm thu.",
+                "WORKER_COMPLETE"
+        );
 
         return buildResponse(
                 booking,
@@ -217,5 +297,63 @@ public class WorkerBookingActionServiceImpl implements WorkerBookingActionServic
                 .message(message)
                 .updatedAt(now)
                 .build();
+    }
+
+    private void sendNotificationToCustomer(Booking booking, String title, String content, String type) {
+        try {
+            if (booking != null && booking.getCustomer() != null && booking.getCustomer().getUser() != null) {
+                UUID customerUserId = booking.getCustomer().getUser().getId();
+                String workerName = booking.getWorker() != null && booking.getWorker().getFullName() != null 
+                        ? booking.getWorker().getFullName() : "Thợ";
+                String formattedContent = content.replace("[Tên thợ]", workerName);
+                Map<String, String> data = Map.of(
+                        "bookingId", booking.getId().toString(),
+                        "status", booking.getStatus().name(),
+                        "type", type
+                );
+                notificationSenderService.sendNotification(customerUserId, title, formattedContent, data);
+            } else {
+                log.warn("Cannot send notification: booking, customer or customer user is null.");
+            }
+        } catch (Exception e) {
+            log.error("Failed to send notification '{}' for booking: {}", type, booking != null ? booking.getId() : null, e);
+        }
+    }
+
+    private String toBookingStatusText(String status) {
+        if (status == null) {
+            return "Không xác định";
+        }
+
+        return switch (status) {
+            case "Accepted" -> "Đã nhận đơn";
+            case "Surveying" -> "Đang khảo sát";
+            case "Waiting_Approval" -> "Chờ duyệt báo giá";
+            case "In_Progress" -> "Đang sửa chữa";
+            case "Completed" -> "Hoàn thành";
+            case "Cancelled" -> "Đã hủy";
+            default -> status;
+        };
+    }
+
+    private String toNextAction(String status, List<String> doneActions) {
+        if (status == null) {
+            return null;
+        }
+
+        return switch (status) {
+            case "Accepted" -> {
+                if (doneActions.contains("Arrived")) {
+                    yield "START_SURVEY";
+                } else if (doneActions.contains("Moving")) {
+                    yield "ARRIVE";
+                } else {
+                    yield "START_MOVING";
+                }
+            }
+            case "Surveying" -> "START_REPAIR";
+            case "In_Progress" -> "WORKER_COMPLETE";
+            default -> null;
+        };
     }
 }

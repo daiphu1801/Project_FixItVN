@@ -32,7 +32,6 @@ public class WorkerHomeServiceImpl implements WorkerHomeService {
     private final WorkerHomeQueryRepository workerHomeQueryRepository;
     private final CurrentWorkerResolver currentWorkerResolver;
 
-
     // 1. Inject StringRedisTemplate của Spring
     private final StringRedisTemplate redisTemplate;
 
@@ -83,8 +82,7 @@ public class WorkerHomeServiceImpl implements WorkerHomeService {
         redisTemplate.opsForGeo().add(
                 WORKERS_LOCATION_KEY,
                 location,
-                workerId.toString()
-        );
+                workerId.toString());
     }
 
     private WorkerHomeResponse buildHomeResponse(UUID workerId) {
@@ -192,8 +190,7 @@ public class WorkerHomeServiceImpl implements WorkerHomeService {
     }
 
     private WorkerHomeResponse.ActiveOrderSummary toActiveOrder(
-            WorkerActiveBookingProjection p
-    ) {
+            WorkerActiveBookingProjection p) {
         if (p == null) {
             return null;
         }
@@ -228,8 +225,7 @@ public class WorkerHomeServiceImpl implements WorkerHomeService {
     }
 
     private List<WorkerHomeResponse.IncomeChartPoint> toIncomeChart(
-            List<WorkerIncomeChartPointProjection> projections
-    ) {
+            List<WorkerIncomeChartPointProjection> projections) {
         if (projections == null || projections.isEmpty()) {
             return Collections.emptyList();
         }
@@ -244,8 +240,7 @@ public class WorkerHomeServiceImpl implements WorkerHomeService {
     }
 
     private List<WorkerHomeResponse.TodayAppointmentItem> toAppointments(
-            List<WorkerScheduleItemProjection> projections
-    ) {
+            List<WorkerScheduleItemProjection> projections) {
         if (projections == null || projections.isEmpty()) {
             return Collections.emptyList();
         }

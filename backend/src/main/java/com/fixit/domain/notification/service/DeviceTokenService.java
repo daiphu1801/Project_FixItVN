@@ -1,6 +1,6 @@
-package com.fixit.domain.auth.service;
+package com.fixit.domain.notification.service;
 
-import com.fixit.domain.auth.dto.request.DeviceTokenRequest;
+import com.fixit.domain.notification.dto.request.DeviceTokenRequest;
 
 import java.util.UUID;
 

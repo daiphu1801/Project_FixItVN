@@ -1,4 +1,6 @@
-package com.fixit.domain.auth.entity;
+package com.fixit.domain.notification.entity;
+
+import com.fixit.domain.auth.entity.User;
 
 import jakarta.persistence.*;
 import lombok.*;

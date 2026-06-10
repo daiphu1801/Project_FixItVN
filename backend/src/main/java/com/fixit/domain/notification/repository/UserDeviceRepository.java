@@ -1,6 +1,6 @@
-package com.fixit.domain.auth.repository;
+package com.fixit.domain.notification.repository;
 
-import com.fixit.domain.auth.entity.UserDevice;
+import com.fixit.domain.notification.entity.UserDevice;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -12,9 +12,7 @@ public interface UserDeviceRepository extends JpaRepository<UserDevice, UUID> {
     
     Optional<UserDevice> findByDeviceToken(String deviceToken);
     
-    Optional<UserDevice> findByUserIdAndDeviceToken(UUID userId, String deviceToken);
-    
-    void deleteByDeviceToken(String deviceToken);
+    java.util.List<UserDevice> findByUserId(UUID userId);
     
     void deleteByUserIdAndDeviceToken(UUID userId, String deviceToken);
 }

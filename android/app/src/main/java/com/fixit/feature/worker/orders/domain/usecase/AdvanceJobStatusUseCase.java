@@ -1,5 +1,6 @@
 package com.fixit.feature.worker.orders.domain.usecase;
 
+import com.fixit.core.common.ResultCallback;
 import com.fixit.feature.worker.orders.domain.model.JobStatus;
 import com.fixit.feature.worker.orders.domain.repository.WorkerOrdersRepository;
 
@@ -13,7 +14,7 @@ public class AdvanceJobStatusUseCase {
         this.repository = repository;
     }
 
-    public JobStatus execute(JobStatus currentStatus) {
-        return repository.advanceStatus(currentStatus);
+    public void execute(String orderId, JobStatus currentStatus, ResultCallback<JobStatus> callback) {
+        repository.advanceStatus(orderId, currentStatus, callback);
     }
 }

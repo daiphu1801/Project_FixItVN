@@ -1,8 +1,8 @@
-package com.fixit.domain.auth.service;
+package com.fixit.domain.notification.service;
 
-import com.fixit.domain.auth.dto.response.NotificationResponse;
-import com.fixit.domain.auth.entity.Notification;
-import com.fixit.domain.auth.repository.NotificationRepository;
+import com.fixit.domain.notification.dto.response.NotificationResponse;
+import com.fixit.domain.notification.entity.Notification;
+import com.fixit.domain.notification.repository.NotificationRepository;
 import com.fixit.global.exception.AppException;
 import com.fixit.global.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;

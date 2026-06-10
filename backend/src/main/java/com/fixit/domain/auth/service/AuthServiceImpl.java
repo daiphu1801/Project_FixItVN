@@ -2,13 +2,9 @@ package com.fixit.domain.auth.service;
 
 import com.fixit.domain.auth.dto.request.*;
 import com.fixit.domain.auth.dto.response.AuthResponse;
-import com.fixit.domain.auth.dto.response.NotificationResponse;
-import com.fixit.domain.auth.dto.response.UnreadCountResponse;
 import com.fixit.domain.auth.entity.*;
-import com.fixit.domain.auth.repository.NotificationRepository;
 import com.fixit.domain.auth.repository.OtpCodeRepository;
 import com.fixit.domain.auth.repository.RefreshTokenRepository;
-import com.fixit.domain.auth.repository.UserDeviceRepository;
 import com.fixit.domain.auth.repository.UserRepository;
 import com.fixit.domain.auth.repository.UserSocialLoginRepository;
 import com.fixit.domain.wallet.entity.WorkerWallet;
@@ -16,8 +12,6 @@ import com.fixit.domain.wallet.repository.WorkerWalletRepository;
 import com.fixit.domain.worker.entity.Worker;
 import com.fixit.domain.worker.entity.WorkerVerificationStatus;
 import com.fixit.domain.worker.repository.WorkerRepository;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import com.fixit.global.security.JwtService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -42,8 +36,6 @@ public class AuthServiceImpl implements AuthService {
     private final RefreshTokenRepository refreshTokenRepository;
     private final OtpCodeRepository otpCodeRepository;
     private final UserSocialLoginRepository userSocialLoginRepository;
-    private final NotificationRepository notificationRepository;
-    private final UserDeviceRepository userDeviceRepository;
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
     private final JwtService jwtService;
@@ -316,77 +308,7 @@ public class AuthServiceImpl implements AuthService {
         sendOtp(sendOtpRequest);
     }
 
-    @Transactional
-    @Override
-    public void registerDeviceToken(String identifier, DeviceTokenRequest request) {
-        User user = userRepository.findByPhoneNumber(identifier)
-                .orElseGet(() -> userRepository.findByEmail(identifier)
-                        .orElseThrow(() -> new RuntimeException("Người dùng không tồn tại")));
 
-        UserDevice userDevice = userDeviceRepository.findByDeviceToken(request.getDeviceToken())
-                .orElseGet(() -> UserDevice.builder()
-                        .deviceToken(request.getDeviceToken())
-                        .build());
-        userDevice.setUser(user);
-        userDevice.setDeviceOs(request.getDeviceOs());
-        userDeviceRepository.save(userDevice);
-    }
-
-    @Override
-    @Transactional
-    public void removeDeviceToken(String deviceToken) {
-        userDeviceRepository.deleteByDeviceToken(deviceToken);
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public Page<NotificationResponse> getMyNotifications(String identifier, Pageable pageable) {
-        User user = userRepository.findByPhoneNumber(identifier)
-                .orElseGet(() -> userRepository.findByEmail(identifier)
-                        .orElseThrow(() -> new RuntimeException("Người dùng không tồn tại")));
-        return notificationRepository.findByUserIdOrderByCreatedAtDesc(user.getId(), pageable)
-                .map(notification -> NotificationResponse.builder()
-                        .id(notification.getId())
-                        .title(notification.getTitle())
-                        .content(notification.getContent())
-                        .is_read(notification.getRead())
-                        .createdAt(notification.getCreatedAt())
-                        .build());
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public UnreadCountResponse getMyUnreadCount(String identifier) {
-        User user = userRepository.findByPhoneNumber(identifier)
-                .orElseGet(() -> userRepository.findByEmail(identifier)
-                        .orElseThrow(() -> new RuntimeException("Người dùng không tồn tại")));
-        long count = notificationRepository.countByUserIdAndReadFalse(user.getId());
-        return UnreadCountResponse.builder().count(count).build();
-    }
-
-    @Override
-    @Transactional
-    public void markAsRead(String identifier, UUID notificationId) {
-        User user = userRepository.findByPhoneNumber(identifier)
-                .orElseGet(() -> userRepository.findByEmail(identifier)
-                        .orElseThrow(() -> new RuntimeException("Người dùng không tồn tại")));
-        Notification notification = notificationRepository.findById(notificationId)
-                .orElseThrow(() -> new RuntimeException("Thông báo không tồn tại"));
-        if (!notification.getUser().getId().equals(user.getId())) {
-            throw new RuntimeException("Không có quyền");
-        }
-        notification.setRead(true);
-        notificationRepository.save(notification);
-    }
-
-    @Override
-    @Transactional
-    public void markAllAsRead(String identifier) {
-        User user = userRepository.findByPhoneNumber(identifier)
-                .orElseGet(() -> userRepository.findByEmail(identifier)
-                        .orElseThrow(() -> new RuntimeException("Người dùng không tồn tại")));
-        notificationRepository.markAllAsReadByUserId(user.getId());
-    }
 
     private AuthResponse buildAuthResponse(User user, String accessToken, String refreshToken) {
         return AuthResponse.builder()

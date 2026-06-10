@@ -1,9 +1,9 @@
-package com.fixit.domain.auth.service;
+package com.fixit.domain.notification.service;
 
-import com.fixit.domain.auth.dto.request.DeviceTokenRequest;
+import com.fixit.domain.notification.dto.request.DeviceTokenRequest;
 import com.fixit.domain.auth.entity.User;
-import com.fixit.domain.auth.entity.UserDevice;
-import com.fixit.domain.auth.repository.UserDeviceRepository;
+import com.fixit.domain.notification.entity.UserDevice;
+import com.fixit.domain.notification.repository.UserDeviceRepository;
 import com.fixit.domain.auth.repository.UserRepository;
 import com.fixit.global.exception.AppException;
 import com.fixit.global.exception.ErrorCode;

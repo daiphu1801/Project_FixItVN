@@ -235,25 +235,29 @@
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btnCancelOrderDetail"
-            style="@style/FixIt.Button.Action.Outlined"
+            style="@style/FixIt.Button.Action"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="56dp"
             android:layout_marginEnd="12dp"
-            android:text="Hủy"
+            android:paddingHorizontal="24dp"
+            android:text="Hủy đơn"
             android:textColor="#ef4444"
+            app:backgroundTint="#fee2e2"
+            app:rippleColor="#fca5a5"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:strokeColor="#ef4444" />
+            app:layout_constraintTop_toTopOf="parent" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btnCompleteOrderDetail"
             style="@style/FixIt.Button.Action"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
+            android:layout_height="56dp"
+            android:layout_marginStart="12dp"
             android:text="Cập nhật tiến độ tiếp theo"
             android:textColor="@android:color/white"
             app:backgroundTint="#0ea5e9"
+            app:rippleColor="#80ffffff"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/btnCancelOrderDetail"
@@ -261,30 +265,32 @@
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btnBottomConfirmCash"
-            style="@style/FixIt.Button.Action.Outlined"
+            style="@style/FixIt.Button.Action"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
+            android:layout_height="56dp"
             android:layout_marginEnd="8dp"
             android:text="Tiền mặt"
             android:textColor="#10b981"
             android:visibility="gone"
+            app:backgroundTint="#d1fae5"
+            app:rippleColor="#a7f3d0"
             app:icon="@drawable/ic_lucide_wallet"
             app:iconTint="#10b981"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@id/btnBottomShowQr"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:strokeColor="#10b981" />
+            app:layout_constraintTop_toTopOf="parent" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btnBottomShowQr"
             style="@style/FixIt.Button.Action"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
+            android:layout_height="56dp"
             android:text="Hiện mã QR"
             android:textColor="@android:color/white"
             android:visibility="gone"
             app:backgroundTint="#0ea5e9"
+            app:rippleColor="#80ffffff"
             app:icon="@drawable/ic_lucide_receipt"
             app:iconTint="@android:color/white"
             app:layout_constraintBottom_toBottomOf="parent"

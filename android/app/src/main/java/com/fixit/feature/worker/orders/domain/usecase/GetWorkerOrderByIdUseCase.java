@@ -1,5 +1,6 @@
 package com.fixit.feature.worker.orders.domain.usecase;
 
+import com.fixit.core.common.ResultCallback;
 import com.fixit.feature.worker.orders.domain.model.WorkerOrder;
 import com.fixit.feature.worker.orders.domain.repository.WorkerOrdersRepository;
 
@@ -13,7 +14,7 @@ public class GetWorkerOrderByIdUseCase {
         this.repository = repository;
     }
 
-    public WorkerOrder execute(String orderId) {
-        return repository.getOrderById(orderId);
+    public void execute(String orderId, ResultCallback<WorkerOrder> callback) {
+        repository.getOrderById(orderId, callback);
     }
 }

@@ -52,7 +52,7 @@ dependencies {
     annotationProcessor 'com.google.dagger:hilt-compiler:2.51.1'
 
     // Firebase - TODO: Re-enable when google-services.json is configured
-    // implementation 'com.google.firebase:firebase-messaging:24.1.0'
+    implementation 'com.google.firebase:firebase-messaging:24.1.0'
 
     // Google Maps & Location
     implementation 'com.google.android.gms:play-services-maps:19.0.0'

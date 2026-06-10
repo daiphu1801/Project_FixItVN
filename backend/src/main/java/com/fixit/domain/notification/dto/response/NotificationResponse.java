@@ -1,4 +1,4 @@
-package com.fixit.domain.auth.dto.response;
+package com.fixit.domain.notification.dto.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

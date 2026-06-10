@@ -13,6 +13,7 @@ import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.annotation.Nullable;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.bumptech.glide.Glide;
@@ -41,6 +42,13 @@ public class WorkerComplaintFragment extends BaseFragment<FragmentWorkerComplain
                 }
             }
     );
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        viewModel = new ViewModelProvider(requireActivity()).get(WorkerOrdersViewModel.class);
+        uploadViewModel = new ViewModelProvider(this).get(UploadViewModel.class);
+    }
 
     @Override
     protected FragmentWorkerComplaintBinding inflateViewBinding(LayoutInflater inflater, ViewGroup container) {
@@ -82,15 +90,17 @@ public class WorkerComplaintFragment extends BaseFragment<FragmentWorkerComplain
 
     @Override
     protected void observeData() {
-        viewModel = new ViewModelProvider(requireActivity()).get(WorkerOrdersViewModel.class);
-        uploadViewModel = new ViewModelProvider(this).get(UploadViewModel.class);
+        viewModel.orderDetails.observe(getViewLifecycleOwner(), order -> {
+            if (order != null) {
+                binding.tvOrderTitle.setText("📦 Đơn #" + order.getOrderId() + " – " + order.getServiceTitle());
+                binding.tvComplaintReason.setText(order.getComplaintReason());
+                binding.tvCountdown.setText(order.getComplaintDeadline());
+                binding.tvFrozenAmount.setText(order.getPrice());
+            }
+        });
 
-        WorkerOrder order = viewModel.getOrderById(orderId);
-        if (order != null) {
-            binding.tvOrderTitle.setText("📦 Đơn #" + order.getOrderId() + " – " + order.getServiceTitle());
-            binding.tvComplaintReason.setText(order.getComplaintReason());
-            binding.tvCountdown.setText(order.getComplaintDeadline());
-            binding.tvFrozenAmount.setText(order.getPrice());
+        if (orderId != null) {
+            viewModel.loadOrderDetails(orderId);
         }
 
         // Observe kết quả upload ảnh bằng chứng

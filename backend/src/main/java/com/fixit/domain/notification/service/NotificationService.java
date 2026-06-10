@@ -1,6 +1,6 @@
-package com.fixit.domain.auth.service;
+package com.fixit.domain.notification.service;
 
-import com.fixit.domain.auth.dto.response.NotificationResponse;
+import com.fixit.domain.notification.dto.response.NotificationResponse;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 

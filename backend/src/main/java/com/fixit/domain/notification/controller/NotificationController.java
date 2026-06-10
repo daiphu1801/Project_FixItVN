@@ -1,8 +1,8 @@
-package com.fixit.domain.auth.controller;
+package com.fixit.domain.notification.controller;
 
-import com.fixit.domain.auth.dto.response.NotificationResponse;
+import com.fixit.domain.notification.dto.response.NotificationResponse;
 import com.fixit.domain.auth.entity.User;
-import com.fixit.domain.auth.service.NotificationService;
+import com.fixit.domain.notification.service.NotificationService;
 import com.fixit.global.response.ApiResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;

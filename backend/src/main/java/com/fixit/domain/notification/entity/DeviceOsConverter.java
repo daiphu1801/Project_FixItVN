@@ -1,4 +1,4 @@
-package com.fixit.domain.auth.entity;
+package com.fixit.domain.notification.entity;
 
 import jakarta.persistence.AttributeConverter;
 import jakarta.persistence.Converter;

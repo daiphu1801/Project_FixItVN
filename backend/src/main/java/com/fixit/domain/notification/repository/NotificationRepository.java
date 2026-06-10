@@ -1,6 +1,6 @@
-package com.fixit.domain.auth.repository;
+package com.fixit.domain.notification.repository;
 
-import com.fixit.domain.auth.entity.Notification;
+import com.fixit.domain.notification.entity.Notification;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;

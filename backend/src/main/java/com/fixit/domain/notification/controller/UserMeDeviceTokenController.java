@@ -1,8 +1,8 @@
-package com.fixit.domain.auth.controller;
+package com.fixit.domain.notification.controller;
 
-import com.fixit.domain.auth.dto.request.DeviceTokenRequest;
+import com.fixit.domain.notification.dto.request.DeviceTokenRequest;
 import com.fixit.domain.auth.entity.User;
-import com.fixit.domain.auth.service.DeviceTokenService;
+import com.fixit.domain.notification.service.DeviceTokenService;
 import com.fixit.global.response.ApiResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;

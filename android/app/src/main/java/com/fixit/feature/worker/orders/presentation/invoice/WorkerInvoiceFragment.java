@@ -33,7 +33,7 @@ import dagger.hilt.android.AndroidEntryPoint;
 public class WorkerInvoiceFragment extends BaseFragment<FragmentWorkerInvoiceBinding> {
 
     private WorkerOrdersViewModel viewModel;
-    private String orderId = "ORD001"; // Placeholder, should come from args
+    private String orderId = "ORD001"; // Default
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -52,28 +52,29 @@ public class WorkerInvoiceFragment extends BaseFragment<FragmentWorkerInvoiceBin
     @Override
     protected void setupViews() {
         setupHeader();
-        setupInvoiceItems();
         setupListeners();
     }
 
     @Override
     protected void observeData() {
+        viewModel.orderDetails.observe(getViewLifecycleOwner(), order -> {
+            if (order != null) {
+                binding.tvOrderSummary.setText("Đơn hàng #" + orderId + " - Khách: " + order.getCustomerName());
+                setupInvoiceItems(order);
+            }
+        });
+
+        viewModel.loadOrderDetails(orderId);
     }
 
     private void setupHeader() {
         binding.llWorkerTopbar.tvToolbarTitle.setText("Hóa đơn thanh toán");
         binding.llWorkerTopbar.btnBack.setOnClickListener(v -> Navigation.findNavController(v).navigateUp());
-        
-        WorkerOrder order = viewModel.getOrderById(orderId);
-        if (order != null) {
-            binding.tvOrderSummary.setText("Đơn hàng #" + orderId + " - Khách: " + order.getCustomerName());
-        }
     }
 
-    private void setupInvoiceItems() {
+    private void setupInvoiceItems(WorkerOrder order) {
         binding.llInvoiceItems.removeAllViews();
         
-        WorkerOrder order = viewModel.getOrderById(orderId);
         long basePrice = 0;
         if (order != null) {
             // Parse base price
