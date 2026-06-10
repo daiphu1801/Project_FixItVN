@@ -29,6 +29,8 @@ import dagger.hilt.android.AndroidEntryPoint;
 public class CustomerListMsgFragment extends BaseFragment<FragmentListMsgBinding> {
 
     private ChatPreviewAdapter adapter;
+    private ConversationsViewModel viewModel;
+    private final List<ChatPreview> conversationList = new ArrayList<>();
 
     @NonNull
     @Override
@@ -39,8 +41,20 @@ public class CustomerListMsgFragment extends BaseFragment<FragmentListMsgBinding
 
     @Override
     protected void setupViews() {
+        viewModel = new androidx.lifecycle.ViewModelProvider(this).get(ConversationsViewModel.class);
         configureTopBar();
         setupRecyclerView();
+        viewModel.startListening();
+
+        // Cấu hình sự kiện cho nút FAB (dấu cộng) để mở chat với thợ mẫu phục vụ việc test
+        binding.fabNewChat.setOnClickListener(v -> {
+            Bundle args = new Bundle();
+            args.putString("workerId", "worker_tuan_123");
+            args.putString("workerName", "Anh Tuấn - Thợ Điện");
+            if (navController != null) {
+                navController.navigate(R.id.action_list_msg_to_chat, args);
+            }
+        });
     }
 
     /**
@@ -64,8 +78,7 @@ public class CustomerListMsgFragment extends BaseFragment<FragmentListMsgBinding
     }
 
     private void setupRecyclerView() {
-        List<ChatPreview> fakeData = buildFakeConversations();
-        adapter = new ChatPreviewAdapter(fakeData, this::onConversationClicked);
+        adapter = new ChatPreviewAdapter(conversationList, this::onConversationClicked);
 
         binding.rvChats.setLayoutManager(new LinearLayoutManager(requireContext()));
         binding.rvChats.setAdapter(adapter);
@@ -84,21 +97,18 @@ public class CustomerListMsgFragment extends BaseFragment<FragmentListMsgBinding
 
     @Override
     protected void observeData() {
-        // Sẽ kết nối ViewModel/API thực ở đây sau
-    }
+        viewModel.conversations.observe(getViewLifecycleOwner(), list -> {
+            conversationList.clear();
+            if (list != null) {
+                conversationList.addAll(list);
+            }
+            adapter.notifyDataSetChanged();
+        });
 
-    private List<ChatPreview> buildFakeConversations() {
-        List<ChatPreview> list = new ArrayList<>();
-        list.add(new ChatPreview("w1", "Anh Tuấn — Thợ Điện",
-                "Em sẽ có mặt trong 15 phút ạ!", "Vừa xong", true, true));
-        list.add(new ChatPreview("w2", "Chú Hùng — Thợ Máy Lạnh",
-                "Chị cần em bơm thêm gas không ạ?", "10:45", true, false));
-        list.add(new ChatPreview("w3", "Anh Khoa — Thợ Ống Nước",
-                "Em đã sửa xong rồi ạ, chị kiểm tra lại nhé.", "Hôm qua", false, false));
-        list.add(new ChatPreview("w4", "Chú Minh — Thợ Điện Lạnh",
-                "Tủ lạnh của chị cần thay lốc mới ạ.", "T4", false, false));
-        list.add(new ChatPreview("w5", "Anh Phong — Thợ Bếp",
-                "Bếp từ của chị ok rồi ạ!", "T2", false, false));
-        return list;
+        viewModel.error.observe(getViewLifecycleOwner(), errorMsg -> {
+            if (errorMsg != null && !errorMsg.isEmpty()) {
+                android.widget.Toast.makeText(requireContext(), errorMsg, android.widget.Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 }

@@ -30,6 +30,8 @@ public class SharedPrefsSessionStorage implements SessionStorage {
                 .putString(Constants.PREF_REFRESH_TOKEN, session.getRefreshToken())
                 .putString(Constants.PREF_USER_ID, session.getUser().getId())
                 .putString(Constants.PREF_USER_ROLE, session.getUser().getRole().name())
+                .putString(Constants.PREF_USER_NAME, session.getUser().getFullName())
+                .putString(Constants.PREF_USER_PHONE, session.getUser().getPhone())
                 .apply();
     }
 
@@ -63,7 +65,9 @@ public class SharedPrefsSessionStorage implements SessionStorage {
             return null;
         }
 
-        User user = new User(userId, null, null, UserRole.from(userRole));
+        String userName = prefs.getString(Constants.PREF_USER_NAME, null);
+        String userPhone = prefs.getString(Constants.PREF_USER_PHONE, null);
+        User user = new User(userId, userPhone, userName, UserRole.from(userRole));
         return new Session(accessToken, refreshToken, user);
     }
 

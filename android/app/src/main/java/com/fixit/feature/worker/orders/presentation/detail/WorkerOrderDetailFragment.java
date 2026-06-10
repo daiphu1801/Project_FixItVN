@@ -74,8 +74,7 @@ public class WorkerOrderDetailFragment extends BaseFragment<FragmentWorkerOrderD
                             "{\"proofType\":\"BEFORE_REPAIR\"}"
                     );
                 }
-            }
-    );
+            });
 
     private final ActivityResultLauncher<String> pickAfterImageLauncher = registerForActivityResult(
             new ActivityResultContracts.GetContent(),
@@ -95,8 +94,7 @@ public class WorkerOrderDetailFragment extends BaseFragment<FragmentWorkerOrderD
                             "{\"proofType\":\"AFTER_REPAIR\"}"
                     );
                 }
-            }
-    );
+            });
 
     @Override
     public void onCreate(android.os.Bundle savedInstanceState) {
@@ -113,12 +111,12 @@ public class WorkerOrderDetailFragment extends BaseFragment<FragmentWorkerOrderD
     @Override
     protected void setupViews() {
         // Lấy binding của các sub-layout từ include tags
-        customerBinding  = LayoutOrderCustomerCardBinding.bind(binding.cardCustomerInfo.getRoot());
-        metaBinding      = LayoutOrderMetaCardBinding.bind(binding.cardOrderMeta.getRoot());
-        timelineBinding  = LayoutOrderTimelineCardBinding.bind(binding.cardTimeline.getRoot());
-        pricingBinding   = LayoutPricingSummaryCardBinding.bind(binding.cardPricingSummary.getRoot());
-        paymentBinding   = LayoutWorkerPaymentSectionBinding.bind(binding.sectionPayment.getRoot());
-        proofBinding     = LayoutProofOfWorkSectionBinding.bind(binding.sectionProofOfWork.getRoot());
+        customerBinding = LayoutOrderCustomerCardBinding.bind(binding.cardCustomerInfo.getRoot());
+        metaBinding = LayoutOrderMetaCardBinding.bind(binding.cardOrderMeta.getRoot());
+        timelineBinding = LayoutOrderTimelineCardBinding.bind(binding.cardTimeline.getRoot());
+        pricingBinding = LayoutPricingSummaryCardBinding.bind(binding.cardPricingSummary.getRoot());
+        paymentBinding = LayoutWorkerPaymentSectionBinding.bind(binding.sectionPayment.getRoot());
+        proofBinding = LayoutProofOfWorkSectionBinding.bind(binding.sectionProofOfWork.getRoot());
 
         // Chọn ảnh bằng chứng công việc
         proofBinding.cardProofBefore.setOnClickListener(v -> pickBeforeImageLauncher.launch("image/*"));
@@ -127,9 +125,8 @@ public class WorkerOrderDetailFragment extends BaseFragment<FragmentWorkerOrderD
         // Setup Toolbar
         if (binding.appBarLayout.toolbar != null) {
             binding.appBarLayout.toolbar.setTitle("Chi tiết đơn hàng");
-            binding.appBarLayout.toolbar.setNavigationOnClickListener(v ->
-                androidx.navigation.Navigation.findNavController(v).navigateUp()
-            );
+            binding.appBarLayout.toolbar.setNavigationOnClickListener(
+                    v -> androidx.navigation.Navigation.findNavController(v).navigateUp());
         }
 
         // Chat với khách hàng
@@ -142,9 +139,8 @@ public class WorkerOrderDetailFragment extends BaseFragment<FragmentWorkerOrderD
         });
 
         // Hủy đơn
-        binding.btnCancelOrderDetail.setOnClickListener(v ->
-            Toast.makeText(requireContext(), "Hủy đơn hàng", Toast.LENGTH_SHORT).show()
-        );
+        binding.btnCancelOrderDetail
+                .setOnClickListener(v -> Toast.makeText(requireContext(), "Hủy đơn hàng", Toast.LENGTH_SHORT).show());
 
         // Tiến độ tiếp theo
         binding.btnCompleteOrderDetail.setOnClickListener(v -> {
@@ -153,9 +149,8 @@ public class WorkerOrderDetailFragment extends BaseFragment<FragmentWorkerOrderD
         });
 
         // Thêm chi phí phát sinh
-        pricingBinding.btnAddExtraFee.setOnClickListener(v ->
-            androidx.navigation.Navigation.findNavController(v).navigate(com.fixit.R.id.workerExtraCostFragment)
-        );
+        pricingBinding.btnAddExtraFee.setOnClickListener(v -> androidx.navigation.Navigation.findNavController(v)
+                .navigate(com.fixit.R.id.workerExtraCostFragment));
 
         // Hiển thị QR thanh toán
         paymentBinding.btnShowQr.setOnClickListener(v -> showPaymentQrCode());
@@ -167,9 +162,8 @@ public class WorkerOrderDetailFragment extends BaseFragment<FragmentWorkerOrderD
         binding.btnBottomShowQr.setOnClickListener(v -> {
             showPaymentQrCode();
             // Cuộn mượt đến phần thanh toán QR
-            binding.scrollOrderDetail.post(() -> 
-                binding.scrollOrderDetail.smoothScrollTo(0, binding.sectionPayment.getRoot().getTop())
-            );
+            binding.scrollOrderDetail
+                    .post(() -> binding.scrollOrderDetail.smoothScrollTo(0, binding.sectionPayment.getRoot().getTop()));
         });
 
         // Xác nhận tiền mặt ở thanh đáy thích ứng
@@ -251,7 +245,8 @@ public class WorkerOrderDetailFragment extends BaseFragment<FragmentWorkerOrderD
         binding.btnBottomShowQr.setVisibility(View.GONE);
 
         if (status == JobStatus.REPAIRING) {
-            // Trạng thái đang sửa chữa & Chờ thanh toán -> Kích hoạt thanh đáy thích ứng kép
+            // Trạng thái đang sửa chữa & Chờ thanh toán -> Kích hoạt thanh đáy thích ứng
+            // kép
             binding.btnCancelOrderDetail.setVisibility(View.GONE);
             binding.btnCompleteOrderDetail.setVisibility(View.GONE);
 
@@ -272,7 +267,11 @@ public class WorkerOrderDetailFragment extends BaseFragment<FragmentWorkerOrderD
             binding.btnCompleteOrderDetail.setEnabled(false);
             binding.btnCompleteOrderDetail.setAlpha(0.5f);
             binding.btnCompleteOrderDetail.setText("Đã hoàn thành & thanh toán");
-            binding.btnCompleteOrderDetail.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#10b981"))); // Xanh lá cây sang trọng
+            binding.btnCompleteOrderDetail.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#10b981"))); // Xanh
+                                                                                                                       // lá
+                                                                                                                       // cây
+                                                                                                                       // sang
+                                                                                                                       // trọng
 
             paymentBinding.cardPaymentSection.setVisibility(View.VISIBLE);
             paymentBinding.tvPaymentStatus.setText("Đã thanh toán");
@@ -292,7 +291,8 @@ public class WorkerOrderDetailFragment extends BaseFragment<FragmentWorkerOrderD
     }
 
     private void showPaymentQrCode() {
-        if (currentOrder == null) return;
+        if (currentOrder == null)
+            return;
 
         paymentBinding.llQrContainer.setVisibility(View.VISIBLE);
         paymentBinding.pbQrLoading.setVisibility(View.VISIBLE);
@@ -302,23 +302,23 @@ public class WorkerOrderDetailFragment extends BaseFragment<FragmentWorkerOrderD
 
         if (!qrUrl.isEmpty()) {
             Glide.with(this)
-                .load(qrUrl)
-                .listener(new RequestListener<Drawable>() {
-                    @Override
-                    public boolean onLoadFailed(@Nullable GlideException e, Object model,
-                            Target<Drawable> target, boolean isFirstResource) {
-                        paymentBinding.pbQrLoading.setVisibility(View.GONE);
-                        return false;
-                    }
+                    .load(qrUrl)
+                    .listener(new RequestListener<Drawable>() {
+                        @Override
+                        public boolean onLoadFailed(@Nullable GlideException e, Object model,
+                                Target<Drawable> target, boolean isFirstResource) {
+                            paymentBinding.pbQrLoading.setVisibility(View.GONE);
+                            return false;
+                        }
 
-                    @Override
-                    public boolean onResourceReady(Drawable resource, Object model,
-                            Target<Drawable> target, DataSource dataSource, boolean isFirstResource) {
-                        paymentBinding.pbQrLoading.setVisibility(View.GONE);
-                        return false;
-                    }
-                })
-                .into(paymentBinding.ivPaymentQr);
+                        @Override
+                        public boolean onResourceReady(Drawable resource, Object model,
+                                Target<Drawable> target, DataSource dataSource, boolean isFirstResource) {
+                            paymentBinding.pbQrLoading.setVisibility(View.GONE);
+                            return false;
+                        }
+                    })
+                    .into(paymentBinding.ivPaymentQr);
         } else {
             paymentBinding.pbQrLoading.setVisibility(View.GONE);
             Toast.makeText(requireContext(), "Lỗi tạo mã QR", Toast.LENGTH_SHORT).show();
@@ -333,11 +333,13 @@ public class WorkerOrderDetailFragment extends BaseFragment<FragmentWorkerOrderD
         new android.os.Handler(android.os.Looper.getMainLooper()).postDelayed(() -> {
             if (isAdded() && viewModel.currentStatus.getValue() == JobStatus.REPAIRING) {
                 paymentBinding.tvPaymentStatus.setText("Đã thanh toán qua QR");
-                paymentBinding.tvPaymentStatus.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#DCFCE7")));
+                paymentBinding.tvPaymentStatus
+                        .setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#DCFCE7")));
                 paymentBinding.tvPaymentStatus.setTextColor(Color.parseColor("#22C55E"));
                 paymentBinding.tvPaymentSimulationHint.setText("Thanh toán trực tuyến thành công!");
 
-                Toast.makeText(requireContext(), "Khách hàng đã thanh toán qua QR thành công!", Toast.LENGTH_LONG).show();
+                Toast.makeText(requireContext(), "Khách hàng đã thanh toán qua QR thành công!", Toast.LENGTH_LONG)
+                        .show();
 
                 paymentBinding.btnShowQr.setEnabled(false);
                 paymentBinding.btnConfirmCash.setVisibility(View.GONE);
@@ -348,7 +350,8 @@ public class WorkerOrderDetailFragment extends BaseFragment<FragmentWorkerOrderD
     }
 
     private void confirmCashPayment() {
-        if (currentOrder == null) return;
+        if (currentOrder == null)
+            return;
 
         paymentBinding.tvPaymentStatus.setText("Đã thanh toán (Tiền mặt)");
         paymentBinding.tvPaymentStatus.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#DCFCE7")));
@@ -368,18 +371,19 @@ public class WorkerOrderDetailFragment extends BaseFragment<FragmentWorkerOrderD
         if (order != null) {
             try {
                 basePrice = Long.parseLong(order.getPrice().replaceAll("[^\\d]", ""));
-            } catch (Exception ignored) {}
+            } catch (Exception ignored) {
+            }
         }
         return basePrice + viewModel.calculateTotalExtra();
     }
 
     private void updateStep(int stepIndex, int currentStepIndex) {
-        int colorActive  = Color.parseColor("#0ea5e9");
-        int colorDone    = Color.parseColor("#0ea5e9");
+        int colorActive = Color.parseColor("#0ea5e9");
+        int colorDone = Color.parseColor("#0ea5e9");
         int colorPending = Color.parseColor("#e2e8f0");
-        int textActive   = Color.parseColor("#0ea5e9");
-        int textDone     = Color.parseColor("#0d1b2a");
-        int textPending  = Color.parseColor("#94a3b8");
+        int textActive = Color.parseColor("#0ea5e9");
+        int textDone = Color.parseColor("#0d1b2a");
+        int textPending = Color.parseColor("#94a3b8");
 
         if (stepIndex < currentStepIndex) {
             setStepState(stepIndex, true, false, colorDone, textDone);
@@ -425,7 +429,8 @@ public class WorkerOrderDetailFragment extends BaseFragment<FragmentWorkerOrderD
     }
 
     private void displayProofBeforeImage(android.net.Uri uri) {
-        if (proofBinding == null) return;
+        if (proofBinding == null)
+            return;
         proofBinding.ivProofBeforeImage.setVisibility(View.VISIBLE);
         proofBinding.icProofBeforeCamera.setVisibility(View.GONE);
         proofBinding.tvProofBeforeLabel.setVisibility(View.GONE);
@@ -433,7 +438,8 @@ public class WorkerOrderDetailFragment extends BaseFragment<FragmentWorkerOrderD
     }
 
     private void displayProofAfterImage(android.net.Uri uri) {
-        if (proofBinding == null) return;
+        if (proofBinding == null)
+            return;
         proofBinding.ivProofAfterImage.setVisibility(View.VISIBLE);
         proofBinding.icProofAfterCamera.setVisibility(View.GONE);
         proofBinding.tvProofAfterLabel.setVisibility(View.GONE);

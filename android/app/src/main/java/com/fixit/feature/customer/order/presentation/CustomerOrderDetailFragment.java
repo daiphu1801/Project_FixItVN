@@ -13,7 +13,8 @@ public class CustomerOrderDetailFragment extends BaseFragment<FragmentCustomerOr
 
     @NonNull
     @Override
-    protected FragmentCustomerOrderDetailBinding inflateViewBinding(@NonNull LayoutInflater inflater, ViewGroup container) {
+    protected FragmentCustomerOrderDetailBinding inflateViewBinding(@NonNull LayoutInflater inflater,
+            ViewGroup container) {
         return FragmentCustomerOrderDetailBinding.inflate(inflater, container, false);
     }
 
