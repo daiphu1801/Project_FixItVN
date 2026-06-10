@@ -130,12 +130,26 @@ public class WorkerOrderDetailFragment extends BaseFragment<FragmentWorkerOrderD
         }
 
         // Chat với khách hàng
-        customerBinding.btnChatCustomer.setOnClickListener(v -> {
-            String orderId = getArguments() != null ? getArguments().getString("orderId") : "ORD001";
-            android.os.Bundle args = new android.os.Bundle();
-            args.putString("orderId", orderId);
-            args.putString("chatTitle", customerBinding.tvOrderDetailCustomerName.getText().toString());
-            androidx.navigation.Navigation.findNavController(v).navigate(com.fixit.R.id.workerChatFragment, args);
+        // customerBinding.btnChatCustomer.setOnClickListener(v -> {
+        //     String orderId = getArguments() != null ? getArguments().getString("orderId") : "ORD001";
+        //     android.os.Bundle args = new android.os.Bundle();
+        //     args.putString("orderId", orderId);
+        //     args.putString("chatTitle", customerBinding.tvOrderDetailCustomerName.getText().toString());
+        //     androidx.navigation.Navigation.findNavController(v).navigate(com.fixit.R.id.workerChatFragment, args);
+        // });
+              customerBinding.btnChatCustomer.setOnClickListener(v -> {
+            if (currentOrder != null) {
+                android.os.Bundle args = new android.os.Bundle();
+                // Truyền đúng ID và Tên khách hàng sang ChatCustomerFragment qua khóa 'workerId' và 'workerName'
+                args.putString("workerId", currentOrder.getCustomerId()); 
+                args.putString("workerName", currentOrder.getCustomerName()); 
+                
+                // Điều hướng trực tiếp đến màn hình Chat chi tiết 1-1
+                androidx.navigation.Navigation.findNavController(v)
+                        .navigate(com.fixit.R.id.nav_worker_chat_detail, args);
+            } else {
+                Toast.makeText(requireContext(), "Không thể tải thông tin khách hàng", Toast.LENGTH_SHORT).show();
+            }
         });
 
         // Hủy đơn
