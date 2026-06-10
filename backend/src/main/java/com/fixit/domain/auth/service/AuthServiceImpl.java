@@ -8,6 +8,8 @@ import com.fixit.domain.auth.repository.RefreshTokenRepository;
 import com.fixit.domain.auth.repository.UserRepository;
 import com.fixit.domain.auth.repository.UserSocialLoginRepository;
 import com.fixit.domain.wallet.entity.WorkerWallet;
+import com.fixit.domain.customer.entity.Customer;
+import com.fixit.domain.customer.repository.CustomerRepository;
 import com.fixit.domain.wallet.repository.WorkerWalletRepository;
 import com.fixit.domain.worker.entity.Worker;
 import com.fixit.domain.worker.entity.WorkerVerificationStatus;
@@ -39,6 +41,7 @@ public class AuthServiceImpl implements AuthService {
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
     private final JwtService jwtService;
+    private final CustomerRepository customerRepository;
 
     @Override
     @Transactional
@@ -85,6 +88,13 @@ public class AuthServiceImpl implements AuthService {
                     .build();
 
             workerWalletRepository.save(wallet);
+        } else if (request.getRole() == UserRole.Customer) {
+            Customer customer = Customer.builder()
+                    .user(savedUser)
+                    .fullName(request.getFullName().trim())
+                    .build();
+
+            customerRepository.save(customer);
         }
 
         String accessToken = jwtService.generateToken(savedUser);
@@ -153,7 +163,14 @@ public class AuthServiceImpl implements AuthService {
                         .role(UserRole.Customer)
                         .active(true)
                         .build();
-                userRepository.save(user);
+                User savedUser = userRepository.save(user);
+
+                Customer customer = Customer.builder()
+                        .user(savedUser)
+                        .fullName(name)
+                        .build();
+                customerRepository.save(customer);
+                user = savedUser;
             }
             UserSocialLogin newSocialLogin = UserSocialLogin.builder()
                     .user(user)
