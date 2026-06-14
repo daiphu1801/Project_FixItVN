@@ -149,4 +149,26 @@
             android:defaultValue="" />
     </fragment>
 
+    <fragment
+        android:id="@+id/nav_worker_public_profile"
+        android:name="com.fixit.feature.customer.workerprofile.presentation.WorkerPublicProfileFragment"
+        android:label="Hồ sơ thợ"
+        tools:layout="@layout/fragment_worker_public_profile">
+        <argument
+            android:name="workerId"
+            app:argType="string"
+            android:defaultValue="" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/confirmPaymentFragment"
+        android:name="com.fixit.feature.payment.presentation.ConfirmPaymentFragment"
+        android:label="Xác nhận thanh toán"
+        tools:layout="@layout/fragment_confirm_payment">
+        <argument
+            android:name="isWorker"
+            app:argType="boolean"
+            android:defaultValue="false" />
+    </fragment>
+
 </navigation>

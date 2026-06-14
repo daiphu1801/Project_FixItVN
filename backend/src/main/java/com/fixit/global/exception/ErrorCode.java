@@ -31,6 +31,7 @@ public enum ErrorCode {
 
     // Booking action
     BOOKING_NOT_FOUND(404, HttpStatus.NOT_FOUND, "Không tìm thấy đơn của thợ hiện tại"),
+    QUOTATION_NOT_FOUND(404, HttpStatus.NOT_FOUND, "Không tìm thấy báo giá"),
     BOOKING_INVALID_STATUS_TRANSITION(409, HttpStatus.CONFLICT,
             "Trạng thái đơn hiện tại không cho phép thực hiện hành động này"),
     BOOKING_PREVIOUS_ACTION_REQUIRED(409, HttpStatus.CONFLICT, "Chưa hoàn thành bước trước đó"),

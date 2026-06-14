@@ -7,12 +7,23 @@ import com.fixit.core.ui.BaseFragment;
 import com.fixit.databinding.FragmentCustomerSearchBinding;
 import dagger.hilt.android.AndroidEntryPoint;
 
+import androidx.lifecycle.ViewModelProvider;
+import android.text.Editable;
+import android.text.TextWatcher;
+import com.fixit.R;
+import com.fixit.feature.customer.home.presentation.ServiceCategoryAdapter;
+import com.fixit.feature.customer.home.presentation.ServiceCategoryBottomSheet;
+import com.fixit.feature.customer.service.domain.model.ServiceCategory;
+
 /**
  * FILE ĐIỀU KHIỂN GIAO DIỆN TÌM KIẾM (CUSTOMER SEARCH FRAGMENT)
  * Mục đích: Quản lý các hành động của người dùng tại màn hình tìm kiếm.
  */
 @AndroidEntryPoint
 public class CustomerSearchFragment extends BaseFragment<FragmentCustomerSearchBinding> {
+
+    private CustomerSearchViewModel viewModel;
+    private ServiceCategoryAdapter serviceAdapter;
 
     // Hàm này giúp kết nối file giao diện XML (fragment_customer_search.xml) với code Java này
     @NonNull
@@ -25,18 +36,69 @@ public class CustomerSearchFragment extends BaseFragment<FragmentCustomerSearchB
     // Ví dụ: Bắt sự kiện khi người dùng gõ từ khóa vào thanh tìm kiếm.
     @Override
     protected void setupViews() {
+        viewModel = new ViewModelProvider(this).get(CustomerSearchViewModel.class);
+
         // Sự kiện khi nhấn nút Quay lại (Back)
         binding.btnBack.setOnClickListener(v -> {
             if (navController != null) {
                 navController.popBackStack();
             }
         });
+
+        // Thiết lập Adapter cho RecyclerView (Dùng lại ServiceCategoryAdapter)
+        serviceAdapter = new ServiceCategoryAdapter(new ServiceCategoryAdapter.OnCategoryClickListener() {
+            @Override
+            public void onCategoryClick(ServiceCategory category) {
+                // Hiện BottomSheet để chọn dịch vụ con
+                ServiceCategoryBottomSheet bottomSheet = ServiceCategoryBottomSheet.newInstance(category.getId(),
+                        category.getName());
+                bottomSheet.setOnServiceItemSelectedListener(item -> {
+                    // Khi chọn xong 1 dịch vụ con -> Chuyển sang màn hình Đặt thợ
+                    navigateToFindingWorker(item.getName());
+                });
+                bottomSheet.show(getParentFragmentManager(), "ServiceCategoryBottomSheet");
+            }
+        });
+        binding.rvServices.setAdapter(serviceAdapter);
+
+        // Sự kiện gõ tìm kiếm
+        binding.etSearch.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                viewModel.searchCategories(s.toString());
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {}
+        });
+
+        viewModel.fetchCategories();
+    }
+
+    private void navigateToFindingWorker(String serviceName) {
+        // Ta cần truyền tên dịch vụ đã chọn về màn hình booking
+        // Do màn hình search không có tvLocationValue, ta sẽ chuyển hướng thẳng với args (nếu cần thiết)
+        // Hiện tại tạm thời chỉ navigate sang nav_customer_booking
+        if (navController != null) {
+            navController.navigate(R.id.nav_customer_booking);
+        }
     }
 
     // Nơi nhận dữ liệu từ ViewModel để cập nhật lên màn hình
     // Ví dụ: Hiển thị danh sách các thợ sửa chữa tìm thấy được.
     @Override
     protected void observeData() {
-        // Code cập nhật danh sách tìm kiếm sẽ viết ở đây.
+        viewModel.categories.observe(getViewLifecycleOwner(), categories -> {
+            serviceAdapter.submitList(categories);
+        });
+
+        viewModel.getErrorMessage().observe(getViewLifecycleOwner(), error -> {
+            if (error != null) {
+                showToast(error);
+            }
+        });
     }
 }

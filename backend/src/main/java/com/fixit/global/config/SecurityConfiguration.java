@@ -41,40 +41,41 @@ public class SecurityConfiguration {
             "/swagger-ui/**",
             "/webjars/**",
             "/swagger-ui.html",
+            "/api/v1/services/**",
             "/api/v1/webhooks/**"
 
-//            // DEV ONLY: cho phép test assignment bằng X-Debug-Worker-Id
-//            "/api/v1/workers/me/home",
-//            "/api/v1/workers/me/status",
-//            "/api/v1/workers/me/location",
-//            "/api/v1/workers/me/schedule",
-//
-//            "/api/v1/workers/me/assignments/pending",
-//            "/api/v1/bookings/*/assignments/*/accept",
-//            "/api/v1/bookings/*/assignments/*/reject",
-//            "/api/v1/bookings/*/assignments/*/miss",
-//
-//            "/api/v1/bookings/*/start-moving",
-//            "/api/v1/bookings/*/arrive",
-//            "/api/v1/bookings/*/start-survey",
-//            "/api/v1/bookings/*/start-repair",
-//
-//            "/api/v1/workers/me/profile",
-//            "/api/v1/workers/me/skills",
-//
-//            "/api/v1/bookings/*/worker-complete",
-//            "/api/v1/workers/me/history",
-//            "/api/v1/workers/me/stats",
-//
-//            "/api/v1/workers/me/wallet",
-//            "/api/v1/workers/me/wallet/transactions",
-//            "/api/v1/workers/me/wallet/deposits",
-//            "/api/v1/workers/me/wallet/deposits/*",
-//            "/api/v1/workers/me/wallet/deposits/*/qr",
-//
-//            "/api/v1/workers/me/bank-accounts",
-//            "/api/v1/workers/me/bank-accounts/*",
-//            "/api/v1/workers/me/bank-accounts/*/default"
+            // // DEV ONLY: cho phép test assignment bằng X-Debug-Worker-Id
+            // "/api/v1/workers/me/home",
+            // "/api/v1/workers/me/status",
+            // "/api/v1/workers/me/location",
+            // "/api/v1/workers/me/schedule",
+            //
+            // "/api/v1/workers/me/assignments/pending",
+            // "/api/v1/bookings/*/assignments/*/accept",
+            // "/api/v1/bookings/*/assignments/*/reject",
+            // "/api/v1/bookings/*/assignments/*/miss",
+            //
+            // "/api/v1/bookings/*/start-moving",
+            // "/api/v1/bookings/*/arrive",
+            // "/api/v1/bookings/*/start-survey",
+            // "/api/v1/bookings/*/start-repair",
+            //
+            // "/api/v1/workers/me/profile",
+            // "/api/v1/workers/me/skills",
+            //
+            // "/api/v1/bookings/*/worker-complete",
+            // "/api/v1/workers/me/history",
+            // "/api/v1/workers/me/stats",
+            //
+            // "/api/v1/workers/me/wallet",
+            // "/api/v1/workers/me/wallet/transactions",
+            // "/api/v1/workers/me/wallet/deposits",
+            // "/api/v1/workers/me/wallet/deposits/*",
+            // "/api/v1/workers/me/wallet/deposits/*/qr",
+            //
+            // "/api/v1/workers/me/bank-accounts",
+            // "/api/v1/workers/me/bank-accounts/*",
+            // "/api/v1/workers/me/bank-accounts/*/default"
     };
 
     @Bean
@@ -82,13 +83,10 @@ public class SecurityConfiguration {
         http
                 .csrf(AbstractHttpConfigurer::disable)
                 .cors(Customizer.withDefaults())
-                .sessionManagement(session ->
-                        session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-                )
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(WHITE_LIST_URL).permitAll()
-                        .anyRequest().authenticated()
-                )
+                        .anyRequest().authenticated())
                 .authenticationProvider(authenticationProvider())
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
 
