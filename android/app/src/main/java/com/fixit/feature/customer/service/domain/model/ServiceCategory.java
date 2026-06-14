@@ -18,8 +18,16 @@ public class ServiceCategory {
     
     private Integer id;
     private String name; // Chú ý: Ở đây ta gọi ngắn gọn là 'name', không còn là 'serviceName' như Backend
+    private String iconUrl;
 
     // Constructor (Hàm khởi tạo)
+    public ServiceCategory(Integer id, String name, String iconUrl) {
+        this.id = id;
+        this.name = name;
+        this.iconUrl = iconUrl;
+    }
+
+    // Constructor cũ cho tương thích
     public ServiceCategory(Integer id, String name) {
         this.id = id;
         this.name = name;
@@ -40,5 +48,13 @@ public class ServiceCategory {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getIconUrl() {
+        return iconUrl;
+    }
+
+    public void setIconUrl(String iconUrl) {
+        this.iconUrl = iconUrl;
     }
 }

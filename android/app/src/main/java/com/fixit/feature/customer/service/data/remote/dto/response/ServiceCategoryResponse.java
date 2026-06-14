@@ -25,6 +25,9 @@ public class ServiceCategoryResponse {
     @SerializedName("serviceName")
     private String serviceName;
 
+    @SerializedName("iconUrl")
+    private String iconUrl;
+
     public Integer getId() {
         return id;
     }
@@ -39,5 +42,13 @@ public class ServiceCategoryResponse {
 
     public void setServiceName(String serviceName) {
         this.serviceName = serviceName;
+    }
+
+    public String getIconUrl() {
+        return iconUrl;
+    }
+
+    public void setIconUrl(String iconUrl) {
+        this.iconUrl = iconUrl;
     }
 }

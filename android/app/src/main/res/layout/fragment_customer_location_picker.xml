@@ -70,9 +70,14 @@
         <FrameLayout
             android:id="@+id/mapContainer"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:background="@drawable/img_map_placeholder">
+            android:layout_height="match_parent">
 
+            <org.osmdroid.views.MapView
+                android:id="@+id/mapView"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
+
+            <!-- Trung tâm bản đồ -->
             <ImageView
                 android:id="@+id/ivCenterPin"
                 android:layout_width="54dp"

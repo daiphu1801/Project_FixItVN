@@ -32,6 +32,12 @@ public class WorkerQuotation {
     @Column(name = "total_proposed_price", nullable = false, precision = 12, scale = 2)
     private BigDecimal totalProposedPrice;
 
+    @Column(name = "labor_cost", precision = 12, scale = 2)
+    private BigDecimal laborCost;
+
+    @Column(name = "material_cost", precision = 12, scale = 2)
+    private BigDecimal materialCost;
+
     @Builder.Default
     @Enumerated(EnumType.STRING)
     @Column(name = "status", length = 50)

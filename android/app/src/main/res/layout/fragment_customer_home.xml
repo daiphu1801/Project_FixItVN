@@ -178,6 +178,19 @@
             app:layout_constraintTop_toBottomOf="@id/card_banner"
             app:layout_constraintStart_toStartOf="parent" />
 
+        <TextView
+            android:id="@+id/tv_see_all"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="20dp"
+            android:text="Xem tất cả"
+            android:textColor="#0284C7"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="@id/tv_services_header"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@id/tv_services_header" />
+
         <!-- Services -->
         <!-- Services (RecyclerView) -->
         <androidx.recyclerview.widget.RecyclerView

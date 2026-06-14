@@ -31,7 +31,18 @@ public class CustomerOrderDetailFragment extends BaseFragment<FragmentCustomerOr
             }
         });
 
-        // Other bindings for Technician info, etc.
+        // Open Worker Public Profile when clicking on avatar or name
+        binding.ivTechnicianAvatar.setOnClickListener(v -> navigateToWorkerProfile());
+        binding.tvTechnicianName.setOnClickListener(v -> navigateToWorkerProfile());
+    }
+
+    private void navigateToWorkerProfile() {
+        if (navController != null) {
+            android.os.Bundle args = new android.os.Bundle();
+            // TODO: Replace with real worker ID from order details when API is integrated
+            args.putString("workerId", com.fixit.core.common.Constants.DEBUG_WORKER_ID);
+            navController.navigate(R.id.nav_worker_public_profile, args);
+        }
     }
 
     @Override
