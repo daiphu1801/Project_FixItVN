@@ -12,6 +12,7 @@ import com.fixit.databinding.FragmentCustomerOrderHistoryBinding;
 import dagger.hilt.android.AndroidEntryPoint;
 import java.util.ArrayList;
 import java.util.List;
+import com.fixit.feature.customer.order.presentation.CustomerOrderViewModel;
 
 /**
  * FILE ĐIỀU KHIỂN MÀN HÌNH LỊCH SỬ ĐƠN HÀNG
@@ -27,6 +28,9 @@ public class OrderHistoryFragment extends BaseFragment<FragmentCustomerOrderHist
         return FragmentCustomerOrderHistoryBinding.inflate(inflater, container, false);
     }
 
+    private OrderHistoryAdapter adapter;
+    private CustomerOrderViewModel orderViewModel;
+
     @Override
     protected void setupViews() {
         // Cài đặt nút quay lại (Back)
@@ -37,6 +41,13 @@ public class OrderHistoryFragment extends BaseFragment<FragmentCustomerOrderHist
         });
 
         setupFilterChips();
+        
+        adapter = new OrderHistoryAdapter();
+        binding.rvOrders.setLayoutManager(new androidx.recyclerview.widget.LinearLayoutManager(requireContext()));
+        binding.rvOrders.setAdapter(adapter);
+
+        orderViewModel = new androidx.lifecycle.ViewModelProvider(requireActivity()).get(CustomerOrderViewModel.class);
+        orderViewModel.fetchBookings();
     }
 
     private void setupFilterChips() {
@@ -49,7 +60,6 @@ public class OrderHistoryFragment extends BaseFragment<FragmentCustomerOrderHist
         for (TextView chip : chips) {
             chip.setOnClickListener(v -> {
                 updateChipsState(chips, chip);
-                // Sau này sẽ thêm logic gọi API hoặc lọc dữ liệu tại đây
                 filterData(chip.getText().toString());
             });
         }
@@ -68,11 +78,13 @@ public class OrderHistoryFragment extends BaseFragment<FragmentCustomerOrderHist
     }
 
     private void filterData(String status) {
-        // Mock logic lọc dữ liệu
+        // Có thể filter list ở đây
     }
 
     @Override
     protected void observeData() {
-        // Gợi ý: Sau này bạn sẽ lấy dữ liệu đơn hàng từ ViewModel tại đây
+        orderViewModel.bookingHistory.observe(getViewLifecycleOwner(), list -> {
+            adapter.submitList(list);
+        });
     }
 }

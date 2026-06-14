@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:gravity="center"
+    android:padding="8dp">
+
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/cardIconBg"
+        android:layout_width="56dp"
+        android:layout_height="56dp"
+        app:cardCornerRadius="16dp"
+        app:cardElevation="0dp"
+        app:cardBackgroundColor="#F0FAFF">
+
+        <ImageView
+            android:id="@+id/ivServiceIcon"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:layout_gravity="center"
+            android:src="@drawable/ic_home_repair"
+            app:tint="#42C2FF" />
+            
+    </com.google.android.material.card.MaterialCardView>
+
+    <TextView
+        android:id="@+id/tvServiceName"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="Sửa điện"
+        android:textSize="12sp"
+        android:textColor="#374151"
+        android:textAlignment="center"
+        android:maxLines="2"
+        android:ellipsize="end" />
+
+</LinearLayout>

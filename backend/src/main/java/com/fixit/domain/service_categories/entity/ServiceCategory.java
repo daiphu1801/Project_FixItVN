@@ -31,4 +31,7 @@ public class ServiceCategory {
 
     @Column(name = "service_name", nullable = false)        // Ánh xạ cột "service_name", không được null
     private String serviceName;
+
+    @Column(name = "icon_url")
+    private String iconUrl;
 }

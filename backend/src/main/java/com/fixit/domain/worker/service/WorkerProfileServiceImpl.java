@@ -6,6 +6,8 @@ import com.fixit.domain.service_categories.repository.ServiceCategoryRepository;
 import com.fixit.domain.worker.dto.request.WorkerProfileUpdateRequest;
 import com.fixit.domain.worker.dto.request.WorkerSkillUpsertItemRequest;
 import com.fixit.domain.worker.dto.request.WorkerSkillsUpdateRequest;
+import com.fixit.domain.worker.dto.response.PublicWorkerProfileResponse;
+import com.fixit.domain.worker.dto.response.PublicWorkerSkillResponse;
 import com.fixit.domain.worker.dto.response.WorkerProfileResponse;
 import com.fixit.domain.worker.dto.response.WorkerSkillResponse;
 import com.fixit.domain.worker.dto.response.WorkerSkillsResponse;
@@ -144,6 +146,42 @@ public class WorkerProfileServiceImpl implements WorkerProfileService {
                 .totalItems(responseSkills.size())
                 .skills(responseSkills)
                 .build();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public PublicWorkerProfileResponse getPublicProfile(String workerId) {
+        Worker worker = getWorker(UUID.fromString(workerId));
+        User user = worker.getUser();
+        
+        return PublicWorkerProfileResponse.builder()
+                .workerId(worker.getWorkerId())
+                .fullName(worker.getFullName())
+                .avatarUrl(user != null ? user.getAvatarUrl() : null)
+                .reputationScore(worker.getReputationScore())
+                .totalReviews(0) // Mock for now
+                .experienceDescription(worker.getExperienceDescription())
+                .serviceArea(worker.getServiceArea())
+                .available(worker.getAvailable())
+                .build();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<PublicWorkerSkillResponse> getPublicSkills(String workerId) {
+        return workerServiceRepository
+                .findByWorker_WorkerId(UUID.fromString(workerId))
+                .stream()
+                .map(workerService -> {
+                    ServiceCategory category = workerService.getServiceCategory();
+                    return PublicWorkerSkillResponse.builder()
+                            .serviceId(category != null ? category.getId() : null)
+                            .serviceName(category != null ? category.getServiceName() : null)
+                            .iconUrl(category != null ? category.getIconUrl() : null)
+                            .basePrice(workerService.getBasePrice())
+                            .build();
+                })
+                .toList();
     }
 
     private Worker getWorker(UUID workerId) {

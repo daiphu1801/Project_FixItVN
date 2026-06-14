@@ -43,6 +43,16 @@ public class ServiceCategoryAdapter extends RecyclerView.Adapter<ServiceCategory
         ServiceCategory category = categories.get(position);
         holder.binding.tvServiceName.setText(category.getName());
         
+        if (category.getIconUrl() != null && !category.getIconUrl().isEmpty()) {
+            com.bumptech.glide.Glide.with(holder.itemView.getContext())
+                    .load(category.getIconUrl())
+                    .placeholder(com.fixit.R.drawable.ic_home_repair)
+                    .error(com.fixit.R.drawable.ic_home_repair)
+                    .into(holder.binding.ivServiceIcon);
+        } else {
+            holder.binding.ivServiceIcon.setImageResource(com.fixit.R.drawable.ic_home_repair);
+        }
+        
         holder.itemView.setOnClickListener(v -> {
             if (listener != null) {
                 listener.onCategoryClick(category);

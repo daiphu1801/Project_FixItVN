@@ -29,4 +29,5 @@ public class ServiceCategoryResponse {
 
     private Integer id;         // ID nhóm dịch vụ (VD: 1)
     private String serviceName; // Tên nhóm dịch vụ (VD: "Sửa điện")
+    private String iconUrl;     // Icon URL
 }

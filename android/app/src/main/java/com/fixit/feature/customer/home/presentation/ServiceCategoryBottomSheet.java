@@ -4,7 +4,9 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -12,12 +14,19 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.fixit.R;
+import com.fixit.core.common.ResultCallback;
+import com.fixit.core.common.Result;
 import com.fixit.feature.customer.service.domain.model.ServiceItem;
+import com.fixit.feature.customer.service.domain.repository.ServiceRepository;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 
-import java.util.ArrayList;
 import java.util.List;
 
+import javax.inject.Inject;
+
+import dagger.hilt.android.AndroidEntryPoint;
+
+@AndroidEntryPoint
 public class ServiceCategoryBottomSheet extends BottomSheetDialogFragment {
 
     public interface OnServiceItemSelectedListener {
@@ -30,6 +39,12 @@ public class ServiceCategoryBottomSheet extends BottomSheetDialogFragment {
     private OnServiceItemSelectedListener listener;
     private Integer categoryId;
     private String categoryName;
+
+    private ServiceItemAdapter adapter;
+    private ProgressBar progressBar;
+
+    @Inject
+    ServiceRepository serviceRepository;
 
     public static ServiceCategoryBottomSheet newInstance(Integer categoryId, String categoryName) {
         ServiceCategoryBottomSheet fragment = new ServiceCategoryBottomSheet();
@@ -56,9 +71,7 @@ public class ServiceCategoryBottomSheet extends BottomSheetDialogFragment {
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        // Since the specific layout is missing, we'll use a placeholder or create one.
-        // For now, let's use a simple view with a title and a list.
-        return inflater.inflate(R.layout.bottom_sheet_cancel_reason, container, false); // Placeholder
+        return inflater.inflate(R.layout.bottom_sheet_service_items, container, false);
     }
 
     @Override
@@ -70,18 +83,40 @@ public class ServiceCategoryBottomSheet extends BottomSheetDialogFragment {
             tvTitle.setText(categoryName);
         }
 
-        // Mocking the sub-services selection for now to fix build and provide functionality
-        View confirmBtn = view.findViewById(R.id.btnConfirmCancel);
-        if (confirmBtn != null) {
-            confirmBtn.setVisibility(View.GONE);
+        progressBar = view.findViewById(R.id.progressBar);
+        RecyclerView rvServiceItems = view.findViewById(R.id.rv_service_items);
+
+        if (rvServiceItems != null) {
+            adapter = new ServiceItemAdapter(item -> {
+                if (listener != null) {
+                    listener.onServiceItemSelected(item);
+                    dismiss();
+                }
+            });
+            rvServiceItems.setLayoutManager(new LinearLayoutManager(getContext()));
+            rvServiceItems.setAdapter(adapter);
         }
-        
-        // In a real implementation, we would have a RecyclerView here.
-        // For the sake of fixing the error and allowing the app to run:
-        view.setOnClickListener(v -> {
-            if (listener != null) {
-                listener.onServiceItemSelected(new ServiceItem(1, "Dịch vụ " + categoryName + " 1", 100000L, categoryId));
-                dismiss();
+
+        loadServiceItems();
+    }
+
+    private void loadServiceItems() {
+        if (categoryId == null || serviceRepository == null) return;
+
+        if (progressBar != null) progressBar.setVisibility(View.VISIBLE);
+
+        serviceRepository.getItemsByCategoryId(categoryId, new ResultCallback<List<ServiceItem>>() {
+            @Override
+            public void onResult(Result<List<ServiceItem>> result) {
+                if (progressBar != null) progressBar.setVisibility(View.GONE);
+                
+                if (result.isSuccess()) {
+                    if (adapter != null) {
+                        adapter.submitList(result.getData());
+                    }
+                } else {
+                    Toast.makeText(getContext(), "Lỗi tải dịch vụ: " + result.getError().getMessage(), Toast.LENGTH_SHORT).show();
+                }
             }
         });
     }

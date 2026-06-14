@@ -192,4 +192,15 @@
         android:name="com.fixit.feature.worker.profile.presentation.ChangePasswordFragment"
         android:label="Đổi mật khẩu"
         tools:layout="@layout/fragment_change_password" />
+
+    <fragment
+        android:id="@+id/confirmPaymentFragment"
+        android:name="com.fixit.feature.payment.presentation.ConfirmPaymentFragment"
+        android:label="Xác nhận thanh toán"
+        tools:layout="@layout/fragment_confirm_payment">
+        <argument
+            android:name="isWorker"
+            app:argType="boolean"
+            android:defaultValue="true" />
+    </fragment>
 </navigation>

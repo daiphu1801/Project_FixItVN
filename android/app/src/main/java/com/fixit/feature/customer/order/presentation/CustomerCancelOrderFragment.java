@@ -56,14 +56,14 @@ public class CustomerCancelOrderFragment extends BaseFragment<FragmentCustomerCa
 
             if (customerCheckedId != -1) {
                 // THAY ĐỔI TỪ PHÍA TÔI -> Quay về Trang chủ và Hủy đơn
-                orderViewModel.cancelOrder();
+                orderViewModel.cancelCurrentBooking("Lý do cá nhân", false);
                 Toast.makeText(requireContext(), "Đã hủy đơn thành công", Toast.LENGTH_SHORT).show();
                 if (navController != null) {
                     navController.navigate(R.id.nav_customer_home);
                 }
             } else if (workerCheckedId != -1) {
                 // VẤN ĐỀ TỪ PHÍA THỢ -> Quay về màn hình Finding Worker (Radar) trong tab Order
-                orderViewModel.startFinding();
+                orderViewModel.cancelCurrentBooking("Lỗi do thợ", true);
                 Toast.makeText(requireContext(), "Đang tìm thợ khác cho bạn", Toast.LENGTH_SHORT).show();
                 if (navController != null) {
                     navController.navigate(R.id.nav_customer_order);

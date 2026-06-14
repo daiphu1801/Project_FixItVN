@@ -18,7 +18,7 @@ import dagger.hilt.android.AndroidEntryPoint;
 public class CustomerHomeFragment extends BaseFragment<FragmentCustomerHomeBinding> {
 
     private CustomerHomeViewModel viewModel;
-    private ServiceCategoryAdapter serviceAdapter;
+    private HomeServiceGridAdapter serviceAdapter;
 
     @NonNull
     @Override
@@ -31,17 +31,23 @@ public class CustomerHomeFragment extends BaseFragment<FragmentCustomerHomeBindi
         viewModel = new ViewModelProvider(this).get(CustomerHomeViewModel.class);
 
         // Thiết lập Adapter cho RecyclerView
-        serviceAdapter = new ServiceCategoryAdapter(new ServiceCategoryAdapter.OnCategoryClickListener() {
+        serviceAdapter = new HomeServiceGridAdapter(new HomeServiceGridAdapter.OnCategoryClickListener() {
             @Override
-            public void onCategoryClick(ServiceCategory category) {
-                // Hiện BottomSheet để chọn dịch vụ con
-                ServiceCategoryBottomSheet bottomSheet = ServiceCategoryBottomSheet.newInstance(category.getId(),
-                        category.getName());
-                bottomSheet.setOnServiceItemSelectedListener(item -> {
-                    // Khi chọn xong 1 dịch vụ con -> Chuyển sang màn hình Đặt thợ
-                    navigateToFindingWorker(item.getName());
-                });
-                bottomSheet.show(getParentFragmentManager(), "ServiceCategoryBottomSheet");
+            public void onCategoryClick(ServiceCategory category, boolean isSeeAll) {
+                if (isSeeAll) {
+                    if (navController != null) {
+                        navController.navigate(R.id.nav_customer_search);
+                    }
+                } else {
+                    // Hiện BottomSheet để chọn dịch vụ con
+                    ServiceCategoryBottomSheet bottomSheet = ServiceCategoryBottomSheet.newInstance(category.getId(),
+                            category.getName());
+                    bottomSheet.setOnServiceItemSelectedListener(item -> {
+                        // Khi chọn xong 1 dịch vụ con -> Chuyển sang màn hình Đặt thợ
+                        navigateToFindingWorker(item.getName());
+                    });
+                    bottomSheet.show(getParentFragmentManager(), "ServiceCategoryBottomSheet");
+                }
             }
         });
         binding.rvServices.setAdapter(serviceAdapter);
@@ -74,6 +80,15 @@ public class CustomerHomeFragment extends BaseFragment<FragmentCustomerHomeBindi
                 }
             }
         });
+
+        binding.tvSeeAll.setOnClickListener(v -> {
+            if (navController != null) {
+                navController.navigate(R.id.nav_customer_search);
+            }
+        });
+
+        // Gọi API tải danh sách dịch vụ khi màn hình vừa mở lên
+        viewModel.fetchCategories();
     }
 
     private void navigateToFindingWorker(String serviceName) {
@@ -86,7 +101,17 @@ public class CustomerHomeFragment extends BaseFragment<FragmentCustomerHomeBindi
     @Override
     protected void observeData() {
         viewModel.categories.observe(getViewLifecycleOwner(), categories -> {
-            serviceAdapter.submitList(categories);
+            if (categories != null && !categories.isEmpty()) {
+                java.util.List<ServiceCategory> displayList = new java.util.ArrayList<>();
+                int limit = Math.min(categories.size(), 7);
+                for (int i = 0; i < limit; i++) {
+                    displayList.add(categories.get(i));
+                }
+                displayList.add(new ServiceCategory(-1, "Xem tất cả"));
+                serviceAdapter.submitList(displayList);
+            } else {
+                serviceAdapter.submitList(categories);
+            }
         });
 
         viewModel.getIsLoading().observe(getViewLifecycleOwner(), isLoading -> {

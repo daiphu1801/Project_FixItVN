@@ -9,6 +9,7 @@ import com.fixit.core.network.ApiResponse;
 import com.fixit.feature.customer.profile.data.remote.api.CustomerProfileApi;
 import com.fixit.feature.customer.profile.data.remote.dto.request.CustomerProfileRequestDto;
 import com.fixit.feature.customer.profile.data.remote.dto.response.CustomerProfileResponseDto;
+import com.fixit.feature.customer.profile.data.remote.mapper.CustomerProfileMapper;
 import com.fixit.feature.customer.profile.domain.model.CustomerAddress;
 import com.fixit.feature.customer.profile.domain.model.CustomerProfile;
 import com.fixit.feature.customer.profile.domain.repository.CustomerProfileRepository;

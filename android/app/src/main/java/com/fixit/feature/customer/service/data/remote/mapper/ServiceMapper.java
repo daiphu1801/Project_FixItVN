@@ -31,7 +31,8 @@ public class ServiceMapper {
         // Tạo Hộp Model mới và nhét dữ liệu từ DTO sang
         return new ServiceCategory(
                 response.getId(),              // Lấy ID từ DTO
-                response.getServiceName()      // Lấy serviceName từ DTO, nhét vào biến 'name' của Model
+                response.getServiceName(),     // Lấy serviceName từ DTO, nhét vào biến 'name' của Model
+                response.getIconUrl()          // Lấy iconUrl từ DTO
         );
     }
 

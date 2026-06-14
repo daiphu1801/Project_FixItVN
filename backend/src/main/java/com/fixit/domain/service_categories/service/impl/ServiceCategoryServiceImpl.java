@@ -51,6 +51,7 @@ public class ServiceCategoryServiceImpl implements ServiceCategoryService {
                 .map(category -> ServiceCategoryResponse.builder()
                         .id(category.getId())                     // Rút ID từ Entity nhét vào DTO
                         .serviceName(category.getServiceName())   // Rút Name từ Entity nhét vào DTO
+                        .iconUrl(category.getIconUrl())           // Rút Icon URL
                         .build())
                 // Thu thập lại thành một List mới (List các DTO)
                 .collect(Collectors.toList());
@@ -69,6 +70,7 @@ public class ServiceCategoryServiceImpl implements ServiceCategoryService {
         return ServiceCategoryResponse.builder()
                 .id(category.getId())
                 .serviceName(category.getServiceName())
+                .iconUrl(category.getIconUrl())
                 .build();
     }
 
