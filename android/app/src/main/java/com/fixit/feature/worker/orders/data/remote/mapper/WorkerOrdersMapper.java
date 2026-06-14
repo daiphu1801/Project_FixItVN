@@ -30,6 +30,7 @@ public class WorkerOrdersMapper {
         );
         order.setJobStatus(mapJobStatus(dto.getStatus(), dto.getDoneActions()));
         order.setPaymentMethod(dto.getPaymentMethod());
+        order.setIssueDescription(dto.getIssueDescription());
         return order;
     }
 
@@ -52,6 +53,8 @@ public class WorkerOrdersMapper {
                 dto.getCustomerName()
         );
         order.setJobStatus(mapJobStatus(dto.getStatus(), null));
+        order.setPaymentMethod(dto.getPaymentMethod());
+        order.setIssueDescription(dto.getIssueDescription());
         return order;
     }
 
@@ -73,6 +76,8 @@ public class WorkerOrdersMapper {
                 dto.getCustomerName()
         );
         order.setJobStatus(mapJobStatus(dto.getStatus(), null));
+        order.setPaymentMethod(dto.getPaymentMethod());
+        order.setIssueDescription(dto.getIssueDescription());
         return order;
     }
     

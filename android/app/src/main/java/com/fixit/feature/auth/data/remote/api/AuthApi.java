@@ -21,7 +21,7 @@ public interface AuthApi {
     Call<AuthResponse> loginWithGoogle(@Body AuthRequest.GoogleLogin request);
 
     @POST("api/v1/auth/logout")
-    Call<String> logout(@Query("refreshToken") String refreshToken);
+    Call<Void> logout(@Query("refreshToken") String refreshToken);
 
     @POST("api/v1/auth/refresh-token")
     Call<AuthResponse> refreshToken(@Body AuthRequest.RefreshToken request);

@@ -7,13 +7,10 @@ import android.view.ViewGroup;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
+import com.fixit.core.common.AutoRefreshHelper;
 import com.fixit.core.ui.BaseFragment;
 import com.fixit.databinding.FragmentWorkerOrdersBinding;
 import com.fixit.feature.worker.orders.presentation.WorkerOrdersViewModel;
-import com.google.android.material.tabs.TabLayout;
-
-import com.fixit.core.ui.BaseFragment;
-import com.fixit.databinding.FragmentWorkerOrdersBinding;
 import com.google.android.material.tabs.TabLayout;
 
 import dagger.hilt.android.AndroidEntryPoint;
@@ -23,6 +20,7 @@ public class WorkerOrdersFragment extends BaseFragment<FragmentWorkerOrdersBindi
 
     private WorkerOrdersViewModel viewModel;
     private WorkerOrderAdapter adapter;
+    private AutoRefreshHelper autoRefreshHelper;
 
     // ──────────────────────────────────────────────────────────────────────────
     // 1. Inflate
@@ -61,6 +59,11 @@ public class WorkerOrdersFragment extends BaseFragment<FragmentWorkerOrdersBindi
         });
         binding.rvOrders.setLayoutManager(new LinearLayoutManager(requireContext()));
         binding.rvOrders.setAdapter(adapter);
+
+        // Setup SwipeRefreshLayout
+        binding.swipeRefreshOrders.setOnRefreshListener(() -> {
+            viewModel.filterByStatus(viewModel.getCurrentFilterStatus());
+        });
 
         // Setup Tab listener → lọc dữ liệu theo tab
         binding.tabLayoutOrders.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
@@ -105,5 +108,37 @@ public class WorkerOrdersFragment extends BaseFragment<FragmentWorkerOrdersBindi
                         ? View.VISIBLE : View.GONE);
             }
         });
+
+        // Lắng nghe trạng thái loading để hiển thị/tắt progress bar của SwipeRefreshLayout
+        viewModel.isLoading.observe(getViewLifecycleOwner(), loading -> {
+            if (loading != null) {
+                binding.swipeRefreshOrders.setRefreshing(loading);
+            }
+        });
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (autoRefreshHelper == null) {
+            autoRefreshHelper = new AutoRefreshHelper(
+                    requireContext(),
+                    () -> {
+                        if (viewModel != null) {
+                            viewModel.filterByStatus(viewModel.getCurrentFilterStatus());
+                        }
+                    },
+                    "com.fixit.BOOKING_UPDATE"
+            );
+        }
+        autoRefreshHelper.start();
+    }
+
+    @Override
+    public void onPause() {
+        if (autoRefreshHelper != null) {
+            autoRefreshHelper.stop();
+        }
+        super.onPause();
     }
 }

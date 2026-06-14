@@ -9,6 +9,7 @@ import android.widget.Toast;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
+import com.fixit.core.common.AutoRefreshHelper;
 import com.fixit.core.ui.BaseFragment;
 import com.fixit.core.ui.ViewUtils;
 import com.fixit.databinding.FragmentWorkerHomeBinding;
@@ -24,6 +25,7 @@ public class WorkerHomeFragment extends BaseFragment<FragmentWorkerHomeBinding> 
 
     private WorkerHomeViewModel viewModel;
     private AppointmentAdapter appointmentAdapter;
+    private AutoRefreshHelper autoRefreshHelper;
 
     @Override
     protected FragmentWorkerHomeBinding inflateViewBinding(
@@ -208,5 +210,31 @@ public class WorkerHomeFragment extends BaseFragment<FragmentWorkerHomeBinding> 
             return fallback;
         }
         return value;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (autoRefreshHelper == null) {
+            autoRefreshHelper = new AutoRefreshHelper(
+                    requireContext(),
+                    () -> {
+                        if (viewModel != null) {
+                            viewModel.loadWorkerHome();
+                        }
+                    },
+                    "com.fixit.BOOKING_UPDATE",
+                    "com.fixit.PROFILE_UPDATE"
+            );
+        }
+        autoRefreshHelper.start();
+    }
+
+    @Override
+    public void onPause() {
+        if (autoRefreshHelper != null) {
+            autoRefreshHelper.stop();
+        }
+        super.onPause();
     }
 }

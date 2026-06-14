@@ -73,6 +73,8 @@ public class SharedPrefsSessionStorage implements SessionStorage {
 
     @Override
     public void clear() {
-        prefs.edit().clear().apply();
+        android.util.Log.d("FixIt_SessionStorage", "clear: Clearing all SharedPreferences keys");
+        boolean success = prefs.edit().clear().commit();
+        android.util.Log.d("FixIt_SessionStorage", "clear: Session cleared. Success = " + success);
     }
 }

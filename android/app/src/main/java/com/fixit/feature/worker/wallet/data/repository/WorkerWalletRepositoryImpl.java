@@ -1,144 +1,393 @@
+// PATH: android/app/src/main/java/com/fixit/feature/worker/wallet/data/repository/WorkerWalletRepositoryImpl.java
+
 package com.fixit.feature.worker.wallet.data.repository;
 
+import com.fixit.core.common.AppError;
+import com.fixit.core.common.Result;
+import com.fixit.core.common.ResultCallback;
+import com.fixit.core.network.ApiResponse;
+import com.fixit.core.ui.ViewUtils;
+import com.fixit.feature.worker.wallet.data.remote.api.WorkerWalletApi;
+import com.fixit.feature.worker.wallet.data.remote.dto.request.DepositCreateRequest;
+import com.fixit.feature.worker.wallet.data.remote.dto.response.DepositQrResponse;
+import com.fixit.feature.worker.wallet.data.remote.dto.response.DepositResponse;
+import com.fixit.feature.worker.wallet.data.remote.dto.response.WalletTransactionItemResponse;
+import com.fixit.feature.worker.wallet.data.remote.dto.response.WalletTransactionsResponse;
+import com.fixit.feature.worker.wallet.data.remote.dto.response.WorkerWalletResponse;
 import com.fixit.feature.worker.wallet.domain.model.WalletBalance;
 import com.fixit.feature.worker.wallet.domain.model.WalletTransaction;
 import com.fixit.feature.worker.wallet.domain.repository.WorkerWalletRepository;
 
-import java.text.DecimalFormat;
-import java.text.DecimalFormatSymbols;
-import java.text.SimpleDateFormat;
+import java.math.BigDecimal;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
-import java.util.Locale;
-import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+
 @Singleton
 public class WorkerWalletRepositoryImpl implements WorkerWalletRepository {
-    private long availableAmount = 1250000;
-    private long heldAmount = 320000;
-    private long debtAmount = 75000;
 
-    private final List<WalletTransaction> transactions = new ArrayList<>();
+    private final WorkerWalletApi api;
 
     @Inject
-    public WorkerWalletRepositoryImpl() {
-        // Khởi tạo các giao dịch mẫu ban đầu
-        transactions.add(new WalletTransaction("TX001", "Nhận tiền đơn ORD003 (chuyển khoản)",
-                "08/05/2026 - 14:30", "350.000 đ", true, "available", "SUCCESS"));
-        transactions.add(new WalletTransaction("TX002", "Rút tiền về Vietcombank",
-                "07/05/2026 - 09:00", "500.000 đ", false, "available", "SUCCESS"));
-        transactions.add(new WalletTransaction("TX003", "Nhận tiền đơn ORD001",
-                "06/05/2026 - 17:00", "150.000 đ", true, "available", "SUCCESS"));
-        transactions.add(new WalletTransaction("TX004", "Giữ bảo hành đơn ORD003",
-                "08/05/2026 - 14:30", "100.000 đ", false, "held", "SUCCESS"));
-        transactions.add(new WalletTransaction("TX005", "Giải phóng bảo hành ORD002",
-                "05/05/2026 - 11:00", "80.000 đ", true, "held", "SUCCESS"));
-        transactions.add(new WalletTransaction("TX006", "Giữ bảo hành đơn ORD001",
-                "06/05/2026 - 17:00", "50.000 đ", false, "held", "SUCCESS"));
-        transactions.add(new WalletTransaction("TX007", "Chiết khấu đơn tiền mặt ORD004",
-                "07/05/2026 - 16:00", "30.000 đ", false, "debt", "SUCCESS"));
-        transactions.add(new WalletTransaction("TX008", "Nạp tiền trả nợ",
-                "06/05/2026 - 08:00", "100.000 đ", true, "debt", "SUCCESS"));
-        transactions.add(new WalletTransaction("TX009", "Chiết khấu đơn tiền mặt ORD002",
-                "05/05/2026 - 15:30", "45.000 đ", false, "debt", "SUCCESS"));
+    public WorkerWalletRepositoryImpl(WorkerWalletApi api) {
+        this.api = api;
     }
 
-    private String formatVND(long amount) {
-        DecimalFormatSymbols symbols = new DecimalFormatSymbols(new Locale("vi", "VN"));
-        symbols.setGroupingSeparator('.');
-        DecimalFormat format = new DecimalFormat("#,###", symbols);
-        return format.format(amount) + " đ";
-    }
+    // ─────────────────────────────────────────────
+    // Số dư ví
+    // ─────────────────────────────────────────────
 
     @Override
-    public WalletBalance getWalletBalance() {
-        return new WalletBalance(formatVND(availableAmount), formatVND(heldAmount), formatVND(debtAmount));
-    }
+    public void getWalletBalance(ResultCallback<WalletBalance> callback) {
+        api.getWallet().enqueue(new Callback<ApiResponse<WorkerWalletResponse>>() {
+            @Override
+            public void onResponse(
+                    Call<ApiResponse<WorkerWalletResponse>> call,
+                    Response<ApiResponse<WorkerWalletResponse>> response
+            ) {
+                if (!response.isSuccessful()) {
+                    ApiResponse<?> errorResponse = ApiResponse.parseError(response);
+                    String errorMsg = (errorResponse != null && errorResponse.getMessage() != null)
+                            ? errorResponse.getMessage()
+                            : "Không tải được số dư ví. HTTP " + response.code();
+                    callback.onResult(Result.error(new AppError(errorMsg)));
+                    return;
+                }
 
-    @Override
-    public List<WalletTransaction> getTransactions(String walletType) {
-        if ("all".equals(walletType)) {
-            return transactions;
-        }
-        return transactions.stream()
-                .filter(transaction -> walletType.equals(transaction.getWalletType()))
-                .collect(Collectors.toList());
-    }
+                ApiResponse<WorkerWalletResponse> body = response.body();
+                if (body == null || !body.isSuccess() || body.getData() == null) {
+                    callback.onResult(Result.error(new AppError(
+                            body != null && body.getMessage() != null
+                                    ? body.getMessage()
+                                    : "Dữ liệu ví trống"
+                    )));
+                    return;
+                }
 
-    @Override
-    public String createDeposit(long amount, String note) {
-        String txId = "DEP" + (System.currentTimeMillis() % 100000);
-        String dateStr = new SimpleDateFormat("dd/05/2026 - HH:mm", Locale.getDefault()).format(new Date());
-
-        transactions.add(0, new WalletTransaction(txId, "Nạp tiền ví (" + note + ")",
-                dateStr, formatVND(amount), true, "debt", "PENDING"));
-
-        return txId;
-    }
-
-    @Override
-    public String getDepositQr(String transactionId) {
-        WalletTransaction target = null;
-        for (WalletTransaction tx : transactions) {
-            if (tx.getId().equals(transactionId)) {
-                target = tx;
-                break;
+                WorkerWalletResponse data = body.getData();
+                WalletBalance balance = new WalletBalance(
+                        formatBalance(data.getAvailableBalance()),
+                        formatBalance(data.getHeldBalance()),
+                        formatBalance(data.getDebtBalance()),
+                        formatBalance(data.getIncomeThisWeek()),
+                        formatBalance(data.getIncomeThisMonth())
+                );
+                callback.onResult(Result.success(balance));
             }
-        }
-        long amount = 75000;
-        if (target != null) {
-            try {
-                String amtStr = target.getAmount().replace(" đ", "").replace(".", "").trim();
-                amount = Long.parseLong(amtStr);
-            } catch (Exception ignored) {}
-        }
 
-        return "https://img.vietqr.io/image/MB-9704229999999-qr_only.png?amount=" + amount + "&addInfo=FIXIT_" + transactionId;
-    }
-
-    @Override
-    public void createWithdrawal(long amount, String bankAccountId) {
-        if (amount > availableAmount) return;
-
-        availableAmount -= amount;
-        String txId = "WDR" + (System.currentTimeMillis() % 100000);
-        String dateStr = new SimpleDateFormat("dd/05/2026 - HH:mm", Locale.getDefault()).format(new Date());
-
-        transactions.add(0, new WalletTransaction(txId, "Rút tiền về ngân hàng",
-                dateStr, formatVND(amount), false, "available", "PENDING"));
-    }
-
-    @Override
-    public void cancelWithdrawal(String transactionId) {
-        for (WalletTransaction tx : transactions) {
-            if (tx.getId().equals(transactionId) && "PENDING".equals(tx.getStatus())) {
-                tx.setStatus("CANCELLED");
-                try {
-                    String amtStr = tx.getAmount().replace(" đ", "").replace(".", "").trim();
-                    long amount = Long.parseLong(amtStr);
-                    availableAmount += amount;
-                } catch (Exception ignored) {}
-                break;
+            @Override
+            public void onFailure(Call<ApiResponse<WorkerWalletResponse>> call, Throwable t) {
+                callback.onResult(Result.error(new AppError(
+                        "Lỗi kết nối khi tải ví: " + t.getMessage(), t
+                )));
             }
-        }
+        });
+    }
+
+    // ─────────────────────────────────────────────
+    // Lịch sử giao dịch
+    // ─────────────────────────────────────────────
+
+    @Override
+    public void getTransactions(String walletType, ResultCallback<List<WalletTransaction>> callback) {
+        // Ánh xạ walletType của UI sang transactionType của API
+        String apiType = mapWalletTypeToApiType(walletType);
+
+        api.getTransactions(0, 50, apiType).enqueue(new Callback<ApiResponse<WalletTransactionsResponse>>() {
+            @Override
+            public void onResponse(
+                    Call<ApiResponse<WalletTransactionsResponse>> call,
+                    Response<ApiResponse<WalletTransactionsResponse>> response
+            ) {
+                if (!response.isSuccessful()) {
+                    ApiResponse<?> errorResponse = ApiResponse.parseError(response);
+                    String errorMsg = (errorResponse != null && errorResponse.getMessage() != null)
+                            ? errorResponse.getMessage()
+                            : "Không tải được lịch sử giao dịch. HTTP " + response.code();
+                    callback.onResult(Result.error(new AppError(errorMsg)));
+                    return;
+                }
+
+                ApiResponse<WalletTransactionsResponse> body = response.body();
+                if (body == null || !body.isSuccess()) {
+                    callback.onResult(Result.error(new AppError(
+                            body != null && body.getMessage() != null
+                                    ? body.getMessage()
+                                    : "Danh sách giao dịch trống"
+                    )));
+                    return;
+                }
+
+                WalletTransactionsResponse data = body.getData();
+                List<WalletTransaction> result = mapTransactions(
+                        data != null ? data.getTransactions() : null,
+                        walletType
+                );
+                callback.onResult(Result.success(result));
+            }
+
+            @Override
+            public void onFailure(Call<ApiResponse<WalletTransactionsResponse>> call, Throwable t) {
+                callback.onResult(Result.error(new AppError(
+                        "Lỗi kết nối khi tải giao dịch: " + t.getMessage(), t
+                )));
+            }
+        });
+    }
+
+    // ─────────────────────────────────────────────
+    // Nạp tiền
+    // ─────────────────────────────────────────────
+
+    @Override
+    public void createDeposit(long amount, ResultCallback<DepositResponse> callback) {
+        DepositCreateRequest request = new DepositCreateRequest(BigDecimal.valueOf(amount));
+
+        api.createDeposit(request).enqueue(new Callback<ApiResponse<DepositResponse>>() {
+            @Override
+            public void onResponse(
+                    Call<ApiResponse<DepositResponse>> call,
+                    Response<ApiResponse<DepositResponse>> response
+            ) {
+                if (!response.isSuccessful()) {
+                    ApiResponse<?> errorResponse = ApiResponse.parseError(response);
+                    String errorMsg = (errorResponse != null && errorResponse.getMessage() != null)
+                            ? errorResponse.getMessage()
+                            : "Tạo lệnh nạp tiền thất bại. HTTP " + response.code();
+                    callback.onResult(Result.error(new AppError(errorMsg)));
+                    return;
+                }
+
+                ApiResponse<DepositResponse> body = response.body();
+                if (body == null || !body.isSuccess() || body.getData() == null) {
+                    callback.onResult(Result.error(new AppError(
+                            body != null && body.getMessage() != null
+                                    ? body.getMessage()
+                                    : "Tạo lệnh nạp tiền thất bại"
+                    )));
+                    return;
+                }
+
+                callback.onResult(Result.success(body.getData()));
+            }
+
+            @Override
+            public void onFailure(Call<ApiResponse<DepositResponse>> call, Throwable t) {
+                callback.onResult(Result.error(new AppError(
+                        "Lỗi kết nối khi nạp tiền: " + t.getMessage(), t
+                )));
+            }
+        });
     }
 
     @Override
-    public void simulateDepositSuccess(String transactionId) {
-        for (WalletTransaction tx : transactions) {
-            if (tx.getId().equals(transactionId) && "PENDING".equals(tx.getStatus())) {
-                tx.setStatus("SUCCESS");
-                try {
-                    String amtStr = tx.getAmount().replace(" đ", "").replace(".", "").trim();
-                    long amount = Long.parseLong(amtStr);
-                    debtAmount = Math.max(0, debtAmount - amount);
-                } catch (Exception ignored) {}
-                break;
+    public void getDepositQr(String transactionId, ResultCallback<DepositQrResponse> callback) {
+        api.getDepositQr(transactionId).enqueue(new Callback<ApiResponse<DepositQrResponse>>() {
+            @Override
+            public void onResponse(
+                    Call<ApiResponse<DepositQrResponse>> call,
+                    Response<ApiResponse<DepositQrResponse>> response
+            ) {
+                if (!response.isSuccessful()) {
+                    ApiResponse<?> errorResponse = ApiResponse.parseError(response);
+                    String errorMsg = (errorResponse != null && errorResponse.getMessage() != null)
+                            ? errorResponse.getMessage()
+                            : "Lấy mã QR thất bại. HTTP " + response.code();
+                    callback.onResult(Result.error(new AppError(errorMsg)));
+                    return;
+                }
+
+                ApiResponse<DepositQrResponse> body = response.body();
+                if (body == null || !body.isSuccess() || body.getData() == null) {
+                    callback.onResult(Result.error(new AppError(
+                            body != null && body.getMessage() != null
+                                    ? body.getMessage()
+                                    : "Dữ liệu QR trống"
+                    )));
+                    return;
+                }
+
+                callback.onResult(Result.success(body.getData()));
             }
+
+            @Override
+            public void onFailure(Call<ApiResponse<DepositQrResponse>> call, Throwable t) {
+                callback.onResult(Result.error(new AppError(
+                        "Lỗi kết nối khi lấy QR: " + t.getMessage(), t
+                )));
+            }
+        });
+    }
+
+    // ─────────────────────────────────────────────
+    // Rút tiền (stub — chờ backend bổ sung endpoint)
+    // ─────────────────────────────────────────────
+
+    @Override
+    public void createWithdrawal(long amount, String bankAccountId, ResultCallback<Void> callback) {
+        // TODO: Gọi API khi backend có endpoint rút tiền
+        callback.onResult(Result.success(null));
+    }
+
+    @Override
+    public void cancelWithdrawal(String transactionId, ResultCallback<Void> callback) {
+        // TODO: Gọi API khi backend có endpoint hủy rút tiền
+        callback.onResult(Result.success(null));
+    }
+
+    @Override
+    public void getDepositDetail(String transactionId, ResultCallback<DepositResponse> callback) {
+        api.getDepositDetail(transactionId).enqueue(new Callback<ApiResponse<DepositResponse>>() {
+            @Override
+            public void onResponse(
+                    Call<ApiResponse<DepositResponse>> call,
+                    Response<ApiResponse<DepositResponse>> response
+            ) {
+                if (!response.isSuccessful()) {
+                    ApiResponse<?> errorResponse = ApiResponse.parseError(response);
+                    String errorMsg = (errorResponse != null && errorResponse.getMessage() != null)
+                            ? errorResponse.getMessage()
+                            : "Không tải được chi tiết nạp tiền. HTTP " + response.code();
+                    callback.onResult(Result.error(new AppError(errorMsg)));
+                    return;
+                }
+
+                ApiResponse<DepositResponse> body = response.body();
+                if (body == null || !body.isSuccess() || body.getData() == null) {
+                    callback.onResult(Result.error(new AppError(
+                            body != null && body.getMessage() != null
+                                    ? body.getMessage()
+                                    : "Dữ liệu giao dịch nạp tiền trống"
+                    )));
+                    return;
+                }
+
+                callback.onResult(Result.success(body.getData()));
+            }
+
+            @Override
+            public void onFailure(Call<ApiResponse<DepositResponse>> call, Throwable t) {
+                callback.onResult(Result.error(new AppError(
+                        "Lỗi kết nối khi tải chi tiết nạp tiền: " + t.getMessage(), t
+                )));
+            }
+        });
+    }
+
+    // ─────────────────────────────────────────────
+    // Helper
+    // ─────────────────────────────────────────────
+
+    private String formatBalance(BigDecimal value) {
+        if (value == null) return ViewUtils.formatCurrency(0);
+        return ViewUtils.formatCurrency(value.longValue());
+    }
+
+    /**
+     * UI dùng 3 tab: "available", "held", "debt"
+     * Backend nhận: Deposit | Withdraw | Holding | Release | Fee_Deduction | null (all)
+     *
+     * Mapping:
+     *   "available" → null (lấy all rồi filter phía client)
+     *   "held"      → "Holding"
+     *   "debt"      → "Fee_Deduction"
+     *   null/"all"  → null
+     */
+    private String mapWalletTypeToApiType(String walletType) {
+        if (walletType == null) return null;
+        switch (walletType) {
+            case "held":  return "Holding";
+            case "debt":  return "Fee_Deduction";
+            default:      return null; // "available" và "all" lấy all rồi filter client-side
+        }
+    }
+
+    /**
+     * Ánh xạ response DTO → domain model WalletTransaction
+     * isCredit (cộng tiền): Deposit, Release → true
+     * isDebit  (trừ tiền):  Withdraw, Holding, Fee_Deduction → false
+     */
+    private List<WalletTransaction> mapTransactions(
+            List<WalletTransactionItemResponse> items,
+            String walletType
+    ) {
+        List<WalletTransaction> result = new ArrayList<>();
+        if (items == null) return result;
+
+        for (WalletTransactionItemResponse item : items) {
+            String type = item.getTransactionType();
+
+            // Xác định walletType hiển thị
+            String resolvedWalletType = resolveWalletType(type);
+
+            // Nếu đang filter tab "available", bỏ qua các loại không thuộc nhóm này
+            if ("available".equals(walletType)) {
+                if (!"available".equals(resolvedWalletType)) continue;
+            }
+
+            boolean isCredit = "Deposit".equals(type) || "Release".equals(type);
+
+            String label = buildLabel(type, item);
+            String date = formatDate(item.getTransactionTime());
+            String amountStr = formatBalance(item.getAmount());
+
+            result.add(new WalletTransaction(
+                    item.getTransactionId(),
+                    label,
+                    date,
+                    amountStr,
+                    isCredit,
+                    resolvedWalletType,
+                    item.getStatus() != null ? item.getStatus() : "Success",
+                    item.getBookingId()
+            ));
+        }
+        return result;
+    }
+
+    private String resolveWalletType(String transactionType) {
+        if (transactionType == null) return "available";
+        switch (transactionType) {
+            case "Holding":       return "held";
+            case "Fee_Deduction": return "debt";
+            default:              return "available"; // Deposit, Withdraw, Release
+        }
+    }
+
+    private String buildLabel(String type, WalletTransactionItemResponse item) {
+        if (type == null) return "Giao dịch";
+        switch (type) {
+            case "Deposit":       return "Nạp tiền trả nợ phí";
+            case "Withdraw":      return item.getTargetBankName() != null
+                    ? "Rút tiền về " + item.getTargetBankName()
+                    : "Rút tiền về ngân hàng";
+            case "Holding":       return item.getBookingId() != null
+                    ? "Tạm giữ bảo hành đơn"
+                    : "Tạm giữ bảo hành";
+            case "Release":       return item.getBookingId() != null
+                    ? "Giải phóng bảo hành đơn"
+                    : "Giải phóng bảo hành";
+            case "Fee_Deduction": return "Khấu trừ phí nền tảng";
+            default:              return type;
+        }
+    }
+
+    private String formatDate(String isoDateTime) {
+        if (isoDateTime == null || isoDateTime.isEmpty()) return "";
+        try {
+            // "2026-05-08T14:30:00+07:00" → "08/05/2026 - 14:30"
+            String datePart = isoDateTime.substring(0, 10);   // yyyy-MM-dd
+            String timePart = isoDateTime.substring(11, 16);  // HH:mm
+            String[] parts = datePart.split("-");
+            return parts[2] + "/" + parts[1] + "/" + parts[0] + " - " + timePart;
+        } catch (Exception e) {
+            return isoDateTime;
         }
     }
 }

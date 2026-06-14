@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#F5F7FA"
+    android:background="#f8fafc"
     android:orientation="vertical">
 
     <include layout="@layout/layout_worker_topbar" />
@@ -12,11 +12,13 @@
     <com.google.android.material.tabs.TabLayout
         android:id="@+id/tabLayoutOrders"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="48dp"
         android:background="@android:color/white"
-        app:tabIndicatorColor="#42c2ff"
-        app:tabSelectedTextColor="#42c2ff"
-        app:tabTextColor="#888888">
+        app:tabIndicatorColor="#2563eb"
+        app:tabIndicatorHeight="3dp"
+        app:tabSelectedTextColor="#2563eb"
+        app:tabTextColor="#64748b"
+        app:tabRippleColor="#102563eb">
 
         <com.google.android.material.tabs.TabItem
             android:layout_width="wrap_content"
@@ -34,16 +36,29 @@
             android:text="Lịch sử" />
     </com.google.android.material.tabs.TabLayout>
 
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="#e2e8f0" />
+
     <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:padding="16dp">
+        android:layout_height="match_parent">
 
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/rvOrders"
+        <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+            android:id="@+id/swipeRefreshOrders"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            tools:listitem="@layout/item_worker_order_card" />
+            android:layout_height="match_parent">
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rvOrders"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:paddingHorizontal="16dp"
+                android:paddingTop="12dp"
+                android:clipToPadding="false"
+                tools:listitem="@layout/item_worker_order_card" />
+        </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
         <include layout="@layout/layout_empty_state" />
     </FrameLayout>

@@ -31,13 +31,15 @@ public enum ErrorCode {
 
     // Booking action
     BOOKING_NOT_FOUND(404, HttpStatus.NOT_FOUND, "Không tìm thấy đơn của thợ hiện tại"),
-    BOOKING_INVALID_STATUS_TRANSITION(409, HttpStatus.CONFLICT, "Trạng thái đơn hiện tại không cho phép thực hiện hành động này"),
+    BOOKING_INVALID_STATUS_TRANSITION(409, HttpStatus.CONFLICT,
+            "Trạng thái đơn hiện tại không cho phép thực hiện hành động này"),
     BOOKING_PREVIOUS_ACTION_REQUIRED(409, HttpStatus.CONFLICT, "Chưa hoàn thành bước trước đó"),
     BOOKING_ACTION_ALREADY_DONE(409, HttpStatus.CONFLICT, "Hành động này đã được thực hiện trước đó"),
 
     // Worker bank account
     WORKER_BANK_ACCOUNT_NOT_FOUND(404, HttpStatus.NOT_FOUND, "Không tìm thấy tài khoản ngân hàng của thợ hiện tại"),
-    WORKER_BANK_ACCOUNT_IN_USE(409, HttpStatus.CONFLICT, "Tài khoản ngân hàng đã phát sinh giao dịch nên không thể xóa"),
+    WORKER_BANK_ACCOUNT_IN_USE(409, HttpStatus.CONFLICT,
+            "Tài khoản ngân hàng đã phát sinh giao dịch nên không thể xóa"),
 
     // File upload
     UPLOAD_INVALID_PURPOSE(400, HttpStatus.BAD_REQUEST, "Mục đích upload không hợp lệ"),
@@ -53,22 +55,25 @@ public enum ErrorCode {
     UPLOAD_PUBLIC_ID_MISMATCH(400, HttpStatus.BAD_REQUEST, "Public ID không khớp với upload đã cấp"),
     UPLOAD_STORAGE_ERROR(500, HttpStatus.INTERNAL_SERVER_ERROR, "Lỗi khi làm việc với hệ thống lưu trữ file"),
     UPLOAD_PROVIDER_OBJECT_NOT_FOUND(404, HttpStatus.NOT_FOUND, "Không tìm thấy file trên hệ thống lưu trữ"),
-    UPLOAD_PROVIDER_FILE_SIZE_MISMATCH(400, HttpStatus.BAD_REQUEST, "Dung lượng file trên storage không khớp với upload đã cấp"),
+    UPLOAD_PROVIDER_FILE_SIZE_MISMATCH(400, HttpStatus.BAD_REQUEST,
+            "Dung lượng file trên storage không khớp với upload đã cấp"),
     UPLOAD_PROVIDER_RESOURCE_TYPE_INVALID(400, HttpStatus.BAD_REQUEST, "Loại tài nguyên trên storage không hợp lệ"),
     UPLOAD_NOT_CONFIRMED(409, HttpStatus.CONFLICT, "Upload chưa được xác nhận"),
     UPLOAD_ALREADY_USED(409, HttpStatus.CONFLICT, "Upload đã được sử dụng"),
     UPLOAD_PURPOSE_NOT_ALLOWED(400, HttpStatus.BAD_REQUEST, "Upload không đúng mục đích nghiệp vụ"),
 
-    //eKYC
+    // eKYC
     WORKER_KYC_NOT_FOUND(404, HttpStatus.NOT_FOUND, "Không tìm thấy hồ sơ KYC của thợ hiện tại"),
 
-    //Proof of work
+    // Proof of work
     PROOF_OF_WORK_ALREADY_EXISTS(409, HttpStatus.CONFLICT, "Ảnh bằng chứng loại này đã tồn tại cho đơn hàng"),
 
     // Worker wallet
     WALLET_NOT_FOUND(404, HttpStatus.NOT_FOUND, "Không tìm thấy ví của thợ hiện tại"),
-    WALLET_DEBT_NOT_FOUND(409, HttpStatus.CONFLICT, "Không có khoản nợ cần thanh toán"),
-    WALLET_DEPOSIT_AMOUNT_TOO_SMALL(400, HttpStatus.BAD_REQUEST, "Số tiền nạp phải lớn hơn hoặc bằng khoản nợ hiện tại"),
+    // WALLET_DEBT_NOT_FOUND(409, HttpStatus.CONFLICT, "Không có khoản nợ cần thanh
+    // toán"),
+    WALLET_DEPOSIT_AMOUNT_TOO_SMALL(400, HttpStatus.BAD_REQUEST,
+            "Số tiền nạp phải lớn hơn hoặc bằng khoản nợ hiện tại"),
     WALLET_DEPOSIT_INVALID_AMOUNT(400, HttpStatus.BAD_REQUEST, "Số tiền nạp không hợp lệ"),
     WALLET_DEPOSIT_NOT_FOUND(404, HttpStatus.NOT_FOUND, "Không tìm thấy giao dịch nạp tiền của thợ hiện tại"),
     WALLET_DEPOSIT_INVALID_STATUS(409, HttpStatus.CONFLICT, "Trạng thái giao dịch nạp tiền không hợp lệ"),

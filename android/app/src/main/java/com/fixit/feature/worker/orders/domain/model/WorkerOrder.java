@@ -24,6 +24,7 @@ public class WorkerOrder {
     private String complaintDeadline; // Countdown timer string
     private JobStatus jobStatus;
     private String paymentMethod;
+    private String issueDescription;
 
     public WorkerOrder(String orderId, String customerId, String serviceTitle, String address,
             String timeSlot, String price, String status, String customerName) {
@@ -108,4 +109,13 @@ public class WorkerOrder {
     public void setPaymentMethod(String paymentMethod) {
         this.paymentMethod = paymentMethod;
     }
+
+    public String getIssueDescription() {
+        return issueDescription;
+    }
+
+    public void setIssueDescription(String issueDescription) {
+        this.issueDescription = issueDescription;
+    }
 }
+

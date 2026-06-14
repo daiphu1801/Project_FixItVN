@@ -8,6 +8,7 @@ import android.widget.Toast;
 import androidx.appcompat.app.AlertDialog;
 import androidx.lifecycle.ViewModelProvider;
 
+import com.fixit.core.common.AutoRefreshHelper;
 import com.fixit.core.ui.BaseFragment;
 import com.fixit.core.ui.ViewUtils;
 import com.fixit.databinding.FragmentWorkerProfileBinding;
@@ -20,6 +21,7 @@ public class WorkerProfileFragment extends BaseFragment<FragmentWorkerProfileBin
 
     private WorkerProfileViewModel viewModel;
     private String currentVerificationStatus = "";
+    private AutoRefreshHelper autoRefreshHelper;
 
     @Override
     protected FragmentWorkerProfileBinding inflateViewBinding(
@@ -217,5 +219,32 @@ public class WorkerProfileFragment extends BaseFragment<FragmentWorkerProfileBin
 
         String last4 = value.substring(value.length() - 4);
         return "********" + last4;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (autoRefreshHelper == null) {
+            autoRefreshHelper = new AutoRefreshHelper(
+                    requireContext(),
+                    0L,
+                    () -> {
+                        if (viewModel != null) {
+                            viewModel.loadProfile();
+                            viewModel.loadSkills();
+                        }
+                    },
+                    "com.fixit.PROFILE_UPDATE"
+            );
+        }
+        autoRefreshHelper.start();
+    }
+
+    @Override
+    public void onPause() {
+        if (autoRefreshHelper != null) {
+            autoRefreshHelper.stop();
+        }
+        super.onPause();
     }
 }

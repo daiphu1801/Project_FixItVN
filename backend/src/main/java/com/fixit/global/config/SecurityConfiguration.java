@@ -41,6 +41,7 @@ public class SecurityConfiguration {
             "/swagger-ui/**",
             "/webjars/**",
             "/swagger-ui.html",
+            "/api/v1/webhooks/**"
 
 //            // DEV ONLY: cho phép test assignment bằng X-Debug-Worker-Id
 //            "/api/v1/workers/me/home",

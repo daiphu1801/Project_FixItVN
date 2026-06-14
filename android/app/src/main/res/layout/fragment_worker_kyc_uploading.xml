@@ -396,6 +396,23 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/cardError" />
 
+    <!-- Nút Hủy và Làm lại (Ẩn mặc định) -->
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnCancelUpload"
+        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+        android:layout_width="0dp"
+        android:layout_height="56dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginHorizontal="16dp"
+        android:text="Hủy &amp; Làm lại"
+        android:visibility="gone"
+        android:textColor="#e11d48"
+        app:strokeColor="#e11d48"
+        app:cornerRadius="12dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/btnRetryUpload" />
+
     <!-- Ghi chú chân trang, neo ở sát đáy -->
     <TextView
         android:id="@+id/tvNote"

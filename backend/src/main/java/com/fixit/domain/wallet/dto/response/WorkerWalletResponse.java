@@ -23,4 +23,8 @@ public class WorkerWalletResponse {
     private BigDecimal totalBalance;
 
     private Boolean canWithdraw;
+
+    private BigDecimal incomeThisWeek;
+
+    private BigDecimal incomeThisMonth;
 }

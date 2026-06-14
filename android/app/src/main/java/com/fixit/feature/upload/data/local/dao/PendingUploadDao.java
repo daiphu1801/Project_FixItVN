@@ -57,6 +57,10 @@ public interface PendingUploadDao {
     @Query("UPDATE pending_uploads SET status = 'LOCAL_SELECTED' WHERE groupId = :groupId AND status = 'LOCAL_DRAFT'")
     void submitGroup(String groupId);
 
-    @Query("DELETE FROM pending_uploads WHERE targetType = :targetType AND (status = 'LOCAL_DRAFT' OR createdAt < :timeLimit)")
+    @Query("DELETE FROM pending_uploads WHERE targetType = :targetType AND createdAt < :timeLimit")
     void deleteStaleUploads(String targetType, long timeLimit);
+
+    @Query("SELECT * FROM pending_uploads WHERE targetType = :targetType AND status != 'CONSUMED' AND status != 'LOCAL_DRAFT' ORDER BY createdAt ASC")
+    List<PendingUploadEntity> getSubmittedActiveUploadsByTargetType(String targetType);
 }
+

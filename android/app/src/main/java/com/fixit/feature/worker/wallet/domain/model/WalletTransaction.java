@@ -26,9 +26,10 @@ public class WalletTransaction {
     private boolean isCredit;   // true = cộng (+), false = trừ (-)
     private String walletType;  // "available" | "held" | "debt"
     private String status;      // "SUCCESS" | "PENDING" | "CANCELLED"
+    private String bookingId;
 
     public WalletTransaction(String id, String title, String date, String amount,
-                              boolean isCredit, String walletType, String status) {
+                              boolean isCredit, String walletType, String status, String bookingId) {
         this.id = id;
         this.title = title;
         this.date = date;
@@ -36,6 +37,7 @@ public class WalletTransaction {
         this.isCredit = isCredit;
         this.walletType = walletType;
         this.status = status;
+        this.bookingId = bookingId;
     }
 
     public String getId()         { return id; }
@@ -45,6 +47,7 @@ public class WalletTransaction {
     public boolean isCredit()     { return isCredit; }
     public String getWalletType() { return walletType; }
     public String getStatus()     { return status; }
+    public String getBookingId()  { return bookingId; }
 
     public void setStatus(String status) {
         this.status = status;

@@ -48,5 +48,10 @@
             </intent-filter>
         </service>
 
+        <!-- Google Maps API Key. Replace value with actual key in production -->
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="AIzaSyDummyKeyPleaseReplaceWithYourOwnKey" />
+
     </application>
 </manifest>

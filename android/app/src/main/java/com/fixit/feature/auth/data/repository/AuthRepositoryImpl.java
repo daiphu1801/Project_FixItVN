@@ -96,8 +96,57 @@ public class AuthRepositoryImpl implements AuthRepository {
 
     @Override
     public void logout(ResultCallback<Void> callback) {
+        String refreshToken = sessionStorage.getRefreshToken();
         sessionStorage.clear();
-        callback.onResult(Result.success(null));
+        if (refreshToken != null && !refreshToken.isEmpty()) {
+            authApi.logout(refreshToken).enqueue(new Callback<Void>() {
+                @Override
+                public void onResponse(Call<Void> call, Response<Void> response) {
+                    callback.onResult(Result.success(null));
+                }
+
+                @Override
+                public void onFailure(Call<Void> call, Throwable t) {
+                    callback.onResult(Result.success(null));
+                }
+            });
+        } else {
+            callback.onResult(Result.success(null));
+        }
+    }
+
+    @Override
+    public void refreshToken(String refreshToken, ResultCallback<Session> callback) {
+        authApi.refreshToken(new AuthRequest.RefreshToken(refreshToken))
+                .enqueue(new Callback<AuthResponse>() {
+                    @Override
+                    public void onResponse(Call<AuthResponse> call, Response<AuthResponse> response) {
+                        if (!response.isSuccessful()) {
+                            callback.onResult(Result.error(
+                                    new AppError("Refresh token thất bại. HTTP " + response.code())
+                            ));
+                            return;
+                        }
+
+                        Session session = AuthMapper.toSession(response.body());
+                        if (session == null) {
+                            callback.onResult(Result.error(
+                                    new AppError("Dữ liệu refresh token không hợp lệ")
+                            ));
+                            return;
+                        }
+
+                        sessionStorage.saveSession(session);
+                        callback.onResult(Result.success(session));
+                    }
+
+                    @Override
+                    public void onFailure(Call<AuthResponse> call, Throwable t) {
+                        callback.onResult(Result.error(
+                                new AppError("Lỗi kết nối refresh token: " + t.getMessage(), t)
+                        ));
+                    }
+                });
     }
 
     @Override

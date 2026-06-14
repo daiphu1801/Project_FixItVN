@@ -49,13 +49,6 @@ public class WorkerDepositFragment extends BaseFragment<FragmentWorkerDepositBin
         // Tạo QR chuyển khoản
         binding.btnGenerateQR.setOnClickListener(v -> generateQrPayment());
 
-        // Giả lập nạp thành công
-        binding.btnSimulateSuccess.setOnClickListener(v -> {
-            if (viewModel != null) {
-                viewModel.simulateSuccess();
-            }
-        });
-
         // Nút hoàn thành giao dịch
         binding.btnBackToWallet.setOnClickListener(v ->
                 requireActivity().getOnBackPressedDispatcher().onBackPressed());
@@ -117,10 +110,10 @@ public class WorkerDepositFragment extends BaseFragment<FragmentWorkerDepositBin
                     binding.tvDepositAmount.setText(String.format("%,d đ", amt));
                 }
 
-                // Điền mã nội dung chuyển khoản
-                String txId = viewModel.transactionId.getValue();
-                if (txId != null) {
-                    binding.tvDepositNote.setText(txId);
+                // Điền mã nội dung chuyển khoản (từ server)
+                String content = viewModel.transferContent.getValue();
+                if (content != null && !content.isEmpty()) {
+                    binding.tvDepositNote.setText(content);
                 }
 
                 // Bắt đầu đếm ngược 5 phút
@@ -128,15 +121,36 @@ public class WorkerDepositFragment extends BaseFragment<FragmentWorkerDepositBin
             }
         });
 
+        // Observer nội dung chuyển khoản động từ server
+        viewModel.transferContent.observe(getViewLifecycleOwner(), content -> {
+            if (content != null && !content.isEmpty()) {
+                binding.tvDepositNote.setText(content);
+            }
+        });
+
+        // Observer lỗi
+        viewModel.error.observe(getViewLifecycleOwner(), errMsg -> {
+            if (errMsg != null && !errMsg.isEmpty()) {
+                Toast.makeText(requireContext(), errMsg, Toast.LENGTH_LONG).show();
+            }
+        });
+
+        // Observer loading
+        viewModel.loading.observe(getViewLifecycleOwner(), isLoading -> {
+            binding.btnGenerateQR.setEnabled(!Boolean.TRUE.equals(isLoading));
+            binding.btnGenerateQR.setAlpha(Boolean.TRUE.equals(isLoading) ? 0.5f : 1.0f);
+        });
+
         viewModel.status.observe(getViewLifecycleOwner(), status -> {
-            if ("SUCCESS".equals(status)) {
+            if ("Pending".equalsIgnoreCase(status) || "PENDING".equals(status)) {
+                // QR observer sẽ xử lý hiển thị
+            } else if ("Success".equalsIgnoreCase(status) || "SUCCESS".equals(status)) {
                 // Dừng đếm ngược
                 if (timer != null) timer.cancel();
 
-                // Hiển thị màn hình thành công cực đẹp
+                // Hiển thị màn hình thành công
                 binding.scrollStep2.setVisibility(View.GONE);
                 binding.layoutSuccessState.setVisibility(View.VISIBLE);
-                binding.btnSimulateSuccess.setVisibility(View.GONE);
                 Toast.makeText(requireContext(), "Nạp tiền thành công!", Toast.LENGTH_LONG).show();
             }
         });
@@ -156,8 +170,6 @@ public class WorkerDepositFragment extends BaseFragment<FragmentWorkerDepositBin
             @Override
             public void onFinish() {
                 binding.tvCountdown.setText("Hết hạn");
-                binding.btnSimulateSuccess.setEnabled(false);
-                binding.btnSimulateSuccess.setAlpha(0.5f);
                 Toast.makeText(requireContext(), "Mã QR đã hết hạn giao dịch", Toast.LENGTH_SHORT).show();
             }
         }.start();
