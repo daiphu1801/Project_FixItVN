@@ -24,7 +24,7 @@ public class AuthActivity extends BaseActivity<ActivityAuthBinding> {
     protected void setupViews() {
         viewModel = new ViewModelProvider(this).get(AuthViewModel.class);
         // Kiểm tra ngay khi khởi động: nếu có session đã lưu thì bỏ qua màn login
-        viewModel.checkExistingSession();
+        // viewModel.checkExistingSession();
     }
 
     @Override

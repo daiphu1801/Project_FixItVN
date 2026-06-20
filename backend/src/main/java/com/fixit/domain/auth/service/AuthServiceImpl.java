@@ -15,6 +15,8 @@ import com.fixit.domain.worker.entity.Worker;
 import com.fixit.domain.worker.entity.WorkerVerificationStatus;
 import com.fixit.domain.worker.repository.WorkerRepository;
 import com.fixit.global.security.JwtService;
+import com.fixit.global.exception.AppException;
+import com.fixit.global.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -50,11 +52,11 @@ public class AuthServiceImpl implements AuthService {
         String email = request.getEmail().trim().toLowerCase();
 
         if (userRepository.existsByPhoneNumber(phone)) {
-            throw new RuntimeException("Số điện thoại đã được đăng ký");
+            throw new AppException(ErrorCode.PHONE_ALREADY_EXISTS);
         }
 
         if (userRepository.existsByEmail(email)) {
-            throw new RuntimeException("Email đã được đăng ký");
+            throw new AppException(ErrorCode.EMAIL_ALREADY_EXISTS);
         }
 
         User user = User.builder()
@@ -117,14 +119,14 @@ public class AuthServiceImpl implements AuthService {
     public AuthResponse login(LoginRequest request) {
         User user = userRepository
                 .findByPhoneNumber(request.getPhoneNumber())
-                .orElseThrow(() -> new RuntimeException("Tài khoản không tồn tại"));
+                .orElseThrow(() -> new AppException(ErrorCode.INVALID_CREDENTIALS));
 
         if (!Boolean.TRUE.equals(user.getActive())) {
-            throw new RuntimeException("Tài khoản đã bị khóa");
+            throw new AppException(ErrorCode.USER_BLOCKED);
         }
 
         if (!passwordEncoder.matches(request.getPassword(), user.getPasswordHash())) {
-            throw new RuntimeException("Mật khẩu không đúng");
+            throw new AppException(ErrorCode.INVALID_CREDENTIALS);
         }
 
         refreshTokenRepository.revokeAllActiveTokensByUserId(user.getId());
