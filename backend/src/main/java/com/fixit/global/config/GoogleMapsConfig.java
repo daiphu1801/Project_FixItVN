@@ -19,7 +19,7 @@ public class GoogleMapsConfig {
      * Dùng @Value để lấy giá trị "app.google.maps.api-key" từ file application-dev.yml.
      * Nếu trong yml không có, chương trình sẽ báo lỗi lúc khởi động.
      */
-    @Value("${app.google.maps.api-key}")
+    @Value("${app.google.maps.api-key:YOUR_GOOGLE_MAPS_API_KEY}")
     private String googleMapsApiKey;
 
     /**

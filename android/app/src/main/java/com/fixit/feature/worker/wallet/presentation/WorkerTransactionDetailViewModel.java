@@ -5,6 +5,7 @@ import androidx.lifecycle.MutableLiveData;
 
 import com.fixit.core.ui.BaseViewModel;
 import com.fixit.feature.worker.wallet.domain.model.WalletTransaction;
+import com.fixit.feature.worker.wallet.domain.usecase.CancelDepositUseCase;
 import com.fixit.feature.worker.wallet.domain.usecase.CancelWithdrawalUseCase;
 import com.fixit.feature.worker.wallet.domain.usecase.GetWalletTransactionsUseCase;
 
@@ -19,6 +20,7 @@ public class WorkerTransactionDetailViewModel extends BaseViewModel {
 
     private final GetWalletTransactionsUseCase getWalletTransactionsUseCase;
     private final CancelWithdrawalUseCase cancelWithdrawalUseCase;
+    private final CancelDepositUseCase cancelDepositUseCase;
 
     private final MutableLiveData<WalletTransaction> _transaction = new MutableLiveData<>();
     public LiveData<WalletTransaction> transaction = _transaction;
@@ -32,10 +34,12 @@ public class WorkerTransactionDetailViewModel extends BaseViewModel {
     @Inject
     public WorkerTransactionDetailViewModel(
             GetWalletTransactionsUseCase getWalletTransactionsUseCase,
-            CancelWithdrawalUseCase cancelWithdrawalUseCase
+            CancelWithdrawalUseCase cancelWithdrawalUseCase,
+            CancelDepositUseCase cancelDepositUseCase
     ) {
         this.getWalletTransactionsUseCase = getWalletTransactionsUseCase;
         this.cancelWithdrawalUseCase = cancelWithdrawalUseCase;
+        this.cancelDepositUseCase = cancelDepositUseCase;
     }
 
     public void loadTransaction(String txId) {
@@ -53,12 +57,31 @@ public class WorkerTransactionDetailViewModel extends BaseViewModel {
     }
 
     public void cancelWithdrawal(String txId) {
+        _loading.setValue(true);
         cancelWithdrawalUseCase.execute(txId, result -> {
             if (result.isSuccess()) {
                 _message.postValue("Đã hủy yêu cầu rút tiền");
                 loadTransaction(txId);
-            } else if (result.getError() != null) {
-                _message.postValue(result.getError().getMessage());
+            } else {
+                _loading.postValue(false);
+                if (result.getError() != null) {
+                    _message.postValue(result.getError().getMessage());
+                }
+            }
+        });
+    }
+
+    public void cancelDeposit(String txId) {
+        _loading.setValue(true);
+        cancelDepositUseCase.execute(txId, result -> {
+            if (result.isSuccess()) {
+                _message.postValue("Đã hủy yêu cầu nạp tiền");
+                loadTransaction(txId);
+            } else {
+                _loading.postValue(false);
+                if (result.getError() != null) {
+                    _message.postValue(result.getError().getMessage());
+                }
             }
         });
     }

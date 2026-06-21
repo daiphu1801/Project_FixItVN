@@ -32,12 +32,20 @@ android {
     buildFeatures {
         viewBinding true
     }
+
+    aaptOptions {
+        noCompress "tflite"
+        noCompress "lite"
+        noCompress "bic"
+    }
 }
 
 dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.aar', '*.jar'])
     implementation 'androidx.fragment:fragment:1.8.9'
     implementation 'androidx.recyclerview:recyclerview:1.4.0'
-    implementation("de.hdodenhof:circleimageview:3.1.0")
+    // circleimageview is embedded inside VNPT eKYC SDK, so we do not include it separately to avoid duplicate class errors.
+    // implementation("de.hdodenhof:circleimageview:3.1.0")
     // Retrofit + OkHttp
     implementation 'com.squareup.retrofit2:retrofit:2.11.0'
     implementation 'com.squareup.retrofit2:converter-gson:2.11.0'
@@ -86,4 +94,8 @@ dependencies {
     implementation platform('com.google.firebase:firebase-bom:34.13.0')
     implementation 'com.google.firebase:firebase-firestore'
     implementation 'androidx.swiperefreshlayout:swiperefreshlayout:1.1.0'
+
+    // VNPT eKYC SDK dependencies
+    implementation 'androidx.exifinterface:exifinterface:1.2.0'
+    implementation 'com.google.code.gson:gson:2.8.2'
 }

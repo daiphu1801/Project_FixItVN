@@ -109,10 +109,18 @@ public class WorkerOrdersFragment extends BaseFragment<FragmentWorkerOrdersBindi
             }
         });
 
-        // Lắng nghe trạng thái loading để hiển thị/tắt progress bar của SwipeRefreshLayout
+        // Lắng nghe trạng thái loading để hiển thị/tắt progress bar của SwipeRefreshLayout hoặc loading overlay
         viewModel.isLoading.observe(getViewLifecycleOwner(), loading -> {
             if (loading != null) {
-                binding.swipeRefreshOrders.setRefreshing(loading);
+                boolean isSwipeRefreshing = binding.swipeRefreshOrders.isRefreshing();
+                if (loading) {
+                    if (!isSwipeRefreshing) {
+                        binding.layoutLoading.getRoot().setVisibility(View.VISIBLE);
+                    }
+                } else {
+                    binding.layoutLoading.getRoot().setVisibility(View.GONE);
+                    binding.swipeRefreshOrders.setRefreshing(false);
+                }
             }
         });
     }

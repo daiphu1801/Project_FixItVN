@@ -89,6 +89,12 @@ public class WorkerProfileFragment extends BaseFragment<FragmentWorkerProfileBin
             }
         });
 
+        viewModel.isLoading.observe(getViewLifecycleOwner(), loading -> {
+            if (binding.layoutLoading != null) {
+                binding.layoutLoading.getRoot().setVisibility(loading ? android.view.View.VISIBLE : android.view.View.GONE);
+            }
+        });
+
         viewModel.loadProfile();
         viewModel.loadSkills();
     }

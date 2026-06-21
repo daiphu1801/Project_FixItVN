@@ -134,9 +134,15 @@ public class WorkerWalletFragment extends BaseFragment<FragmentWorkerWalletBindi
     protected void observeData() {
         viewModel = new ViewModelProvider(this).get(WorkerWalletViewModel.class);
 
-        // SwipeRefresh loading spinner
+        // SwipeRefresh và loading overlay
         viewModel.loading.observe(getViewLifecycleOwner(), isLoading -> {
-            binding.swipeRefreshLayout.setRefreshing(isLoading);
+            if (binding.swipeRefreshLayout.isRefreshing()) {
+                if (!isLoading) {
+                    binding.swipeRefreshLayout.setRefreshing(false);
+                }
+            } else {
+                binding.layoutLoading.getRoot().setVisibility(isLoading ? View.VISIBLE : View.GONE);
+            }
         });
 
         // Số dư 3 loại ví

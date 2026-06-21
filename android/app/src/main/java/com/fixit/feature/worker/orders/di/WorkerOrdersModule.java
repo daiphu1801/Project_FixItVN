@@ -34,4 +34,10 @@ public abstract class WorkerOrdersModule {
     public static WorkerBookingApi provideWorkerBookingApi(Retrofit retrofit) {
         return retrofit.create(WorkerBookingApi.class);
     }
+
+    @Provides
+    @Singleton
+    public static WorkerOrdersApi provideWorkerOrdersApi(Retrofit retrofit) {
+        return retrofit.create(WorkerOrdersApi.class);
+    }
 }

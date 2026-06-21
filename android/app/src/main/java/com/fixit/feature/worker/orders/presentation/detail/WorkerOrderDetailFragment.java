@@ -228,6 +228,12 @@ public class WorkerOrderDetailFragment extends BaseFragment<FragmentWorkerOrderD
             }
         });
 
+        viewModel.isLoading.observe(getViewLifecycleOwner(), loading -> {
+            if (binding.layoutLoading != null) {
+                binding.layoutLoading.getRoot().setVisibility(loading ? View.VISIBLE : View.GONE);
+            }
+        });
+
         viewModel.errorMessage.observe(getViewLifecycleOwner(), error -> {
             if (error != null && !error.isEmpty()) {
                 Toast.makeText(requireContext(), error, Toast.LENGTH_SHORT).show();

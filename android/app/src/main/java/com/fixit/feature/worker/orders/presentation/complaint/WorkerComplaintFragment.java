@@ -99,6 +99,12 @@ public class WorkerComplaintFragment extends BaseFragment<FragmentWorkerComplain
             }
         });
 
+        viewModel.isLoading.observe(getViewLifecycleOwner(), loading -> {
+            if (binding.layoutLoading != null) {
+                binding.layoutLoading.getRoot().setVisibility(loading ? View.VISIBLE : View.GONE);
+            }
+        });
+
         if (orderId != null) {
             viewModel.loadOrderDetails(orderId);
         }

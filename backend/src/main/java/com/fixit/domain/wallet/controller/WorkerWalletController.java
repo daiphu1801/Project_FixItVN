@@ -58,4 +58,12 @@ public class WorkerWalletController {
     ) {
         return ApiResponse.success(workerWalletService.getMyDepositQr(transactionId));
     }
+
+    @PostMapping("/deposits/{transactionId}/cancel")
+    public ApiResponse<Void> cancelDeposit(
+            @PathVariable UUID transactionId
+    ) {
+        workerWalletService.cancelMyDeposit(transactionId);
+        return ApiResponse.success(null, "Hủy yêu cầu nạp tiền thành công");
+    }
 }

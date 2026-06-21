@@ -6,6 +6,7 @@ public final class UploadPurpose {
     public static final String AVATAR = "AVATAR";
     public static final String WORKER_KYC_FRONT = "WORKER_KYC_FRONT";
     public static final String WORKER_KYC_BACK = "WORKER_KYC_BACK";
+    public static final String WORKER_KYC_SELFIE = "WORKER_KYC_SELFIE";
     public static final String WORKER_CERTIFICATE = "WORKER_CERTIFICATE";
     public static final String BOOKING_ISSUE_IMAGE = "BOOKING_ISSUE_IMAGE";
     public static final String PROOF_BEFORE_REPAIR = "PROOF_BEFORE_REPAIR";

@@ -85,6 +85,39 @@ public class WorkerDepositViewModel extends BaseViewModel {
         });
     }
 
+    public void loadDeposit(String txId) {
+        _loading.setValue(true);
+        _status.setValue("PENDING");
+        _error.setValue(null);
+
+        getDepositDetailUseCase.execute(txId, result -> {
+            _loading.postValue(false);
+            if (!result.isSuccess() || result.getData() == null) {
+                String msg = result.getError() != null
+                        ? result.getError().getMessage()
+                        : "Không tìm thấy thông tin giao dịch";
+                _error.postValue(msg);
+                return;
+            }
+
+            var deposit = result.getData();
+            _transactionId.postValue(deposit.getTransactionId());
+            _status.postValue(deposit.getStatus());
+            if (deposit.getAmount() != null) {
+                _amount.postValue(deposit.getAmount().longValue());
+            }
+
+            if (deposit.getQr() != null) {
+                _qrCodeUrl.postValue(deposit.getQr().getQrUrl());
+                _transferContent.postValue(deposit.getQr().getTransferContent());
+            }
+
+            if (deposit.getTransactionId() != null && "PENDING".equalsIgnoreCase(deposit.getStatus())) {
+                startPolling(deposit.getTransactionId());
+            }
+        });
+    }
+
     private void startPolling(String txId) {
         stopPolling();
         pollingRunnable = new Runnable() {

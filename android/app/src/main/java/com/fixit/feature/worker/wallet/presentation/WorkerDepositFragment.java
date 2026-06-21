@@ -81,6 +81,15 @@ public class WorkerDepositFragment extends BaseFragment<FragmentWorkerDepositBin
     protected void observeData() {
         viewModel = new ViewModelProvider(this).get(WorkerDepositViewModel.class);
 
+        String transactionId = "";
+        if (getArguments() != null) {
+            transactionId = getArguments().getString("transactionId", "");
+        }
+
+        if (!transactionId.isEmpty()) {
+            viewModel.loadDeposit(transactionId);
+        }
+
         viewModel.qrCodeUrl.observe(getViewLifecycleOwner(), url -> {
             if (url != null && !url.isEmpty()) {
                 binding.scrollStep1.setVisibility(View.GONE);
@@ -137,8 +146,7 @@ public class WorkerDepositFragment extends BaseFragment<FragmentWorkerDepositBin
 
         // Observer loading
         viewModel.loading.observe(getViewLifecycleOwner(), isLoading -> {
-            binding.btnGenerateQR.setEnabled(!Boolean.TRUE.equals(isLoading));
-            binding.btnGenerateQR.setAlpha(Boolean.TRUE.equals(isLoading) ? 0.5f : 1.0f);
+            binding.layoutLoading.getRoot().setVisibility(isLoading ? View.VISIBLE : View.GONE);
         });
 
         viewModel.status.observe(getViewLifecycleOwner(), status -> {

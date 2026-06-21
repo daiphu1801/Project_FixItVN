@@ -48,4 +48,10 @@ public interface WorkerWalletApi {
     Call<ApiResponse<DepositQrResponse>> getDepositQr(
             @Path("transactionId") String transactionId
     );
+
+    // Hủy yêu cầu nạp tiền
+    @POST("api/v1/workers/me/wallet/deposits/{transactionId}/cancel")
+    Call<ApiResponse<Void>> cancelDeposit(
+            @Path("transactionId") String transactionId
+    );
 }

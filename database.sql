@@ -266,7 +266,7 @@ CREATE TABLE transaction_histories (
     gateway_reference_code varchar(100),
     target_bank_account_id uuid REFERENCES worker_bank_accounts(id),
     status varchar(50) DEFAULT 'Pending'
-        CHECK (status IN ('Pending', 'Success', 'Failed')),
+        CHECK (status IN ('Pending', 'Success', 'Failed', 'Cancelled')),
     admin_note text,
     held_release_at timestamptz,
     transaction_time timestamptz DEFAULT now()

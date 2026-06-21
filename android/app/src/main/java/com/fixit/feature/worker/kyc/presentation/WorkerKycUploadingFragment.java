@@ -101,7 +101,7 @@ public class WorkerKycUploadingFragment extends BaseFragment<FragmentWorkerKycUp
 
         updateSlotUi("front", list);
         updateSlotUi("back", list);
-        updateSlotUi("certificate", list);
+        updateSlotUi("selfie", list);
 
         if (hasError) {
             binding.progressUploading.setVisibility(View.GONE);

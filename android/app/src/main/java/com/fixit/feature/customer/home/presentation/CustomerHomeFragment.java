@@ -115,7 +115,9 @@ public class CustomerHomeFragment extends BaseFragment<FragmentCustomerHomeBindi
         });
 
         viewModel.getIsLoading().observe(getViewLifecycleOwner(), isLoading -> {
-            // Có thể hiển thị ProgressBar nếu muốn
+            if (isLoading != null && binding.layoutLoading != null) {
+                binding.layoutLoading.getRoot().setVisibility(isLoading ? android.view.View.VISIBLE : android.view.View.GONE);
+            }
         });
 
         viewModel.getErrorMessage().observe(getViewLifecycleOwner(), error -> {

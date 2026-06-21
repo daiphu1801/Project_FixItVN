@@ -333,7 +333,8 @@ public class UploadWorkflowProcessor {
         List<PendingUploadEntity> group = pendingUploadDao.getByGroupId(upload.getGroupId());
         PendingUploadEntity front = findSlot(group, "front");
         PendingUploadEntity back = findSlot(group, "back");
-        if (!isReadyForConsume(front) || !isReadyForConsume(back)) {
+        PendingUploadEntity selfie = findSlot(group, "selfie");
+        if (!isReadyForConsume(front) || !isReadyForConsume(back) || !isReadyForConsume(selfie)) {
             return false;
         }
         for (PendingUploadEntity item : group) {
@@ -352,6 +353,7 @@ public class UploadWorkflowProcessor {
         executeApi(uploadApi.submitWorkerKyc(new WorkerKycSubmitRequest(
                 front.getUploadId(),
                 back.getUploadId(),
+                selfie.getUploadId(),
                 certificateIds
         )));
 

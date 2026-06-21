@@ -97,6 +97,12 @@ public class WorkerHomeFragment extends BaseFragment<FragmentWorkerHomeBinding> 
             binding.tvEmptyAppointments.setVisibility(empty ? View.VISIBLE : View.GONE);
         });
 
+        viewModel.isLoading.observe(getViewLifecycleOwner(), loading -> {
+            if (binding.layoutLoading != null) {
+                binding.layoutLoading.getRoot().setVisibility(loading ? View.VISIBLE : View.GONE);
+            }
+        });
+
         viewModel.errorMessage.observe(getViewLifecycleOwner(), message -> {
             if (message != null && !message.trim().isEmpty()) {
                 Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show();

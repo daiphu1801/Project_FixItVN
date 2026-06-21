@@ -280,6 +280,42 @@ public class WorkerWalletRepositoryImpl implements WorkerWalletRepository {
         });
     }
 
+    @Override
+    public void cancelDeposit(String transactionId, ResultCallback<Void> callback) {
+        api.cancelDeposit(transactionId).enqueue(new Callback<ApiResponse<Void>>() {
+            @Override
+            public void onResponse(Call<ApiResponse<Void>> call, Response<ApiResponse<Void>> response) {
+                if (!response.isSuccessful()) {
+                    ApiResponse<?> errorResponse = ApiResponse.parseError(response);
+                    String errorMsg = (errorResponse != null && errorResponse.getMessage() != null)
+                            ? errorResponse.getMessage()
+                            : "Hủy yêu cầu nạp tiền thất bại. HTTP " + response.code();
+                    callback.onResult(Result.error(new AppError(errorMsg)));
+                    return;
+                }
+
+                ApiResponse<Void> body = response.body();
+                if (body == null || !body.isSuccess()) {
+                    callback.onResult(Result.error(new AppError(
+                            body != null && body.getMessage() != null
+                                    ? body.getMessage()
+                                    : "Hủy yêu cầu nạp tiền thất bại"
+                    )));
+                    return;
+                }
+
+                callback.onResult(Result.success(null));
+            }
+
+            @Override
+            public void onFailure(Call<ApiResponse<Void>> call, Throwable t) {
+                callback.onResult(Result.error(new AppError(
+                        "Lỗi kết nối khi hủy nạp tiền: " + t.getMessage(), t
+                )));
+            }
+        });
+    }
+
     // ─────────────────────────────────────────────
     // Helper
     // ─────────────────────────────────────────────
@@ -344,7 +380,7 @@ public class WorkerWalletRepositoryImpl implements WorkerWalletRepository {
                     amountStr,
                     isCredit,
                     resolvedWalletType,
-                    item.getStatus() != null ? item.getStatus() : "Success",
+                    item.getStatus() != null ? item.getStatus().toUpperCase() : "SUCCESS",
                     item.getBookingId()
             ));
         }

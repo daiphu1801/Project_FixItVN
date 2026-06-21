@@ -285,5 +285,11 @@ public class CustomerBookingFragment extends BaseFragment<FragmentCustomerBookin
                 Toast.makeText(requireContext(), result.getErrorMessage(), Toast.LENGTH_SHORT).show();
             }
         });
+
+        uploadViewModel.isUploading.observe(getViewLifecycleOwner(), isLoading -> {
+            if (isLoading != null && binding.layoutLoading != null) {
+                binding.layoutLoading.getRoot().setVisibility(isLoading ? android.view.View.VISIBLE : android.view.View.GONE);
+            }
+        });
     }
 }

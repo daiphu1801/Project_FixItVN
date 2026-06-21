@@ -23,4 +23,6 @@ public interface WorkerWalletService {
 
     // ← THÊM MỚI: Webhook gọi hàm này khi ngân hàng xác nhận tiền vào
     void processDepositWebhook(SepayWebhookRequest request);
+
+    void cancelMyDeposit(java.util.UUID transactionId);
 }

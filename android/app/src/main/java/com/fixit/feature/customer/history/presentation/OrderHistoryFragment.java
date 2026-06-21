@@ -93,5 +93,11 @@ public class OrderHistoryFragment extends BaseFragment<FragmentCustomerOrderHist
         orderViewModel.bookingHistory.observe(getViewLifecycleOwner(), list -> {
             adapter.submitList(list);
         });
+
+        orderViewModel.getIsLoading().observe(getViewLifecycleOwner(), isLoading -> {
+            if (isLoading != null && binding.layoutLoading != null) {
+                binding.layoutLoading.getRoot().setVisibility(isLoading ? android.view.View.VISIBLE : android.view.View.GONE);
+            }
+        });
     }
 }

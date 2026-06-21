@@ -16,61 +16,55 @@ import java.util.stream.Collectors;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-    private static final Logger log = LoggerFactory.getLogger(GlobalExceptionHandler.class);
+        private static final Logger log = LoggerFactory.getLogger(GlobalExceptionHandler.class);
 
-    @ExceptionHandler(AppException.class)
-    public ResponseEntity<ApiResponse<Void>> handleAppException(AppException ex) {
-        ErrorCode errorCode = ex.getErrorCode();
+        @ExceptionHandler(AppException.class)
+        public ResponseEntity<ApiResponse<Void>> handleAppException(AppException ex) {
+                ErrorCode errorCode = ex.getErrorCode();
 
-        ApiResponse<Void> response = ApiResponse.error(
-                errorCode.getCode(),
-                errorCode.getMessage()
-        );
+                ApiResponse<Void> response = ApiResponse.error(
+                                errorCode.getCode(),
+                                errorCode.getMessage());
 
-        return new ResponseEntity<>(response, errorCode.getHttpStatus());
-    }
+                return new ResponseEntity<>(response, errorCode.getHttpStatus());
+        }
 
-    @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<ApiResponse<Void>> handleValidationException(
-            MethodArgumentNotValidException ex
-    ) {
-        String message = ex.getBindingResult()
-                .getFieldErrors()
-                .stream()
-                .map(DefaultMessageSourceResolvable::getDefaultMessage)
-                .collect(Collectors.joining("; "));
+        @ExceptionHandler(MethodArgumentNotValidException.class)
+        public ResponseEntity<ApiResponse<Void>> handleValidationException(
+                        MethodArgumentNotValidException ex) {
+                String message = ex.getBindingResult()
+                                .getFieldErrors()
+                                .stream()
+                                .map(DefaultMessageSourceResolvable::getDefaultMessage)
+                                .collect(Collectors.joining("; "));
 
-        ApiResponse<Void> response = ApiResponse.error(
-                ErrorCode.INVALID_REQUEST_PARAMETER.getCode(),
-                message
-        );
+                ApiResponse<Void> response = ApiResponse.error(
+                                ErrorCode.INVALID_REQUEST_PARAMETER.getCode(),
+                                message);
 
-        return new ResponseEntity<>(response, ErrorCode.INVALID_REQUEST_PARAMETER.getHttpStatus());
-    }
+                return new ResponseEntity<>(response, ErrorCode.INVALID_REQUEST_PARAMETER.getHttpStatus());
+        }
 
-    @ExceptionHandler(Exception.class)
-    public ResponseEntity<ApiResponse<Void>> handleGeneralException(Exception ex) {
-        log.error("UNHANDLED_EXCEPTION", ex);
+        @ExceptionHandler(Exception.class)
+        public ResponseEntity<ApiResponse<Void>> handleGeneralException(Exception ex) {
+                log.error("UNHANDLED_EXCEPTION", ex);
 
-        ApiResponse<Void> response = ApiResponse.error(
-                ErrorCode.INTERNAL_SERVER_ERROR.getCode(),
-                ErrorCode.INTERNAL_SERVER_ERROR.getMessage()
-        );
+                ApiResponse<Void> response = ApiResponse.error(
+                                ErrorCode.INTERNAL_SERVER_ERROR.getCode(),
+                                ErrorCode.INTERNAL_SERVER_ERROR.getMessage());
 
-        return new ResponseEntity<>(response, ErrorCode.INTERNAL_SERVER_ERROR.getHttpStatus());
-    }
+                return new ResponseEntity<>(response, ErrorCode.INTERNAL_SERVER_ERROR.getHttpStatus());
+        }
 
-    @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
-    public ResponseEntity<ApiResponse<Void>> handleMethodNotSupported(
-            HttpRequestMethodNotSupportedException ex
-    ) {
-        ApiResponse<Void> response = ApiResponse.error(
-                405,
-                "Phương thức HTTP không được hỗ trợ. Hãy kiểm tra GET/POST/PATCH/DELETE."
-        );
+        @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
+        public ResponseEntity<ApiResponse<Void>> handleMethodNotSupported(
+                        HttpRequestMethodNotSupportedException ex) {
+                ApiResponse<Void> response = ApiResponse.error(
+                                405,
+                                "Phương thức HTTP không được hỗ trợ. Hãy kiểm tra GET/POST/PATCH/DELETE.");
 
-        return ResponseEntity
-                .status(HttpStatus.METHOD_NOT_ALLOWED)
-                .body(response);
-    }
+                return ResponseEntity
+                                .status(HttpStatus.METHOD_NOT_ALLOWED)
+                                .body(response);
+        }
 }

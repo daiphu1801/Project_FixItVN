@@ -100,7 +100,12 @@
     <fragment
         android:id="@+id/workerDepositFragment"
         android:name="com.fixit.feature.worker.wallet.presentation.WorkerDepositFragment"
-        android:label="Nạp tiền" />
+        android:label="Nạp tiền">
+        <argument
+            android:name="transactionId"
+            app:argType="string"
+            android:defaultValue="" />
+    </fragment>
 
     <fragment
         android:id="@+id/workerTransactionDetailFragment"
@@ -109,6 +114,9 @@
         <argument
             android:name="transactionId"
             app:argType="string" />
+        <action
+            android:id="@+id/action_tx_detail_to_deposit"
+            app:destination="@id/workerDepositFragment" />
     </fragment>
 
     <fragment

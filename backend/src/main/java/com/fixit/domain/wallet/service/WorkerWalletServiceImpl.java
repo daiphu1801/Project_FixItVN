@@ -453,4 +453,19 @@ public class WorkerWalletServiceImpl implements WorkerWalletService {
         workerWalletRepository.save(wallet);
         transactionHistoryRepository.save(transaction);
     }
+
+    @Override
+    @Transactional
+    public void cancelMyDeposit(UUID transactionId) {
+        UUID workerId = currentWorkerResolver.getCurrentWorkerId();
+        TransactionHistory transaction = getMyDepositTransaction(workerId, transactionId);
+
+        if (transaction.getStatus() != TransactionStatus.Pending) {
+            throw new AppException(ErrorCode.WALLET_DEPOSIT_INVALID_STATUS);
+        }
+
+        transaction.setStatus(TransactionStatus.Cancelled);
+        transaction.setAdminNote("Hủy giao dịch do người dùng yêu cầu.");
+        transactionHistoryRepository.save(transaction);
+    }
 }

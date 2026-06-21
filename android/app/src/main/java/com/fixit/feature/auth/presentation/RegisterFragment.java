@@ -64,6 +64,12 @@ public class RegisterFragment extends Fragment {
                 return;
             }
 
+            String passwordPattern = "^(?=.*[0-9])(?=.*[.,!@#$%^&*()_+\\-=\\[\\]{};':\"\\\\|<>/?])[A-Z].{7,}$";
+            if (!password.matches(passwordPattern)) {
+                Toast.makeText(getContext(), "Mật khẩu phải từ 8 ký tự trở lên, bắt đầu bằng chữ viết hoa, chứa ít nhất một chữ số và một ký tự đặc biệt (ví dụ: .,!)", Toast.LENGTH_LONG).show();
+                return;
+            }
+
             viewModel.register(phone, email, password, fullName, selectedRole);
         });
 

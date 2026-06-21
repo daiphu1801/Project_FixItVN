@@ -108,6 +108,10 @@ public class WorkerWithdrawFragment extends BaseFragment<FragmentWorkerWithdrawB
                 binding.tvAccountHolder.setText(acc.getAccountHolderName());
             }
         });
+        viewModel.loading.observe(getViewLifecycleOwner(), isLoading -> {
+            binding.layoutLoading.getRoot().setVisibility(isLoading ? View.VISIBLE : View.GONE);
+        });
+
         viewModel.message.observe(getViewLifecycleOwner(), msg -> {
             if (msg == null || msg.isEmpty()) return;
             Toast.makeText(requireContext(), msg, Toast.LENGTH_SHORT).show();

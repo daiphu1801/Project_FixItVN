@@ -6,6 +6,7 @@ import android.os.Looper;
 import com.fixit.core.common.AppError;
 import com.fixit.core.common.Result;
 import com.fixit.core.common.ResultCallback;
+import com.fixit.core.network.ApiResponse;
 import com.fixit.core.storage.SessionStorage;
 import com.fixit.feature.auth.data.remote.api.AuthApi;
 import com.fixit.feature.auth.data.remote.dto.AuthRequest;
@@ -42,9 +43,11 @@ public class AuthRepositoryImpl implements AuthRepository {
                     @Override
                     public void onResponse(Call<AuthResponse> call, Response<AuthResponse> response) {
                         if (!response.isSuccessful()) {
-                            callback.onResult(Result.error(
-                                    new AppError("Đăng nhập thất bại. HTTP " + response.code())
-                            ));
+                            ApiResponse<?> apiResponse = ApiResponse.parseError(response);
+                            String errorMessage = (apiResponse != null && apiResponse.getMessage() != null)
+                                    ? apiResponse.getMessage()
+                                    : "Đăng nhập thất bại. HTTP " + response.code();
+                            callback.onResult(Result.error(new AppError(errorMessage)));
                             return;
                         }
 
@@ -83,7 +86,11 @@ public class AuthRepositoryImpl implements AuthRepository {
                         callback.onResult(Result.error(new AppError("Đăng ký thất bại: dữ liệu phản hồi không hợp lệ")));
                     }
                 } else {
-                    callback.onResult(Result.error(new AppError("Đăng ký thất bại: " + response.code())));
+                    ApiResponse<?> apiResponse = ApiResponse.parseError(response);
+                    String errorMessage = (apiResponse != null && apiResponse.getMessage() != null)
+                            ? apiResponse.getMessage()
+                            : "Đăng ký thất bại: " + response.code();
+                    callback.onResult(Result.error(new AppError(errorMessage)));
                 }
             }
 

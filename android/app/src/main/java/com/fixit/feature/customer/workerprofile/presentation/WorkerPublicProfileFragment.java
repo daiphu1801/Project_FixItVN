@@ -96,7 +96,9 @@ public class WorkerPublicProfileFragment extends Fragment {
 
     private void observeViewModel() {
         viewModel.getIsLoading().observe(getViewLifecycleOwner(), isLoading -> {
-            binding.progressBar.setVisibility(isLoading ? View.VISIBLE : View.GONE);
+            if (isLoading != null && binding.layoutLoading != null) {
+                binding.layoutLoading.getRoot().setVisibility(isLoading ? View.VISIBLE : View.GONE);
+            }
         });
 
         viewModel.getError().observe(getViewLifecycleOwner(), error -> {

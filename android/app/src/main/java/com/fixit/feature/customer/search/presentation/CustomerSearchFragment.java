@@ -95,6 +95,12 @@ public class CustomerSearchFragment extends BaseFragment<FragmentCustomerSearchB
             serviceAdapter.submitList(categories);
         });
 
+        viewModel.getIsLoading().observe(getViewLifecycleOwner(), isLoading -> {
+            if (isLoading != null && binding.layoutLoading != null) {
+                binding.layoutLoading.getRoot().setVisibility(isLoading ? android.view.View.VISIBLE : android.view.View.GONE);
+            }
+        });
+
         viewModel.getErrorMessage().observe(getViewLifecycleOwner(), error -> {
             if (error != null) {
                 showToast(error);

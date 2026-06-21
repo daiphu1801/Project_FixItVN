@@ -36,4 +36,7 @@ public interface WorkerWalletRepository {
 
     // Lấy chi tiết giao dịch nạp tiền để polling check trạng thái
     void getDepositDetail(String transactionId, ResultCallback<DepositResponse> callback);
+
+    // Hủy yêu cầu nạp tiền
+    void cancelDeposit(String transactionId, ResultCallback<Void> callback);
 }

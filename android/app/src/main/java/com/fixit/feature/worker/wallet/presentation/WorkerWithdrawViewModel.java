@@ -91,7 +91,9 @@ public class WorkerWithdrawViewModel extends BaseViewModel {
             return;
         }
 
+        _loading.setValue(true);
         createWithdrawalUseCase.execute(amount, acc.getId(), result -> {
+            _loading.postValue(false);
             if (result.isSuccess()) {
                 _message.postValue("Yêu cầu rút tiền đã được gửi");
             } else if (result.getError() != null) {
