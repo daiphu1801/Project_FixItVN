@@ -41,6 +41,9 @@ public class WorkerSelectServiceBottomSheet extends BottomSheetDialogFragment {
     private final List<CatalogServiceItem> allCatalogItems = new ArrayList<>();
     private final List<CatalogServiceItem> filteredCatalogItems = new ArrayList<>();
 
+    private final List<ServiceCategory> originalCategories = new ArrayList<>();
+    private final List<Integer> alreadySelectedIds = new ArrayList<>();
+
     private CatalogCategoryChipAdapter categoryAdapter;
     private CatalogServiceAdapter serviceAdapter;
 
@@ -56,6 +59,21 @@ public class WorkerSelectServiceBottomSheet extends BottomSheetDialogFragment {
 
     public void setOnServicesSelectedListener(OnServicesSelectedListener listener) {
         this.listener = listener;
+    }
+
+    public void setCategoriesAndSelected(List<ServiceCategory> availableCategories, List<SpecializationItem> myServices) {
+        this.originalCategories.clear();
+        if (availableCategories != null) {
+            this.originalCategories.addAll(availableCategories);
+        }
+        this.alreadySelectedIds.clear();
+        if (myServices != null) {
+            for (SpecializationItem item : myServices) {
+                if (item.getId() != null) {
+                    this.alreadySelectedIds.add(item.getId());
+                }
+            }
+        }
     }
 
     @Override
@@ -74,8 +92,8 @@ public class WorkerSelectServiceBottomSheet extends BottomSheetDialogFragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        // Initialize Mock Data
-        initMockData();
+        // Initialize Catalog Items using the passed categories
+        initCatalogItems();
 
         // Bind Views
         layoutCatalogContainer = view.findViewById(R.id.layout_catalog_container);
@@ -104,6 +122,7 @@ public class WorkerSelectServiceBottomSheet extends BottomSheetDialogFragment {
             filterItems();
         });
         recyclerCategories.setAdapter(categoryAdapter);
+        recyclerCategories.setVisibility(View.GONE);
 
         serviceAdapter = new CatalogServiceAdapter(filteredCatalogItems, this::updateSelectedCount);
         recyclerServices.setAdapter(serviceAdapter);
@@ -136,6 +155,8 @@ public class WorkerSelectServiceBottomSheet extends BottomSheetDialogFragment {
                         String displayName;
                         if (item.isCustom()) {
                             displayName = item.getServiceName();
+                        } else if (item.getCategoryName().equals(item.getServiceName())) {
+                            displayName = item.getCategoryName();
                         } else {
                             displayName = item.getCategoryName() + " - " + item.getServiceName();
                         }
@@ -158,10 +179,9 @@ public class WorkerSelectServiceBottomSheet extends BottomSheetDialogFragment {
 
         // Setup Card Custom Trigger click listener
         View cardCustomTrigger = view.findViewById(R.id.card_custom_trigger);
-        cardCustomTrigger.setOnClickListener(v -> {
-            layoutCatalogContainer.setVisibility(View.GONE);
-            layoutCustomContainer.setVisibility(View.VISIBLE);
-        });
+        if (cardCustomTrigger != null) {
+            cardCustomTrigger.setVisibility(View.GONE);
+        }
 
         // Setup Back to Catalog button
         btnBackToCatalog.setOnClickListener(v -> {
@@ -287,34 +307,23 @@ public class WorkerSelectServiceBottomSheet extends BottomSheetDialogFragment {
         }
     }
 
-    private void initMockData() {
-        // Categories list
-        categories.add(new ServiceCategory(1, "Điện lạnh"));
-        categories.add(new ServiceCategory(2, "Điện nước"));
-        categories.add(new ServiceCategory(3, "Sửa khóa"));
-        categories.add(new ServiceCategory(4, "Thiết bị gia dụng"));
+    private void initCatalogItems() {
+        categories.clear();
+        categories.addAll(originalCategories);
 
-        // Plumbing & Electrical items (catId = 2)
-        allCatalogItems.add(new CatalogServiceItem(101, 2, "Điện nước", "Lắp đặt, sửa vòi nước", 100000));
-        allCatalogItems.add(new CatalogServiceItem(102, 2, "Điện nước", "Thông tắc đường ống nước", 150000));
-        allCatalogItems.add(new CatalogServiceItem(103, 2, "Điện nước", "Lắp đặt bóng đèn, công tắc", 80000));
-        allCatalogItems.add(new CatalogServiceItem(104, 2, "Điện nước", "Sửa chập điện âm tường", 300000));
-
-        // HVAC items (catId = 1)
-        allCatalogItems.add(new CatalogServiceItem(201, 1, "Điện lạnh", "Vệ sinh, bảo dưỡng điều hòa", 150000));
-        allCatalogItems.add(new CatalogServiceItem(202, 1, "Điện lạnh", "Nạp gas máy lạnh", 250000));
-        allCatalogItems.add(new CatalogServiceItem(203, 1, "Điện lạnh", "Sửa tủ lạnh không đông đá", 40000));
-        allCatalogItems.add(new CatalogServiceItem(204, 1, "Điện lạnh", "Lắp đặt máy giặt", 120000));
-
-        // Locksmith items (catId = 3)
-        allCatalogItems.add(new CatalogServiceItem(301, 3, "Sửa khóa", "Mở khóa cửa tay nắm tròn", 100000));
-        allCatalogItems.add(new CatalogServiceItem(302, 3, "Sửa khóa", "Thay ruột khóa cửa tay gạt", 200000));
-        allCatalogItems.add(new CatalogServiceItem(303, 3, "Sửa khóa", "Làm chìa khóa xe máy", 150000));
-
-        // Appliances items (catId = 4)
-        allCatalogItems.add(new CatalogServiceItem(401, 4, "Thiết bị gia dụng", "Sửa bếp từ không lên nguồn", 150000));
-        allCatalogItems.add(new CatalogServiceItem(402, 4, "Thiết bị gia dụng", "Sửa lò vi sóng không nóng", 200000));
-        allCatalogItems.add(new CatalogServiceItem(403, 4, "Thiết bị gia dụng", "Vệ sinh máy lọc nước", 100000));
+        allCatalogItems.clear();
+        for (ServiceCategory category : originalCategories) {
+            boolean isSelected = alreadySelectedIds.contains(category.getId());
+            if (!isSelected) {
+                allCatalogItems.add(new CatalogServiceItem(
+                        category.getId(),
+                        category.getId(),
+                        category.getServiceName(),
+                        category.getServiceName(),
+                        150000.0 // Giá gợi ý mặc định
+                ));
+            }
+        }
     }
 
     private void filterItems() {
@@ -328,8 +337,6 @@ public class WorkerSelectServiceBottomSheet extends BottomSheetDialogFragment {
             }
         }
 
-        // Add a fake "Custom service card trigger" item at the end of the list to let them click and open the form!
-        // We'll handle this by adding a special local item
         serviceAdapter.notifyDataSetChanged();
     }
 
@@ -342,9 +349,9 @@ public class WorkerSelectServiceBottomSheet extends BottomSheetDialogFragment {
         }
 
         if (count > 0) {
-            tvSelectedCount.setText("Đã chọn: " + count + " dịch vụ");
+            tvSelectedCount.setText("Đã chọn: " + count + " lĩnh vực chuyên môn");
         } else {
-            tvSelectedCount.setText("Chưa chọn dịch vụ nào");
+            tvSelectedCount.setText("Chưa chọn lĩnh vực chuyên môn nào");
         }
     }
 }

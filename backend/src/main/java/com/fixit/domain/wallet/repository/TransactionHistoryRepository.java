@@ -6,6 +6,8 @@ import com.fixit.domain.wallet.entity.TransactionType;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import java.util.Optional;
 import java.util.UUID;
@@ -35,4 +37,10 @@ public interface TransactionHistoryRepository extends JpaRepository<TransactionH
             TransactionType transactionType,
             TransactionStatus status
     );
+
+    // Tìm giao dịch Pending theo transactionCode xuất hiện trong nội dung chuyển khoản
+    @Query("SELECT t FROM TransactionHistory t WHERE t.status = 'Pending' " +
+            "AND t.transactionType = 'Deposit' " +
+            "AND :content LIKE CONCAT('%', t.transactionCode, '%')")
+    Optional<TransactionHistory> findByTransactionCodeInContent(@Param("content") String content);
 }

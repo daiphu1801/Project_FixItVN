@@ -183,11 +183,22 @@ public class UploadViewModel extends BaseViewModel {
     public LiveData<Boolean> hasPendingKyc = _hasPendingKyc;
 
     /**
-     * Phát true khi Room DB báo không còn pending KYC nào → navigate sang màn "Chờ
-     * duyệt"
+     * Phát true khi Room DB báo không còn pending KYC nào → navigate sang màn "Chờ duyệt"
      */
     private final MutableLiveData<Boolean> _kycUploadDone = new MutableLiveData<>(false);
     public LiveData<Boolean> kycUploadDone = _kycUploadDone;
+
+    /**
+     * Danh sách chi tiết các upload ảnh KYC đang xử lý.
+     */
+    private final MutableLiveData<List<QueuedUpload>> _kycUploadsList = new MutableLiveData<>();
+    public LiveData<List<QueuedUpload>> kycUploadsList = _kycUploadsList;
+
+    /**
+     * Phát true khi tiến trình upload KYC bị hủy bỏ bởi người dùng.
+     */
+    private final MutableLiveData<Boolean> _kycUploadCancelled = new MutableLiveData<>(false);
+    public LiveData<Boolean> kycUploadCancelled = _kycUploadCancelled;
 
     private volatile boolean _pollingActive = false;
     private static final long POLL_INTERVAL_MS = 2_000L;
@@ -208,23 +219,27 @@ public class UploadViewModel extends BaseViewModel {
 
     /**
      * Bắt đầu polling Room DB mỗi 2 giây.
-     * Khi count = 0 → phát kycUploadDone=true → màn Uploading navigate sang màn
-     * Pending.
+     * Khi count = 0 → phát kycUploadDone=true → màn Uploading navigate sang màn Pending.
      * Gọi trong onResume() của WorkerKycUploadingFragment.
      */
     public void startKycUploadPolling() {
         if (_pollingActive)
             return;
         _pollingActive = true;
+        _kycUploadCancelled.postValue(false);
+        _kycUploadDone.postValue(false);
         new Thread(() -> {
             while (_pollingActive) {
-                uploadRepository.hasSubmittedActiveUploads(
+                uploadRepository.getSubmittedActiveUploads(
                         com.fixit.feature.upload.domain.model.UploadTargetType.WORKER_KYC,
                         result -> {
-                            if (result.isSuccess() && Boolean.FALSE.equals(result.getData())) {
-                                // Không còn pending → upload xong hoặc lỗi vĩnh viễn
-                                _pollingActive = false;
-                                _kycUploadDone.postValue(true);
+                            if (result.isSuccess()) {
+                                List<QueuedUpload> list = result.getData();
+                                _kycUploadsList.postValue(list);
+                                if (list.isEmpty()) {
+                                    _pollingActive = false;
+                                    _kycUploadDone.postValue(true);
+                                }
                             }
                         });
                 try {
@@ -235,6 +250,24 @@ public class UploadViewModel extends BaseViewModel {
                 }
             }
         }).start();
+    }
+
+    public void retryKycGroup(String groupId) {
+        _isUploading.postValue(true);
+        uploadRepository.retryKycGroup(groupId, result -> {
+            _isUploading.postValue(false);
+            if (result.isSuccess()) {
+                startKycUploadPolling();
+            }
+        });
+    }
+
+    public void cancelKycGroup(String groupId) {
+        _pollingActive = false;
+        uploadRepository.cancelKycGroup(groupId, result -> {
+            _kycUploadsList.postValue(new ArrayList<>());
+            _kycUploadCancelled.postValue(true);
+        });
     }
 
     /** Dừng polling khi fragment bị destroy (tránh leak). */

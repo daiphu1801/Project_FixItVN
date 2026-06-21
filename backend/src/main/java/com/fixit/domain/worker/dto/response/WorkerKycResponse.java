@@ -13,6 +13,10 @@ public class WorkerKycResponse {
     private UUID workerId;
     private String frontImageUrl;
     private String backImageUrl;
+    private String selfieImageUrl;
+    private String ocrFullName;
+    private String ocrIdentityCard;
+    private java.math.BigDecimal similarityScore;
     private List<String> certificateUrls;
     private String status;
 }

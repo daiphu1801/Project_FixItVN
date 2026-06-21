@@ -1,5 +1,9 @@
+// PATH: android/app/src/main/java/com/fixit/feature/worker/wallet/domain/usecase/CreateDepositUseCase.java
+
 package com.fixit.feature.worker.wallet.domain.usecase;
 
+import com.fixit.core.common.ResultCallback;
+import com.fixit.feature.worker.wallet.data.remote.dto.response.DepositResponse;
 import com.fixit.feature.worker.wallet.domain.repository.WorkerWalletRepository;
 
 import javax.inject.Inject;
@@ -12,7 +16,7 @@ public class CreateDepositUseCase {
         this.repository = repository;
     }
 
-    public String execute(long amount, String note) {
-        return repository.createDeposit(amount, note);
+    public void execute(long amount, ResultCallback<DepositResponse> callback) {
+        repository.createDeposit(amount, callback);
     }
 }

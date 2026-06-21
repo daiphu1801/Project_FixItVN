@@ -108,6 +108,12 @@ public class CustomerBookingFragment extends BaseFragment<FragmentCustomerBookin
         binding.cardLocation.setOnClickListener(v -> {
             if (navController != null) navController.navigate(R.id.nav_customer_location_picker);
         });
+        binding.tvLocationEdit.setOnClickListener(v -> {
+            if (navController != null) navController.navigate(R.id.nav_customer_location_picker);
+        });
+        binding.cardMap.setOnClickListener(v -> {
+            if (navController != null) navController.navigate(R.id.nav_customer_location_picker);
+        });
 
         binding.cardProblem.setOnClickListener(v -> navigateToInput("problem", "Vấn đề của bạn", problemDescription));
         binding.cardNote.setOnClickListener(v -> navigateToInput("note", "Ghi chú", specialNote));
@@ -118,8 +124,14 @@ public class CustomerBookingFragment extends BaseFragment<FragmentCustomerBookin
         binding.cardTime.setOnClickListener(v -> showTimeSelectionDialog());
 
         binding.btnFindWorker.setOnClickListener(v -> {
-            // 1. Cập nhật trạng thái: Đang tìm thợ
-            orderViewModel.startFinding();
+            // Lấy dữ liệu từ UI
+            Integer serviceId = 1; // TODO: Lấy từ arguments truyền vào
+            java.math.BigDecimal lat = new java.math.BigDecimal("21.0285"); // Mặc định Hà Nội
+            java.math.BigDecimal lng = new java.math.BigDecimal("105.8542"); // Mặc định Hà Nội
+            String desc = problemDescription + (specialNote.isEmpty() ? "" : "\nGhi chú: " + specialNote);
+
+            // 1. Cập nhật trạng thái: Đang tìm thợ & gọi API tạo đơn
+            orderViewModel.createBooking(serviceId, currentAddress, lat, lng, desc);
             
             // 2. Chuyển sang Tab Đơn hàng
             if (navController != null) {
@@ -271,6 +283,12 @@ public class CustomerBookingFragment extends BaseFragment<FragmentCustomerBookin
                 Toast.makeText(requireContext(), "Ảnh đã tải lên thành công", Toast.LENGTH_SHORT).show();
             } else {
                 Toast.makeText(requireContext(), result.getErrorMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        uploadViewModel.isUploading.observe(getViewLifecycleOwner(), isLoading -> {
+            if (isLoading != null && binding.layoutLoading != null) {
+                binding.layoutLoading.getRoot().setVisibility(isLoading ? android.view.View.VISIBLE : android.view.View.GONE);
             }
         });
     }

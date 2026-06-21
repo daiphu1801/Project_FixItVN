@@ -1,5 +1,7 @@
 package com.fixit.feature.upload.data.repository;
 
+import android.content.Context;
+import android.content.Intent;
 import android.util.Log;
 
 import com.fixit.core.network.ApiResponse;
@@ -34,6 +36,7 @@ import java.util.Set;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
+import dagger.hilt.android.qualifiers.ApplicationContext;
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
@@ -48,6 +51,7 @@ public class UploadWorkflowProcessor {
     /** Số lần retry tối đa trước khi xóa hẳn item khỏi hàng đợi. */
     private static final int MAX_RETRY_COUNT = 10;
 
+    private final Context context;
     private final UploadApi uploadApi;
     private final CloudinaryUploadApi cloudinaryUploadApi;
     private final PendingUploadDao pendingUploadDao;
@@ -55,11 +59,13 @@ public class UploadWorkflowProcessor {
 
     @Inject
     public UploadWorkflowProcessor(
+            @ApplicationContext Context context,
             UploadApi uploadApi,
             CloudinaryUploadApi cloudinaryUploadApi,
             PendingUploadDao pendingUploadDao,
             Gson gson
     ) {
+        this.context = context;
         this.uploadApi = uploadApi;
         this.cloudinaryUploadApi = cloudinaryUploadApi;
         this.pendingUploadDao = pendingUploadDao;
@@ -112,13 +118,12 @@ public class UploadWorkflowProcessor {
             return false;
         }
 
-        // Xóa hẳn item nếu đã vượt quá số lần retry tối đa
+        // Dừng xử lý nếu đã vượt quá số lần retry tối đa, giữ lại trong DB để UI hiển thị lỗi
         if (upload.getRetryCount() >= MAX_RETRY_COUNT) {
-            Log.w(TAG, "Discarding upload after max retries. id=" + upload.getId()
+            Log.w(TAG, "Upload has reached max retries, skipping automatic execution. id=" + upload.getId()
                     + ", status=" + upload.getStatus()
                     + ", retries=" + upload.getRetryCount());
-            discardPermanently(upload);
-            return true;
+            return false;
         }
 
         markAttempt(upload);
@@ -148,10 +153,12 @@ public class UploadWorkflowProcessor {
                     return false;
             }
         } catch (PermanentApiException ex) {
-            // Lỗi vĩnh viễn (403/404/409): xóa hẳn, không retry
-            Log.w(TAG, "Permanently discarding upload due to permanent API error. id=" + upload.getId()
+            // Lỗi vĩnh viễn (403/404/409): ghi nhận trạng thái lỗi, đặt số lần retry về tối đa để dừng chạy ngầm
+            Log.w(TAG, "Permanent API error. Stopping retries for upload. id=" + upload.getId()
                     + ", error=" + ex.getMessage());
-            discardPermanently(upload);
+            fail(upload, failedStatusFor(upload.getStatus()), "Lỗi hệ thống không thể thử lại: " + ex.getMessage());
+            upload.setRetryCount(MAX_RETRY_COUNT);
+            pendingUploadDao.update(upload);
             throw ex;
         } catch (Exception ex) {
             fail(upload, failedStatusFor(upload.getStatus()), ex.getMessage());
@@ -285,6 +292,13 @@ public class UploadWorkflowProcessor {
             Log.d(TAG, "Consume avatar. id=" + upload.getId() + ", uploadId=" + upload.getUploadId());
             executeApi(uploadApi.updateAvatar(new UserAvatarUpdateRequest(upload.getUploadId())));
             markConsumed(upload);
+            try {
+                Intent intent = new Intent("com.fixit.PROFILE_UPDATE");
+                context.sendBroadcast(intent);
+                Log.d(TAG, "Broadcast com.fixit.PROFILE_UPDATE sent");
+            } catch (Exception e) {
+                Log.e(TAG, "Failed to send profile update broadcast", e);
+            }
             return true;
         }
 
@@ -294,6 +308,13 @@ public class UploadWorkflowProcessor {
                     new ProofOfWorkCreateRequest(upload.getUploadId(), proofTypeOf(upload))
             ));
             markConsumed(upload);
+            try {
+                Intent intent = new Intent("com.fixit.BOOKING_UPDATE");
+                context.sendBroadcast(intent);
+                Log.d(TAG, "Broadcast com.fixit.BOOKING_UPDATE sent");
+            } catch (Exception e) {
+                Log.e(TAG, "Failed to send booking update broadcast", e);
+            }
             return true;
         }
 
@@ -312,7 +333,8 @@ public class UploadWorkflowProcessor {
         List<PendingUploadEntity> group = pendingUploadDao.getByGroupId(upload.getGroupId());
         PendingUploadEntity front = findSlot(group, "front");
         PendingUploadEntity back = findSlot(group, "back");
-        if (!isReadyForConsume(front) || !isReadyForConsume(back)) {
+        PendingUploadEntity selfie = findSlot(group, "selfie");
+        if (!isReadyForConsume(front) || !isReadyForConsume(back) || !isReadyForConsume(selfie)) {
             return false;
         }
         for (PendingUploadEntity item : group) {
@@ -331,6 +353,7 @@ public class UploadWorkflowProcessor {
         executeApi(uploadApi.submitWorkerKyc(new WorkerKycSubmitRequest(
                 front.getUploadId(),
                 back.getUploadId(),
+                selfie.getUploadId(),
                 certificateIds
         )));
 
@@ -454,17 +477,6 @@ public class UploadWorkflowProcessor {
         pendingUploadDao.update(upload);
     }
 
-    /**
-     * Xóa hẳn item khỏi hàng đợi và file local (nếu còn).
-     * Dùng khi gặp lỗi vĩnh viễn (403/404/409) hoặc vượt quá MAX_RETRY_COUNT.
-     */
-    private void discardPermanently(PendingUploadEntity upload) {
-        UploadFilePreparer.deleteLocalFile(upload.getLocalFilePath());
-        pendingUploadDao.deleteById(upload.getId());
-        Log.w(TAG, "Upload discarded permanently. id=" + upload.getId()
-                + ", uploadId=" + upload.getUploadId()
-                + ", lastError=" + upload.getLastError());
-    }
 
     private void markConsumed(PendingUploadEntity upload) {
         Log.d(TAG, "Upload consumed. id=" + upload.getId() + ", uploadId=" + upload.getUploadId());

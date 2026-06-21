@@ -112,6 +112,12 @@ public class WorkerEditProfileFragment extends BaseFragment<FragmentWorkerEditPr
             }
         });
 
+        viewModel.isLoading.observe(getViewLifecycleOwner(), loading -> {
+            if (binding.layoutLoading != null) {
+                binding.layoutLoading.getRoot().setVisibility(loading ? android.view.View.VISIBLE : android.view.View.GONE);
+            }
+        });
+
         viewModel.loadProfile();
     }
 

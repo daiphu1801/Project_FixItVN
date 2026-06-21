@@ -6,6 +6,7 @@ import android.os.Looper;
 import com.fixit.core.common.AppError;
 import com.fixit.core.common.Result;
 import com.fixit.core.common.ResultCallback;
+import com.fixit.core.network.ApiResponse;
 import com.fixit.core.storage.SessionStorage;
 import com.fixit.feature.auth.data.remote.api.AuthApi;
 import com.fixit.feature.auth.data.remote.dto.AuthRequest;
@@ -42,9 +43,11 @@ public class AuthRepositoryImpl implements AuthRepository {
                     @Override
                     public void onResponse(Call<AuthResponse> call, Response<AuthResponse> response) {
                         if (!response.isSuccessful()) {
-                            callback.onResult(Result.error(
-                                    new AppError("Đăng nhập thất bại. HTTP " + response.code())
-                            ));
+                            ApiResponse<?> apiResponse = ApiResponse.parseError(response);
+                            String errorMessage = (apiResponse != null && apiResponse.getMessage() != null)
+                                    ? apiResponse.getMessage()
+                                    : "Đăng nhập thất bại. HTTP " + response.code();
+                            callback.onResult(Result.error(new AppError(errorMessage)));
                             return;
                         }
 
@@ -83,7 +86,11 @@ public class AuthRepositoryImpl implements AuthRepository {
                         callback.onResult(Result.error(new AppError("Đăng ký thất bại: dữ liệu phản hồi không hợp lệ")));
                     }
                 } else {
-                    callback.onResult(Result.error(new AppError("Đăng ký thất bại: " + response.code())));
+                    ApiResponse<?> apiResponse = ApiResponse.parseError(response);
+                    String errorMessage = (apiResponse != null && apiResponse.getMessage() != null)
+                            ? apiResponse.getMessage()
+                            : "Đăng ký thất bại: " + response.code();
+                    callback.onResult(Result.error(new AppError(errorMessage)));
                 }
             }
 
@@ -96,8 +103,57 @@ public class AuthRepositoryImpl implements AuthRepository {
 
     @Override
     public void logout(ResultCallback<Void> callback) {
+        String refreshToken = sessionStorage.getRefreshToken();
         sessionStorage.clear();
-        callback.onResult(Result.success(null));
+        if (refreshToken != null && !refreshToken.isEmpty()) {
+            authApi.logout(refreshToken).enqueue(new Callback<Void>() {
+                @Override
+                public void onResponse(Call<Void> call, Response<Void> response) {
+                    callback.onResult(Result.success(null));
+                }
+
+                @Override
+                public void onFailure(Call<Void> call, Throwable t) {
+                    callback.onResult(Result.success(null));
+                }
+            });
+        } else {
+            callback.onResult(Result.success(null));
+        }
+    }
+
+    @Override
+    public void refreshToken(String refreshToken, ResultCallback<Session> callback) {
+        authApi.refreshToken(new AuthRequest.RefreshToken(refreshToken))
+                .enqueue(new Callback<AuthResponse>() {
+                    @Override
+                    public void onResponse(Call<AuthResponse> call, Response<AuthResponse> response) {
+                        if (!response.isSuccessful()) {
+                            callback.onResult(Result.error(
+                                    new AppError("Refresh token thất bại. HTTP " + response.code())
+                            ));
+                            return;
+                        }
+
+                        Session session = AuthMapper.toSession(response.body());
+                        if (session == null) {
+                            callback.onResult(Result.error(
+                                    new AppError("Dữ liệu refresh token không hợp lệ")
+                            ));
+                            return;
+                        }
+
+                        sessionStorage.saveSession(session);
+                        callback.onResult(Result.success(session));
+                    }
+
+                    @Override
+                    public void onFailure(Call<AuthResponse> call, Throwable t) {
+                        callback.onResult(Result.error(
+                                new AppError("Lỗi kết nối refresh token: " + t.getMessage(), t)
+                        ));
+                    }
+                });
     }
 
     @Override

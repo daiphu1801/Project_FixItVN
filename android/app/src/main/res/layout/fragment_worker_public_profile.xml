@@ -1,116 +1,211 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#f0faff">
+    android:background="#F3F4F6">
 
-    <!-- TOOLBAR -->
-    <include
-        android:id="@+id/layoutAppbar"
-        layout="@layout/layout_standard_appbar"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+    <com.google.android.material.appbar.AppBarLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@android:color/transparent"
+        app:elevation="0dp">
 
-    <!-- CONTENT -->
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:background="@color/white"
+            app:navigationIcon="@drawable/ic_lucide_arrow_left"
+            app:title="Hồ sơ Thợ" />
+    </com.google.android.material.appbar.AppBarLayout>
+
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:fillViewport="true"
-        app:layout_constraintBottom_toTopOf="@id/layoutBottomActions"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/layoutAppbar">
+        android:layout_height="match_parent"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:paddingBottom="24dp">
+            android:paddingBottom="80dp">
 
-            <!-- HEADER CARD (Avatar + Name + Rating) -->
-            <include
-                android:id="@+id/layoutProfileHeader"
-                layout="@layout/layout_worker_public_header" />
-
-            <!-- SPECIALIZATIONS CARD (Chuyên môn) -->
-            <include
-                android:id="@+id/layoutResume"
-                layout="@layout/layout_worker_public_resume" />
-
-            <!-- REVIEWS CARD (Danh sách các đánh giá) -->
+            <!-- Profile Header Card -->
             <com.google.android.material.card.MaterialCardView
-                style="@style/FixIt.Card.Content"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginHorizontal="16dp"
-                android:layout_marginTop="8dp">
+                app:cardElevation="2dp"
+                app:cardCornerRadius="0dp">
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
-                    android:padding="16dp">
+                    android:padding="20dp"
+                    android:gravity="center_horizontal">
+
+                    <com.google.android.material.imageview.ShapeableImageView
+                        android:id="@+id/iv_avatar"
+                        android:layout_width="100dp"
+                        android:layout_height="100dp"
+                        android:scaleType="centerCrop"
+                        android:src="@drawable/ic_lucide_user"
+                        app:shapeAppearanceOverlay="@style/CircleImageView"
+                        android:background="#E5E7EB"
+                        android:padding="1dp"/>
 
                     <TextView
-                        style="@style/FixIt.Text.SectionHeader"
+                        android:id="@+id/tv_worker_name"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Đánh giá từ khách hàng"
-                        android:textSize="17sp" />
+                        android:layout_marginTop="12dp"
+                        tools:text="Nguyễn Văn A"
+                        android:textSize="20sp"
+                        android:textStyle="bold"
+                        android:textColor="#111827"/>
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:layout_marginTop="8dp"
+                        android:gravity="center_vertical">
+
+                        <ImageView
+                            android:layout_width="16dp"
+                            android:layout_height="16dp"
+                            android:src="@drawable/ic_lucide_star"
+                            app:tint="#F59E0B"/>
+
+                        <TextView
+                            android:id="@+id/tv_rating"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="4dp"
+                            tools:text="4.8 (120 đánh giá)"
+                            android:textSize="14sp"
+                            android:textColor="#4B5563"/>
+                    </LinearLayout>
+
+                    <com.google.android.material.chip.Chip
+                        android:id="@+id/chip_status"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        tools:text="Sẵn sàng nhận việc"
+                        app:chipBackgroundColor="#D1FAE5"
+                        android:textColor="#065F46"
+                        app:chipStrokeWidth="0dp"/>
+
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- Experience Card -->
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                app:cardElevation="1dp"
+                app:cardCornerRadius="0dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="20dp">
 
                     <TextView
-                        android:id="@+id/tvEmptyReviews"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Giới thiệu kinh nghiệm"
+                        android:textSize="16sp"
+                        android:textStyle="bold"
+                        android:textColor="#111827"/>
+
+                    <TextView
+                        android:id="@+id/tv_experience"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginVertical="24dp"
-                        android:gravity="center"
-                        android:text="Chưa có đánh giá nào từ khách hàng."
-                        android:textColor="#64748b"
+                        android:layout_marginTop="8dp"
+                        tools:text="Hơn 5 năm kinh nghiệm sửa chữa điện nước gia đình. Chuyên trị các ca khó, sửa nhanh gọn, bảo hành dài hạn."
                         android:textSize="14sp"
-                        android:visibility="gone" />
+                        android:textColor="#374151"
+                        android:lineSpacingExtra="4dp"/>
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- Services Card -->
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                app:cardElevation="1dp"
+                app:cardCornerRadius="0dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="20dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Dịch vụ cung cấp"
+                        android:textSize="16sp"
+                        android:textStyle="bold"
+                        android:textColor="#111827"/>
 
                     <androidx.recyclerview.widget.RecyclerView
-                        android:id="@+id/rvReviews"
+                        android:id="@+id/rv_skills"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:nestedScrollingEnabled="false"
-                        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-                        tools:listitem="@layout/item_review" />
+                        android:layout_marginTop="12dp"
+                        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"/>
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
 
-    <!-- BOTTOM ACTION BAR -->
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/layoutBottomActions"
+    <!-- Bottom Action Button (Select this worker) -->
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@android:color/white"
+        android:layout_gravity="bottom"
+        android:background="@color/white"
         android:elevation="8dp"
         android:padding="16dp"
-        app:layout_constraintBottom_toBottomOf="parent">
+        android:orientation="horizontal">
+        
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_favorite"
+            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="12dp"
+            app:icon="@drawable/ic_heart_outline"
+            app:iconTint="#EF4444"
+            app:strokeColor="#E5E7EB"/>
 
         <com.google.android.material.button.MaterialButton
-            android:id="@+id/btnChatWithWorker"
-            style="@style/FixIt.Button.Action.Primary"
-            android:layout_width="match_parent"
-            android:layout_height="54dp"
-            android:text="Trò chuyện với thợ"
-            android:textAllCaps="false"
+            android:id="@+id/btn_book_worker"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Chọn thợ này"
             android:textSize="16sp"
-            android:textStyle="bold"
-            app:icon="@drawable/ic_lucide_message_circle"
-            app:iconGravity="textStart"
-            app:iconPadding="8dp"
-            app:iconTint="@android:color/white"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:cornerRadius="8dp"
+            android:paddingVertical="12dp"/>
+    </LinearLayout>
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
+    <include
+        android:id="@+id/layoutLoading"
+        layout="@layout/layout_loading"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone" />
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

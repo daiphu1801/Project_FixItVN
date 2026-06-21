@@ -1,5 +1,8 @@
+// PATH: android/app/src/main/java/com/fixit/feature/worker/wallet/domain/usecase/GetWalletBalanceUseCase.java
+
 package com.fixit.feature.worker.wallet.domain.usecase;
 
+import com.fixit.core.common.ResultCallback;
 import com.fixit.feature.worker.wallet.domain.model.WalletBalance;
 import com.fixit.feature.worker.wallet.domain.repository.WorkerWalletRepository;
 
@@ -13,7 +16,7 @@ public class GetWalletBalanceUseCase {
         this.repository = repository;
     }
 
-    public WalletBalance execute() {
-        return repository.getWalletBalance();
+    public void execute(ResultCallback<WalletBalance> callback) {
+        repository.getWalletBalance(callback);
     }
 }

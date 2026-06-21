@@ -41,8 +41,13 @@ public class AuthViewModel extends ViewModel {
      */
     public void checkExistingSession() {
         Session session = getCurrentSessionUseCase.execute();
+        android.util.Log.d("FixIt_AuthViewModel", "checkExistingSession: session = " + session);
         if (session != null) {
+            android.util.Log.d("FixIt_AuthViewModel", "checkExistingSession: session is NOT null! Navigating automatically to role: " + 
+                (session.getUser() != null ? session.getUser().getRole() : "null"));
             _event.setValue(AuthEvent.navigate(session));
+        } else {
+            android.util.Log.d("FixIt_AuthViewModel", "checkExistingSession: session is null. Showing login screen.");
         }
     }
 

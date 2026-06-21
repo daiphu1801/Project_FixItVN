@@ -246,6 +246,94 @@
                     android:textSize="15sp" />
             </com.google.android.material.textfield.TextInputLayout>
 
+            <!-- Container VNPT eKYC (Chỉ hiển thị khi SDK khả dụng) -->
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/cardVnptKyc"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:visibility="gone"
+                app:cardBackgroundColor="#f0fdf4"
+                app:cardCornerRadius="14dp"
+                app:cardElevation="0dp"
+                app:strokeColor="#bbf7d0"
+                app:strokeWidth="1dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/menuDocType">
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:padding="16dp">
+
+                    <ImageView
+                        android:id="@+id/ivVnptIcon"
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:src="@drawable/ic_shield"
+                        app:tint="#16a34a"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintStart_toStartOf="parent" />
+
+                    <TextView
+                        android:id="@+id/tvVnptTitle"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="8dp"
+                        android:text="Xác thực tự động bằng AI (Khuyên dùng)"
+                        android:textColor="#16a34a"
+                        android:textSize="15sp"
+                        android:textStyle="bold"
+                        app:layout_constraintBottom_toBottomOf="@id/ivVnptIcon"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toEndOf="@id/ivVnptIcon"
+                        app:layout_constraintTop_toTopOf="@id/ivVnptIcon" />
+
+                    <TextView
+                        android:id="@+id/tvVnptContent"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:text="Hệ thống sẽ tự động quét thông tin và đối chiếu khuôn mặt của bạn thông qua VNPT eKYC SDK chỉ trong 1 phút."
+                        android:textColor="#15803d"
+                        android:textSize="13sp"
+                        android:lineSpacingExtra="2dp"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/tvVnptTitle" />
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btnStartVnptKyc"
+                        style="@style/FixIt.Button.Action.Primary"
+                        android:layout_width="0dp"
+                        android:layout_height="50dp"
+                        android:layout_marginTop="16dp"
+                        android:text="Bắt đầu xác thực eKYC"
+                        android:textColor="@android:color/white"
+                        app:backgroundTint="#16a34a"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/tvVnptContent" />
+
+                    <TextView
+                        android:id="@+id/tvSwitchToManual"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="12dp"
+                        android:text="Hoặc tải ảnh lên thủ công"
+                        android:textColor="#16a34a"
+                        android:textSize="14sp"
+                        android:textStyle="bold"
+                        android:clickable="true"
+                        android:focusable="true"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/btnStartVnptKyc" />
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+            </com.google.android.material.card.MaterialCardView>
+
             <!-- Tải lên hình ảnh -->
             <TextView
                 android:id="@+id/tvLabelUpload"
@@ -255,7 +343,7 @@
                 android:layout_marginTop="24dp"
                 android:text="Tải lên hình ảnh giấy tờ"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/menuDocType" />
+                app:layout_constraintTop_toBottomOf="@id/cardVnptKyc" />
 
             <!-- Card Mặt trước -->
             <com.google.android.material.card.MaterialCardView
@@ -496,7 +584,20 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/cardTips" />
 
+            <!-- Nhóm các view chọn ảnh thủ công -->
+            <androidx.constraintlayout.widget.Group
+                android:id="@+id/groupManualUpload"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:visibility="visible"
+                app:constraint_referenced_ids="tvLabelUpload,cardUploadFront,cardUploadBack,cardUploadPortrait,cardTips,btnSubmitKYC" />
+
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.core.widget.NestedScrollView>
+
+    <include
+        android:id="@+id/layoutLoading"
+        layout="@layout/layout_loading"
+        android:visibility="gone" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

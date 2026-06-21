@@ -1,6 +1,7 @@
 package com.fixit.domain.wallet.service;
 
 import com.fixit.domain.wallet.dto.request.DepositCreateRequest;
+import com.fixit.domain.wallet.dto.request.SepayWebhookRequest;
 import com.fixit.domain.wallet.dto.response.DepositQrResponse;
 import com.fixit.domain.wallet.dto.response.DepositResponse;
 import com.fixit.domain.wallet.dto.response.WalletTransactionResponse;
@@ -13,6 +14,8 @@ import com.fixit.domain.wallet.entity.WorkerBankAccount;
 import com.fixit.domain.wallet.entity.WorkerWallet;
 import com.fixit.domain.wallet.repository.TransactionHistoryRepository;
 import com.fixit.domain.wallet.repository.WorkerWalletRepository;
+import com.fixit.domain.worker.repository.projection.WorkerPerformanceStatsProjection;
+import com.fixit.domain.worker.repository.query.WorkerHomeQueryRepository;
 import com.fixit.domain.worker.support.CurrentWorkerResolver;
 import com.fixit.global.exception.AppException;
 import com.fixit.global.exception.ErrorCode;
@@ -33,6 +36,7 @@ import java.security.SecureRandom;
 import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -48,6 +52,7 @@ public class WorkerWalletServiceImpl implements WorkerWalletService {
     private final CurrentWorkerResolver currentWorkerResolver;
     private final WorkerWalletRepository workerWalletRepository;
     private final TransactionHistoryRepository transactionHistoryRepository;
+    private final WorkerHomeQueryRepository workerHomeQueryRepository;
 
     @Value("${app.payment.deposit.bank-code:MB}")
     private String depositBankCode;
@@ -66,9 +71,13 @@ public class WorkerWalletServiceImpl implements WorkerWalletService {
     public WorkerWalletResponse getMyWallet() {
         UUID workerId = currentWorkerResolver.getCurrentWorkerId();
 
+        WorkerPerformanceStatsProjection stats = workerHomeQueryRepository.findStatsOverview(workerId);
+        BigDecimal incomeThisWeek = stats != null && stats.getIncomeThisWeek() != null ? stats.getIncomeThisWeek() : BigDecimal.ZERO;
+        BigDecimal incomeThisMonth = stats != null && stats.getIncomeThisMonth() != null ? stats.getIncomeThisMonth() : BigDecimal.ZERO;
+
         return workerWalletRepository.findById(workerId)
-                .map(this::toWalletResponse)
-                .orElseGet(() -> emptyWalletResponse(workerId));
+                .map(wallet -> toWalletResponse(wallet, incomeThisWeek, incomeThisMonth))
+                .orElseGet(() -> emptyWalletResponse(workerId, incomeThisWeek, incomeThisMonth));
     }
 
     @Override
@@ -115,13 +124,6 @@ public class WorkerWalletServiceImpl implements WorkerWalletService {
                 .orElseThrow(() -> new AppException(ErrorCode.WALLET_NOT_FOUND));
 
         BigDecimal currentDebt = valueOrZero(wallet.getDebtBalance());
-        if (currentDebt.compareTo(BigDecimal.ZERO) <= 0) {
-            throw new AppException(ErrorCode.WALLET_DEBT_NOT_FOUND);
-        }
-
-        if (amount.compareTo(currentDebt) < 0) {
-            throw new AppException(ErrorCode.WALLET_DEPOSIT_AMOUNT_TOO_SMALL);
-        }
 
         if (transactionHistoryRepository.existsByWallet_WorkerIdAndTransactionTypeAndStatus(
                 workerId,
@@ -292,7 +294,7 @@ public class WorkerWalletServiceImpl implements WorkerWalletService {
         return URLEncoder.encode(value != null ? value : "", StandardCharsets.UTF_8);
     }
 
-    private WorkerWalletResponse toWalletResponse(WorkerWallet wallet) {
+    private WorkerWalletResponse toWalletResponse(WorkerWallet wallet, BigDecimal incomeThisWeek, BigDecimal incomeThisMonth) {
         BigDecimal availableBalance = valueOrZero(wallet.getAvailableBalance());
         BigDecimal heldBalance = valueOrZero(wallet.getHeldBalance());
         BigDecimal debtBalance = valueOrZero(wallet.getDebtBalance());
@@ -307,10 +309,12 @@ public class WorkerWalletServiceImpl implements WorkerWalletService {
                         availableBalance.compareTo(BigDecimal.ZERO) > 0
                                 && debtBalance.compareTo(BigDecimal.ZERO) == 0
                 )
+                .incomeThisWeek(incomeThisWeek)
+                .incomeThisMonth(incomeThisMonth)
                 .build();
     }
 
-    private WorkerWalletResponse emptyWalletResponse(UUID workerId) {
+    private WorkerWalletResponse emptyWalletResponse(UUID workerId, BigDecimal incomeThisWeek, BigDecimal incomeThisMonth) {
         return WorkerWalletResponse.builder()
                 .workerId(workerId)
                 .availableBalance(BigDecimal.ZERO)
@@ -318,6 +322,8 @@ public class WorkerWalletServiceImpl implements WorkerWalletService {
                 .debtBalance(BigDecimal.ZERO)
                 .totalBalance(BigDecimal.ZERO)
                 .canWithdraw(false)
+                .incomeThisWeek(incomeThisWeek)
+                .incomeThisMonth(incomeThisMonth)
                 .build();
     }
 
@@ -386,5 +392,80 @@ public class WorkerWalletServiceImpl implements WorkerWalletService {
         }
 
         return "****" + trimmed.substring(length - 4);
+    }
+
+
+    @Override
+    @Transactional
+    public void processDepositWebhook(SepayWebhookRequest request) {
+        // Chỉ xử lý giao dịch tiền VÀO
+        if (!"in".equalsIgnoreCase(request.getTransactionType())) {
+            return;
+        }
+        // Tìm mã giao dịch trong nội dung chuyển khoản
+        // SePay gửi nội dung dạng: "DEP20260612143022 1234" hoặc "Chuyen khoan DEP20260612143022"
+        String content = request.getContent();
+        if (content == null || content.isBlank()) {
+            return;
+        }
+        // Tìm TransactionHistory theo transactionCode trong nội dung
+        Optional<TransactionHistory> transactionOpt =
+                transactionHistoryRepository.findByTransactionCodeInContent(content.trim());
+        if (transactionOpt.isEmpty()) {
+            // Không tìm thấy giao dịch khớp — bỏ qua (có thể là giao dịch khác)
+            return;
+        }
+        TransactionHistory transaction = transactionOpt.get();
+        // Chỉ xử lý giao dịch đang ở trạng thái Pending
+        if (transaction.getStatus() != TransactionStatus.Pending) {
+            return;
+        }
+        // Kiểm tra số tiền khớp (cho phép chênh lệch không đáng kể)
+        BigDecimal webhookAmount = request.getTransferAmount();
+        if (webhookAmount == null || webhookAmount.compareTo(transaction.getAmount()) != 0) {
+            // Số tiền không khớp — đánh dấu lỗi, không xử lý
+            transaction.setStatus(TransactionStatus.Failed);
+            transaction.setAdminNote("Webhook: số tiền không khớp. Nhận: "
+                    + (webhookAmount != null ? webhookAmount.toPlainString() : "null")
+                    + ", Yêu cầu: " + transaction.getAmount().toPlainString());
+            transactionHistoryRepository.save(transaction);
+            return;
+        }
+        // Lấy ví thợ với pessimistic lock
+        WorkerWallet wallet = workerWalletRepository
+                .findByWorkerIdForUpdate(transaction.getWallet().getWorkerId())
+                .orElseThrow(() -> new AppException(ErrorCode.WALLET_NOT_FOUND));
+        BigDecimal depositAmount = valueOrZero(transaction.getAmount());
+        BigDecimal currentDebt = valueOrZero(wallet.getDebtBalance());
+        // Tính toán: trả nợ trước, phần dư cộng vào khả dụng
+        BigDecimal debtPaid = depositAmount.min(currentDebt);
+        BigDecimal surplus = depositAmount.subtract(debtPaid).max(BigDecimal.ZERO);
+        wallet.setDebtBalance(currentDebt.subtract(debtPaid).max(BigDecimal.ZERO));
+        wallet.setAvailableBalance(valueOrZero(wallet.getAvailableBalance()).add(surplus));
+        // Cập nhật giao dịch thành công
+        transaction.setStatus(TransactionStatus.Success);
+        transaction.setGatewayReferenceCode(request.getReferenceCode());
+        transaction.setAdminNote("Webhook SePay xác nhận: "
+                + request.getGateway() + " - " + request.getTransactionDate()
+                + ". Nợ đã trả: " + debtPaid.toPlainString()
+                + ". Dư cộng vào khả dụng: " + surplus.toPlainString());
+        transaction.setTransactionTime(java.time.OffsetDateTime.now());
+        workerWalletRepository.save(wallet);
+        transactionHistoryRepository.save(transaction);
+    }
+
+    @Override
+    @Transactional
+    public void cancelMyDeposit(UUID transactionId) {
+        UUID workerId = currentWorkerResolver.getCurrentWorkerId();
+        TransactionHistory transaction = getMyDepositTransaction(workerId, transactionId);
+
+        if (transaction.getStatus() != TransactionStatus.Pending) {
+            throw new AppException(ErrorCode.WALLET_DEPOSIT_INVALID_STATUS);
+        }
+
+        transaction.setStatus(TransactionStatus.Cancelled);
+        transaction.setAdminNote("Hủy giao dịch do người dùng yêu cầu.");
+        transactionHistoryRepository.save(transaction);
     }
 }

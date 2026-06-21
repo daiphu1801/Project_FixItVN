@@ -41,6 +41,16 @@ public class WorkerWalletFragment extends BaseFragment<FragmentWorkerWalletBindi
         android.widget.TextView tvTitle = requireView().findViewById(R.id.tvToolbarTitle);
         if (tvTitle != null) tvTitle.setText("Ví tiền thợ");
 
+        // Pull-to-refresh
+        binding.swipeRefreshLayout.setOnRefreshListener(() -> {
+            String tabType = "available";
+            switch (currentTabPosition) {
+                case 1: tabType = "held"; break;
+                case 2: tabType = "debt"; break;
+            }
+            viewModel.refresh(tabType);
+        });
+
         // RecyclerView lịch sử giao dịch
         adapter = new WalletTransactionAdapter();
         binding.rvWalletTransactions.setLayoutManager(new LinearLayoutManager(requireContext()));
@@ -65,30 +75,49 @@ public class WorkerWalletFragment extends BaseFragment<FragmentWorkerWalletBindi
             @Override public void onTabReselected(TabLayout.Tab tab) {}
         });
 
-        // Nút Rút tiền (Ví khả dụng)
-        binding.btnWithdraw.setOnClickListener(v ->
+        // Quick Action: Nạp tiền
+        binding.btnActionTopUp.setOnClickListener(v ->
+                Navigation.findNavController(requireView())
+                        .navigate(R.id.action_wallet_to_deposit)
+        );
+
+        // Quick Action: Rút tiền
+        binding.btnActionWithdraw.setOnClickListener(v ->
                 Navigation.findNavController(requireView())
                         .navigate(R.id.action_wallet_to_withdraw)
         );
 
-        // Nút Nạp tiền (Ví ghi nợ)
+        // Quick Action: Liên kết ngân hàng
+        binding.btnActionBank.setOnClickListener(v ->
+                Navigation.findNavController(requireView())
+                        .navigate(R.id.action_wallet_to_bank_list)
+        );
+
+        // Nút Nạp tiền nhanh ở Ví ghi nợ
         binding.btnTopUp.setOnClickListener(v ->
                 Navigation.findNavController(requireView())
                         .navigate(R.id.action_wallet_to_deposit)
         );
 
-        // Nút Quản lý ngân hàng liên kết
+        // Nút Quản lý ngân hàng liên kết ở phía dưới
         binding.btnManageBank.setOnClickListener(v ->
                 Navigation.findNavController(requireView())
                         .navigate(R.id.action_wallet_to_bank_list)
         );
 
-        // Nút Xem chi tiết (Ví tạm giữ)
+        // Nút Xem chi tiết khiếu nại của Ví tạm giữ
         binding.btnHeldDetail.setOnClickListener(v -> {
-            Bundle bundle = new Bundle();
-            bundle.putString("orderId", "ORD004"); // Mock trỏ đến đơn có khiếu nại
-            Navigation.findNavController(requireView())
-                    .navigate(R.id.workerComplaintFragment, bundle);
+            String bookingId = viewModel.heldBookingId.getValue();
+            if (bookingId != null && !bookingId.isEmpty()) {
+                Bundle bundle = new Bundle();
+                bundle.putString("orderId", bookingId);
+                Navigation.findNavController(requireView())
+                        .navigate(R.id.workerComplaintFragment, bundle);
+            } else {
+                android.widget.Toast.makeText(requireContext(), 
+                        "Không tìm thấy đơn hàng đang tạm giữ bảo hành", 
+                        android.widget.Toast.LENGTH_SHORT).show();
+            }
         });
     }
 
@@ -105,6 +134,17 @@ public class WorkerWalletFragment extends BaseFragment<FragmentWorkerWalletBindi
     protected void observeData() {
         viewModel = new ViewModelProvider(this).get(WorkerWalletViewModel.class);
 
+        // SwipeRefresh và loading overlay
+        viewModel.loading.observe(getViewLifecycleOwner(), isLoading -> {
+            if (binding.swipeRefreshLayout.isRefreshing()) {
+                if (!isLoading) {
+                    binding.swipeRefreshLayout.setRefreshing(false);
+                }
+            } else {
+                binding.layoutLoading.getRoot().setVisibility(isLoading ? View.VISIBLE : View.GONE);
+            }
+        });
+
         // Số dư 3 loại ví
         viewModel.availableBalance.observe(getViewLifecycleOwner(),
                 bal -> binding.tvAvailableBalance.setText(bal));
@@ -112,6 +152,12 @@ public class WorkerWalletFragment extends BaseFragment<FragmentWorkerWalletBindi
                 bal -> binding.tvHeldBalance.setText(bal));
         viewModel.debtBalance.observe(getViewLifecycleOwner(),
                 bal -> binding.tvDebtBalance.setText(bal));
+
+        // Thống kê thu nhập
+        viewModel.incomeThisWeek.observe(getViewLifecycleOwner(),
+                week -> binding.tvIncomeThisWeek.setText(week));
+        viewModel.incomeThisMonth.observe(getViewLifecycleOwner(),
+                month -> binding.tvIncomeThisMonth.setText(month));
 
         // Danh sách giao dịch (lọc theo tab)
         viewModel.filteredTransactions.observe(getViewLifecycleOwner(), txList -> {

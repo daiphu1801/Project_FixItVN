@@ -10,5 +10,7 @@ public interface AuthRepository {
 
     void logout(ResultCallback<Void> callback);
 
+    void refreshToken(String refreshToken, ResultCallback<Session> callback);
+
     Session getCurrentSession();
 }

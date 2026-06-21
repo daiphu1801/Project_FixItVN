@@ -60,3 +60,6 @@ docs/
 # Firebase Secrets
 firebase-service-account.json
 google-services.json
+
+# VNPT SDK configs
+configs/

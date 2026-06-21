@@ -64,6 +64,12 @@ public class WorkerInvoiceFragment extends BaseFragment<FragmentWorkerInvoiceBin
             }
         });
 
+        viewModel.isLoading.observe(getViewLifecycleOwner(), loading -> {
+            if (binding.layoutLoading != null) {
+                binding.layoutLoading.getRoot().setVisibility(loading ? View.VISIBLE : View.GONE);
+            }
+        });
+
         viewModel.loadOrderDetails(orderId);
     }
 

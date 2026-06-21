@@ -7,6 +7,7 @@ import com.fixit.core.network.ApiResponse;
 import com.fixit.feature.upload.data.remote.dto.request.WorkerKycSubmitRequest;
 import com.fixit.feature.upload.data.remote.dto.response.WorkerKycResponse;
 import com.fixit.feature.worker.kyc.data.remote.api.WorkerKycApi;
+import com.fixit.feature.worker.kyc.data.remote.dto.response.VnptKycConfigResponse;
 import com.fixit.feature.worker.kyc.data.remote.mapper.WorkerKycMapper;
 import com.fixit.feature.worker.kyc.domain.model.WorkerKyc;
 import com.fixit.feature.worker.kyc.domain.repository.WorkerKycRepository;
@@ -29,6 +30,43 @@ public class WorkerKycRepositoryImpl implements WorkerKycRepository {
     }
 
     @Override
+    public void getKycConfig(ResultCallback<VnptKycConfigResponse> callback) {
+        workerKycApi.getKycConfig().enqueue(new Callback<ApiResponse<VnptKycConfigResponse>>() {
+            @Override
+            public void onResponse(
+                    Call<ApiResponse<VnptKycConfigResponse>> call,
+                    Response<ApiResponse<VnptKycConfigResponse>> response
+            ) {
+                if (!response.isSuccessful()) {
+                    callback.onResult(Result.error(
+                            new AppError("Không tải được cấu hình eKYC VNPT. HTTP " + response.code())
+                    ));
+                    return;
+                }
+
+                ApiResponse<VnptKycConfigResponse> body = response.body();
+                if (body == null || !body.isSuccess() || body.getData() == null) {
+                    callback.onResult(Result.error(
+                            new AppError(body != null && body.getMessage() != null
+                                    ? body.getMessage()
+                                    : "Không tải được cấu hình eKYC VNPT")
+                    ));
+                    return;
+                }
+
+                callback.onResult(Result.success(body.getData()));
+            }
+
+            @Override
+            public void onFailure(Call<ApiResponse<VnptKycConfigResponse>> call, Throwable t) {
+                callback.onResult(Result.error(
+                        new AppError("Lỗi kết nối khi tải cấu hình eKYC: " + t.getMessage(), t)
+                ));
+            }
+        });
+    }
+
+    @Override
     public void getKycStatus(ResultCallback<WorkerKyc> callback) {
         workerKycApi.getKycStatus().enqueue(new Callback<ApiResponse<WorkerKycResponse>>() {
             @Override
@@ -38,7 +76,7 @@ public class WorkerKycRepositoryImpl implements WorkerKycRepository {
             ) {
                 // Trả về trạng thái chưa xác minh nếu backend trả 404 (chưa gửi KYC bao giờ)
                 if (response.code() == 404) {
-                    callback.onResult(Result.success(new WorkerKyc(null, "UNVERIFIED", null)));
+                    callback.onResult(Result.success(new WorkerKyc(null, "UNVERIFIED", null, null, null, null, null, null, null)));
                     return;
                 }
 

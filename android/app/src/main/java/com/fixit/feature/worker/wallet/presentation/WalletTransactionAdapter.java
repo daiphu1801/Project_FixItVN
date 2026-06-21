@@ -72,13 +72,19 @@ public class WalletTransactionAdapter extends RecyclerView.Adapter<WalletTransac
             if ("CANCELLED".equals(tx.getStatus())) {
                 b.tvTransactionAmount.setTextColor(Color.parseColor("#9ca3af"));
                 b.tvTransactionTitle.setTextColor(Color.parseColor("#9ca3af"));
+                b.tvTransactionStatus.setText("Đã hủy");
+                b.tvTransactionStatus.setTextColor(Color.parseColor("#9ca3af"));
             } else if ("PENDING".equals(tx.getStatus())) {
                 b.tvTransactionAmount.setTextColor(Color.parseColor("#f59e0b")); // màu cam chờ duyệt
                 b.tvTransactionTitle.setTextColor(Color.parseColor("#333333"));
+                b.tvTransactionStatus.setText("Đang chờ duyệt");
+                b.tvTransactionStatus.setTextColor(Color.parseColor("#f59e0b"));
             } else {
                 b.tvTransactionAmount.setTextColor(
                         Color.parseColor(tx.isCredit() ? "#22c55e" : "#ef4444"));
                 b.tvTransactionTitle.setTextColor(Color.parseColor("#333333"));
+                b.tvTransactionStatus.setText("Thành công");
+                b.tvTransactionStatus.setTextColor(Color.parseColor("#64748b"));
             }
 
             // Icon màu theo loại ví

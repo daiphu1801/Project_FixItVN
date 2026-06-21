@@ -149,7 +149,7 @@ public class AuthServiceImpl implements AuthService {
     @Override
     @Transactional
     public AuthResponse googleLogin(GoogleLoginRequest request) {
-        String googleId = "mock-google-id-" + UUID.randomUUID().toString().substring(0,8);
+        String googleId = "mock-google-id-" + UUID.randomUUID().toString().substring(0, 8);
         String email = "mock@gmail.com";
         String name = "Mock Google User";
 
@@ -240,7 +240,8 @@ public class AuthServiceImpl implements AuthService {
     @Transactional
     public void resetPassword(ResetPasswordRequest request) {
         String identifier = request.getPhoneNumber() != null ? request.getPhoneNumber() : request.getEmail();
-        OtpCode otp = otpCodeRepository.findByPhoneNumberAndActionTypeAndUsedFalse(identifier, OtpActionType.FORGOT_PASSWORD)
+        OtpCode otp = otpCodeRepository
+                .findByPhoneNumberAndActionTypeAndUsedFalse(identifier, OtpActionType.FORGOT_PASSWORD)
                 .orElseThrow(() -> new RuntimeException("Mã OTP không tồn tại hoặc đã được sử dụng"));
 
         if (otp.getExpiresAt().isBefore(OffsetDateTime.now())) {
@@ -326,8 +327,6 @@ public class AuthServiceImpl implements AuthService {
                 .build();
         sendOtp(sendOtpRequest);
     }
-
-
 
     private AuthResponse buildAuthResponse(User user, String accessToken, String refreshToken) {
         return AuthResponse.builder()

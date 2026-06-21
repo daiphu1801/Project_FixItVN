@@ -27,4 +27,9 @@ public class WorkerKycController {
     public ApiResponse<WorkerKycResponse> getMyKycStatus() {
         return ApiResponse.success(workerKycService.getMyKycStatus());
     }
+
+    @GetMapping("/config")
+    public ApiResponse<com.fixit.domain.worker.dto.response.VnptKycConfigResponse> getKycConfig() {
+        return ApiResponse.success(workerKycService.getKycConfig());
+    }
 }

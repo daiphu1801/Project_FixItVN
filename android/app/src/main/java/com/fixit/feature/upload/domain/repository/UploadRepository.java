@@ -59,4 +59,20 @@ public interface UploadRepository {
          * Kích hoạt chuyển đổi các nháp trong nhóm sang trạng thái LOCAL_SELECTED để bắt đầu tải lên.
          */
         void submitKycGroup(String groupId, ResultCallback<Void> callback);
+
+        /**
+         * Lấy danh sách chi tiết các upload đang active của một loại đối tượng (VD: WORKER_KYC).
+         */
+        void getSubmittedActiveUploads(String targetType, ResultCallback<java.util.List<QueuedUpload>> callback);
+
+        /**
+         * Thử lại toàn bộ nhóm ảnh upload bằng cách reset số lần thử lại về 0.
+         */
+        void retryKycGroup(String groupId, ResultCallback<Void> callback);
+
+        /**
+         * Hủy toàn bộ tiến trình upload của nhóm và xóa dữ liệu liên quan.
+         */
+        void cancelKycGroup(String groupId, ResultCallback<Void> callback);
 }
+
