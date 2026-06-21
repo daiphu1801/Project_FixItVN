@@ -10,8 +10,11 @@ public enum ErrorCode {
         UNAUTHORIZED(401, HttpStatus.UNAUTHORIZED, "Unauthorized access"),
         FORBIDDEN(403, HttpStatus.FORBIDDEN, "Forbidden access"),
         USER_NOT_FOUND(404, HttpStatus.NOT_FOUND, "User not found"),
-        INVALID_CREDENTIALS(400, HttpStatus.BAD_REQUEST, "Invalid phone number or password"),
+        INVALID_CREDENTIALS(400, HttpStatus.BAD_REQUEST, "Số điện thoại hoặc mật khẩu không chính xác"),
         USER_ALREADY_EXISTS(409, HttpStatus.CONFLICT, "User already exists"),
+        PHONE_ALREADY_EXISTS(409, HttpStatus.CONFLICT, "Số điện thoại đã được đăng ký"),
+        EMAIL_ALREADY_EXISTS(409, HttpStatus.CONFLICT, "Email đã được đăng ký"),
+        USER_BLOCKED(403, HttpStatus.FORBIDDEN, "Tài khoản đã bị khóa"),
         NOTIFICATION_NOT_FOUND(404, HttpStatus.NOT_FOUND, "Notification not found"),
 
         // Worker assignment
@@ -71,14 +74,16 @@ public enum ErrorCode {
 
         // Worker wallet
         WALLET_NOT_FOUND(404, HttpStatus.NOT_FOUND, "Không tìm thấy ví của thợ hiện tại"),
-        // WALLET_DEBT_NOT_FOUND(409, HttpStatus.CONFLICT, "Không có khoản nợ cần thanh
-        // toán"),
-        WALLET_DEPOSIT_AMOUNT_TOO_SMALL(400, HttpStatus.BAD_REQUEST,
-                        "Số tiền nạp phải lớn hơn hoặc bằng khoản nợ hiện tại"),
+        WALLET_DEBT_NOT_FOUND(409, HttpStatus.CONFLICT, "Không có khoản nợ cần thanh toán"),
+        WALLET_DEPOSIT_AMOUNT_TOO_SMALL(400, HttpStatus.BAD_REQUEST, "Số tiền nạp phải lớn hơn hoặc bằng khoản nợ hiện tại"),
         WALLET_DEPOSIT_INVALID_AMOUNT(400, HttpStatus.BAD_REQUEST, "Số tiền nạp không hợp lệ"),
         WALLET_DEPOSIT_NOT_FOUND(404, HttpStatus.NOT_FOUND, "Không tìm thấy giao dịch nạp tiền của thợ hiện tại"),
         WALLET_DEPOSIT_INVALID_STATUS(409, HttpStatus.CONFLICT, "Trạng thái giao dịch nạp tiền không hợp lệ"),
-        WALLET_DEPOSIT_PENDING_EXISTS(409, HttpStatus.CONFLICT, "Đang có giao dịch nạp tiền chờ thanh toán");
+        WALLET_DEPOSIT_PENDING_EXISTS(409, HttpStatus.CONFLICT, "Đang có giao dịch nạp tiền chờ thanh toán"),
+
+        // Review
+        BOOKING_NOT_COMPLETED(400, HttpStatus.BAD_REQUEST, "Đơn hàng chưa hoàn thành, không thể đánh giá"),
+        REVIEW_ALREADY_EXISTS(409, HttpStatus.CONFLICT, "Đơn hàng này đã được đánh giá trước đó");
 
         private final int code;
         private final HttpStatus httpStatus;
