@@ -5,12 +5,15 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#F5F7FA">    <androidx.constraintlayout.widget.ConstraintLayout
+    android:background="#F8FAFC"> <!-- Slate 50 background -->
+
+    <!-- ================= HEADER BAR ================= -->
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/layoutHeader"
         android:layout_width="match_parent"
-        android:layout_height="70dp"
+        android:layout_height="64dp"
         android:background="#FFFFFF"
-        android:elevation="2dp"
+        android:elevation="0dp"
         app:layout_constraintTop_toTopOf="parent">
 
         <ImageButton
@@ -19,11 +22,11 @@
             android:layout_height="40dp"
             android:layout_marginStart="8dp"
             android:background="?attr/selectableItemBackgroundBorderless"
-            android:src="@android:drawable/ic_menu_revert"
+            android:src="@drawable/ic_lucide_arrow_left"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:tint="#999999" />
+            app:tint="#334155" />
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/layoutAvatar"
@@ -34,21 +37,23 @@
             app:layout_constraintStart_toEndOf="@id/btnBack"
             app:layout_constraintTop_toTopOf="parent">
 
-            <ImageView
+            <com.google.android.material.imageview.ShapeableImageView
                 android:id="@+id/ivAvatar"
-                android:layout_width="44dp"
-                android:layout_height="44dp"
-                android:src="@android:drawable/sym_def_app_icon" 
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:src="@drawable/ic_person"
+                android:scaleType="centerCrop"
+                app:shapeAppearanceOverlay="@style/CircleImageView"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintBottom_toBottomOf="parent"/>
 
+            <!-- Online Dot viền trắng bo tròn -->
             <View
                 android:layout_width="12dp"
                 android:layout_height="12dp"
-                android:background="@drawable/bg_bottom_sheet"
-                android:backgroundTint="#00C853"
+                android:background="@drawable/bg_online_dot"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent" />
         </androidx.constraintlayout.widget.ConstraintLayout>
@@ -59,9 +64,9 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="12dp"
             android:text="Nguyễn Thị Lan"
-            android:textColor="#333333"
-            android:textSize="17sp"
-            android:textStyle="bold" 
+            android:textColor="#1E293B"
+            android:textSize="16sp"
+            android:textStyle="bold"
             app:layout_constraintStart_toEndOf="@id/layoutAvatar"
             app:layout_constraintEnd_toStartOf="@id/btnCall"
             app:layout_constraintTop_toTopOf="@id/layoutAvatar"
@@ -74,8 +79,8 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="12dp"
             android:text="Đang hoạt động"
-            android:textColor="#00C853"
-            android:textSize="12sp" 
+            android:textColor="#10B981"
+            android:textSize="11sp"
             app:layout_constraintStart_toEndOf="@id/layoutAvatar"
             app:layout_constraintEnd_toStartOf="@id/btnCall"
             app:layout_constraintTop_toBottomOf="@id/tvName"
@@ -87,11 +92,11 @@
             android:layout_height="40dp"
             android:layout_marginEnd="4dp"
             android:background="?attr/selectableItemBackgroundBorderless"
-            android:src="@android:drawable/ic_menu_call"
+            android:src="@drawable/ic_phone"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@id/btnMore"
             app:layout_constraintTop_toTopOf="parent"
-            app:tint="#29B6F6" />
+            app:tint="#0EA5E9" />
 
         <ImageButton
             android:id="@+id/btnMore"
@@ -99,54 +104,72 @@
             android:layout_height="40dp"
             android:layout_marginEnd="8dp"
             android:background="?attr/selectableItemBackgroundBorderless"
-            android:src="@android:drawable/ic_menu_more"
+            android:src="@drawable/ic_more_horizontal"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:tint="#999999" />
+            app:tint="#64748B" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
+    <!-- Đường viền mỏng phân chia Header (Soft Divider) -->
+    <View
+        android:id="@+id/headerDivider"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="#E2E8F0"
+        app:layout_constraintTop_toBottomOf="@id/layoutHeader" />
+
+    <!-- ================= RECYCLER VIEW ================= -->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rvChatMessages"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:clipToPadding="false"
-        android:padding="12dp"
-        app:layout_constraintBottom_toTopOf="@id/layoutBottomInput"
-        app:layout_constraintTop_toBottomOf="@id/layoutHeader"
+        android:paddingHorizontal="16dp"
+        android:paddingVertical="12dp"
+        app:layout_constraintBottom_toTopOf="@id/inputDivider"
+        app:layout_constraintTop_toBottomOf="@id/headerDivider"
         tools:listitem="@layout/item_message_received"
-        tools:itemCount="1"
-        />
+        tools:itemCount="3" />
 
+    <!-- Đường viền mỏng phía trên Bottom Input (Soft Divider) -->
+    <View
+        android:id="@+id/inputDivider"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="#E2E8F0"
+        app:layout_constraintBottom_toTopOf="@id/layoutBottomInput" />
+
+    <!-- ================= BOTTOM INPUT SECTION ================= -->
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/layoutBottomInput"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="#FFFFFF"
-        android:elevation="10dp"
+        android:elevation="0dp"
         android:paddingHorizontal="12dp"
-        android:paddingVertical="10dp"
+        android:paddingVertical="8dp"
         app:layout_constraintBottom_toBottomOf="parent">
 
         <ImageButton
             android:id="@+id/btnAdd"
-            android:layout_width="32dp"
-            android:layout_height="32dp"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:src="@drawable/ic_add"
-            app:tint="#888888" 
+            app:tint="#64748B"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"/>
 
         <ImageButton
             android:id="@+id/btnGallery"
-            android:layout_width="32dp"
-            android:layout_height="32dp"
-            android:layout_marginStart="8dp"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:layout_marginStart="4dp"
             android:background="?attr/selectableItemBackgroundBorderless"
-            android:src="@android:drawable/ic_menu_gallery"
-            app:tint="#888888" 
+            android:src="@drawable/ic_lucide_image"
+            app:tint="#64748B"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toEndOf="@id/btnAdd"/>
@@ -155,9 +178,8 @@
             android:id="@+id/layoutInputBox"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginHorizontal="12dp"
-            android:background="@drawable/bg_bottom_sheet"
-            android:backgroundTint="#F0F2F5"
+            android:layout_marginHorizontal="8dp"
+            android:background="@drawable/bg_search_bar_rounded"
             android:paddingHorizontal="12dp"
             android:paddingVertical="8dp"
             app:layout_constraintTop_toTopOf="parent"
@@ -172,9 +194,9 @@
                 android:background="@null"
                 android:hint="Nhập tin nhắn..."
                 android:maxLines="4"
-                android:textColor="#333333"
-                android:textColorHint="#999999"
-                android:textSize="15sp" 
+                android:textColor="#1E293B"
+                android:textColorHint="#94A3B8"
+                android:textSize="15sp"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -185,7 +207,7 @@
                 android:layout_width="24dp"
                 android:layout_height="24dp"
                 android:src="@drawable/ic_emoticon"
-                app:tint="#999999" 
+                app:tint="#64748B"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"/>
@@ -193,16 +215,15 @@
 
         <ImageButton
             android:id="@+id/btnSend"
-            android:layout_width="44dp"
-            android:layout_height="44dp"
-            android:background="@drawable/bg_bottom_sheet"
-            android:backgroundTint="#29B6F6"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:background="@drawable/bg_circle_blue"
+            android:backgroundTint="#0EA5E9"
             android:src="@drawable/ic_send"
-            app:tint="#FFFFFF" 
+            app:tint="#FFFFFF"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"/>
     </androidx.constraintlayout.widget.ConstraintLayout>
-
 
 </androidx.constraintlayout.widget.ConstraintLayout>

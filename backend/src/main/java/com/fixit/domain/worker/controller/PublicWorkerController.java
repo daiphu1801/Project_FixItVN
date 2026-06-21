@@ -10,7 +10,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.Collections;
 import java.util.List;
 
 @RestController
@@ -28,11 +27,5 @@ public class PublicWorkerController {
     @GetMapping("/{workerId}/skills")
     public ApiResponse<List<PublicWorkerSkillResponse>> getPublicSkills(@PathVariable String workerId) {
         return ApiResponse.success(workerProfileService.getPublicSkills(workerId));
-    }
-
-    @GetMapping("/{workerId}/reviews")
-    public ApiResponse<List<Object>> getPublicReviews(@PathVariable String workerId) {
-        // Mock reviews for now since Review entity is not fully implemented
-        return ApiResponse.success(Collections.emptyList());
     }
 }
