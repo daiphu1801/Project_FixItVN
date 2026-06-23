@@ -131,9 +131,10 @@ public class WorkerOrdersFragment extends BaseFragment<FragmentWorkerOrdersBindi
         if (autoRefreshHelper == null) {
             autoRefreshHelper = new AutoRefreshHelper(
                     requireContext(),
+                    0L,
                     () -> {
                         if (viewModel != null) {
-                            viewModel.filterByStatus(viewModel.getCurrentFilterStatus());
+                            viewModel.filterByStatus(viewModel.getCurrentFilterStatus(), false);
                         }
                     },
                     "com.fixit.BOOKING_UPDATE"

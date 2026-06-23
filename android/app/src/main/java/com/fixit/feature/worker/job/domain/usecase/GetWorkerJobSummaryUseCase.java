@@ -1,5 +1,6 @@
 package com.fixit.feature.worker.job.domain.usecase;
 
+import com.fixit.core.common.ResultCallback;
 import com.fixit.feature.worker.job.domain.model.WorkerJobSummary;
 import com.fixit.feature.worker.job.domain.repository.WorkerJobRepository;
 
@@ -13,7 +14,7 @@ public class GetWorkerJobSummaryUseCase {
         this.repository = repository;
     }
 
-    public WorkerJobSummary execute() {
-        return repository.getJobSummary();
+    public void execute(ResultCallback<WorkerJobSummary> callback) {
+        repository.getJobSummary(callback);
     }
 }

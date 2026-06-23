@@ -211,4 +211,10 @@
             app:argType="boolean"
             android:defaultValue="true" />
     </fragment>
+
+    <fragment
+        android:id="@+id/workerLocationPickerFragment"
+        android:name="com.fixit.feature.worker.profile.presentation.WorkerLocationPickerFragment"
+        android:label="Chọn vị trí hoạt động"
+        tools:layout="@layout/fragment_worker_location_picker" />
 </navigation>

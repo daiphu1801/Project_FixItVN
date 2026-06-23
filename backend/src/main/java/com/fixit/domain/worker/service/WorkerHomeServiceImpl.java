@@ -66,6 +66,7 @@ public class WorkerHomeServiceImpl implements WorkerHomeService {
     }
 
     @Override
+    @Transactional
     public void updateLocation(WorkerLocationUpdateRequest request) {
         UUID workerId = currentWorkerResolver.getCurrentWorkerId();
         double latitude = request.getLatitude().doubleValue();
@@ -83,6 +84,9 @@ public class WorkerHomeServiceImpl implements WorkerHomeService {
                 WORKERS_LOCATION_KEY,
                 location,
                 workerId.toString());
+
+        // Đồng bộ vị trí vào DB PostgreSQL
+        workerRepository.updateLocation(workerId, request.getLatitude(), request.getLongitude());
     }
 
     private WorkerHomeResponse buildHomeResponse(UUID workerId) {

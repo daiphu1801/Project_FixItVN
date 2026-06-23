@@ -1,181 +1,181 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#f0faff"
-    android:orientation="vertical">
+    android:background="#f0faff">
 
     <!-- ═══════════════════════════════════════════════
          HEADER: Avatar + Tên thợ + Chuông thông báo
          ═══════════════════════════════════════════════ -->
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+    <View
+        android:id="@+id/viewHeaderBackground"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
         android:background="@android:color/white"
-        android:gravity="center_vertical"
-        android:orientation="horizontal"
-        android:paddingHorizontal="16dp"
-        android:paddingVertical="12dp">
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="@id/ivJobAvatar"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginBottom="-12dp" />
 
-        <ImageView
-            android:id="@+id/ivJobAvatar"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:layout_marginEnd="10dp"
-            android:background="@drawable/circle_background"
-            android:padding="8dp"
-            android:src="@drawable/ic_lucide_user"
-            app:tint="#42c2ff" />
+    <ImageView
+        android:id="@+id/ivJobAvatar"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="12dp"
+        android:background="@drawable/circle_background"
+        android:padding="8dp"
+        android:src="@drawable/ic_lucide_user"
+        app:tint="#42c2ff"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
 
-        <LinearLayout
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:orientation="vertical">
+    <TextView
+        android:id="@+id/tvHeaderTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="10dp"
+        android:text="Bảng điều khiển"
+        android:textColor="#94a3b8"
+        android:textSize="11sp"
+        app:layout_constraintTop_toTopOf="@id/ivJobAvatar"
+        app:layout_constraintStart_toEndOf="@id/ivJobAvatar" />
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Bảng điều khiển"
-                android:textColor="#94a3b8"
-                android:textSize="11sp" />
+    <TextView
+        android:id="@+id/tvJobWorkerName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="10dp"
+        android:text="Nguyễn Văn Phú"
+        android:textColor="#0d1b2a"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        app:layout_constraintTop_toBottomOf="@id/tvHeaderTitle"
+        app:layout_constraintStart_toEndOf="@id/ivJobAvatar"
+        tools:ignore="HardcodedText" />
 
-            <TextView
-                android:id="@+id/tvJobWorkerName"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Nguyễn Văn Phú"
-                android:textColor="#0d1b2a"
-                android:textSize="16sp"
-                android:textStyle="bold"
-                tools:ignore="HardcodedText" />
-        </LinearLayout>
 
-        <FrameLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content">
-
-            <ImageView
-                android:layout_width="26dp"
-                android:layout_height="26dp"
-                android:src="@drawable/ic_lucide_bell"
-                app:tint="#42c2ff" />
-
-            <View
-                android:layout_width="9dp"
-                android:layout_height="9dp"
-                android:layout_gravity="top|end"
-                android:background="#ef4444" />
-        </FrameLayout>
-    </LinearLayout>
 
     <!-- ═══════════════════════════════════════════════
-         BẢN ĐỒ PLACEHOLDER — 60% phần còn lại
+         BẢN ĐỒ - 60% phần còn lại
          ═══════════════════════════════════════════════ -->
-    <FrameLayout
-        android:id="@+id/frameMapPlaceholder"
-        android:layout_width="match_parent"
+    <org.osmdroid.views.MapView
+        android:id="@+id/mapView"
+        android:layout_width="0dp"
         android:layout_height="0dp"
-        android:layout_weight="6"
-        android:background="#cbe8f8">
+        app:layout_constraintTop_toBottomOf="@id/viewHeaderBackground"
+        app:layout_constraintBottom_toTopOf="@id/bannerDebt"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintVertical_weight="6" />
 
-        <!-- Đường kẻ ngang giả bản đồ -->
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:layout_gravity="center_vertical"
-            android:alpha="0.5"
-            android:background="#b0d9f0" />
+    <!-- Nhãn khu vực -->
+    <TextView
+        android:id="@+id/tvMapLocationLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="12dp"
+        android:background="#cc42c2ff"
+        android:paddingHorizontal="10dp"
+        android:paddingVertical="5dp"
+        android:text="📍 Chưa xác định vị trí"
+        android:textColor="#ffffff"
+        android:textSize="12sp"
+        android:textStyle="bold"
+        app:layout_constraintTop_toTopOf="@id/mapView"
+        app:layout_constraintStart_toStartOf="@id/mapView" />
 
-        <!-- Đường kẻ dọc giả bản đồ -->
-        <View
-            android:layout_width="1dp"
-            android:layout_height="match_parent"
-            android:layout_gravity="center_horizontal"
-            android:alpha="0.5"
-            android:background="#b0d9f0" />
+    <!-- Icon Radar + trạng thái -->
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/layoutRadarContainer"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        app:layout_constraintTop_toTopOf="@id/mapView"
+        app:layout_constraintBottom_toBottomOf="@id/mapView"
+        app:layout_constraintStart_toStartOf="@id/mapView"
+        app:layout_constraintEnd_toEndOf="@id/mapView">
 
-        <!-- Nhãn khu vực -->
+        <ImageView
+            android:id="@+id/ivMapRadar"
+            android:layout_width="72dp"
+            android:layout_height="72dp"
+            android:src="@drawable/ic_lucide_radar"
+            app:tint="#42c2ff"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
+
         <TextView
+            android:id="@+id/tvMapStatus"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="top|start"
-            android:layout_margin="12dp"
+            android:layout_marginTop="8dp"
             android:background="#cc42c2ff"
-            android:paddingHorizontal="10dp"
+            android:paddingHorizontal="14dp"
             android:paddingVertical="5dp"
-            android:text="📍 Cầu Giấy, Hà Nội"
+            android:text="Đang tìm việc..."
             android:textColor="#ffffff"
-            android:textSize="12sp"
-            android:textStyle="bold" />
+            android:textSize="13sp"
+            app:layout_constraintTop_toBottomOf="@id/ivMapRadar"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
-        <!-- Icon Radar + trạng thái -->
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:gravity="center"
-            android:orientation="vertical">
-
-            <ImageView
-                android:id="@+id/ivMapRadar"
-                android:layout_width="72dp"
-                android:layout_height="72dp"
-                android:src="@drawable/ic_lucide_radar"
-                app:tint="#42c2ff" />
-
-            <TextView
-                android:id="@+id/tvMapStatus"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:background="#cc42c2ff"
-                android:paddingHorizontal="14dp"
-                android:paddingVertical="5dp"
-                android:text="Đang tắt"
-                android:textColor="#ffffff"
-                android:textSize="13sp" />
-        </LinearLayout>
-
-        <!-- Overlay mờ khi Offline -->
-        <View
-            android:id="@+id/viewMapOverlay"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:background="#66000000"
-            android:visibility="visible" />
-    </FrameLayout>
+    <!-- Overlay mờ khi Offline -->
+    <View
+        android:id="@+id/viewMapOverlay"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:background="#66000000"
+        android:visibility="visible"
+        app:layout_constraintTop_toTopOf="@id/mapView"
+        app:layout_constraintBottom_toBottomOf="@id/mapView"
+        app:layout_constraintStart_toStartOf="@id/mapView"
+        app:layout_constraintEnd_toEndOf="@id/mapView" />
 
     <!-- ═══════════════════════════════════════════════
          BANNER CẢNH BÁO NỢ
          ═══════════════════════════════════════════════ -->
-    <LinearLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/bannerDebt"
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:background="#fef2f2"
-        android:gravity="center_vertical"
-        android:orientation="horizontal"
         android:paddingHorizontal="16dp"
         android:paddingVertical="10dp"
-        android:visibility="gone">
+        android:visibility="gone"
+        app:layout_constraintTop_toBottomOf="@id/mapView"
+        app:layout_constraintBottom_toTopOf="@id/scrollViewPanel"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
 
         <TextView
+            android:id="@+id/tvDebtWarningIcon"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="8dp"
             android:text="⚠️"
-            android:textSize="16sp" />
+            android:textSize="16sp"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
 
         <TextView
+            android:id="@+id/tvDebtWarningText"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="8dp"
             android:text="Bạn đang có khoản nợ chiết khấu. Vui lòng nạp tiền trước khi nhận việc."
             android:textColor="#b91c1c"
-            android:textSize="13sp" />
+            android:textSize="13sp"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toEndOf="@id/tvDebtWarningIcon"
+            app:layout_constraintEnd_toStartOf="@id/btnGoToWalletFromJob" />
 
         <TextView
             android:id="@+id/btnGoToWalletFromJob"
@@ -189,93 +189,129 @@
             android:text="Nạp tiền"
             android:textColor="#ffffff"
             android:textSize="12sp"
-            android:textStyle="bold" />
-    </LinearLayout>
+            android:textStyle="bold"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
     <!-- ═══════════════════════════════════════════════
-         PANEL ĐIỀU KHIỂN — 40% phần còn lại (scrollable)
+         PANEL ĐIỀU KHIỂN - 40% phần còn lại (scrollable)
          ═══════════════════════════════════════════════ -->
     <androidx.core.widget.NestedScrollView
-        android:layout_width="match_parent"
+        android:id="@+id/scrollViewPanel"
+        android:layout_width="0dp"
         android:layout_height="0dp"
-        android:layout_weight="4"
         android:clipToPadding="false"
-        android:paddingBottom="100dp">
+        android:paddingBottom="100dp"
+        app:layout_constraintTop_toBottomOf="@id/bannerDebt"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintVertical_weight="4">
 
-        <LinearLayout
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
             android:padding="16dp">
 
             <!-- Card trạng thái Online/Offline -->
             <com.google.android.material.card.MaterialCardView
                 android:id="@+id/cardStatus"
-                android:layout_width="match_parent"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="12dp"
                 app:cardBackgroundColor="#f1f5f9"
                 app:cardCornerRadius="16dp"
                 app:cardElevation="0dp"
                 app:strokeColor="#e2e8f0"
-                app:strokeWidth="1dp">
+                app:strokeWidth="1dp"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent">
 
-                <LinearLayout
+                <androidx.constraintlayout.widget.ConstraintLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:gravity="center_vertical"
-                    android:orientation="horizontal"
                     android:padding="16dp">
 
                     <View
                         android:id="@+id/viewStatusDot"
-                        android:layout_width="12dp"
-                        android:layout_height="12dp"
-                        android:layout_marginEnd="12dp"
-                        android:background="#94a3b8" />
+                        android:layout_width="10dp"
+                        android:layout_height="10dp"
+                        android:background="@drawable/circle_background"
+                        android:backgroundTint="#94a3b8"
+                        app:layout_constraintTop_toTopOf="@id/tvStatusLabel"
+                        app:layout_constraintBottom_toBottomOf="@id/tvStatusLabel"
+                        app:layout_constraintStart_toStartOf="parent" />
 
-                    <LinearLayout
+                    <TextView
+                        android:id="@+id/tvStatusLabel"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="8dp"
+                        android:text="OFFLINE"
+                        android:textColor="#94a3b8"
+                        android:textSize="13sp"
+                        android:textStyle="bold"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintStart_toEndOf="@id/viewStatusDot" />
+
+                    <TextView
+                        android:id="@+id/tvStatusDesc"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:orientation="vertical">
+                        android:layout_marginTop="4dp"
+                        android:text="Bạn đang không hiển thị trên bản đồ"
+                        android:textColor="#64748b"
+                        android:textSize="12sp"
+                        app:layout_constraintTop_toBottomOf="@id/tvStatusLabel"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent" />
 
-                        <TextView
-                            android:id="@+id/tvStatusLabel"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="OFFLINE"
-                            android:textColor="#94a3b8"
-                            android:textSize="13sp"
-                            android:textStyle="bold" />
+                    <View
+                        android:id="@+id/viewDivider"
+                        android:layout_width="0dp"
+                        android:layout_height="1dp"
+                        android:layout_marginTop="12dp"
+                        android:background="#e2e8f0"
+                        app:layout_constraintTop_toBottomOf="@id/tvStatusDesc"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent" />
 
-                        <TextView
-                            android:id="@+id/tvStatusDesc"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="2dp"
-                            android:text="Bạn đang không hiển thị trên bản đồ"
-                            android:textColor="#64748b"
-                            android:textSize="12sp" />
-                    </LinearLayout>
+                    <ImageView
+                        android:id="@+id/ivLocationPin"
+                        android:layout_width="16dp"
+                        android:layout_height="16dp"
+                        android:layout_marginTop="12dp"
+                        android:src="@drawable/ic_lucide_map_pin"
+                        app:tint="#42c2ff"
+                        app:layout_constraintTop_toBottomOf="@id/viewDivider"
+                        app:layout_constraintStart_toStartOf="parent" />
 
                     <TextView
                         android:id="@+id/tvServiceArea"
-                        android:layout_width="wrap_content"
+                        android:layout_width="0dp"
                         android:layout_height="wrap_content"
+                        android:layout_marginStart="8dp"
                         android:text="Cầu Giấy ▾"
                         android:textColor="#42c2ff"
-                        android:textSize="12sp"
-                        android:textStyle="bold" />
-                </LinearLayout>
+                        android:textSize="13sp"
+                        android:textStyle="bold"
+                        android:ellipsize="end"
+                        android:singleLine="true"
+                        app:layout_constraintTop_toTopOf="@id/ivLocationPin"
+                        app:layout_constraintBottom_toBottomOf="@id/ivLocationPin"
+                        app:layout_constraintStart_toEndOf="@id/ivLocationPin"
+                        app:layout_constraintEnd_toEndOf="parent" />
+                </androidx.constraintlayout.widget.ConstraintLayout>
             </com.google.android.material.card.MaterialCardView>
 
             <!-- Nút Toggle -->
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnToggleOnline"
-                android:layout_width="match_parent"
+                android:layout_width="0dp"
                 android:layout_height="52dp"
-                android:layout_marginBottom="14dp"
+                android:layout_marginTop="12dp"
                 android:text="BẮT ĐẦU NHẬN VIỆC"
                 android:textSize="15sp"
                 android:textStyle="bold"
@@ -284,102 +320,128 @@
                 app:elevation="4dp"
                 app:icon="@drawable/ic_lucide_radar"
                 app:iconGravity="textStart"
-                app:iconPadding="10dp" />
+                app:iconPadding="10dp"
+                app:layout_constraintTop_toBottomOf="@id/cardStatus"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent" />
 
-            <!-- 2 Stats mini -->
-            <LinearLayout
-                android:layout_width="match_parent"
+            <!-- Card: Đơn hôm nay -->
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/cardTodayOrders"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal">
+                android:layout_marginTop="14dp"
+                android:layout_marginEnd="8dp"
+                app:cardBackgroundColor="@android:color/white"
+                app:cardCornerRadius="14dp"
+                app:cardElevation="2dp"
+                app:strokeColor="#e2e8f0"
+                app:strokeWidth="1dp"
+                app:layout_constraintTop_toBottomOf="@id/btnToggleOnline"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/cardRatingScore"
+                app:layout_constraintHorizontal_weight="1">
 
-                <com.google.android.material.card.MaterialCardView
-                    android:layout_width="0dp"
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginEnd="8dp"
-                    android:layout_weight="1"
-                    app:cardBackgroundColor="@android:color/white"
-                    app:cardCornerRadius="14dp"
-                    app:cardElevation="2dp"
-                    app:strokeColor="#e2e8f0"
-                    app:strokeWidth="1dp">
+                    android:padding="14dp">
 
-                    <LinearLayout
-                        android:layout_width="match_parent"
+                    <ImageView
+                        android:id="@+id/ivIconTodayOrders"
+                        android:layout_width="26dp"
+                        android:layout_height="26dp"
+                        android:src="@drawable/ic_lucide_briefcase"
+                        app:tint="#42c2ff"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent" />
+
+                    <TextView
+                        android:id="@+id/tvTodayOrders"
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:gravity="center"
-                        android:orientation="vertical"
-                        android:padding="14dp">
+                        android:layout_marginTop="6dp"
+                        android:text="5"
+                        android:textColor="#0d1b2a"
+                        android:textSize="22sp"
+                        android:textStyle="bold"
+                        app:layout_constraintTop_toBottomOf="@id/ivIconTodayOrders"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent" />
 
-                        <ImageView
-                            android:layout_width="26dp"
-                            android:layout_height="26dp"
-                            android:layout_marginBottom="6dp"
-                            android:src="@drawable/ic_lucide_briefcase"
-                            app:tint="#42c2ff" />
+                    <TextView
+                        android:id="@+id/tvLabelTodayOrders"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Đơn hôm nay"
+                        android:textColor="#94a3b8"
+                        android:textSize="11sp"
+                        app:layout_constraintTop_toBottomOf="@id/tvTodayOrders"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent" />
+                </androidx.constraintlayout.widget.ConstraintLayout>
+            </com.google.android.material.card.MaterialCardView>
 
-                        <TextView
-                            android:id="@+id/tvTodayOrders"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="5"
-                            android:textColor="#0d1b2a"
-                            android:textSize="22sp"
-                            android:textStyle="bold" />
+            <!-- Card: Điểm đánh giá -->
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/cardRatingScore"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="14dp"
+                android:layout_marginStart="8dp"
+                app:cardBackgroundColor="@android:color/white"
+                app:cardCornerRadius="14dp"
+                app:cardElevation="2dp"
+                app:strokeColor="#e2e8f0"
+                app:strokeWidth="1dp"
+                app:layout_constraintTop_toBottomOf="@id/btnToggleOnline"
+                app:layout_constraintStart_toEndOf="@id/cardTodayOrders"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_weight="1">
 
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="Đơn hôm nay"
-                            android:textColor="#94a3b8"
-                            android:textSize="11sp" />
-                    </LinearLayout>
-                </com.google.android.material.card.MaterialCardView>
-
-                <com.google.android.material.card.MaterialCardView
-                    android:layout_width="0dp"
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="8dp"
-                    android:layout_weight="1"
-                    app:cardBackgroundColor="@android:color/white"
-                    app:cardCornerRadius="14dp"
-                    app:cardElevation="2dp"
-                    app:strokeColor="#e2e8f0"
-                    app:strokeWidth="1dp">
+                    android:padding="14dp">
 
-                    <LinearLayout
-                        android:layout_width="match_parent"
+                    <ImageView
+                        android:id="@+id/ivIconRatingScore"
+                        android:layout_width="26dp"
+                        android:layout_height="26dp"
+                        android:src="@drawable/ic_lucide_check_circle"
+                        app:tint="#f59e0b"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent" />
+
+                    <TextView
+                        android:id="@+id/tvRatingScore"
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:gravity="center"
-                        android:orientation="vertical"
-                        android:padding="14dp">
+                        android:layout_marginTop="6dp"
+                        android:text="4.8"
+                        android:textColor="#0d1b2a"
+                        android:textSize="22sp"
+                        android:textStyle="bold"
+                        app:layout_constraintTop_toBottomOf="@id/ivIconRatingScore"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent" />
 
-                        <ImageView
-                            android:layout_width="26dp"
-                            android:layout_height="26dp"
-                            android:layout_marginBottom="6dp"
-                            android:src="@drawable/ic_lucide_check_circle"
-                            app:tint="#f59e0b" />
+                    <TextView
+                        android:id="@+id/tvLabelRatingScore"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Điểm đánh giá"
+                        android:textColor="#94a3b8"
+                        android:textSize="11sp"
+                        app:layout_constraintTop_toBottomOf="@id/tvRatingScore"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent" />
+                </androidx.constraintlayout.widget.ConstraintLayout>
+            </com.google.android.material.card.MaterialCardView>
 
-                        <TextView
-                            android:id="@+id/tvRatingScore"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="4.8"
-                            android:textColor="#0d1b2a"
-                            android:textSize="22sp"
-                            android:textStyle="bold" />
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="Điểm đánh giá"
-                            android:textColor="#94a3b8"
-                            android:textSize="11sp" />
-                    </LinearLayout>
-                </com.google.android.material.card.MaterialCardView>
-            </LinearLayout>
-
-        </LinearLayout>
+        </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.core.widget.NestedScrollView>
 
-</LinearLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

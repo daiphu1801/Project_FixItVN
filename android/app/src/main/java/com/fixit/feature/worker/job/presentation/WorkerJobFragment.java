@@ -32,6 +32,7 @@ public class WorkerJobFragment extends BaseFragment<FragmentWorkerJobBinding> {
 
     private WorkerJobViewModel viewModel;
     private com.fixit.feature.worker.presentation.WorkerStatusViewModel statusViewModel;
+    private org.osmdroid.views.overlay.Marker workerMarker;
 
     // ──────────────────────────────────────────────────────────────────────────
     @Override
@@ -42,11 +43,25 @@ public class WorkerJobFragment extends BaseFragment<FragmentWorkerJobBinding> {
     // ──────────────────────────────────────────────────────────────────────────
     @Override
     protected void setupViews() {
+        // Khởi tạo bản đồ OsmDroid
+        org.osmdroid.config.Configuration.getInstance().load(
+                requireContext(),
+                requireContext().getSharedPreferences("osmdroid", android.content.Context.MODE_PRIVATE)
+        );
+        org.osmdroid.config.Configuration.getInstance().setUserAgentValue(requireContext().getPackageName());
+
+        binding.mapView.setTileSource(org.osmdroid.tileprovider.tilesource.TileSourceFactory.MAPNIK);
+        binding.mapView.setMultiTouchControls(true);
+        binding.mapView.getController().setZoom(16.5);
+
+        // Vị trí mặc định ban đầu (Hà Nội) trước khi có toạ độ của thợ
+        org.osmdroid.util.GeoPoint startPoint = new org.osmdroid.util.GeoPoint(21.0285, 105.8542);
+        binding.mapView.getController().setCenter(startPoint);
+
         // Nút Toggle nhận việc
         binding.btnToggleOnline.setOnClickListener(v -> {
             if (viewModel.hasDebt()) {
-                Toast.makeText(requireContext(),
-                        "Bạn cần thanh toán khoản nợ chiết khấu trước!", Toast.LENGTH_LONG).show();
+                showWarningDialog("Không thể nhận việc", "Bạn cần thanh toán khoản nợ chiết khấu trước!");
                 return;
             }
             if (statusViewModel != null) {
@@ -71,8 +86,10 @@ public class WorkerJobFragment extends BaseFragment<FragmentWorkerJobBinding> {
                 name -> binding.tvJobWorkerName.setText(name));
 
         // Khu vực hoạt động
-        viewModel.serviceArea.observe(getViewLifecycleOwner(),
-                area -> binding.tvServiceArea.setText(area + " ▾"));
+        viewModel.serviceArea.observe(getViewLifecycleOwner(), area -> {
+            binding.tvServiceArea.setText(area + " ▾");
+            binding.tvMapLocationLabel.setText("📍 " + area);
+        });
 
         // Đơn hôm nay
         viewModel.todayOrders.observe(getViewLifecycleOwner(),
@@ -96,8 +113,39 @@ public class WorkerJobFragment extends BaseFragment<FragmentWorkerJobBinding> {
             }
         });
 
+        // Toạ độ thợ
+        viewModel.latitude.observe(getViewLifecycleOwner(), lat -> updateMapPosition());
+        viewModel.longitude.observe(getViewLifecycleOwner(), lng -> updateMapPosition());
+
         // Trạng thái Online/Offline → cập nhật toàn bộ UI
         statusViewModel.isOnline.observe(getViewLifecycleOwner(), this::applyOnlineState);
+
+        statusViewModel.errorMessage.observe(getViewLifecycleOwner(), message -> {
+            if (message != null && !message.trim().isEmpty()) {
+                showWarningDialog("Không thể nhận việc", message);
+                statusViewModel.clearError();
+            }
+        });
+    }
+
+    private void updateMapPosition() {
+        Double lat = viewModel.latitude.getValue();
+        Double lng = viewModel.longitude.getValue();
+        if (lat == null || lng == null || (lat == 0.0 && lng == 0.0)) {
+            return;
+        }
+
+        org.osmdroid.util.GeoPoint point = new org.osmdroid.util.GeoPoint(lat, lng);
+        binding.mapView.getController().animateTo(point);
+
+        if (workerMarker == null) {
+            workerMarker = new org.osmdroid.views.overlay.Marker(binding.mapView);
+            workerMarker.setTitle("Vị trí hoạt động của tôi");
+            workerMarker.setAnchor(org.osmdroid.views.overlay.Marker.ANCHOR_CENTER, org.osmdroid.views.overlay.Marker.ANCHOR_BOTTOM);
+            binding.mapView.getOverlays().add(workerMarker);
+        }
+        workerMarker.setPosition(point);
+        binding.mapView.invalidate();
     }
 
     /**
@@ -117,13 +165,16 @@ public class WorkerJobFragment extends BaseFragment<FragmentWorkerJobBinding> {
             binding.tvStatusLabel.setText("ONLINE");
             binding.tvStatusLabel.setTextColor(Color.parseColor("#16a34a"));
             binding.tvStatusDesc.setText("Sẵn sàng nhận việc! Hệ thống đang tìm đơn cho bạn...");
-            binding.viewStatusDot.setBackgroundColor(Color.parseColor("#22c55e"));
+            binding.viewStatusDot.setBackgroundTintList(
+                    android.content.res.ColorStateList.valueOf(Color.parseColor("#22c55e")));
+            binding.viewDivider.setBackgroundColor(Color.parseColor("#86efac"));
             binding.cardStatus.setCardBackgroundColor(Color.parseColor("#f0fdf4"));
             ((com.google.android.material.card.MaterialCardView) binding.cardStatus)
                     .setStrokeColor(Color.parseColor("#86efac"));
 
             // Bản đồ: sáng + ẩn overlay
             binding.viewMapOverlay.setVisibility(View.GONE);
+            binding.layoutRadarContainer.setVisibility(View.VISIBLE);
             binding.tvMapStatus.setText("Đang phát sóng");
             binding.tvMapStatus.setBackgroundColor(Color.parseColor("#cc22c55e"));
             startRadarPulse();
@@ -139,13 +190,16 @@ public class WorkerJobFragment extends BaseFragment<FragmentWorkerJobBinding> {
             binding.tvStatusLabel.setText("OFFLINE");
             binding.tvStatusLabel.setTextColor(Color.parseColor("#94a3b8"));
             binding.tvStatusDesc.setText("Bạn đang không hiển thị trên bản đồ");
-            binding.viewStatusDot.setBackgroundColor(Color.parseColor("#94a3b8"));
+            binding.viewStatusDot.setBackgroundTintList(
+                    android.content.res.ColorStateList.valueOf(Color.parseColor("#94a3b8")));
+            binding.viewDivider.setBackgroundColor(Color.parseColor("#e2e8f0"));
             binding.cardStatus.setCardBackgroundColor(Color.parseColor("#f1f5f9"));
             ((com.google.android.material.card.MaterialCardView) binding.cardStatus)
                     .setStrokeColor(Color.parseColor("#e2e8f0"));
 
             // Bản đồ: mờ + hiện overlay
             binding.viewMapOverlay.setVisibility(View.VISIBLE);
+            binding.layoutRadarContainer.setVisibility(View.GONE);
             binding.tvMapStatus.setText("Đang tắt");
             binding.tvMapStatus.setBackgroundColor(Color.parseColor("#cc42c2ff"));
             binding.ivMapRadar.clearAnimation();
@@ -161,5 +215,25 @@ public class WorkerJobFragment extends BaseFragment<FragmentWorkerJobBinding> {
         pulse.setRepeatCount(Animation.INFINITE);
         pulse.setRepeatMode(Animation.REVERSE);
         binding.ivMapRadar.startAnimation(pulse);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (binding != null && binding.mapView != null) {
+            binding.mapView.onResume();
+        }
+        if (viewModel != null) {
+            viewModel.loadProfile();
+            viewModel.loadSummary();
+        }
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        if (binding != null && binding.mapView != null) {
+            binding.mapView.onPause();
+        }
     }
 }

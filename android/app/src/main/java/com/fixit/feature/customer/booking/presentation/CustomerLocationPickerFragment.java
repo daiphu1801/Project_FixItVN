@@ -24,6 +24,7 @@ public class CustomerLocationPickerFragment extends BaseFragment<FragmentCustome
     protected void setupViews() {
         // Configure osmdroid
         org.osmdroid.config.Configuration.getInstance().load(requireContext(), requireContext().getSharedPreferences("osmdroid", android.content.Context.MODE_PRIVATE));
+        org.osmdroid.config.Configuration.getInstance().setUserAgentValue(requireContext().getPackageName());
 
         // Initialize MapView
         binding.mapView.setTileSource(org.osmdroid.tileprovider.tilesource.TileSourceFactory.MAPNIK);

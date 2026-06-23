@@ -68,4 +68,26 @@ public abstract class BaseFragment<VB extends ViewBinding> extends Fragment {
             Toast.makeText(getContext(), message, Toast.LENGTH_SHORT).show();
         }
     }
+
+    protected void showWarningDialog(String title, String message) {
+        if (getContext() != null) {
+            new com.google.android.material.dialog.MaterialAlertDialogBuilder(getContext())
+                    .setIcon(com.fixit.R.drawable.ic_lucide_alert_circle)
+                    .setTitle(title)
+                    .setMessage(message)
+                    .setPositiveButton("Đồng ý", (dialog, which) -> dialog.dismiss())
+                    .show();
+        }
+    }
+
+    protected void showSuccessDialog(String title, String message) {
+        if (getContext() != null) {
+            new com.google.android.material.dialog.MaterialAlertDialogBuilder(getContext())
+                    .setIcon(com.fixit.R.drawable.ic_lucide_check_circle)
+                    .setTitle(title)
+                    .setMessage(message)
+                    .setPositiveButton("Tuyệt vời", (dialog, which) -> dialog.dismiss())
+                    .show();
+        }
+    }
 }

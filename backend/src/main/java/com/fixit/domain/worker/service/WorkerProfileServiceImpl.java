@@ -63,6 +63,14 @@ public class WorkerProfileServiceImpl implements WorkerProfileService {
             worker.setServiceArea(trimToNull(request.getServiceArea()));
         }
 
+        if (request.getLatitude() != null) {
+            worker.setLatitude(request.getLatitude());
+        }
+
+        if (request.getLongitude() != null) {
+            worker.setLongitude(request.getLongitude());
+        }
+
         User user = worker.getUser();
 
         if (user != null) {

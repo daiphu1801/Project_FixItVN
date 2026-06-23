@@ -4,6 +4,7 @@ import android.view.LayoutInflater;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
+import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.Navigation;
 
 import com.fixit.core.ui.BaseFragment;
@@ -13,6 +14,8 @@ import dagger.hilt.android.AndroidEntryPoint;
 
 @AndroidEntryPoint
 public class ChangePasswordFragment extends BaseFragment<FragmentChangePasswordBinding> {
+
+    private ChangePasswordViewModel viewModel;
 
     @Override
     protected FragmentChangePasswordBinding inflateViewBinding(LayoutInflater inflater, ViewGroup container) {
@@ -33,9 +36,7 @@ public class ChangePasswordFragment extends BaseFragment<FragmentChangePasswordB
             String confirmPass = binding.etConfirmPassword.getText().toString().trim();
 
             if (validatePasswords(currentPass, newPass, confirmPass)) {
-                // TODO: Gọi API đổi mật khẩu
-                Toast.makeText(requireContext(), "Đổi mật khẩu thành công", Toast.LENGTH_SHORT).show();
-                Navigation.findNavController(v).navigateUp();
+                viewModel.changePassword(currentPass, newPass);
             }
         });
     }
@@ -66,6 +67,27 @@ public class ChangePasswordFragment extends BaseFragment<FragmentChangePasswordB
 
     @Override
     protected void observeData() {
-        // ViewModel logic if needed
+        viewModel = new ViewModelProvider(this).get(ChangePasswordViewModel.class);
+
+        viewModel.changePasswordSuccess.observe(getViewLifecycleOwner(), success -> {
+            if (Boolean.TRUE.equals(success)) {
+                Toast.makeText(requireContext(), "Đổi mật khẩu thành công", Toast.LENGTH_SHORT).show();
+                if (getView() != null) {
+                    Navigation.findNavController(getView()).navigateUp();
+                }
+            }
+        });
+
+        viewModel.errorMessage.observe(getViewLifecycleOwner(), message -> {
+            if (message != null && !message.trim().isEmpty()) {
+                Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        viewModel.isLoading.observe(getViewLifecycleOwner(), loading -> {
+            if (binding.layoutLoading != null) {
+                binding.layoutLoading.getRoot().setVisibility(loading ? android.view.View.VISIBLE : android.view.View.GONE);
+            }
+        });
     }
 }

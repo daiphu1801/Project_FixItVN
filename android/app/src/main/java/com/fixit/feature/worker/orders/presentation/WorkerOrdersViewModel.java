@@ -95,11 +95,19 @@ public class WorkerOrdersViewModel extends BaseViewModel {
     }
 
     public void loadOrderDetails(String orderId) {
-        setLoading(true);
+        loadOrderDetails(orderId, true);
+    }
+
+    public void loadOrderDetails(String orderId, boolean showLoading) {
+        if (showLoading) {
+            setLoading(true);
+        }
         getWorkerOrderByIdUseCase.execute(orderId, new ResultCallback<WorkerOrder>() {
             @Override
             public void onResult(Result<WorkerOrder> result) {
-                setLoading(false);
+                if (showLoading) {
+                    setLoading(false);
+                }
                 if (result.isSuccess()) {
                     WorkerOrder order = result.getData();
                     _orderDetails.postValue(order);
@@ -121,12 +129,20 @@ public class WorkerOrdersViewModel extends BaseViewModel {
     }
 
     public void filterByStatus(String status) {
+        filterByStatus(status, true);
+    }
+
+    public void filterByStatus(String status, boolean showLoading) {
         currentFilterStatus = status;
-        setLoading(true);
+        if (showLoading) {
+            setLoading(true);
+        }
         filterWorkerOrdersUseCase.execute(status, new ResultCallback<List<WorkerOrder>>() {
             @Override
             public void onResult(Result<List<WorkerOrder>> result) {
-                setLoading(false);
+                if (showLoading) {
+                    setLoading(false);
+                }
                 if (result.isSuccess()) {
                     _filteredOrders.postValue(result.getData());
                 } else {

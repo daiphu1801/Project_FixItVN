@@ -34,10 +34,18 @@ public class WorkerHomeViewModel extends BaseViewModel {
     }
 
     public void loadWorkerHome() {
-        setLoading(true);
+        loadWorkerHome(true);
+    }
+
+    public void loadWorkerHome(boolean showLoading) {
+        if (showLoading) {
+            setLoading(true);
+        }
 
         getWorkerHomeUseCase.execute(result -> {
-            setLoading(false);
+            if (showLoading) {
+                setLoading(false);
+            }
 
             if (result.isSuccess()) {
                 WorkerHome home = result.getData();
