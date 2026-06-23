@@ -171,4 +171,25 @@
             android:defaultValue="false" />
     </fragment>
 
+    <!-- KHIẾU NẠI / BẢO HÀNH -->
+    <fragment
+        android:id="@+id/nav_customer_complaint_create"
+        android:name="com.fixit.feature.customer.complaint.presentation.CustomerComplaintCreateFragment"
+        android:label="Tạo khiếu nại"
+        tools:layout="@layout/fragment_customer_complaint_create">
+        <argument
+            android:name="bookingId"
+            app:argType="string" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/nav_customer_complaint_detail"
+        android:name="com.fixit.feature.customer.complaint.presentation.CustomerComplaintDetailFragment"
+        android:label="Chi tiết khiếu nại"
+        tools:layout="@layout/fragment_customer_complaint_detail">
+        <argument
+            android:name="bookingId"
+            app:argType="string" />
+    </fragment>
+
 </navigation>
