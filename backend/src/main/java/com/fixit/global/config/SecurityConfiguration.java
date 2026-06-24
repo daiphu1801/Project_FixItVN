@@ -85,6 +85,7 @@ public class SecurityConfiguration {
                 .cors(Customizer.withDefaults())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/api/v1/auth/change-password").authenticated()
                         .requestMatchers(WHITE_LIST_URL).permitAll()
                         .anyRequest().authenticated())
                 .authenticationProvider(authenticationProvider())
