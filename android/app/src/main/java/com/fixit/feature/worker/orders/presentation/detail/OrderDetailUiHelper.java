@@ -78,11 +78,25 @@ public class OrderDetailUiHelper {
         com.bumptech.glide.Glide.with(fragment).load(uri).into(proofBinding.ivProofBeforeImage);
     }
 
+    public void displayProofBeforeImage(String url) {
+        proofBinding.ivProofBeforeImage.setVisibility(View.VISIBLE);
+        proofBinding.icProofBeforeCamera.setVisibility(View.GONE);
+        proofBinding.tvProofBeforeLabel.setVisibility(View.GONE);
+        com.bumptech.glide.Glide.with(fragment).load(url).into(proofBinding.ivProofBeforeImage);
+    }
+
     public void displayProofAfterImage(Uri uri) {
         proofBinding.ivProofAfterImage.setVisibility(View.VISIBLE);
         proofBinding.icProofAfterCamera.setVisibility(View.GONE);
         proofBinding.tvProofAfterLabel.setVisibility(View.GONE);
         com.bumptech.glide.Glide.with(fragment).load(uri).into(proofBinding.ivProofAfterImage);
+    }
+
+    public void displayProofAfterImage(String url) {
+        proofBinding.ivProofAfterImage.setVisibility(View.VISIBLE);
+        proofBinding.icProofAfterCamera.setVisibility(View.GONE);
+        proofBinding.tvProofAfterLabel.setVisibility(View.GONE);
+        com.bumptech.glide.Glide.with(fragment).load(url).into(proofBinding.ivProofAfterImage);
     }
 
     public void bindOrderData(WorkerOrder order) {
@@ -99,6 +113,13 @@ public class OrderDetailUiHelper {
         metaBinding.tvOrderDetailAddress.setText(order.getAddress());
         metaBinding.tvOrderDetailScheduledTime.setText(order.getTimeSlot());
         pricingBinding.tvOrderDetailPrice.setText(order.getPrice());
+
+        if (order.getProofBeforeUrl() != null && !order.getProofBeforeUrl().isEmpty()) {
+            displayProofBeforeImage(order.getProofBeforeUrl());
+        }
+        if (order.getProofAfterUrl() != null && !order.getProofAfterUrl().isEmpty()) {
+            displayProofAfterImage(order.getProofAfterUrl());
+        }
 
         if (mapHelper != null) {
             mapHelper.loadMap(fragment.requireContext(), order.getAddress());
@@ -279,6 +300,15 @@ public class OrderDetailUiHelper {
         binding.btnCompleteOrderDetail.setOnClickListener(v -> {
             WorkerOrder order = fragment.getCurrentOrder();
             if (order != null) {
+                JobStatus currentStatus = viewModel.currentStatus.getValue();
+                if (currentStatus == JobStatus.SURVEYING) {
+                    if (order.getProofBeforeUrl() == null || order.getProofBeforeUrl().isEmpty()) {
+                        Toast.makeText(fragment.requireContext(),
+                                "Bạn phải tải lên ảnh bằng chứng TRƯỚC khi sửa chữa!",
+                                Toast.LENGTH_LONG).show();
+                        return;
+                    }
+                }
                 String nextAction = binding.btnCompleteOrderDetail.getText().toString();
                 new AlertDialog.Builder(fragment.requireContext())
                         .setTitle("Xác nhận trạng thái")

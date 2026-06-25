@@ -28,4 +28,5 @@ public class WorkerBookingDetailResponse {
     private String statusText;
     private String nextAction;
     private List<String> doneActions;
+    private List<ProofOfWorkResponse> proofOfWorks;
 }

@@ -33,6 +33,13 @@ public class OrderPaymentHelper {
             return;
         }
 
+        if (currentOrder.getProofAfterUrl() == null || currentOrder.getProofAfterUrl().isEmpty()) {
+            Toast.makeText(fragment.requireContext(),
+                    "Bạn phải tải lên ảnh bằng chứng SAU khi sửa chữa trước khi thanh toán và hoàn thành!",
+                    Toast.LENGTH_LONG).show();
+            return;
+        }
+
         binding.llQrContainer.setVisibility(View.VISIBLE);
         binding.pbQrLoading.setVisibility(View.VISIBLE);
 
@@ -90,6 +97,13 @@ public class OrderPaymentHelper {
 
     public void confirmCashPayment(WorkerOrder currentOrder) {
         if (currentOrder == null || fragment.getContext() == null) {
+            return;
+        }
+
+        if (currentOrder.getProofAfterUrl() == null || currentOrder.getProofAfterUrl().isEmpty()) {
+            Toast.makeText(fragment.requireContext(),
+                    "Bạn phải tải lên ảnh bằng chứng SAU khi sửa chữa trước khi xác nhận hoàn thành!",
+                    Toast.LENGTH_LONG).show();
             return;
         }
 

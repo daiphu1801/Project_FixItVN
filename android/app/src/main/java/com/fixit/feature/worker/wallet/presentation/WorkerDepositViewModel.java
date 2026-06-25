@@ -9,6 +9,8 @@ import com.fixit.core.ui.BaseViewModel;
 import com.fixit.feature.worker.wallet.domain.usecase.CreateDepositUseCase;
 import com.fixit.feature.worker.wallet.domain.usecase.GetDepositDetailUseCase;
 
+import com.fixit.feature.worker.wallet.domain.usecase.CancelDepositUseCase;
+
 import javax.inject.Inject;
 
 import dagger.hilt.android.lifecycle.HiltViewModel;
@@ -18,6 +20,7 @@ public class WorkerDepositViewModel extends BaseViewModel {
 
     private final CreateDepositUseCase createDepositUseCase;
     private final GetDepositDetailUseCase getDepositDetailUseCase;
+    private final CancelDepositUseCase cancelDepositUseCase;
 
     private final android.os.Handler handler = new android.os.Handler(android.os.Looper.getMainLooper());
     private Runnable pollingRunnable;
@@ -44,13 +47,18 @@ public class WorkerDepositViewModel extends BaseViewModel {
     private final MutableLiveData<String> _error = new MutableLiveData<>();
     public LiveData<String> error = _error;
 
+    private final MutableLiveData<String> _toastMessage = new MutableLiveData<>();
+    public LiveData<String> toastMessage = _toastMessage;
+
     @Inject
     public WorkerDepositViewModel(
             CreateDepositUseCase createDepositUseCase,
-            GetDepositDetailUseCase getDepositDetailUseCase
+            GetDepositDetailUseCase getDepositDetailUseCase,
+            CancelDepositUseCase cancelDepositUseCase
     ) {
         this.createDepositUseCase = createDepositUseCase;
         this.getDepositDetailUseCase = getDepositDetailUseCase;
+        this.cancelDepositUseCase = cancelDepositUseCase;
     }
 
     public void generateQr(long amt) {
@@ -156,6 +164,65 @@ public class WorkerDepositViewModel extends BaseViewModel {
                 if (pollingRunnable != null) {
                     handler.postDelayed(pollingRunnable, 10000);
                 }
+            }
+        });
+    }
+
+    public void checkDepositStatusManual() {
+        String txId = _transactionId.getValue();
+        if (txId == null || txId.isEmpty()) return;
+
+        _loading.setValue(true);
+        _error.setValue(null);
+        _toastMessage.setValue(null);
+        getDepositDetailUseCase.execute(txId, result -> {
+            _loading.postValue(false);
+            if (result.isSuccess() && result.getData() != null) {
+                String currentStatus = result.getData().getStatus();
+                _status.postValue(currentStatus);
+                if ("PENDING".equalsIgnoreCase(currentStatus)) {
+                    _toastMessage.postValue("Giao dịch đang chờ thanh toán. Vui lòng thử lại sau.");
+                } else if ("SUCCESS".equalsIgnoreCase(currentStatus)) {
+                    _toastMessage.postValue("Thanh toán thành công!");
+                    stopPolling();
+                } else if ("CANCELLED".equalsIgnoreCase(currentStatus)) {
+                    _toastMessage.postValue("Giao dịch này đã bị hủy.");
+                    stopPolling();
+                } else if ("FAILED".equalsIgnoreCase(currentStatus)) {
+                    _toastMessage.postValue("Giao dịch thất bại.");
+                    stopPolling();
+                }
+            } else {
+                String msg = result.getError() != null
+                        ? result.getError().getMessage()
+                        : "Không thể kết nối đến server để kiểm tra trạng thái";
+                _error.postValue(msg);
+            }
+        });
+    }
+
+    public void cancelDeposit(Runnable onComplete) {
+        String txId = _transactionId.getValue();
+        if (txId == null || txId.isEmpty()) {
+            if (onComplete != null) onComplete.run();
+            return;
+        }
+
+        _loading.setValue(true);
+        _error.setValue(null);
+        stopPolling();
+        cancelDepositUseCase.execute(txId, result -> {
+            _loading.postValue(false);
+            if (result.isSuccess()) {
+                _status.postValue("CANCELLED");
+            } else {
+                String msg = result.getError() != null
+                        ? result.getError().getMessage()
+                        : "Không thể hủy giao dịch";
+                _error.postValue(msg);
+            }
+            if (onComplete != null) {
+                onComplete.run();
             }
         });
     }

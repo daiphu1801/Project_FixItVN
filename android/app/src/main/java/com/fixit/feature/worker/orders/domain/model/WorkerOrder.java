@@ -117,5 +117,24 @@ public class WorkerOrder {
     public void setIssueDescription(String issueDescription) {
         this.issueDescription = issueDescription;
     }
+
+    private String proofBeforeUrl;
+    private String proofAfterUrl;
+
+    public String getProofBeforeUrl() {
+        return proofBeforeUrl;
+    }
+
+    public void setProofBeforeUrl(String proofBeforeUrl) {
+        this.proofBeforeUrl = proofBeforeUrl;
+    }
+
+    public String getProofAfterUrl() {
+        return proofAfterUrl;
+    }
+
+    public void setProofAfterUrl(String proofAfterUrl) {
+        this.proofAfterUrl = proofAfterUrl;
+    }
 }
 

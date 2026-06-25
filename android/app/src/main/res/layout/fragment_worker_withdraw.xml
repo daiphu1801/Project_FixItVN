@@ -61,17 +61,74 @@
             android:layout_height="wrap_content"
             android:padding="20dp">
 
+            <!-- Mock Simulation Warning Banner -->
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/cardMockWarning"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:cardCornerRadius="16dp"
+                app:cardElevation="0dp"
+                app:cardBackgroundColor="#fffbeb"
+                app:strokeWidth="1dp"
+                app:strokeColor="#fef3c7"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent">
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:padding="16dp">
+
+                    <ImageView
+                        android:id="@+id/ivMockIcon"
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:src="@drawable/ic_lucide_alert_triangle"
+                        app:tint="#d97706"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintStart_toStartOf="parent" />
+
+                    <TextView
+                        android:id="@+id/tvMockTitle"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="12dp"
+                        android:text="Chế độ giả lập (Dev Mode)"
+                        android:textColor="#b45309"
+                        android:textSize="14sp"
+                        android:textStyle="bold"
+                        app:layout_constraintTop_toTopOf="@id/ivMockIcon"
+                        app:layout_constraintBottom_toBottomOf="@id/ivMockIcon"
+                        app:layout_constraintStart_toEndOf="@id/ivMockIcon"
+                        app:layout_constraintEnd_toEndOf="parent" />
+
+                    <TextView
+                        android:id="@+id/tvMockDescription"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:text="Lưu ý: Môi trường thử nghiệm đang sử dụng cơ chế duyệt rút tiền tự động. Tiền sẽ được cộng/trừ giả lập thành công trong vòng 5 giây."
+                        android:textColor="#d97706"
+                        android:textSize="12sp"
+                        app:layout_constraintTop_toBottomOf="@id/ivMockIcon"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent" />
+                </androidx.constraintlayout.widget.ConstraintLayout>
+            </com.google.android.material.card.MaterialCardView>
+
             <!-- Available Balance Card -->
             <com.google.android.material.card.MaterialCardView
                 android:id="@+id/cardBalance"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
                 app:cardCornerRadius="16dp"
                 app:cardElevation="0dp"
                 app:cardBackgroundColor="#eff6ff"
                 app:strokeWidth="1dp"
                 app:strokeColor="#dbeafe"
-                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/cardMockWarning"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent">
 
@@ -480,7 +537,7 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="8dp"
-                        android:text="Tiền rút sẽ được kiểm tra và chuyển đến ngân hàng liên kết của bạn trong vòng tối đa 24 giờ làm việc. Vui lòng đảm bảo thông tin tài khoản là chính xác."
+                        android:text="[MOCK] Yêu cầu rút tiền được xử lý tự động trong vòng 5 giây nhờ cơ chế giả lập. Trong môi trường thực tế, giao dịch sẽ được chuyển đến ngân hàng liên kết trong vòng 24 giờ làm việc."
                         android:textColor="#64748b"
                         android:textSize="12sp"
                         app:layout_constraintTop_toTopOf="parent"

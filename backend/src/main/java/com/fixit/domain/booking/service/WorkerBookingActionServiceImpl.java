@@ -21,6 +21,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import com.fixit.domain.notification.service.NotificationSenderService;
+import com.fixit.domain.booking.entity.ProofType;
+import com.fixit.domain.booking.repository.ProofOfWorkRepository;
+import com.fixit.domain.booking.dto.response.ProofOfWorkResponse;
 
 @Slf4j
 @Service
@@ -37,6 +40,7 @@ public class WorkerBookingActionServiceImpl implements WorkerBookingActionServic
     private final BookingRepository bookingRepository;
     private final BookingHistoryRepository bookingHistoryRepository;
     private final NotificationSenderService notificationSenderService;
+    private final ProofOfWorkRepository proofOfWorkRepository;
 
     @Override
     @Transactional(readOnly = true)
@@ -57,6 +61,16 @@ public class WorkerBookingActionServiceImpl implements WorkerBookingActionServic
             scheduledTimeStr = booking.getScheduledTime().atZoneSameInstant(java.time.ZoneId.of("Asia/Ho_Chi_Minh")).format(formatter);
         }
 
+        List<ProofOfWorkResponse> proofOfWorks = proofOfWorkRepository.findByBooking_IdOrderByCapturedAtAsc(bookingId).stream()
+                .map(pow -> ProofOfWorkResponse.builder()
+                        .proofId(pow.getId())
+                        .bookingId(pow.getBooking().getId())
+                        .imageUrl(pow.getImageUrl())
+                        .proofType(pow.getProofType().name())
+                        .capturedAt(pow.getCapturedAt())
+                        .build())
+                .toList();
+
         return WorkerBookingDetailResponse.builder()
                 .bookingId(booking.getId())
                 .serviceName(booking.getServiceCategory() != null ? booking.getServiceCategory().getServiceName() : null)
@@ -74,6 +88,7 @@ public class WorkerBookingActionServiceImpl implements WorkerBookingActionServic
                 .statusText(toBookingStatusText(booking.getStatus().name()))
                 .nextAction(toNextAction(booking.getStatus().name(), doneActions))
                 .doneActions(doneActions)
+                .proofOfWorks(proofOfWorks)
                 .build();
     }
 
@@ -183,6 +198,11 @@ public class WorkerBookingActionServiceImpl implements WorkerBookingActionServic
         requirePreviousActionDone(doneActions, HISTORY_SURVEYING);
         requireActionNotDone(doneActions, HISTORY_IN_PROGRESS);
 
+        // Validate proof of work before starting repair
+        if (!proofOfWorkRepository.findByBooking_IdAndProofType(bookingId, ProofType.BEFORE_REPAIR).isPresent()) {
+            throw new AppException(ErrorCode.PROOF_OF_WORK_BEFORE_REPAIR_REQUIRED);
+        }
+
         OffsetDateTime now = OffsetDateTime.now();
 
         booking.setStatus(BookingStatus.In_Progress);
@@ -215,6 +235,11 @@ public class WorkerBookingActionServiceImpl implements WorkerBookingActionServic
         requireStatus(booking, BookingStatus.In_Progress);
         requirePreviousActionDone(doneActions, HISTORY_IN_PROGRESS);
         requireActionNotDone(doneActions, HISTORY_WORKER_COMPLETED);
+
+        // Validate proof of work before completing work
+        if (!proofOfWorkRepository.findByBooking_IdAndProofType(bookingId, ProofType.AFTER_REPAIR).isPresent()) {
+            throw new AppException(ErrorCode.PROOF_OF_WORK_AFTER_REPAIR_REQUIRED);
+        }
 
         OffsetDateTime now = OffsetDateTime.now();
 

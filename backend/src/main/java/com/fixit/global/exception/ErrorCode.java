@@ -71,6 +71,9 @@ public enum ErrorCode {
 
         // Proof of work
         PROOF_OF_WORK_ALREADY_EXISTS(409, HttpStatus.CONFLICT, "Ảnh bằng chứng loại này đã tồn tại cho đơn hàng"),
+        PROOF_OF_WORK_NOT_FOUND(404, HttpStatus.NOT_FOUND, "Không tìm thấy ảnh bằng chứng thi công"),
+        PROOF_OF_WORK_BEFORE_REPAIR_REQUIRED(409, HttpStatus.CONFLICT, "Yêu cầu ảnh bằng chứng trước khi thi công"),
+        PROOF_OF_WORK_AFTER_REPAIR_REQUIRED(409, HttpStatus.CONFLICT, "Yêu cầu ảnh bằng chứng sau khi thi công"),
 
         // Worker wallet
         WALLET_NOT_FOUND(404, HttpStatus.NOT_FOUND, "Không tìm thấy ví của thợ hiện tại"),
@@ -80,6 +83,11 @@ public enum ErrorCode {
         WALLET_DEPOSIT_NOT_FOUND(404, HttpStatus.NOT_FOUND, "Không tìm thấy giao dịch nạp tiền của thợ hiện tại"),
         WALLET_DEPOSIT_INVALID_STATUS(409, HttpStatus.CONFLICT, "Trạng thái giao dịch nạp tiền không hợp lệ"),
         WALLET_DEPOSIT_PENDING_EXISTS(409, HttpStatus.CONFLICT, "Đang có giao dịch nạp tiền chờ thanh toán"),
+        WALLET_WITHDRAW_INSUFFICIENT_BALANCE(400, HttpStatus.BAD_REQUEST, "Số dư khả dụng không đủ"),
+        WALLET_WITHDRAW_HAS_DEBT(400, HttpStatus.BAD_REQUEST, "Đang nợ nền tảng, không thể rút tiền"),
+        WALLET_WITHDRAW_INVALID_AMOUNT(400, HttpStatus.BAD_REQUEST, "Số tiền rút không hợp lệ"),
+        WALLET_WITHDRAW_PENDING_EXISTS(409, HttpStatus.CONFLICT, "Đang có yêu cầu rút tiền chờ duyệt"),
+        WALLET_WITHDRAW_NOT_FOUND(404, HttpStatus.NOT_FOUND, "Không tìm thấy yêu cầu rút tiền"),
 
         // Review
         BOOKING_NOT_COMPLETED(400, HttpStatus.BAD_REQUEST, "Đơn hàng chưa hoàn thành, không thể đánh giá"),

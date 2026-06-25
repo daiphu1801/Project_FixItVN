@@ -22,6 +22,7 @@ import com.fixit.databinding.LayoutProofOfWorkSectionBinding;
 import com.fixit.databinding.LayoutWorkerPaymentSectionBinding;
 import com.fixit.core.common.AutoRefreshHelper;
 import com.fixit.feature.upload.domain.model.UploadPurpose;
+import com.fixit.feature.upload.domain.model.UploadTargetType;
 import com.fixit.feature.upload.presentation.UploadViewModel;
 import com.fixit.feature.worker.orders.domain.model.JobStatus;
 import com.fixit.feature.worker.orders.domain.model.WorkerOrder;
@@ -48,7 +49,17 @@ public class WorkerOrderDetailFragment extends BaseFragment<FragmentWorkerOrderD
             uri -> {
                 if (uri != null && uiHelper != null) {
                     uiHelper.displayProofBeforeImage(uri);
-                    uploadViewModel.upload(requireContext(), uri, UploadPurpose.PROOF_BEFORE_REPAIR);
+                    uploadViewModel.upload(
+                            requireContext(),
+                            uri,
+                            UploadPurpose.PROOF_BEFORE_REPAIR,
+                            UploadTargetType.PROOF_OF_WORK,
+                            getCurrentOrderId(),
+                            null,
+                            null,
+                            null,
+                            true
+                    );
                 }
             });
 
@@ -57,7 +68,17 @@ public class WorkerOrderDetailFragment extends BaseFragment<FragmentWorkerOrderD
             uri -> {
                 if (uri != null && uiHelper != null) {
                     uiHelper.displayProofAfterImage(uri);
-                    uploadViewModel.upload(requireContext(), uri, UploadPurpose.PROOF_AFTER_REPAIR);
+                    uploadViewModel.upload(
+                            requireContext(),
+                            uri,
+                            UploadPurpose.PROOF_AFTER_REPAIR,
+                            UploadTargetType.PROOF_OF_WORK,
+                            getCurrentOrderId(),
+                            null,
+                            null,
+                            null,
+                            true
+                    );
                 }
             });
 
@@ -149,6 +170,10 @@ public class WorkerOrderDetailFragment extends BaseFragment<FragmentWorkerOrderD
                 return;
             if (result.isSuccess()) {
                 Toast.makeText(requireContext(), "Upload ảnh thành công", Toast.LENGTH_SHORT).show();
+                String currentId = getCurrentOrderId();
+                if (currentId != null) {
+                    viewModel.loadOrderDetails(currentId, false);
+                }
             } else {
                 Toast.makeText(requireContext(), result.getErrorMessage(), Toast.LENGTH_SHORT).show();
             }

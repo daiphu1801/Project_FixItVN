@@ -31,6 +31,16 @@ public class WorkerOrdersMapper {
         order.setJobStatus(mapJobStatus(dto.getStatus(), dto.getDoneActions()));
         order.setPaymentMethod(dto.getPaymentMethod());
         order.setIssueDescription(dto.getIssueDescription());
+
+        if (dto.getProofOfWorks() != null) {
+            for (com.fixit.feature.upload.data.remote.dto.response.ProofOfWorkResponse pow : dto.getProofOfWorks()) {
+                if ("BEFORE_REPAIR".equals(pow.getProofType())) {
+                    order.setProofBeforeUrl(pow.getImageUrl());
+                } else if ("AFTER_REPAIR".equals(pow.getProofType())) {
+                    order.setProofAfterUrl(pow.getImageUrl());
+                }
+            }
+        }
         return order;
     }
 

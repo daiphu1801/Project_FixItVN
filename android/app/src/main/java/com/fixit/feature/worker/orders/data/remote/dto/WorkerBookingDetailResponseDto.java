@@ -53,6 +53,9 @@ public class WorkerBookingDetailResponseDto {
     @SerializedName("doneActions")
     private List<String> doneActions;
 
+    @SerializedName("proofOfWorks")
+    private List<com.fixit.feature.upload.data.remote.dto.response.ProofOfWorkResponse> proofOfWorks;
+
     // Getters and Setters
     public String getBookingId() { return bookingId; }
     public void setBookingId(String bookingId) { this.bookingId = bookingId; }
@@ -101,4 +104,7 @@ public class WorkerBookingDetailResponseDto {
 
     public List<String> getDoneActions() { return doneActions; }
     public void setDoneActions(List<String> doneActions) { this.doneActions = doneActions; }
+
+    public List<com.fixit.feature.upload.data.remote.dto.response.ProofOfWorkResponse> getProofOfWorks() { return proofOfWorks; }
+    public void setProofOfWorks(List<com.fixit.feature.upload.data.remote.dto.response.ProofOfWorkResponse> proofOfWorks) { this.proofOfWorks = proofOfWorks; }
 }

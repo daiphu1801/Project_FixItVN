@@ -2,9 +2,11 @@ package com.fixit.domain.wallet.service;
 
 import com.fixit.domain.wallet.dto.request.DepositCreateRequest;
 import com.fixit.domain.wallet.dto.request.SepayWebhookRequest;
+import com.fixit.domain.wallet.dto.request.WithdrawRequest;
 import com.fixit.domain.wallet.dto.response.DepositQrResponse;
 import com.fixit.domain.wallet.dto.response.DepositResponse;
 import com.fixit.domain.wallet.dto.response.WalletTransactionResponse;
+import com.fixit.domain.wallet.dto.response.WithdrawResponse;
 import com.fixit.domain.wallet.dto.response.WorkerWalletResponse;
 import com.fixit.domain.wallet.dto.response.WorkerWalletTransactionsResponse;
 import com.fixit.domain.wallet.entity.TransactionHistory;
@@ -13,6 +15,7 @@ import com.fixit.domain.wallet.entity.TransactionType;
 import com.fixit.domain.wallet.entity.WorkerBankAccount;
 import com.fixit.domain.wallet.entity.WorkerWallet;
 import com.fixit.domain.wallet.repository.TransactionHistoryRepository;
+import com.fixit.domain.wallet.repository.WorkerBankAccountRepository;
 import com.fixit.domain.wallet.repository.WorkerWalletRepository;
 import com.fixit.domain.worker.repository.projection.WorkerPerformanceStatsProjection;
 import com.fixit.domain.worker.repository.query.WorkerHomeQueryRepository;
@@ -53,6 +56,14 @@ public class WorkerWalletServiceImpl implements WorkerWalletService {
     private final WorkerWalletRepository workerWalletRepository;
     private final TransactionHistoryRepository transactionHistoryRepository;
     private final WorkerHomeQueryRepository workerHomeQueryRepository;
+    private final WorkerBankAccountRepository workerBankAccountRepository;
+
+    private WorkerWalletService self;
+
+    @org.springframework.beans.factory.annotation.Autowired
+    public void setSelf(@org.springframework.context.annotation.Lazy WorkerWalletService self) {
+        this.self = self;
+    }
 
     @Value("${app.payment.deposit.bank-code:MB}")
     private String depositBankCode;
@@ -467,5 +478,202 @@ public class WorkerWalletServiceImpl implements WorkerWalletService {
         transaction.setStatus(TransactionStatus.Cancelled);
         transaction.setAdminNote("Hủy giao dịch do người dùng yêu cầu.");
         transactionHistoryRepository.save(transaction);
+    }
+
+    @Override
+    @Transactional
+    public WithdrawResponse createMyWithdraw(WithdrawRequest request) {
+        UUID workerId = currentWorkerResolver.getCurrentWorkerId();
+        BigDecimal amount = request.getAmount();
+
+        WorkerBankAccount bankAccount = workerBankAccountRepository.findByIdAndWorkerId(
+                request.getTargetBankAccountId(),
+                workerId
+        ).orElseThrow(() -> new AppException(ErrorCode.WORKER_BANK_ACCOUNT_NOT_FOUND));
+
+        WorkerWallet wallet = workerWalletRepository.findByWorkerIdForUpdate(workerId)
+                .orElseThrow(() -> new AppException(ErrorCode.WALLET_NOT_FOUND));
+
+        BigDecimal availableBalance = valueOrZero(wallet.getAvailableBalance());
+        BigDecimal debtBalance = valueOrZero(wallet.getDebtBalance());
+
+        if (debtBalance.compareTo(BigDecimal.ZERO) > 0) {
+            throw new AppException(ErrorCode.WALLET_WITHDRAW_HAS_DEBT);
+        }
+
+        if (availableBalance.compareTo(amount) < 0) {
+            throw new AppException(ErrorCode.WALLET_WITHDRAW_INSUFFICIENT_BALANCE);
+        }
+
+        if (transactionHistoryRepository.existsByWallet_WorkerIdAndTransactionTypeAndStatus(
+                workerId,
+                TransactionType.Withdraw,
+                TransactionStatus.Pending
+        )) {
+            throw new AppException(ErrorCode.WALLET_WITHDRAW_PENDING_EXISTS);
+        }
+
+        wallet.setAvailableBalance(availableBalance.subtract(amount));
+        workerWalletRepository.save(wallet);
+
+        TransactionHistory transaction = TransactionHistory.builder()
+                .wallet(wallet)
+                .transactionType(TransactionType.Withdraw)
+                .amount(amount)
+                .transactionCode(generateWithdrawTransactionCode())
+                .status(TransactionStatus.Pending)
+                .targetBankAccount(bankAccount)
+                .adminNote("Yêu cầu rút tiền đang chờ xử lý.")
+                .transactionTime(OffsetDateTime.now())
+                .build();
+
+        TransactionHistory saved = transactionHistoryRepository.save(transaction);
+
+        simulateAutomaticApproval(saved.getId());
+
+        return toWithdrawResponse(saved);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public WithdrawResponse getMyWithdrawDetail(UUID transactionId) {
+        UUID workerId = currentWorkerResolver.getCurrentWorkerId();
+        if (transactionId == null) {
+            throw new AppException(ErrorCode.WALLET_WITHDRAW_NOT_FOUND);
+        }
+
+        TransactionHistory transaction = transactionHistoryRepository.findByIdAndWallet_WorkerIdAndTransactionType(
+                transactionId,
+                workerId,
+                TransactionType.Withdraw
+        ).orElseThrow(() -> new AppException(ErrorCode.WALLET_WITHDRAW_NOT_FOUND));
+
+        return toWithdrawResponse(transaction);
+    }
+
+    @Override
+    @Transactional
+    public void cancelMyWithdraw(UUID transactionId) {
+        UUID workerId = currentWorkerResolver.getCurrentWorkerId();
+        if (transactionId == null) {
+            throw new AppException(ErrorCode.WALLET_WITHDRAW_NOT_FOUND);
+        }
+
+        TransactionHistory transaction = transactionHistoryRepository.findByIdAndWallet_WorkerIdAndTransactionType(
+                transactionId,
+                workerId,
+                TransactionType.Withdraw
+        ).orElseThrow(() -> new AppException(ErrorCode.WALLET_WITHDRAW_NOT_FOUND));
+
+        if (transaction.getStatus() != TransactionStatus.Pending) {
+            throw new AppException(ErrorCode.WALLET_DEPOSIT_INVALID_STATUS);
+        }
+
+        WorkerWallet wallet = workerWalletRepository.findByWorkerIdForUpdate(workerId)
+                .orElseThrow(() -> new AppException(ErrorCode.WALLET_NOT_FOUND));
+
+        wallet.setAvailableBalance(valueOrZero(wallet.getAvailableBalance()).add(transaction.getAmount()));
+        workerWalletRepository.save(wallet);
+
+        transaction.setStatus(TransactionStatus.Cancelled);
+        transaction.setAdminNote("Hủy yêu cầu rút tiền do thợ yêu cầu.");
+        transactionHistoryRepository.save(transaction);
+    }
+
+    @Override
+    @Transactional
+    public void approveWithdrawal(UUID transactionId, String referenceCode, String adminNote) {
+        TransactionHistory transaction = transactionHistoryRepository.findById(transactionId)
+                .orElseThrow(() -> new AppException(ErrorCode.WALLET_WITHDRAW_NOT_FOUND));
+
+        if (transaction.getTransactionType() != TransactionType.Withdraw) {
+            throw new AppException(ErrorCode.WALLET_WITHDRAW_NOT_FOUND);
+        }
+
+        if (transaction.getStatus() != TransactionStatus.Pending) {
+            throw new AppException(ErrorCode.WALLET_DEPOSIT_INVALID_STATUS);
+        }
+
+        transaction.setStatus(TransactionStatus.Success);
+        transaction.setGatewayReferenceCode(referenceCode);
+        transaction.setAdminNote(adminNote != null ? adminNote : "Admin đã duyệt yêu cầu rút tiền.");
+        transaction.setTransactionTime(OffsetDateTime.now());
+        transactionHistoryRepository.save(transaction);
+    }
+
+    @Override
+    @Transactional
+    public void rejectWithdrawal(UUID transactionId, String adminNote) {
+        TransactionHistory transaction = transactionHistoryRepository.findById(transactionId)
+                .orElseThrow(() -> new AppException(ErrorCode.WALLET_WITHDRAW_NOT_FOUND));
+
+        if (transaction.getTransactionType() != TransactionType.Withdraw) {
+            throw new AppException(ErrorCode.WALLET_WITHDRAW_NOT_FOUND);
+        }
+
+        if (transaction.getStatus() != TransactionStatus.Pending) {
+            throw new AppException(ErrorCode.WALLET_DEPOSIT_INVALID_STATUS);
+        }
+
+        UUID workerId = transaction.getWallet().getWorkerId();
+        WorkerWallet wallet = workerWalletRepository.findByWorkerIdForUpdate(workerId)
+                .orElseThrow(() -> new AppException(ErrorCode.WALLET_NOT_FOUND));
+
+        wallet.setAvailableBalance(valueOrZero(wallet.getAvailableBalance()).add(transaction.getAmount()));
+        workerWalletRepository.save(wallet);
+
+        transaction.setStatus(TransactionStatus.Failed);
+        transaction.setAdminNote(adminNote != null ? adminNote : "Admin từ chối yêu cầu rút tiền.");
+        transaction.setTransactionTime(OffsetDateTime.now());
+        transactionHistoryRepository.save(transaction);
+    }
+
+    private String generateWithdrawTransactionCode() {
+        String datePart = OffsetDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss"));
+
+        for (int attempt = 0; attempt < 5; attempt++) {
+            int randomPart = SECURE_RANDOM.nextInt(1000, 10000);
+            String code = "WDR" + datePart + randomPart;
+
+            if (!transactionHistoryRepository.existsByTransactionCode(code)) {
+                return code;
+            }
+        }
+
+        return "WDR" + UUID.randomUUID().toString().replace("-", "").substring(0, 20).toUpperCase();
+    }
+
+    private WithdrawResponse toWithdrawResponse(TransactionHistory transaction) {
+        WorkerBankAccount targetBankAccount = transaction.getTargetBankAccount();
+
+        return WithdrawResponse.builder()
+                .transactionId(transaction.getId())
+                .workerId(transaction.getWallet() != null ? transaction.getWallet().getWorkerId() : null)
+                .amount(valueOrZero(transaction.getAmount()))
+                .transactionCode(transaction.getTransactionCode())
+                .status(transaction.getStatus() != null ? transaction.getStatus().name() : null)
+                .transactionType(transaction.getTransactionType() != null ? transaction.getTransactionType().name() : null)
+                .targetBankName(targetBankAccount != null ? targetBankAccount.getBankName() : null)
+                .targetAccountNumber(targetBankAccount != null ? targetBankAccount.getAccountNumber() : null)
+                .targetAccountName(targetBankAccount != null ? targetBankAccount.getAccountName() : null)
+                .transactionTime(transaction.getTransactionTime())
+                .adminNote(transaction.getAdminNote())
+                .build();
+    }
+
+    private void simulateAutomaticApproval(UUID transactionId) {
+        java.util.concurrent.CompletableFuture.runAsync(() -> {
+            try {
+                Thread.sleep(5000);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                return;
+            }
+            try {
+                self.approveWithdrawal(transactionId, "MOCK_PAYOUT_" + System.currentTimeMillis(), "Tự động duyệt giả lập (Dev Mode)");
+            } catch (Exception e) {
+                System.err.println("Lỗi tự động duyệt giao dịch: " + e.getMessage());
+            }
+        });
     }
 }

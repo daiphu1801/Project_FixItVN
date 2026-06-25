@@ -30,6 +30,7 @@ public class WorkerDepositFragment extends BaseFragment<FragmentWorkerDepositBin
 
     private WorkerDepositViewModel viewModel;
     private CountDownTimer timer;
+    private androidx.activity.OnBackPressedCallback backPressedCallback;
 
     @Override
     protected FragmentWorkerDepositBinding inflateViewBinding(LayoutInflater inflater, ViewGroup container) {
@@ -38,8 +39,18 @@ public class WorkerDepositFragment extends BaseFragment<FragmentWorkerDepositBin
 
     @Override
     protected void setupViews() {
-        binding.btnBack.setOnClickListener(v ->
-                requireActivity().getOnBackPressedDispatcher().onBackPressed());
+        viewModel = new ViewModelProvider(this).get(WorkerDepositViewModel.class);
+
+        // Đăng ký bắt sự kiện nút Back hệ thống
+        backPressedCallback = new androidx.activity.OnBackPressedCallback(true) {
+            @Override
+            public void handleOnBackPressed() {
+                handleBackPress();
+            }
+        };
+        requireActivity().getOnBackPressedDispatcher().addCallback(getViewLifecycleOwner(), backPressedCallback);
+
+        binding.btnBack.setOnClickListener(v -> handleBackPress());
 
         // Gợi ý số tiền nhanh
         binding.btn50k.setOnClickListener(v -> binding.etAmount.setText("50000"));
@@ -49,9 +60,14 @@ public class WorkerDepositFragment extends BaseFragment<FragmentWorkerDepositBin
         // Tạo QR chuyển khoản
         binding.btnGenerateQR.setOnClickListener(v -> generateQrPayment());
 
+        // Nút Kiểm tra trạng thái giao dịch
+        binding.btnCheckStatus.setOnClickListener(v -> viewModel.checkDepositStatusManual());
+
+        // Nút Hủy yêu cầu nạp tiền
+        binding.btnCancelDeposit.setOnClickListener(v -> handleBackPress());
+
         // Nút hoàn thành giao dịch
-        binding.btnBackToWallet.setOnClickListener(v ->
-                requireActivity().getOnBackPressedDispatcher().onBackPressed());
+        binding.btnBackToWallet.setOnClickListener(v -> handleBackPress());
     }
 
     private void generateQrPayment() {
@@ -79,8 +95,6 @@ public class WorkerDepositFragment extends BaseFragment<FragmentWorkerDepositBin
 
     @Override
     protected void observeData() {
-        viewModel = new ViewModelProvider(this).get(WorkerDepositViewModel.class);
-
         String transactionId = "";
         if (getArguments() != null) {
             transactionId = getArguments().getString("transactionId", "");
@@ -144,6 +158,13 @@ public class WorkerDepositFragment extends BaseFragment<FragmentWorkerDepositBin
             }
         });
 
+        // Observer thông báo ngắn (Toast)
+        viewModel.toastMessage.observe(getViewLifecycleOwner(), msg -> {
+            if (msg != null && !msg.isEmpty()) {
+                Toast.makeText(requireContext(), msg, Toast.LENGTH_SHORT).show();
+            }
+        });
+
         // Observer loading
         viewModel.loading.observe(getViewLifecycleOwner(), isLoading -> {
             binding.layoutLoading.getRoot().setVisibility(isLoading ? View.VISIBLE : View.GONE);
@@ -160,6 +181,13 @@ public class WorkerDepositFragment extends BaseFragment<FragmentWorkerDepositBin
                 binding.scrollStep2.setVisibility(View.GONE);
                 binding.layoutSuccessState.setVisibility(View.VISIBLE);
                 Toast.makeText(requireContext(), "Nạp tiền thành công!", Toast.LENGTH_LONG).show();
+            } else if ("Cancelled".equalsIgnoreCase(status) || "CANCELLED".equals(status)) {
+                if (timer != null) timer.cancel();
+                Toast.makeText(requireContext(), "Yêu cầu nạp tiền đã bị hủy", Toast.LENGTH_SHORT).show();
+                if (backPressedCallback != null) {
+                    backPressedCallback.setEnabled(false);
+                }
+                requireActivity().getOnBackPressedDispatcher().onBackPressed();
             }
         });
     }
@@ -178,9 +206,40 @@ public class WorkerDepositFragment extends BaseFragment<FragmentWorkerDepositBin
             @Override
             public void onFinish() {
                 binding.tvCountdown.setText("Hết hạn");
-                Toast.makeText(requireContext(), "Mã QR đã hết hạn giao dịch", Toast.LENGTH_SHORT).show();
+                Toast.makeText(requireContext(), "Mã QR đã hết hạn giao dịch. Hệ thống đang tự động hủy...", Toast.LENGTH_SHORT).show();
+                viewModel.cancelDeposit(() -> {
+                    if (backPressedCallback != null) {
+                        backPressedCallback.setEnabled(false);
+                    }
+                    requireActivity().getOnBackPressedDispatcher().onBackPressed();
+                });
             }
         }.start();
+    }
+
+    private void handleBackPress() {
+        String currentStatus = viewModel.status.getValue();
+        if (binding.scrollStep2.getVisibility() == View.VISIBLE &&
+                ("PENDING".equalsIgnoreCase(currentStatus) || currentStatus == null)) {
+            new com.google.android.material.dialog.MaterialAlertDialogBuilder(requireContext())
+                    .setTitle("Hủy giao dịch?")
+                    .setMessage("Bạn đang có một yêu cầu nạp tiền chưa hoàn tất. Thoát màn hình này sẽ tự động hủy yêu cầu nạp tiền.")
+                    .setPositiveButton("Hủy giao dịch và thoát", (dialog, which) -> {
+                        viewModel.cancelDeposit(() -> {
+                            if (backPressedCallback != null) {
+                                backPressedCallback.setEnabled(false);
+                            }
+                            requireActivity().getOnBackPressedDispatcher().onBackPressed();
+                        });
+                    })
+                    .setNegativeButton("Đóng", (dialog, which) -> dialog.dismiss())
+                    .show();
+        } else {
+            if (backPressedCallback != null) {
+                backPressedCallback.setEnabled(false);
+            }
+            requireActivity().getOnBackPressedDispatcher().onBackPressed();
+        }
     }
 
     @Override
