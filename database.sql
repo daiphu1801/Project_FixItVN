@@ -217,6 +217,7 @@ CREATE TABLE complaint_warranties (
     customer_reason text,
     worker_response text,
     evidence_image_urls text,
+    worker_evidence_image_urls text,
     status varchar(50) DEFAULT 'Pending'
         CHECK (status IN ('Pending', 'Worker_Responded', 'Resolved')),
     deadline_to_respond timestamptz,
