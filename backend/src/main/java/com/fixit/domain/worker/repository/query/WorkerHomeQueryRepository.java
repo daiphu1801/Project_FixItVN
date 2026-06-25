@@ -4,6 +4,9 @@ import com.fixit.domain.worker.repository.projection.WorkerActiveBookingProjecti
 import com.fixit.domain.worker.repository.projection.WorkerScheduleItemProjection;
 import com.fixit.domain.worker.repository.projection.WorkerIncomeChartPointProjection;
 import com.fixit.domain.worker.repository.projection.WorkerPerformanceStatsProjection;
+import com.fixit.domain.worker.repository.projection.WorkerRatingDistributionProjection;
+import com.fixit.domain.worker.repository.projection.WorkerServiceBreakdownProjection;
+import com.fixit.domain.worker.repository.projection.WorkerJobCompletionRateProjection;
 import com.fixit.domain.worker.entity.Worker;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -159,4 +162,99 @@ public interface WorkerHomeQueryRepository extends JpaRepository<Worker, UUID> {
     List<WorkerIncomeChartPointProjection> findIncomeChartLast7Days(
             @Param("workerId") UUID workerId
     );
+
+    @Query(value = """
+            SELECT
+                blocks.label AS "label",
+                COALESCE(SUM(th.amount), 0) AS "income",
+                CAST(COALESCE(COUNT(DISTINCT th.booking_id), 0) AS int) AS "completedJobs"
+            FROM (
+                SELECT CURRENT_DATE AS start_time, CURRENT_DATE + INTERVAL '4 hours' AS end_time, '0-4h' AS label
+                UNION ALL
+                SELECT CURRENT_DATE + INTERVAL '4 hours', CURRENT_DATE + INTERVAL '8 hours', '4-8h'
+                UNION ALL
+                SELECT CURRENT_DATE + INTERVAL '8 hours', CURRENT_DATE + INTERVAL '12 hours', '8-12h'
+                UNION ALL
+                SELECT CURRENT_DATE + INTERVAL '12 hours', CURRENT_DATE + INTERVAL '16 hours', '12-16h'
+                UNION ALL
+                SELECT CURRENT_DATE + INTERVAL '16 hours', CURRENT_DATE + INTERVAL '20 hours', '16-20h'
+                UNION ALL
+                SELECT CURRENT_DATE + INTERVAL '20 hours', CURRENT_DATE + INTERVAL '24 hours', '20-24h'
+            ) blocks
+            LEFT JOIN transaction_histories th
+                ON th.transaction_time >= blocks.start_time
+               AND th.transaction_time < blocks.end_time
+               AND th.wallet_id = :workerId
+               AND th.transaction_type = 'Release'
+               AND th.status = 'Success'
+            GROUP BY blocks.label, blocks.start_time
+            ORDER BY blocks.start_time ASC
+            """, nativeQuery = true)
+    List<WorkerIncomeChartPointProjection> findIncomeChartToday(
+            @Param("workerId") UUID workerId
+    );
+
+    @Query(value = """
+            SELECT
+                weeks.label AS "label",
+                COALESCE(SUM(th.amount), 0) AS "income",
+                CAST(COALESCE(COUNT(DISTINCT th.booking_id), 0) AS int) AS "completedJobs"
+            FROM (
+                SELECT DATE_TRUNC('month', CURRENT_DATE) AS start_date, DATE_TRUNC('month', CURRENT_DATE) + INTERVAL '7 days' AS end_date, 'W1' AS label
+                UNION ALL
+                SELECT DATE_TRUNC('month', CURRENT_DATE) + INTERVAL '7 days', DATE_TRUNC('month', CURRENT_DATE) + INTERVAL '14 days', 'W2'
+                UNION ALL
+                SELECT DATE_TRUNC('month', CURRENT_DATE) + INTERVAL '14 days', DATE_TRUNC('month', CURRENT_DATE) + INTERVAL '21 days', 'W3'
+                UNION ALL
+                SELECT DATE_TRUNC('month', CURRENT_DATE) + INTERVAL '21 days', DATE_TRUNC('month', CURRENT_DATE) + INTERVAL '1 month', 'W4'
+            ) weeks
+            LEFT JOIN transaction_histories th
+                ON th.transaction_time >= weeks.start_date
+               AND th.transaction_time < weeks.end_date
+               AND th.wallet_id = :workerId
+               AND th.transaction_type = 'Release'
+               AND th.status = 'Success'
+            GROUP BY weeks.label, weeks.start_date
+            ORDER BY weeks.start_date ASC
+            """, nativeQuery = true)
+    List<WorkerIncomeChartPointProjection> findIncomeChartMonth(
+            @Param("workerId") UUID workerId
+    );
+
+    @Query(value = """
+            SELECT 
+                r.rating AS "rating",
+                CAST(COUNT(*) AS int) AS "count"
+            FROM reviews r
+            JOIN bookings b ON r.booking_id = b.id
+            WHERE b.worker_id = :workerId
+            GROUP BY r.rating
+            ORDER BY r.rating DESC
+            """, nativeQuery = true)
+    List<WorkerRatingDistributionProjection> findRatingDistribution(@Param("workerId") UUID workerId);
+
+    @Query(value = """
+            SELECT 
+                sc.service_name AS "categoryName",
+                CAST(COUNT(b.id) AS int) AS "bookingCount",
+                COALESCE(SUM(b.final_price), 0) AS "totalRevenue"
+            FROM bookings b
+            JOIN service_categories sc ON b.service_id = sc.id
+            WHERE b.worker_id = :workerId
+              AND b.status = 'Completed'
+            GROUP BY sc.service_name
+            ORDER BY "totalRevenue" DESC
+            """, nativeQuery = true)
+    List<WorkerServiceBreakdownProjection> findServiceBreakdown(@Param("workerId") UUID workerId);
+
+    @Query(value = """
+            SELECT 
+                CAST(COUNT(*) AS int) AS "totalJobs",
+                CAST(SUM(CASE WHEN status = 'Completed' THEN 1 ELSE 0 END) AS int) AS "completedJobs",
+                CAST(SUM(CASE WHEN status = 'Cancelled' THEN 1 ELSE 0 END) AS int) AS "cancelledJobs"
+            FROM bookings
+            WHERE worker_id = :workerId
+              AND status IN ('Completed', 'Cancelled')
+            """, nativeQuery = true)
+    WorkerJobCompletionRateProjection findJobCompletionRate(@Param("workerId") UUID workerId);
 }

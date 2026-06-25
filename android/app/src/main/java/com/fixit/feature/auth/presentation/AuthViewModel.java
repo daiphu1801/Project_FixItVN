@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModel;
 
 import com.fixit.core.common.Result;
 import com.fixit.feature.auth.domain.model.Session;
+import com.fixit.feature.auth.domain.usecase.GetCurrentSessionUseCase;
 import com.fixit.feature.auth.domain.usecase.LoginUseCase;
 import com.fixit.feature.auth.domain.usecase.RegisterUseCase;
 
@@ -17,6 +18,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel;
 public class AuthViewModel extends ViewModel {
     private final LoginUseCase loginUseCase;
     private final RegisterUseCase registerUseCase;
+    private final GetCurrentSessionUseCase getCurrentSessionUseCase;
 
     private final MutableLiveData<AuthUiState> _uiState = new MutableLiveData<>(AuthUiState.idle());
     public LiveData<AuthUiState> uiState = _uiState;
@@ -25,9 +27,28 @@ public class AuthViewModel extends ViewModel {
     public LiveData<AuthEvent> event = _event;
 
     @Inject
-    public AuthViewModel(LoginUseCase loginUseCase, RegisterUseCase registerUseCase) {
+    public AuthViewModel(LoginUseCase loginUseCase, RegisterUseCase registerUseCase,
+                         GetCurrentSessionUseCase getCurrentSessionUseCase) {
         this.loginUseCase = loginUseCase;
         this.registerUseCase = registerUseCase;
+        this.getCurrentSessionUseCase = getCurrentSessionUseCase;
+    }
+
+    /**
+     * Kiểm tra session đã lưu khi khởi động app.
+     * Nếu có session hợp lệ → phát event navigate để bỏ qua màn login.
+     * Nếu không → không làm gì, app hiển thị màn login bình thường.
+     */
+    public void checkExistingSession() {
+        Session session = getCurrentSessionUseCase.execute();
+        android.util.Log.d("FixIt_AuthViewModel", "checkExistingSession: session = " + session);
+        if (session != null) {
+            android.util.Log.d("FixIt_AuthViewModel", "checkExistingSession: session is NOT null! Navigating automatically to role: " + 
+                (session.getUser() != null ? session.getUser().getRole() : "null"));
+            _event.setValue(AuthEvent.navigate(session));
+        } else {
+            android.util.Log.d("FixIt_AuthViewModel", "checkExistingSession: session is null. Showing login screen.");
+        }
     }
 
     public void login(String phone, String password, String role) {

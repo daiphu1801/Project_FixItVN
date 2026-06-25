@@ -28,7 +28,9 @@ public class WorkerProfileMapper {
                 Boolean.TRUE.equals(response.getAvailable()),
                 decimalToDouble(response.getReputationScore()),
                 safeText(response.getExperienceDescription(), ""),
-                safeText(response.getServiceArea(), "")
+                safeText(response.getServiceArea(), ""),
+                decimalToDouble(response.getLatitude()),
+                decimalToDouble(response.getLongitude())
         );
     }
 
@@ -36,9 +38,11 @@ public class WorkerProfileMapper {
         return new WorkerProfileUpdateRequest(
                 trimToNull(input.getFullName()),
                 trimToNull(input.getEmail()),
-                trimToNull(input.getAvatarUrl()),
+                null,
                 trimToNull(input.getExperienceDescription()),
-                trimToNull(input.getServiceArea())
+                trimToNull(input.getServiceArea()),
+                input.getLatitude(),
+                input.getLongitude()
         );
     }
 

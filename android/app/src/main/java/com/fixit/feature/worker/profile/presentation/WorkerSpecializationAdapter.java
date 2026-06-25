@@ -45,6 +45,11 @@ public class WorkerSpecializationAdapter extends RecyclerView.Adapter<WorkerSpec
         SpecializationItem item = items.get(position);
         holder.tvServiceName.setText(item.getName());
 
+        // Remove old text watcher before setting text to avoid triggering it
+        if (holder.textWatcher != null) {
+            holder.edtBasePrice.removeTextChangedListener(holder.textWatcher);
+        }
+
         if (item.getBasePrice() != null) {
             holder.edtBasePrice.setText(String.valueOf(item.getBasePrice().intValue()));
         } else {
@@ -53,11 +58,14 @@ public class WorkerSpecializationAdapter extends RecyclerView.Adapter<WorkerSpec
 
         holder.btnDeleteService.setOnClickListener(v -> {
             if (deleteListener != null) {
-                deleteListener.onDeleteClick(position);
+                int pos = holder.getBindingAdapterPosition();
+                if (pos != RecyclerView.NO_POSITION) {
+                    deleteListener.onDeleteClick(pos);
+                }
             }
         });
 
-        holder.edtBasePrice.addTextChangedListener(new TextWatcher() {
+        holder.textWatcher = new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
 
@@ -76,7 +84,8 @@ public class WorkerSpecializationAdapter extends RecyclerView.Adapter<WorkerSpec
                     item.setBasePrice(null);
                 }
             }
-        });
+        };
+        holder.edtBasePrice.addTextChangedListener(holder.textWatcher);
     }
 
     @Override
@@ -92,6 +101,7 @@ public class WorkerSpecializationAdapter extends RecyclerView.Adapter<WorkerSpec
         TextView tvServiceName;
         ImageView btnDeleteService;
         EditText edtBasePrice;
+        TextWatcher textWatcher;
 
         ViewHolder(View itemView) {
             super(itemView);

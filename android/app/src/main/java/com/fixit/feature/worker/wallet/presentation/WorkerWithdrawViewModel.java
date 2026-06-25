@@ -1,3 +1,5 @@
+// PATH: android/app/src/main/java/com/fixit/feature/worker/wallet/presentation/WorkerWithdrawViewModel.java
+
 package com.fixit.feature.worker.wallet.presentation;
 
 import androidx.lifecycle.LiveData;
@@ -5,7 +7,6 @@ import androidx.lifecycle.MutableLiveData;
 
 import com.fixit.core.ui.BaseViewModel;
 import com.fixit.feature.worker.wallet.domain.model.BankAccount;
-import com.fixit.feature.worker.wallet.domain.model.WalletBalance;
 import com.fixit.feature.worker.wallet.domain.usecase.CreateWithdrawalUseCase;
 import com.fixit.feature.worker.wallet.domain.usecase.GetBankAccountsUseCase;
 import com.fixit.feature.worker.wallet.domain.usecase.GetWalletBalanceUseCase;
@@ -23,7 +24,7 @@ public class WorkerWithdrawViewModel extends BaseViewModel {
     private final GetBankAccountsUseCase getBankAccountsUseCase;
     private final CreateWithdrawalUseCase createWithdrawalUseCase;
 
-    private final MutableLiveData<String> _availableBalanceStr = new MutableLiveData<>();
+    private final MutableLiveData<String> _availableBalanceStr = new MutableLiveData<>("...");
     public LiveData<String> availableBalanceStr = _availableBalanceStr;
 
     private final MutableLiveData<Long> _availableAmount = new MutableLiveData<>(0L);
@@ -34,6 +35,9 @@ public class WorkerWithdrawViewModel extends BaseViewModel {
 
     private final MutableLiveData<String> _message = new MutableLiveData<>();
     public LiveData<String> message = _message;
+
+    private final MutableLiveData<Boolean> _loading = new MutableLiveData<>(false);
+    public LiveData<Boolean> loading = _loading;
 
     @Inject
     public WorkerWithdrawViewModel(
@@ -48,52 +52,60 @@ public class WorkerWithdrawViewModel extends BaseViewModel {
     }
 
     public void loadData() {
-        WalletBalance balance = getWalletBalanceUseCase.execute();
-        _availableBalanceStr.setValue(balance.getAvailableBalance());
+        _loading.setValue(true);
 
-        try {
-            String cleanBal = balance.getAvailableBalance().replace(" đ", "").replace(".", "").trim();
-            _availableAmount.setValue(Long.parseLong(cleanBal));
-        } catch (Exception ignored) {
-            _availableAmount.setValue(0L);
-        }
+        // Load số dư bất đồng bộ
+        getWalletBalanceUseCase.execute(result -> {
+            if (result.isSuccess() && result.getData() != null) {
+                String balStr = result.getData().getAvailableBalance();
+                _availableBalanceStr.postValue(balStr);
+                try {
+                    String clean = balStr.replace(" ₫", "").replace(".", "").trim();
+                    _availableAmount.postValue(Long.parseLong(clean));
+                } catch (Exception ignored) {
+                    _availableAmount.postValue(0L);
+                }
+            }
+        });
 
+        // Load danh sách tài khoản ngân hàng
         getBankAccountsUseCase.execute(result -> {
+            _loading.postValue(false);
             if (result.isSuccess()) {
-                _defaultBankAccount.setValue(findDefaultBankAccount(result.getData()));
+                _defaultBankAccount.postValue(findDefaultBankAccount(result.getData()));
             } else {
-                _defaultBankAccount.setValue(null);
+                _defaultBankAccount.postValue(null);
                 if (result.getError() != null) {
-                    _message.setValue(result.getError().getMessage());
+                    _message.postValue(result.getError().getMessage());
                 }
             }
         });
     }
 
-    public boolean submitWithdrawal(long amount) {
+    public void submitWithdrawal(long amount) {
         BankAccount acc = _defaultBankAccount.getValue();
         Long available = _availableAmount.getValue();
 
-        if (acc == null || available == null) {
-            return false;
-        }
-        if (amount > available) {
-            return false;
+        if (acc == null || available == null || amount > available) {
+            _message.setValue("Số tiền rút vượt quá số dư khả dụng");
+            return;
         }
 
-        createWithdrawalUseCase.execute(amount, acc.getId());
-        return true;
+        _loading.setValue(true);
+        createWithdrawalUseCase.execute(amount, acc.getId(), result -> {
+            _loading.postValue(false);
+            if (result.isSuccess()) {
+                _message.postValue("Yêu cầu rút tiền đã được gửi");
+            } else if (result.getError() != null) {
+                _message.postValue(result.getError().getMessage());
+            }
+        });
     }
 
     private BankAccount findDefaultBankAccount(List<BankAccount> accounts) {
-        if (accounts == null || accounts.isEmpty()) {
-            return null;
-        }
-
+        if (accounts == null || accounts.isEmpty()) return null;
         for (BankAccount acc : accounts) {
-            if (acc.isDefault()) {
-                return acc;
-            }
+            if (acc.isDefault()) return acc;
         }
         return accounts.get(0);
     }

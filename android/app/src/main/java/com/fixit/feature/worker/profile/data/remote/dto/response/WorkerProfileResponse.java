@@ -39,6 +39,12 @@ public class WorkerProfileResponse {
     @SerializedName("serviceArea")
     private String serviceArea;
 
+    @SerializedName("latitude")
+    private BigDecimal latitude;
+
+    @SerializedName("longitude")
+    private BigDecimal longitude;
+
     public String getWorkerId() {
         return workerId;
     }
@@ -81,5 +87,13 @@ public class WorkerProfileResponse {
 
     public String getServiceArea() {
         return serviceArea;
+    }
+
+    public BigDecimal getLatitude() {
+        return latitude;
+    }
+
+    public BigDecimal getLongitude() {
+        return longitude;
     }
 }

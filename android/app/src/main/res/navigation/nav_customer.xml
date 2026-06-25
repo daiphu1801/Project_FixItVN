@@ -87,6 +87,21 @@
         tools:layout="@layout/fragment_order_detail_finished" />
 
     <fragment
+        android:id="@+id/nav_customer_worker_public_profile"
+        android:name="com.fixit.feature.customer.workerprofile.presentation.WorkerPublicProfileFragment"
+        android:label="Hồ sơ thợ"
+        tools:layout="@layout/fragment_worker_public_profile">
+        <argument
+            android:name="workerId"
+            app:argType="string"
+            android:defaultValue="" />
+        <argument
+            android:name="workerName"
+            app:argType="string"
+            android:defaultValue="Thợ" />
+    </fragment>
+
+    <fragment
         android:id="@+id/nav_customer_order_detail"
         android:name="com.fixit.feature.customer.order.presentation.CustomerOrderDetailFragment"
         android:label="Chi tiết đơn hàng"
@@ -132,6 +147,49 @@
             android:name="workerId"
             app:argType="string"
             android:defaultValue="" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/nav_worker_public_profile"
+        android:name="com.fixit.feature.customer.workerprofile.presentation.WorkerPublicProfileFragment"
+        android:label="Hồ sơ thợ"
+        tools:layout="@layout/fragment_worker_public_profile">
+        <argument
+            android:name="workerId"
+            app:argType="string"
+            android:defaultValue="" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/confirmPaymentFragment"
+        android:name="com.fixit.feature.payment.presentation.ConfirmPaymentFragment"
+        android:label="Xác nhận thanh toán"
+        tools:layout="@layout/fragment_confirm_payment">
+        <argument
+            android:name="isWorker"
+            app:argType="boolean"
+            android:defaultValue="false" />
+    </fragment>
+
+    <!-- KHIẾU NẠI / BẢO HÀNH -->
+    <fragment
+        android:id="@+id/nav_customer_complaint_create"
+        android:name="com.fixit.feature.customer.complaint.presentation.CustomerComplaintCreateFragment"
+        android:label="Tạo khiếu nại"
+        tools:layout="@layout/fragment_customer_complaint_create">
+        <argument
+            android:name="bookingId"
+            app:argType="string" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/nav_customer_complaint_detail"
+        android:name="com.fixit.feature.customer.complaint.presentation.CustomerComplaintDetailFragment"
+        android:label="Chi tiết khiếu nại"
+        tools:layout="@layout/fragment_customer_complaint_detail">
+        <argument
+            android:name="bookingId"
+            app:argType="string" />
     </fragment>
 
 </navigation>

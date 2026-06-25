@@ -21,7 +21,7 @@ public interface AuthApi {
     Call<AuthResponse> loginWithGoogle(@Body AuthRequest.GoogleLogin request);
 
     @POST("api/v1/auth/logout")
-    Call<String> logout(@Query("refreshToken") String refreshToken);
+    Call<Void> logout(@Query("refreshToken") String refreshToken);
 
     @POST("api/v1/auth/refresh-token")
     Call<AuthResponse> refreshToken(@Body AuthRequest.RefreshToken request);
@@ -39,7 +39,7 @@ public interface AuthApi {
     Call<String> resetPassword(@Body AuthRequest.ResetPassword request);
 
     @PATCH("api/v1/auth/change-password")
-    Call<String> changePassword(@Body AuthRequest.ChangePassword request);
+    Call<okhttp3.ResponseBody> changePassword(@Body AuthRequest.ChangePassword request);
 
     @GET("api/v1/users/me")
     Call<AuthResponse.UserInfo> getCurrentUser();

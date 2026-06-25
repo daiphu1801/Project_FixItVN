@@ -6,6 +6,8 @@ import com.fixit.domain.service_categories.repository.ServiceCategoryRepository;
 import com.fixit.domain.worker.dto.request.WorkerProfileUpdateRequest;
 import com.fixit.domain.worker.dto.request.WorkerSkillUpsertItemRequest;
 import com.fixit.domain.worker.dto.request.WorkerSkillsUpdateRequest;
+import com.fixit.domain.worker.dto.response.PublicWorkerProfileResponse;
+import com.fixit.domain.worker.dto.response.PublicWorkerSkillResponse;
 import com.fixit.domain.worker.dto.response.WorkerProfileResponse;
 import com.fixit.domain.worker.dto.response.WorkerSkillResponse;
 import com.fixit.domain.worker.dto.response.WorkerSkillsResponse;
@@ -61,6 +63,14 @@ public class WorkerProfileServiceImpl implements WorkerProfileService {
             worker.setServiceArea(trimToNull(request.getServiceArea()));
         }
 
+        if (request.getLatitude() != null) {
+            worker.setLatitude(request.getLatitude());
+        }
+
+        if (request.getLongitude() != null) {
+            worker.setLongitude(request.getLongitude());
+        }
+
         User user = worker.getUser();
 
         if (user != null) {
@@ -68,9 +78,7 @@ public class WorkerProfileServiceImpl implements WorkerProfileService {
                 user.setEmail(trimToNull(request.getEmail()));
             }
 
-            if (request.getAvatarUrl() != null) {
-                user.setAvatarUrl(trimToNull(request.getAvatarUrl()));
-            }
+            // Avatar is updated only through /api/v1/users/me/avatar with an uploadId.
         }
 
         return toProfileResponse(worker);
@@ -148,6 +156,42 @@ public class WorkerProfileServiceImpl implements WorkerProfileService {
                 .build();
     }
 
+    @Override
+    @Transactional(readOnly = true)
+    public PublicWorkerProfileResponse getPublicProfile(String workerId) {
+        Worker worker = getWorker(UUID.fromString(workerId));
+        User user = worker.getUser();
+        
+        return PublicWorkerProfileResponse.builder()
+                .workerId(worker.getWorkerId())
+                .fullName(worker.getFullName())
+                .avatarUrl(user != null ? user.getAvatarUrl() : null)
+                .reputationScore(worker.getReputationScore())
+                .totalReviews(0) // Mock for now
+                .experienceDescription(worker.getExperienceDescription())
+                .serviceArea(worker.getServiceArea())
+                .available(worker.getAvailable())
+                .build();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<PublicWorkerSkillResponse> getPublicSkills(String workerId) {
+        return workerServiceRepository
+                .findByWorker_WorkerId(UUID.fromString(workerId))
+                .stream()
+                .map(workerService -> {
+                    ServiceCategory category = workerService.getServiceCategory();
+                    return PublicWorkerSkillResponse.builder()
+                            .serviceId(category != null ? category.getId() : null)
+                            .serviceName(category != null ? category.getServiceName() : null)
+                            .iconUrl(category != null ? category.getIconUrl() : null)
+                            .basePrice(workerService.getBasePrice())
+                            .build();
+                })
+                .toList();
+    }
+
     private Worker getWorker(UUID workerId) {
         return workerRepository.findById(workerId)
                 .orElseThrow(() -> new AppException(ErrorCode.WORKER_NOT_FOUND));
@@ -164,7 +208,7 @@ public class WorkerProfileServiceImpl implements WorkerProfileService {
                 .avatarUrl(user != null ? user.getAvatarUrl() : null)
                 .identityCard(worker.getIdentityCard())
                 .verificationStatus(worker.getVerificationStatus() != null
-                        ? worker.getVerificationStatus().name()
+                        ? worker.getVerificationStatus().name().toUpperCase(Locale.ROOT)
                         : null)
                 .available(worker.getAvailable())
                 .reputationScore(worker.getReputationScore())

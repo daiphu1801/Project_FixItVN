@@ -4,14 +4,14 @@ import com.google.gson.annotations.SerializedName;
 
 public class AuthRequest {
     public static class Login {
-        @SerializedName("identifier")
-        private String identifier;
+        @SerializedName("phoneNumber")
+        private String phoneNumber;
 
         @SerializedName("password")
         private String password;
 
-        public Login(String identifier, String password) {
-            this.identifier = identifier;
+        public Login(String phoneNumber, String password) {
+            this.phoneNumber = phoneNumber;
             this.password = password;
         }
     }

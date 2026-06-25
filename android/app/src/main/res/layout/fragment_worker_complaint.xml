@@ -1,11 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="#f9fafb"
-    android:orientation="vertical">
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#f9fafb"
+        android:orientation="vertical">
 
     <!-- ═══════════════════════════════════════════════
          TOPBAR
@@ -257,6 +261,7 @@
 
             <!-- Nút thêm ảnh -->
             <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnAddEvidence"
                 style="@style/Widget.MaterialComponents.Button.OutlinedButton"
                 android:layout_width="match_parent"
                 android:layout_height="56dp"
@@ -267,6 +272,23 @@
                 app:icon="@drawable/ic_lucide_camera"
                 app:iconTint="#4b5563"
                 app:strokeColor="#d1d5db" />
+
+            <!-- Danh sách ảnh bằng chứng đã chọn -->
+            <HorizontalScrollView
+                android:id="@+id/hsvEvidenceImages"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="16dp"
+                android:layout_marginTop="8dp"
+                android:scrollbars="none"
+                android:visibility="gone">
+
+                <LinearLayout
+                    android:id="@+id/llEvidenceImages"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal" />
+            </HorizontalScrollView>
 
             <!-- ═══════════════════════════════════════════════
                  NÚT HÀNH ĐỘNG
@@ -301,5 +323,13 @@
 
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
+    </LinearLayout>
 
-</LinearLayout>
+    <include
+        android:id="@+id/layoutLoading"
+        layout="@layout/layout_loading"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone" />
+
+</FrameLayout>

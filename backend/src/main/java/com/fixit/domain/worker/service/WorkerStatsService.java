@@ -4,5 +4,5 @@ import com.fixit.domain.worker.dto.response.WorkerStatsResponse;
 
 public interface WorkerStatsService {
 
-    WorkerStatsResponse getMyStats();
+    WorkerStatsResponse getMyStats(String period);
 }

@@ -9,7 +9,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.time.OffsetDateTime;
 import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.UUID;
 
@@ -27,19 +29,22 @@ public class WorkerScheduleServiceImpl implements WorkerScheduleService {
     public WorkerScheduleResponse getMySchedule(LocalDate date) {
         UUID workerId = currentWorkerResolver.getCurrentWorkerId();
 
-        LocalDate targetDate = date != null
-                ? date
-                : LocalDate.now(APP_ZONE);
+        List<WorkerScheduleItemProjection> projections;
 
-        List<WorkerScheduleItemProjection> projections =
-                workerScheduleQueryRepository.findScheduleByWorkerIdAndDate(workerId, targetDate);
+        if (date != null) {
+            // Có date cụ thể → lọc theo ngày (dùng cho lịch hẹn trang chủ)
+            projections = workerScheduleQueryRepository.findScheduleByWorkerIdAndDate(workerId, date);
+        } else {
+            // Không có date → trả tất cả đơn active (dùng cho tab Đơn hàng trên Android)
+            projections = workerScheduleQueryRepository.findActiveByWorkerId(workerId);
+        }
 
         List<WorkerScheduleResponse.ScheduleItem> items = projections.stream()
                 .map(this::toScheduleItem)
                 .toList();
 
         return WorkerScheduleResponse.builder()
-                .date(targetDate)
+                .date(date)
                 .totalItems(items.size())
                 .empty(items.isEmpty())
                 .items(items)
@@ -54,11 +59,17 @@ public class WorkerScheduleServiceImpl implements WorkerScheduleService {
                 .address(p.getAddress())
                 .status(p.getStatus())
                 .statusText(toStatusText(p.getStatus()))
-                .scheduledTime(p.getScheduledTime())
+                .scheduledTime((p.getScheduledTime()))
                 .finalPrice(p.getFinalPrice())
                 .paymentMethod(p.getPaymentMethod())
                 .issueDescription(p.getIssueDescription())
                 .build();
+    }
+
+    private String formatDateTime(OffsetDateTime dt) {
+        if (dt == null) return null;
+        return dt.atZoneSameInstant(ZoneId.of("Asia/Ho_Chi_Minh"))
+                 .format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss"));
     }
 
     private String toStatusText(String status) {

@@ -19,6 +19,7 @@ import java.util.TreeMap;
 public class CloudinaryUploadSigner implements StorageUploadSigner {
 
     private final CloudinaryProperties properties;
+    private final com.cloudinary.Cloudinary cloudinary;
 
     @Override
     public String getUploadUrl() {
@@ -29,6 +30,18 @@ public class CloudinaryUploadSigner implements StorageUploadSigner {
     @Override
     public String buildFileUrl(String objectKey) {
         ensureConfigured();
+        if (isSecureKyc(objectKey)) {
+            try {
+                return cloudinary.url()
+                        .resourceType("image")
+                        .type("authenticated")
+                        .signed(true)
+                        .generate(objectKey);
+            } catch (Exception e) {
+                // Fallback to unsigned authenticated URL if generation fails
+                return "https://res.cloudinary.com/" + properties.getCloudName() + "/image/authenticated/" + objectKey;
+            }
+        }
         return "https://res.cloudinary.com/" + properties.getCloudName() + "/image/upload/" + objectKey;
     }
 
@@ -44,6 +57,12 @@ public class CloudinaryUploadSigner implements StorageUploadSigner {
         paramsToSign.put("overwrite", "false");
         paramsToSign.put("context", "purpose=" + purpose.name());
 
+        if (purpose == UploadPurpose.WORKER_KYC_FRONT 
+                || purpose == UploadPurpose.WORKER_KYC_BACK 
+                || purpose == UploadPurpose.WORKER_KYC_SELFIE) {
+            paramsToSign.put("type", "authenticated");
+        }
+
         String signature = sign(paramsToSign, properties.getApiSecret());
 
         Map<String, String> formData = new HashMap<>(paramsToSign);
@@ -51,6 +70,13 @@ public class CloudinaryUploadSigner implements StorageUploadSigner {
         formData.put("signature", signature);
 
         return formData;
+    }
+
+    private boolean isSecureKyc(String objectKey) {
+        if (objectKey == null) return false;
+        return objectKey.contains("WORKER_KYC_FRONT") 
+                || objectKey.contains("WORKER_KYC_BACK") 
+                || objectKey.contains("WORKER_KYC_SELFIE");
     }
 
     private String sign(Map<String, String> params, String apiSecret) {

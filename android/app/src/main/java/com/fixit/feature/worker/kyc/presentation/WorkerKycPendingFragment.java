@@ -9,6 +9,9 @@ import androidx.navigation.Navigation;
 import com.fixit.core.ui.BaseFragment;
 import com.fixit.databinding.FragmentWorkerKycPendingBinding;
 
+import dagger.hilt.android.AndroidEntryPoint;
+
+@AndroidEntryPoint
 public class WorkerKycPendingFragment extends BaseFragment<FragmentWorkerKycPendingBinding> {
 
     @Override

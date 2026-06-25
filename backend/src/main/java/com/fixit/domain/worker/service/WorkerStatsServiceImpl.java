@@ -3,6 +3,9 @@ package com.fixit.domain.worker.service;
 import com.fixit.domain.worker.dto.response.WorkerStatsResponse;
 import com.fixit.domain.worker.repository.projection.WorkerIncomeChartPointProjection;
 import com.fixit.domain.worker.repository.projection.WorkerPerformanceStatsProjection;
+import com.fixit.domain.worker.repository.projection.WorkerRatingDistributionProjection;
+import com.fixit.domain.worker.repository.projection.WorkerServiceBreakdownProjection;
+import com.fixit.domain.worker.repository.projection.WorkerJobCompletionRateProjection;
 import com.fixit.domain.worker.repository.query.WorkerHomeQueryRepository;
 import com.fixit.domain.worker.support.CurrentWorkerResolver;
 import lombok.RequiredArgsConstructor;
@@ -23,19 +26,35 @@ public class WorkerStatsServiceImpl implements WorkerStatsService {
 
     @Override
     @Transactional(readOnly = true)
-    public WorkerStatsResponse getMyStats() {
+    public WorkerStatsResponse getMyStats(String period) {
         UUID workerId = currentWorkerResolver.getCurrentWorkerId();
 
         WorkerPerformanceStatsProjection stats =
                 workerHomeQueryRepository.findStatsOverview(workerId);
 
-        List<WorkerIncomeChartPointProjection> chart =
-                workerHomeQueryRepository.findIncomeChartLast7Days(workerId);
+        List<WorkerIncomeChartPointProjection> chart;
+        String normalizedPeriod = period != null ? period.toLowerCase() : "week";
+
+        switch (normalizedPeriod) {
+            case "today":
+                chart = workerHomeQueryRepository.findIncomeChartToday(workerId);
+                break;
+            case "month":
+                chart = workerHomeQueryRepository.findIncomeChartMonth(workerId);
+                break;
+            case "week":
+            default:
+                chart = workerHomeQueryRepository.findIncomeChartLast7Days(workerId);
+                break;
+        }
 
         return WorkerStatsResponse.builder()
                 .workerId(workerId)
                 .overview(toStatsOverview(stats))
                 .incomeChart(toIncomeChart(chart))
+                .ratingDistribution(toRatingDistribution(workerHomeQueryRepository.findRatingDistribution(workerId)))
+                .serviceBreakdown(toServiceBreakdown(workerHomeQueryRepository.findServiceBreakdown(workerId)))
+                .completionRate(toCompletionRate(workerHomeQueryRepository.findJobCompletionRate(workerId)))
                 .build();
     }
 
@@ -85,5 +104,75 @@ public class WorkerStatsServiceImpl implements WorkerStatsService {
 
     private Integer defaultInt(Integer value) {
         return value == null ? 0 : value;
+    }
+
+    private List<WorkerStatsResponse.RatingCount> toRatingDistribution(
+            List<WorkerRatingDistributionProjection> projections
+    ) {
+        if (projections == null) {
+            return Collections.emptyList();
+        }
+        return projections.stream()
+                .map(p -> WorkerStatsResponse.RatingCount.builder()
+                        .rating(p.getRating())
+                        .count(p.getCount())
+                        .build())
+                .toList();
+    }
+
+    private List<WorkerStatsResponse.ServiceBreakdown> toServiceBreakdown(
+            List<WorkerServiceBreakdownProjection> projections
+    ) {
+        if (projections == null || projections.isEmpty()) {
+            return Collections.emptyList();
+        }
+        BigDecimal totalRevenueAllServices = projections.stream()
+                .map(p -> defaultMoney(p.getTotalRevenue()))
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+        return projections.stream()
+                .map(p -> {
+                    BigDecimal rev = defaultMoney(p.getTotalRevenue());
+                    double pct = 0.0;
+                    if (totalRevenueAllServices.compareTo(BigDecimal.ZERO) > 0) {
+                        pct = rev.multiply(BigDecimal.valueOf(100))
+                                 .divide(totalRevenueAllServices, 2, java.math.RoundingMode.HALF_UP)
+                                 .doubleValue();
+                    }
+                    return WorkerStatsResponse.ServiceBreakdown.builder()
+                            .categoryName(p.getCategoryName())
+                            .bookingCount(p.getBookingCount())
+                            .totalRevenue(rev)
+                            .revenuePercentage(pct)
+                            .build();
+                })
+                .toList();
+    }
+
+    private WorkerStatsResponse.JobCompletionRate toCompletionRate(
+            WorkerJobCompletionRateProjection p
+    ) {
+        if (p == null) {
+            return WorkerStatsResponse.JobCompletionRate.builder()
+                    .totalJobs(0)
+                    .completedJobs(0)
+                    .cancelledJobs(0)
+                    .completionRatePercent(100.0)
+                    .build();
+        }
+        int total = defaultInt(p.getTotalJobs());
+        int completed = defaultInt(p.getCompletedJobs());
+        int cancelled = defaultInt(p.getCancelledJobs());
+        double pct = 100.0;
+        if (total > 0) {
+            pct = ((double) completed / total) * 100.0;
+            pct = Math.round(pct * 10.0) / 10.0;
+        }
+        return WorkerStatsResponse.JobCompletionRate.builder()
+                .totalJobs(total)
+                .completedJobs(completed)
+                .cancelledJobs(cancelled)
+                .completionRatePercent(pct)
+                .build();
     }
 }

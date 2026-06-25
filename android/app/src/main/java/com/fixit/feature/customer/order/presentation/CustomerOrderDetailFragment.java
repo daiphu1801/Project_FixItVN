@@ -13,7 +13,8 @@ public class CustomerOrderDetailFragment extends BaseFragment<FragmentCustomerOr
 
     @NonNull
     @Override
-    protected FragmentCustomerOrderDetailBinding inflateViewBinding(@NonNull LayoutInflater inflater, ViewGroup container) {
+    protected FragmentCustomerOrderDetailBinding inflateViewBinding(@NonNull LayoutInflater inflater,
+            ViewGroup container) {
         return FragmentCustomerOrderDetailBinding.inflate(inflater, container, false);
     }
 
@@ -22,6 +23,7 @@ public class CustomerOrderDetailFragment extends BaseFragment<FragmentCustomerOr
         binding.ivClose.setOnClickListener(v -> {
             if (navController != null) {
                 navController.popBackStack();
+                
             }
         });
 
@@ -30,8 +32,30 @@ public class CustomerOrderDetailFragment extends BaseFragment<FragmentCustomerOr
                 navController.navigate(R.id.nav_customer_cancel_order);
             }
         });
+           binding.btnMessage.setOnClickListener(v -> {
+            android.os.Bundle args = new android.os.Bundle();
+            // Do đây là bản mẫu thử nghiệm (MVP Mock Data), chúng ta sẽ truyền thông tin Thợ mẫu
+            args.putString("workerId", "worker_tuan_123"); // ID Thợ mẫu
+            args.putString("workerName", "Anh Tuấn - Thợ Điện"); // Tên Thợ mẫu
+            
+            if (navController != null) {
+                // Điều hướng sang màn hình Chat chi tiết của Khách hàng
+                navController.navigate(R.id.nav_customer_chat, args);
+            }
+        });
 
-        // Other bindings for Technician info, etc.
+        // Open Worker Public Profile when clicking on avatar or name
+        binding.ivTechnicianAvatar.setOnClickListener(v -> navigateToWorkerProfile());
+        binding.tvTechnicianName.setOnClickListener(v -> navigateToWorkerProfile());
+    }
+
+    private void navigateToWorkerProfile() {
+        if (navController != null) {
+            android.os.Bundle args = new android.os.Bundle();
+            // TODO: Replace with real worker ID from order details when API is integrated
+            args.putString("workerId", com.fixit.core.common.Constants.DEBUG_WORKER_ID);
+            navController.navigate(R.id.nav_worker_public_profile, args);
+        }
     }
 
     @Override

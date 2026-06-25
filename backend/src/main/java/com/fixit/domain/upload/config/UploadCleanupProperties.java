@@ -14,7 +14,7 @@ public class UploadCleanupProperties {
     /**
      * Bật/tắt scheduler cleanup.
      */
-    private boolean enabled = true;
+    private boolean enabled = false;
 
     /**
      * Số bản ghi xử lý tối đa mỗi lần chạy.

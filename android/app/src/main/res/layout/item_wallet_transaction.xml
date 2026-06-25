@@ -51,22 +51,34 @@
         android:id="@+id/tvTransactionAmount"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
         android:text="+ 500.000 đ"
         android:textColor="#22c55e"
         android:textSize="16sp"
         android:textStyle="bold"
         app:layout_constraintTop_toTopOf="@id/ivTransactionIcon"
-        app:layout_constraintEnd_toEndOf="parent" />
+        app:layout_constraintEnd_toStartOf="@id/ivChevron" />
 
     <TextView
         android:id="@+id/tvTransactionStatus"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="2dp"
+        android:layout_marginEnd="8dp"
         android:text="Thành công"
         android:textColor="#64748b"
         android:textSize="11sp"
         app:layout_constraintTop_toBottomOf="@id/tvTransactionAmount"
+        app:layout_constraintEnd_toStartOf="@id/ivChevron" />
+
+    <ImageView
+        android:id="@+id/ivChevron"
+        android:layout_width="20dp"
+        android:layout_height="20dp"
+        android:src="@drawable/ic_lucide_chevron_right"
+        app:tint="#cbd5e1"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

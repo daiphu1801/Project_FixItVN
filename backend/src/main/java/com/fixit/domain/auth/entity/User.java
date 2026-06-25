@@ -54,7 +54,7 @@ public class User implements UserDetails {
         if (role == null) {
             return List.of();
         }
-        return List.of(new SimpleGrantedAuthority("ROLE_" + role.name().toUpperCase()));
+        return List.of(new SimpleGrantedAuthority("ROLE_" + role.name()));
     }
 
     @Override
