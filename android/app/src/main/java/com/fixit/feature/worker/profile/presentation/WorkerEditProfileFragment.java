@@ -26,7 +26,14 @@ public class WorkerEditProfileFragment extends BaseFragment<FragmentWorkerEditPr
 
     private WorkerProfileViewModel viewModel;
     private UploadViewModel uploadViewModel;
-    private String currentAvatarUrl;
+
+    private String fullName = null;
+    private String email = null;
+    private String bio = null;
+    private String serviceArea = null;
+    private Double selectedLatitude = null;
+    private Double selectedLongitude = null;
+    private String currentAvatarUrl = null;
 
     // Image picker cho avatar
     private final ActivityResultLauncher<String> pickAvatarLauncher = registerForActivityResult(
@@ -74,6 +81,36 @@ public class WorkerEditProfileFragment extends BaseFragment<FragmentWorkerEditPr
          */
         binding.etPhone.setEnabled(false);
         binding.etCccd.setEnabled(false);
+
+        // Đặt ô nhập Khu vực hoạt động thành chỉ chọn từ bản đồ
+        binding.etServiceArea.setFocusable(false);
+        binding.etServiceArea.setClickable(true);
+        binding.etServiceArea.setOnClickListener(v -> {
+            Navigation.findNavController(v).navigate(com.fixit.R.id.workerLocationPickerFragment);
+        });
+        
+        binding.tilServiceArea.setEndIconOnClickListener(v -> {
+            Navigation.findNavController(v).navigate(com.fixit.R.id.workerLocationPickerFragment);
+        });
+
+        // Đăng ký nhận kết quả từ Map Picker
+        getParentFragmentManager().setFragmentResultListener(
+                WorkerLocationPickerFragment.REQUEST_KEY,
+                this,
+                (requestKey, bundle) -> {
+                    String address = bundle.getString(WorkerLocationPickerFragment.ADDRESS_KEY);
+                    double lat = bundle.getDouble(WorkerLocationPickerFragment.LATITUDE_KEY);
+                    double lng = bundle.getDouble(WorkerLocationPickerFragment.LONGITUDE_KEY);
+                    
+                    serviceArea = address;
+                    selectedLatitude = lat;
+                    selectedLongitude = lng;
+                    
+                    if (binding != null) {
+                        binding.etServiceArea.setText(address);
+                    }
+                }
+        );
 
         // Click avatar hoặc text "Thay đổi ảnh đại diện" → mở gallery
         binding.ivAvatar.setOnClickListener(v -> pickAvatarLauncher.launch("image/*"));
@@ -126,7 +163,20 @@ public class WorkerEditProfileFragment extends BaseFragment<FragmentWorkerEditPr
             return;
         }
 
-        currentAvatarUrl = profile.getAvatarUrl();
+        // Chỉ gán giá trị lần đầu tiên khi tải từ server
+        if (fullName == null) fullName = profile.getFullName();
+        if (email == null) email = profile.getEmail();
+        if (bio == null) bio = profile.getExperienceDescription();
+        if (serviceArea == null) serviceArea = profile.getServiceArea();
+        if (selectedLatitude == null) selectedLatitude = profile.getLatitude();
+        if (selectedLongitude == null) selectedLongitude = profile.getLongitude();
+        if (currentAvatarUrl == null) currentAvatarUrl = profile.getAvatarUrl();
+
+        updateUI();
+    }
+
+    private void updateUI() {
+        if (binding == null) return;
 
         // Hiển thị avatar hiện tại
         if (currentAvatarUrl != null && !currentAvatarUrl.isEmpty()) {
@@ -143,49 +193,58 @@ public class WorkerEditProfileFragment extends BaseFragment<FragmentWorkerEditPr
             binding.ivAvatar.setImageResource(com.fixit.R.drawable.ic_lucide_user);
         }
 
-        binding.etFullName.setText(profile.getFullName());
-        binding.etPhone.setText(profile.getPhoneNumber());
-        binding.etEmail.setText(profile.getEmail());
+        binding.etFullName.setText(fullName);
+        binding.etPhone.setText(viewModel.profile.getValue() != null ? viewModel.profile.getValue().getPhoneNumber() : "");
+        binding.etEmail.setText(email);
 
-        /*
-         * Backend hiện chưa có address riêng cho worker.
-         * Tạm hiển thị serviceArea ở etAddress để không để field mock.
-         */
-        binding.etAddress.setText(profile.getServiceArea());
+        binding.etAddress.setText(viewModel.profile.getValue() != null ? viewModel.profile.getValue().getServiceArea() : "");
+        binding.etBio.setText(bio);
+        binding.etServiceArea.setText(serviceArea);
+        binding.etCccd.setText(viewModel.profile.getValue() != null ? viewModel.profile.getValue().getIdentityCard() : "");
+    }
 
-        binding.etBio.setText(profile.getExperienceDescription());
-        binding.etServiceArea.setText(profile.getServiceArea());
-        binding.etCccd.setText(profile.getIdentityCard());
+    @Override
+    public void onDestroyView() {
+        // Lưu lại trạng thái người dùng đang chỉnh sửa trước khi View bị huỷ để khôi phục sau đó
+        if (binding != null) {
+            fullName = binding.etFullName.getText() != null ? binding.etFullName.getText().toString().trim() : null;
+            email = binding.etEmail.getText() != null ? binding.etEmail.getText().toString().trim() : null;
+            bio = binding.etBio.getText() != null ? binding.etBio.getText().toString().trim() : null;
+            serviceArea = binding.etServiceArea.getText() != null ? binding.etServiceArea.getText().toString().trim() : null;
+        }
+        super.onDestroyView();
     }
 
     private void saveProfile() {
-        String fullName = binding.etFullName.getText() != null
+        String inputFullName = binding.etFullName.getText() != null
                 ? binding.etFullName.getText().toString().trim()
                 : "";
 
-        String email = binding.etEmail.getText() != null
+        String inputEmail = binding.etEmail.getText() != null
                 ? binding.etEmail.getText().toString().trim()
                 : "";
 
-        String bio = binding.etBio.getText() != null
+        String inputBio = binding.etBio.getText() != null
                 ? binding.etBio.getText().toString().trim()
                 : "";
 
-        String serviceArea = binding.etServiceArea.getText() != null
+        String inputServiceArea = binding.etServiceArea.getText() != null
                 ? binding.etServiceArea.getText().toString().trim()
                 : "";
 
-        if (fullName.isEmpty()) {
+        if (inputFullName.isEmpty()) {
             binding.etFullName.setError("Vui lòng nhập họ tên");
             return;
         }
 
         WorkerProfileUpdateInput input = new WorkerProfileUpdateInput(
-                fullName,
-                email,
+                inputFullName,
+                inputEmail,
                 null,
-                bio,
-                serviceArea
+                inputBio,
+                inputServiceArea,
+                selectedLatitude,
+                selectedLongitude
         );
 
         viewModel.updateProfile(input);

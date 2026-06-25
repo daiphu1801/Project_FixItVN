@@ -13,4 +13,6 @@ public interface AuthRepository {
     void refreshToken(String refreshToken, ResultCallback<Session> callback);
 
     Session getCurrentSession();
+
+    void changePassword(String oldPassword, String newPassword, ResultCallback<Void> callback);
 }

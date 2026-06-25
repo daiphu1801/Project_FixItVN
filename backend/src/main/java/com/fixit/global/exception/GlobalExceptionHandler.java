@@ -45,6 +45,20 @@ public class GlobalExceptionHandler {
                 return new ResponseEntity<>(response, ErrorCode.INVALID_REQUEST_PARAMETER.getHttpStatus());
         }
 
+        @ExceptionHandler(IllegalStateException.class)
+        public ResponseEntity<ApiResponse<Void>> handleIllegalStateException(IllegalStateException ex) {
+                log.warn("Illegal state exception: {}", ex.getMessage());
+                ApiResponse<Void> response = ApiResponse.error(400, ex.getMessage());
+                return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+        }
+
+        @ExceptionHandler(IllegalArgumentException.class)
+        public ResponseEntity<ApiResponse<Void>> handleIllegalArgumentException(IllegalArgumentException ex) {
+                log.warn("Illegal argument exception: {}", ex.getMessage());
+                ApiResponse<Void> response = ApiResponse.error(400, ex.getMessage());
+                return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+        }
+
         @ExceptionHandler(Exception.class)
         public ResponseEntity<ApiResponse<Void>> handleGeneralException(Exception ex) {
                 log.error("UNHANDLED_EXCEPTION", ex);

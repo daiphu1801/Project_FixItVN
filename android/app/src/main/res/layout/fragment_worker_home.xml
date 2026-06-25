@@ -75,33 +75,9 @@
                 android:padding="2dp"
                 android:background="?attr/selectableItemBackgroundBorderless"
                 app:tint="#42c2ff"
-                android:layout_marginEnd="12dp"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toStartOf="@id/flBell" />
-
-            <FrameLayout
-                android:id="@+id/flBell"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent">
-                
-                <ImageView
-                    android:layout_width="28dp"
-                    android:layout_height="28dp"
-                    android:src="@drawable/ic_lucide_bell"
-                    app:tint="#42c2ff" />
-                    
-                <View
-                    android:layout_width="10dp"
-                    android:layout_height="10dp"
-                    android:layout_gravity="top|end"
-                    android:background="#ef4444"
-                    android:layout_marginTop="2dp"
-                    android:layout_marginEnd="2dp" />
-            </FrameLayout>
+                app:layout_constraintEnd_toEndOf="parent" />
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <!-- Trạng thái nhận việc (read-only) — click → sang tab Tìm việc -->

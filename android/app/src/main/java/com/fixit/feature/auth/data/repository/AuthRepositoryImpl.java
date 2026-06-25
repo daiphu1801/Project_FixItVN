@@ -160,4 +160,27 @@ public class AuthRepositoryImpl implements AuthRepository {
     public Session getCurrentSession() {
         return sessionStorage.getSession();
     }
+
+    @Override
+    public void changePassword(String oldPassword, String newPassword, ResultCallback<Void> callback) {
+        authApi.changePassword(new AuthRequest.ChangePassword(oldPassword, newPassword)).enqueue(new Callback<okhttp3.ResponseBody>() {
+            @Override
+            public void onResponse(Call<okhttp3.ResponseBody> call, Response<okhttp3.ResponseBody> response) {
+                if (response.isSuccessful()) {
+                    callback.onResult(Result.success(null));
+                } else {
+                    ApiResponse<?> apiResponse = ApiResponse.parseError(response);
+                    String errorMessage = (apiResponse != null && apiResponse.getMessage() != null)
+                            ? apiResponse.getMessage()
+                            : "Đổi mật khẩu thất bại: " + response.code();
+                    callback.onResult(Result.error(new AppError(errorMessage)));
+                }
+            }
+
+            @Override
+            public void onFailure(Call<okhttp3.ResponseBody> call, Throwable t) {
+                callback.onResult(Result.error(new AppError("Lỗi kết nối: " + t.getMessage(), t)));
+            }
+        });
+    }
 }

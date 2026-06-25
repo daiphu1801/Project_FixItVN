@@ -19,20 +19,45 @@ public class WorkerStatusViewModel extends ViewModel {
     private final MutableLiveData<Boolean> _isOnline = new MutableLiveData<>(false);
     public final LiveData<Boolean> isOnline = _isOnline;
 
+    private final MutableLiveData<String> _errorMessage = new MutableLiveData<>();
+    public final LiveData<String> errorMessage = _errorMessage;
+
     @Inject
     public WorkerStatusViewModel(GetWorkerAvailabilityUseCase getWorkerAvailabilityUseCase,
                                  ToggleWorkerAvailabilityUseCase toggleWorkerAvailabilityUseCase) {
         this.getWorkerAvailabilityUseCase = getWorkerAvailabilityUseCase;
         this.toggleWorkerAvailabilityUseCase = toggleWorkerAvailabilityUseCase;
-        _isOnline.setValue(getWorkerAvailabilityUseCase.execute());
+        loadOnlineStatus();
+    }
+
+    public void loadOnlineStatus() {
+        getWorkerAvailabilityUseCase.execute(result -> {
+            if (result.isSuccess() && result.getData() != null) {
+                _isOnline.postValue(result.getData());
+            } else if (!result.isSuccess()) {
+                _errorMessage.postValue(result.getError().getMessage());
+            }
+        });
     }
 
     public void toggleOnlineStatus() {
-        _isOnline.setValue(toggleWorkerAvailabilityUseCase.execute());
+        Boolean current = _isOnline.getValue();
+        boolean target = current == null || !current;
+        toggleWorkerAvailabilityUseCase.execute(target, result -> {
+            if (result.isSuccess() && result.getData() != null) {
+                _isOnline.postValue(result.getData());
+            } else if (!result.isSuccess()) {
+                _errorMessage.postValue(result.getError().getMessage());
+            }
+        });
+    }
+
+    public void clearError() {
+        _errorMessage.postValue(null);
     }
 
     public boolean isCurrentlyOnline() {
         Boolean current = _isOnline.getValue();
-        return current != null ? current : getWorkerAvailabilityUseCase.execute();
+        return current != null && current;
     }
 }

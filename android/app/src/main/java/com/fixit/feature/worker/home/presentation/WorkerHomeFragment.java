@@ -224,9 +224,10 @@ public class WorkerHomeFragment extends BaseFragment<FragmentWorkerHomeBinding> 
         if (autoRefreshHelper == null) {
             autoRefreshHelper = new AutoRefreshHelper(
                     requireContext(),
+                    0L,
                     () -> {
                         if (viewModel != null) {
-                            viewModel.loadWorkerHome();
+                            viewModel.loadWorkerHome(false);
                         }
                     },
                     "com.fixit.BOOKING_UPDATE",

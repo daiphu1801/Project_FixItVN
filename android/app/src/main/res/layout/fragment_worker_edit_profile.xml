@@ -172,6 +172,7 @@
 
             <!-- Khu vực hoạt động -->
             <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/tilServiceArea"
                 style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -181,7 +182,10 @@
                 app:boxCornerRadiusBottomStart="12dp"
                 app:boxCornerRadiusTopEnd="12dp"
                 app:boxCornerRadiusTopStart="12dp"
-                app:boxStrokeColor="#cbd5e1">
+                app:boxStrokeColor="#cbd5e1"
+                app:endIconMode="custom"
+                app:endIconDrawable="@drawable/ic_lucide_map_pin"
+                app:endIconTint="?attr/colorPrimary">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/etServiceArea"
