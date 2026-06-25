@@ -1,7 +1,6 @@
 package com.fixit.domain.auth.dto.request;
 
 
-
 import lombok.Data;
 
 
