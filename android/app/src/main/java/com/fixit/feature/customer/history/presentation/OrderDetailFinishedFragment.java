@@ -15,8 +15,11 @@ import javax.inject.Inject;
 import com.fixit.feature.customer.favorite.domain.usecase.CheckFavoriteStatusUseCase;
 import com.fixit.feature.customer.favorite.domain.usecase.AddFavoriteWorkerUseCase;
 import com.fixit.feature.customer.favorite.domain.usecase.RemoveFavoriteWorkerUseCase;
+import com.fixit.feature.customer.complaint.presentation.CustomerComplaintViewModel;
+import androidx.lifecycle.ViewModelProvider;
 
 import dagger.hilt.android.AndroidEntryPoint;
+
 
 /**
  * FILE ĐIỀU KHIỂN CHI TIẾT ĐƠN HÀNG ĐÃ HOÀN THÀNH
@@ -30,6 +33,8 @@ public class OrderDetailFinishedFragment extends BaseFragment<FragmentOrderDetai
     private String orderId;
     private String workerId;
     private String workerName;
+    private CustomerComplaintViewModel complaintViewModel;
+
 
     @Inject
     CheckFavoriteStatusUseCase checkFavoriteStatusUseCase;
@@ -134,11 +139,43 @@ public class OrderDetailFinishedFragment extends BaseFragment<FragmentOrderDetai
                 });
             }
         });
+
+        // Khởi tạo ViewModel khiếu nại và cài đặt click nút Khiếu nại
+        complaintViewModel = new ViewModelProvider(this).get(CustomerComplaintViewModel.class);
+        binding.btnComplaint.setOnClickListener(v -> {
+            if (orderId != null) {
+                Bundle args = new Bundle();
+                args.putString("bookingId", orderId);
+                if (complaintViewModel.complaint.getValue() == null) {
+                    if (navController != null) {
+                        navController.navigate(R.id.nav_customer_complaint_create, args);
+                    }
+                } else {
+                    if (navController != null) {
+                        navController.navigate(R.id.nav_customer_complaint_detail, args);
+                    }
+                }
+            } else {
+                Toast.makeText(requireContext(), "Không tìm thấy thông tin đơn hàng!", Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     @Override
     protected void observeData() {
-        // Lấy dữ liệu chi tiết đơn hàng từ Server để hiển thị (tùy chọn)
+        if (complaintViewModel != null) {
+            complaintViewModel.complaint.observe(getViewLifecycleOwner(), complaint -> {
+                if (complaint == null) {
+                    binding.btnComplaint.setText("⚠️ Khiếu nại");
+                } else {
+                    binding.btnComplaint.setText("👁️ Xem khiếu nại");
+                }
+            });
+
+            if (orderId != null) {
+                complaintViewModel.loadBookingComplaint(orderId);
+            }
+        }
     }
 
     @Override

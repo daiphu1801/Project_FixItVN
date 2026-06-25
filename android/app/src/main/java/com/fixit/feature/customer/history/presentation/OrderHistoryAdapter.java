@@ -53,9 +53,9 @@ public class OrderHistoryAdapter extends RecyclerView.Adapter<OrderHistoryAdapte
 
         public void bind(CustomerBooking booking) {
             binding.tvOrderId.setText("#" + booking.getBookingId().substring(0, 8));
-            
+
             // Map service ID to name (for now hardcode or lookup)
-            binding.tvServiceName.setText("Dịch vụ sửa chữa"); 
+            binding.tvServiceName.setText("Dịch vụ sửa chữa");
 
             if (booking.getWorker() != null && booking.getWorker().getFullName() != null) {
                 binding.layoutWorker.setVisibility(View.VISIBLE);
