@@ -31,6 +31,21 @@ public class CustomerBookingResponseDto {
     @SerializedName("createdAt")
     private String createdAt;
 
+    @SerializedName("serviceName")
+    private String serviceName;
+
+    @SerializedName("laborCost")
+    private BigDecimal laborCost;
+
+    @SerializedName("materialCost")
+    private BigDecimal materialCost;
+
+    @SerializedName("cancellationReason")
+    private String cancellationReason;
+
+    @SerializedName("finalPrice")
+    private BigDecimal finalPrice;
+
     @SerializedName("worker")
     private BookingWorkerInfoDto worker;
 
@@ -60,6 +75,21 @@ public class CustomerBookingResponseDto {
 
     public String getCreatedAt() { return createdAt; }
     public void setCreatedAt(String createdAt) { this.createdAt = createdAt; }
+
+    public String getServiceName() { return serviceName; }
+    public void setServiceName(String serviceName) { this.serviceName = serviceName; }
+
+    public BigDecimal getLaborCost() { return laborCost; }
+    public void setLaborCost(BigDecimal laborCost) { this.laborCost = laborCost; }
+
+    public BigDecimal getMaterialCost() { return materialCost; }
+    public void setMaterialCost(BigDecimal materialCost) { this.materialCost = materialCost; }
+
+    public String getCancellationReason() { return cancellationReason; }
+    public void setCancellationReason(String cancellationReason) { this.cancellationReason = cancellationReason; }
+
+    public BigDecimal getFinalPrice() { return finalPrice; }
+    public void setFinalPrice(BigDecimal finalPrice) { this.finalPrice = finalPrice; }
 
     public BookingWorkerInfoDto getWorker() { return worker; }
     public void setWorker(BookingWorkerInfoDto worker) { this.worker = worker; }

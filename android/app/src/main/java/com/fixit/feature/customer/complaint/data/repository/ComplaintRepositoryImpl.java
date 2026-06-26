@@ -31,7 +31,7 @@ import retrofit2.Response;
 
 @Singleton
 public class ComplaintRepositoryImpl implements ComplaintRepository {
-    private static final boolean USE_MOCK = true; // Bật true để chạy giao diện offline bằng Mock Data
+    private static final boolean USE_MOCK = false; // Tắt mock để dùng API thật
 
     private final ComplaintApi complaintApi;
     private final Map<String, Complaint> mockComplaints = new HashMap<>();
@@ -166,6 +166,52 @@ public class ComplaintRepositoryImpl implements ComplaintRepository {
 
             @Override
             public void onFailure(Call<ApiResponse<Void>> call, Throwable t) {
+                callback.onResult(Result.error(new AppError(t.getMessage(), t)));
+            }
+        });
+    }
+
+    @Override
+    public void respondToComplaint(String bookingId, String workerResponse, List<String> evidenceUrls, ResultCallback<Complaint> callback) {
+        if (USE_MOCK) {
+            new Handler(Looper.getMainLooper()).postDelayed(() -> {
+                Complaint comp = mockComplaints.get(bookingId);
+                if (comp != null) {
+                    Complaint updated = new Complaint(
+                            comp.getId(),
+                            comp.getBookingId(),
+                            comp.getCustomerReason(),
+                            workerResponse,
+                            comp.getCustomerEvidenceUrls(),
+                            evidenceUrls != null ? evidenceUrls : new ArrayList<>(),
+                            "Worker_Responded",
+                            comp.getDeadlineToRespond(),
+                            comp.getCreatedAt()
+                    );
+                    mockComplaints.put(bookingId, updated);
+                    callback.onResult(Result.success(updated));
+                } else {
+                    callback.onResult(Result.error(new AppError("Không tìm thấy khiếu nại")));
+                }
+            }, 1000);
+            return;
+        }
+
+        com.fixit.feature.customer.complaint.data.remote.dto.WorkerComplaintResponseRequestDto req = 
+                new com.fixit.feature.customer.complaint.data.remote.dto.WorkerComplaintResponseRequestDto(workerResponse, evidenceUrls);
+
+        complaintApi.respondToComplaint(bookingId, req).enqueue(new Callback<ApiResponse<com.fixit.feature.customer.complaint.data.remote.dto.ComplaintResponseDto>>() {
+            @Override
+            public void onResponse(Call<ApiResponse<com.fixit.feature.customer.complaint.data.remote.dto.ComplaintResponseDto>> call, Response<ApiResponse<com.fixit.feature.customer.complaint.data.remote.dto.ComplaintResponseDto>> response) {
+                if (response.isSuccessful() && response.body() != null && response.body().isSuccess()) {
+                    callback.onResult(Result.success(ComplaintMapper.toDomain(response.body().getData())));
+                } else {
+                    callback.onResult(Result.error(new AppError("Lỗi gửi giải trình lên máy chủ")));
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ApiResponse<com.fixit.feature.customer.complaint.data.remote.dto.ComplaintResponseDto>> call, Throwable t) {
                 callback.onResult(Result.error(new AppError(t.getMessage(), t)));
             }
         });

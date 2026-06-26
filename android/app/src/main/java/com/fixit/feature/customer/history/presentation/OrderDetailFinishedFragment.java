@@ -2,29 +2,35 @@ package com.fixit.feature.customer.history.presentation;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
+import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 import androidx.annotation.NonNull;
-
+import androidx.lifecycle.ViewModelProvider;
+import com.bumptech.glide.Glide;
 import com.fixit.R;
 import com.fixit.core.ui.BaseFragment;
 import com.fixit.databinding.FragmentOrderDetailFinishedBinding;
+import com.fixit.feature.customer.booking.domain.model.CustomerBooking;
+import com.fixit.feature.customer.booking.domain.usecase.GetBookingDetailUseCase;
 import com.fixit.feature.customer.review.presentation.CustomerReviewDialog;
-
-import javax.inject.Inject;
 import com.fixit.feature.customer.favorite.domain.usecase.CheckFavoriteStatusUseCase;
 import com.fixit.feature.customer.favorite.domain.usecase.AddFavoriteWorkerUseCase;
 import com.fixit.feature.customer.favorite.domain.usecase.RemoveFavoriteWorkerUseCase;
 import com.fixit.feature.customer.complaint.presentation.CustomerComplaintViewModel;
-import androidx.lifecycle.ViewModelProvider;
+import android.graphics.Color;
+
+import java.text.DecimalFormat;
+import java.text.SimpleDateFormat;
+import java.util.Locale;
+
+import javax.inject.Inject;
 
 import dagger.hilt.android.AndroidEntryPoint;
 
-
 /**
  * FILE ĐIỀU KHIỂN CHI TIẾT ĐƠN HÀNG ĐÃ HOÀN THÀNH
- * Mục đích: Hiển thị thông tin chi tiết của một đơn hàng sau khi thợ đã sửa
- * xong.
+ * Mục đích: Hiển thị thông tin chi tiết thực tế của một đơn hàng sau khi thợ đã sửa xong.
  */
 @AndroidEntryPoint
 public class OrderDetailFinishedFragment extends BaseFragment<FragmentOrderDetailFinishedBinding>
@@ -35,7 +41,6 @@ public class OrderDetailFinishedFragment extends BaseFragment<FragmentOrderDetai
     private String workerName;
     private CustomerComplaintViewModel complaintViewModel;
 
-
     @Inject
     CheckFavoriteStatusUseCase checkFavoriteStatusUseCase;
 
@@ -45,11 +50,13 @@ public class OrderDetailFinishedFragment extends BaseFragment<FragmentOrderDetai
     @Inject
     RemoveFavoriteWorkerUseCase removeFavoriteWorkerUseCase;
 
+    @Inject
+    GetBookingDetailUseCase getBookingDetailUseCase;
+
     @NonNull
     @Override
     protected FragmentOrderDetailFinishedBinding inflateViewBinding(@NonNull LayoutInflater inflater,
             ViewGroup container) {
-        // Kết nối file giao diện fragment_order_detail_finished.xml với code Java này
         return FragmentOrderDetailFinishedBinding.inflate(inflater, container, false);
     }
 
@@ -68,15 +75,24 @@ public class OrderDetailFinishedFragment extends BaseFragment<FragmentOrderDetai
             }
         });
 
-        // Hiển thị tên thợ lên thẻ thông tin thợ
+        // Hiển thị mặc định ban đầu
         binding.tvWorkerName.setText(workerName);
+
+        // Gọi API tải chi tiết đơn hàng
+        if (orderId != null) {
+            getBookingDetailUseCase.execute(orderId, result -> {
+                if (result.isSuccess() && result.getData() != null) {
+                    bindOrderDetails(result.getData());
+                } else {
+                    Toast.makeText(requireContext(), "Lỗi tải chi tiết đơn hàng", Toast.LENGTH_SHORT).show();
+                }
+            });
+        }
 
         // Sự kiện khi bấm nút "Đánh giá ngay"
         binding.btnRate.setOnClickListener(v -> {
             if (orderId != null) {
                 CustomerReviewDialog dialog = CustomerReviewDialog.newInstance(orderId);
-                // Hiển thị dialog từ fragment con để nhận callback OnReviewSubmittedListener
-                // chính xác
                 dialog.show(getChildFragmentManager(), "CustomerReviewDialog");
             } else {
                 Toast.makeText(requireContext(), "Không tìm thấy thông tin mã đơn hàng!", Toast.LENGTH_SHORT).show();
@@ -98,8 +114,6 @@ public class OrderDetailFinishedFragment extends BaseFragment<FragmentOrderDetai
         });
 
         // ================= KẾT NỐI TRÁI TIM YÊU THÍCH =================
-
-        // 1. Kiểm tra xem thợ này đã được yêu thích chưa
         if (workerId != null) {
             checkFavoriteStatusUseCase.execute(workerId, result -> {
                 if (result.isSuccess() && result.getData() != null) {
@@ -108,7 +122,6 @@ public class OrderDetailFinishedFragment extends BaseFragment<FragmentOrderDetai
             });
         }
 
-        // 2. Bắt sự kiện Click trái tim để Thêm/Xóa thợ quen
         binding.cbFavorite.setOnClickListener(v -> {
             boolean isChecked = binding.cbFavorite.isChecked();
             if (workerId == null) {
@@ -118,7 +131,6 @@ public class OrderDetailFinishedFragment extends BaseFragment<FragmentOrderDetai
             }
 
             if (isChecked) {
-                // Thêm thợ vào danh sách yêu thích
                 addFavoriteWorkerUseCase.execute(workerId, result -> {
                     if (result.isSuccess()) {
                         Toast.makeText(requireContext(), "Đã thêm vào danh sách thợ quen", Toast.LENGTH_SHORT).show();
@@ -128,7 +140,6 @@ public class OrderDetailFinishedFragment extends BaseFragment<FragmentOrderDetai
                     }
                 });
             } else {
-                // Xóa thợ khỏi danh sách yêu thích
                 removeFavoriteWorkerUseCase.execute(workerId, result -> {
                     if (result.isSuccess()) {
                         Toast.makeText(requireContext(), "Đã xóa khỏi danh sách thợ quen", Toast.LENGTH_SHORT).show();
@@ -161,6 +172,105 @@ public class OrderDetailFinishedFragment extends BaseFragment<FragmentOrderDetai
         });
     }
 
+    private void bindOrderDetails(CustomerBooking booking) {
+        if (booking == null) return;
+
+        // Cập nhật lại ID thợ thật nếu ban đầu truyền từ args là rỗng
+        if (booking.getWorker() != null) {
+            workerId = booking.getWorker().getWorkerId();
+            workerName = booking.getWorker().getFullName();
+            binding.tvWorkerName.setText(workerName);
+
+            Glide.with(this)
+                    .load(booking.getWorker().getAvatarUrl())
+                    .placeholder(R.drawable.ic_person)
+                    .error(R.drawable.ic_person)
+                    .into(binding.ivAvatar);
+        }
+
+        // Tên dịch vụ
+        String serviceName = booking.getServiceName();
+        if (serviceName == null || serviceName.isEmpty()) {
+            serviceName = "Dịch vụ sửa chữa";
+        }
+        binding.tvServiceName.setText(serviceName);
+
+        // Địa chỉ & Thời gian
+        binding.tvJobLocation.setText(booking.getAddress());
+        if (booking.getCreatedAt() != null) {
+            try {
+                SimpleDateFormat inputFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.getDefault());
+                SimpleDateFormat outputFormat = new SimpleDateFormat("HH:mm, dd/MM/yyyy", Locale.getDefault());
+                java.util.Date date = inputFormat.parse(booking.getCreatedAt());
+                binding.tvJobTime.setText(outputFormat.format(date));
+            } catch (Exception e) {
+                binding.tvJobTime.setText(booking.getCreatedAt());
+            }
+        }
+
+        // Tổng tiền
+        DecimalFormat df = new DecimalFormat("#,###đ");
+        if (booking.getFinalPrice() != null) {
+            binding.tvTotalPrice.setText(df.format(booking.getFinalPrice()));
+        } else {
+            binding.tvTotalPrice.setText("Chưa có giá");
+        }
+
+        // Trạng thái hiển thị
+        String status = booking.getStatus();
+        if ("CANCELLED".equalsIgnoreCase(status)) {
+            binding.tvStatus.setText("● Đã hủy");
+            binding.tvStatus.setTextColor(Color.parseColor("#EF4444"));
+            binding.tvStatus.setBackgroundResource(R.drawable.bg_badge_red);
+        } else if ("COMPLETED".equalsIgnoreCase(status)) {
+            binding.tvStatus.setText("● Hoàn thành");
+            binding.tvStatus.setTextColor(Color.parseColor("#10B981"));
+            binding.tvStatus.setBackgroundResource(R.drawable.bg_badge_green_light);
+        } else {
+            binding.tvStatus.setText("● " + status);
+            binding.tvStatus.setTextColor(Color.parseColor("#0284C7"));
+            binding.tvStatus.setBackgroundResource(R.drawable.bg_badge_light_blue);
+        }
+
+        // Bảng chi phí chi tiết (Tiền công / Vật tư)
+        if (booking.getLaborCost() != null || booking.getMaterialCost() != null) {
+            binding.layoutPriceList.setVisibility(View.VISIBLE);
+
+            if (booking.getLaborCost() != null) {
+                binding.tvItem1Title.setVisibility(View.VISIBLE);
+                binding.tvItem1Price.setVisibility(View.VISIBLE);
+                binding.tvItem1Title.setText("Tiền công sửa chữa");
+                binding.tvItem1Price.setText(df.format(booking.getLaborCost()));
+            } else {
+                binding.tvItem1Title.setVisibility(View.GONE);
+                binding.tvItem1Price.setVisibility(View.GONE);
+            }
+
+            if (booking.getMaterialCost() != null) {
+                binding.tvItem2Title.setVisibility(View.VISIBLE);
+                binding.tvItem2Price.setVisibility(View.VISIBLE);
+                binding.tvItem2Title.setText("Tiền vật tư / linh kiện");
+                binding.tvItem2Price.setText(df.format(booking.getMaterialCost()));
+            } else {
+                binding.tvItem2Title.setVisibility(View.GONE);
+                binding.tvItem2Price.setVisibility(View.GONE);
+            }
+        } else {
+            binding.layoutPriceList.setVisibility(View.GONE);
+        }
+
+        // Đặt lại dịch vụ nhanh
+        final String finalServiceName = serviceName;
+        binding.btnReorder.setOnClickListener(v -> {
+            if (navController != null) {
+                Bundle args = new Bundle();
+                args.putInt("serviceId", booking.getServiceId());
+                args.putString("serviceName", finalServiceName);
+                navController.navigate(R.id.nav_customer_booking, args);
+            }
+        });
+    }
+
     @Override
     protected void observeData() {
         if (complaintViewModel != null) {
@@ -180,7 +290,6 @@ public class OrderDetailFinishedFragment extends BaseFragment<FragmentOrderDetai
 
     @Override
     public void onReviewSubmitted() {
-        // Sau khi khách hàng gửi đánh giá thành công, vô hiệu hóa nút bấm
         binding.btnRate.setEnabled(false);
         binding.btnRate.setText("✓ Đã đánh giá");
     }

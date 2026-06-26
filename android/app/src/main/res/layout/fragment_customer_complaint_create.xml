@@ -12,13 +12,14 @@
         android:orientation="vertical">
 
         <!-- HEADER -->
+
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/layoutHeader"
             android:layout_width="match_parent"
             android:layout_height="60dp"
             android:background="#FFFFFF"
-            android:paddingHorizontal="16dp"
-            android:elevation="2dp">
+            android:elevation="2dp"
+            android:paddingHorizontal="16dp">
 
             <ImageView
                 android:id="@+id/ivBack"

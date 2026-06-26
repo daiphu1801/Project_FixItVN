@@ -27,4 +27,10 @@ public interface ComplaintApi {
             @Path("bookingId") String bookingId,
             @Path("complaintId") String complaintId
     );
+
+    @POST("api/v1/bookings/{bookingId}/complaints/respond")
+    Call<ApiResponse<com.fixit.feature.customer.complaint.data.remote.dto.ComplaintResponseDto>> respondToComplaint(
+            @Path("bookingId") String bookingId,
+            @Body com.fixit.feature.customer.complaint.data.remote.dto.WorkerComplaintResponseRequestDto request
+    );
 }
