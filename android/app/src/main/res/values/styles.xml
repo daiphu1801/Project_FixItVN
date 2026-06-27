@@ -13,6 +13,11 @@
         <item name="cornerSize">50%</item>
     </style>
 
+    <style name="ShapeAppearanceOverlay.App.CornerSize50Percent" parent="">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">50%</item>
+    </style>
+
     <!-- Style cho các thẻ Card nội dung trắng -->
     <style name="FixIt.Card.Content" parent="Widget.MaterialComponents.CardView">
         <item name="cardBackgroundColor">@android:color/white</item>

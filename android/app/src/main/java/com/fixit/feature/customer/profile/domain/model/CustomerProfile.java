@@ -8,13 +8,21 @@ public class CustomerProfile {
 
     private String id;
     private String fullName;
+    private String email;
+    private String phoneNumber;
+    private String gender;
+    private String dob;
 
     // ----------------------------------------------------
     // HÀM KHỞI TẠO
     // ----------------------------------------------------
-    public CustomerProfile(String id, String fullName) {
+    public CustomerProfile(String id, String fullName, String email, String phoneNumber, String gender, String dob) {
         this.id = id;
         this.fullName = fullName;
+        this.email = email;
+        this.phoneNumber = phoneNumber;
+        this.gender = gender;
+        this.dob = dob;
     }
 
     // ----------------------------------------------------
@@ -34,5 +42,37 @@ public class CustomerProfile {
 
     public void setFullName(String fullName) {
         this.fullName = fullName;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public String getPhoneNumber() {
+        return phoneNumber;
+    }
+
+    public void setPhoneNumber(String phoneNumber) {
+        this.phoneNumber = phoneNumber;
+    }
+
+    public String getGender() {
+        return gender;
+    }
+
+    public void setGender(String gender) {
+        this.gender = gender;
+    }
+
+    public String getDob() {
+        return dob;
+    }
+
+    public void setDob(String dob) {
+        this.dob = dob;
     }
 }

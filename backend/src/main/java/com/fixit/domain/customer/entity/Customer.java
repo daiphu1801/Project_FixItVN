@@ -26,4 +26,10 @@ public class Customer {
 
     @Column(name = "full_name", length = 100)
     private String fullName;
+
+    @Column(name = "gender", length = 20)
+    private String gender;
+
+    @Column(name = "dob", length = 20)
+    private String dob;
 }

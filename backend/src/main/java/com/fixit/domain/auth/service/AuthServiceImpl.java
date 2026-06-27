@@ -353,10 +353,22 @@ public class AuthServiceImpl implements AuthService {
     }
 
     private AuthResponse.UserInfo mapToUserInfo(User user) {
+        String fullName = null;
+        if (user.getRole() == UserRole.Customer) {
+            fullName = customerRepository.findById(user.getId())
+                    .map(Customer::getFullName)
+                    .orElse(null);
+        } else if (user.getRole() == UserRole.Worker) {
+            fullName = workerRepository.findById(user.getId())
+                    .map(Worker::getFullName)
+                    .orElse(null);
+        }
+
         return AuthResponse.UserInfo.builder()
                 .id(user.getId())
                 .phone(user.getPhoneNumber())
                 .email(user.getEmail())
+                .fullName(fullName)
                 .role(user.getRole().name())
                 .avatarUrl(user.getAvatarUrl())
                 .build();

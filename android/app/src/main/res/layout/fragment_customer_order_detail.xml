@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
+<androidx.coordinatorlayout.widget.CoordinatorLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
@@ -9,32 +9,23 @@
 
     <ImageView
         android:id="@+id/ivMapBackground"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
         android:scaleType="centerCrop"
-        android:src="@drawable/img_map_placeholder"
-        android:alpha="0.5"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+        android:src="@drawable/img_map_placeholder" />
 
     <com.google.android.material.card.MaterialCardView
         android:id="@+id/cardBottomSheet"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
         android:layout_marginHorizontal="12dp"
-        android:layout_marginBottom="16dp"
         android:layout_marginTop="40dp"
         app:cardCornerRadius="20dp"
         app:cardElevation="16dp"
         app:strokeWidth="0dp"
-        app:layout_constrainedHeight="true"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="1.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent">
+        app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior"
+        app:behavior_peekHeight="400dp"
+        app:behavior_hideable="false">
 
         <androidx.core.widget.NestedScrollView
             android:layout_width="match_parent"
@@ -45,6 +36,18 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="?attr/colorSurface">
+
+                <!-- Drag Handle -->
+                <View
+                    android:id="@+id/dragHandle"
+                    android:layout_width="40dp"
+                    android:layout_height="4dp"
+                    android:layout_marginTop="10dp"
+                    android:background="#E2E8F0"
+                    android:backgroundTint="#CBD5E1"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent" />
 
                 <!-- Header Title -->
                 <ImageView
@@ -183,21 +186,39 @@
                     app:layout_constraintStart_toStartOf="@id/tvTechnicianName"
                     app:layout_constraintEnd_toEndOf="parent"/>
 
-                <!-- Buttons Call/Message -->
+                <TextView
+                    android:id="@+id/tvTechnicianStatus"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="6dp"
+                    android:background="@drawable/bg_badge_blue"
+                    android:paddingHorizontal="8dp"
+                    android:paddingVertical="4dp"
+                    android:text="Đang di chuyển đến • 15 phút"
+                    android:textColor="#0284C7"
+                    android:textSize="12sp"
+                    android:textStyle="bold"
+                    app:layout_constraintTop_toBottomOf="@id/tvTechnicianDesc"
+                    app:layout_constraintStart_toStartOf="@id/tvTechnicianName" />
+
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/btnCall"
                     android:layout_width="0dp"
-                    android:layout_height="40dp"
+                    android:layout_height="48dp"
                     android:layout_marginStart="16dp"
                     android:layout_marginTop="12dp"
                     android:layout_marginEnd="5dp"
                     android:text="Gọi điện"
                     android:textSize="13sp"
                     android:textStyle="bold"
+                    android:textAllCaps="false"
                     android:textColor="@android:color/white"
-                    app:cornerRadius="20dp"
-                    android:backgroundTint="?attr/colorPrimary" 
-                    app:layout_constraintTop_toBottomOf="@id/tvTechnicianDesc"
+                    app:cornerRadius="22dp"
+                    app:icon="@drawable/ic_lucide_phone"
+                    app:iconSize="16dp"
+                    app:iconGravity="textStart"
+                    android:backgroundTint="?attr/colorPrimary"
+                    app:layout_constraintTop_toBottomOf="@id/tvTechnicianStatus"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintEnd_toStartOf="@id/btnMessage"/>
 
@@ -205,19 +226,23 @@
                     android:id="@+id/btnMessage"
                     style="@style/Widget.MaterialComponents.Button.OutlinedButton"
                     android:layout_width="0dp"
-                    android:layout_height="40dp"
+                    android:layout_height="48dp"
                     android:layout_marginStart="5dp"
                     android:layout_marginEnd="16dp"
                     android:layout_marginTop="12dp"
                     android:text="Nhắn tin"
                     android:textSize="13sp"
                     android:textStyle="bold"
+                    android:textAllCaps="false"
                     android:textColor="?attr/colorPrimary"
-                    app:cornerRadius="20dp"
+                    app:cornerRadius="22dp"
+                    app:icon="@drawable/ic_lucide_message_circle"
+                    app:iconSize="16dp"
+                    app:iconGravity="textStart"
                     app:strokeColor="?attr/colorPrimary"
                     app:strokeWidth="1dp"
-                    android:backgroundTint="@android:color/transparent" 
-                    app:layout_constraintTop_toBottomOf="@id/tvTechnicianDesc"
+                    android:backgroundTint="@android:color/transparent"
+                    app:layout_constraintTop_toBottomOf="@id/tvTechnicianStatus"
                     app:layout_constraintStart_toEndOf="@id/btnCall"
                     app:layout_constraintEnd_toEndOf="parent"/>
 
@@ -486,4 +511,4 @@
         </androidx.core.widget.NestedScrollView>
     </com.google.android.material.card.MaterialCardView>
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

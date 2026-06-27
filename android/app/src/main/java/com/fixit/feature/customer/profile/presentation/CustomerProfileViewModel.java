@@ -8,6 +8,7 @@ import com.fixit.core.common.Result;
 import com.fixit.core.common.ResultCallback;
 import com.fixit.feature.customer.profile.domain.model.CustomerProfile;
 import com.fixit.feature.customer.profile.domain.usecase.GetCustomerProfileUseCase;
+import com.fixit.feature.customer.profile.domain.usecase.UpdateCustomerProfileUseCase;
 
 import javax.inject.Inject;
 import dagger.hilt.android.lifecycle.HiltViewModel;
@@ -22,6 +23,7 @@ public class CustomerProfileViewModel extends ViewModel {
 
     // ViewModel xài cái nút bấm UseCase (Thay vì xài trực tiếp Repository)
     private final GetCustomerProfileUseCase getCustomerProfileUseCase;
+    private final UpdateCustomerProfileUseCase updateCustomerProfileUseCase;
 
     // ----------------------------------------------------
     // CÁC KÊNH PHÁT SÓNG (LiveData)
@@ -30,10 +32,15 @@ public class CustomerProfileViewModel extends ViewModel {
     private final MutableLiveData<CustomerProfile> profileData = new MutableLiveData<>();
     private final MutableLiveData<Boolean> isLoading = new MutableLiveData<>(false);
     private final MutableLiveData<String> errorMessage = new MutableLiveData<>();
+    private final MutableLiveData<Boolean> updateSuccess = new MutableLiveData<>();
 
     @Inject
-    public CustomerProfileViewModel(GetCustomerProfileUseCase getCustomerProfileUseCase) {
+    public CustomerProfileViewModel(
+            GetCustomerProfileUseCase getCustomerProfileUseCase,
+            UpdateCustomerProfileUseCase updateCustomerProfileUseCase
+    ) {
         this.getCustomerProfileUseCase = getCustomerProfileUseCase;
+        this.updateCustomerProfileUseCase = updateCustomerProfileUseCase;
     }
 
     // ----------------------------------------------------
@@ -63,6 +70,28 @@ public class CustomerProfileViewModel extends ViewModel {
         });
     }
 
+    public void updateProfile(String fullName, String email, String gender, String dob) {
+        isLoading.setValue(true);
+        updateSuccess.setValue(null);
+        updateCustomerProfileUseCase.execute(fullName, email, gender, dob, new ResultCallback<CustomerProfile>() {
+            @Override
+            public void onResult(Result<CustomerProfile> result) {
+                isLoading.postValue(false);
+                if (result.isSuccess()) {
+                    profileData.postValue(result.getData());
+                    updateSuccess.postValue(true);
+                } else {
+                    errorMessage.postValue(result.getError().getMessage());
+                    updateSuccess.postValue(false);
+                }
+            }
+        });
+    }
+
+    public void clearUpdateSuccess() {
+        updateSuccess.setValue(null);
+    }
+
     // ----------------------------------------------------
     // CHỖ ĐỂ TIVI (FRAGMENT) CẮM ĂNG-TEN VÀO BẮT SÓNG
     // ----------------------------------------------------
@@ -79,5 +108,9 @@ public class CustomerProfileViewModel extends ViewModel {
 
     public LiveData<String> getErrorMessage() {
         return errorMessage;
+    }
+
+    public LiveData<Boolean> getUpdateSuccess() {
+        return updateSuccess;
     }
 }

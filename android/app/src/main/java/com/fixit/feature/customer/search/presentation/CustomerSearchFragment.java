@@ -38,12 +38,7 @@ public class CustomerSearchFragment extends BaseFragment<FragmentCustomerSearchB
     protected void setupViews() {
         viewModel = new ViewModelProvider(this).get(CustomerSearchViewModel.class);
 
-        // Sự kiện khi nhấn nút Quay lại (Back)
-        binding.btnBack.setOnClickListener(v -> {
-            if (navController != null) {
-                navController.popBackStack();
-            }
-        });
+
 
         // Thiết lập Adapter cho RecyclerView (Dùng lại ServiceCategoryAdapter)
         serviceAdapter = new ServiceCategoryAdapter(new ServiceCategoryAdapter.OnCategoryClickListener() {

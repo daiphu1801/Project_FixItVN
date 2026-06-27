@@ -32,12 +32,7 @@ public class FavoriteWorkersFragment extends BaseFragment<FragmentFavoriteWorker
 
     @Override
     protected void setupViews() {
-        // Nút quay lại (Back)
-        binding.btnBack.setOnClickListener(v -> {
-            if (navController != null) {
-                navController.popBackStack();
-            }
-        });
+
 
         // Thiết lập RecyclerView & Adapter
         adapter = new FavoriteWorkerAdapter();

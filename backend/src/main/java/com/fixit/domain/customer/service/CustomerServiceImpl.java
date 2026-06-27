@@ -43,16 +43,31 @@ public class CustomerServiceImpl implements CustomerService {
     // CÚ PHÁP: @Override
     // Ý NGHĨA: Báo hiệu đây là hàm được viết đè (thực thi) từ Interface cha.
     @Override
+    @Transactional(readOnly = true)
     public CustomerProfileResponse getProfile(UUID userId) {
-        // Lấy Customer từ DB. Nếu không tìm thấy, ném ra lỗi (báo cho Android biết).
-        Customer customer = customerRepository.findByUser_Id(userId)
-                .orElseThrow(() -> new RuntimeException("Không tìm thấy thông tin khách hàng"));
-
-        // Gói dữ liệu từ Entity (Customer) vào DTO (CustomerProfileResponse) để trả về
-        return CustomerProfileResponse.builder()
-                .id(customer.getCustomerId())
-                .fullName(customer.getFullName())
-                .build();
+        // Tìm Customer record. Nếu chưa có (user mới đăng ký), trả về profile tối thiểu từ User entity.
+        return customerRepository.findByUser_Id(userId)
+                .map(customer -> CustomerProfileResponse.builder()
+                        .id(customer.getCustomerId())
+                        .fullName(customer.getFullName())
+                        .email(customer.getUser() != null ? customer.getUser().getEmail() : null)
+                        .phoneNumber(customer.getUser() != null ? customer.getUser().getPhoneNumber() : null)
+                        .gender(customer.getGender())
+                        .dob(customer.getDob())
+                        .build())
+                .orElseGet(() -> {
+                    // Customer record chưa tồn tại → trả về profile tối thiểu từ User entity
+                    User user = userRepository.findById(userId)
+                            .orElseThrow(() -> new RuntimeException("Tài khoản không tồn tại"));
+                    return CustomerProfileResponse.builder()
+                            .id(null)
+                            .fullName(null)
+                            .email(user.getEmail())
+                            .phoneNumber(user.getPhoneNumber())
+                            .gender(null)
+                            .dob(null)
+                            .build();
+                });
     }
 
     @Override
@@ -71,10 +86,23 @@ public class CustomerServiceImpl implements CustomerService {
             customer = Customer.builder()
                     .user(user)
                     .fullName(request.getFullName())
+                    .gender(request.getGender())
+                    .dob(request.getDob())
                     .build();
         } else {
-            // NẾU ĐÃ CÓ: Chỉ cần cập nhật cái tên mới
+            // NẾU ĐÃ CÓ: Chỉ cần cập nhật dữ liệu mới
             customer.setFullName(request.getFullName());
+            customer.setGender(request.getGender());
+            customer.setDob(request.getDob());
+        }
+
+        // Bổ sung cập nhật email trong User entity
+        if (request.getEmail() != null) {
+            User user = customer.getUser();
+            if (user != null) {
+                user.setEmail(request.getEmail());
+                userRepository.save(user);
+            }
         }
 
         // BƯỚC 2: Gọi thủ kho lưu vào Database
@@ -84,6 +112,10 @@ public class CustomerServiceImpl implements CustomerService {
         return CustomerProfileResponse.builder()
                 .id(savedCustomer.getCustomerId())
                 .fullName(savedCustomer.getFullName())
+                .email(savedCustomer.getUser() != null ? savedCustomer.getUser().getEmail() : null)
+                .phoneNumber(savedCustomer.getUser() != null ? savedCustomer.getUser().getPhoneNumber() : null)
+                .gender(savedCustomer.getGender())
+                .dob(savedCustomer.getDob())
                 .build();
     }
 
