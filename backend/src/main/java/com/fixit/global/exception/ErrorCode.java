@@ -91,7 +91,12 @@ public enum ErrorCode {
 
         // Review
         BOOKING_NOT_COMPLETED(400, HttpStatus.BAD_REQUEST, "Đơn hàng chưa hoàn thành, không thể đánh giá"),
-        REVIEW_ALREADY_EXISTS(409, HttpStatus.CONFLICT, "Đơn hàng này đã được đánh giá trước đó");
+        REVIEW_ALREADY_EXISTS(409, HttpStatus.CONFLICT, "Đơn hàng này đã được đánh giá trước đó"),
+
+        // Complaint
+        COMPLAINT_NOT_FOUND(404, HttpStatus.NOT_FOUND, "Không tìm thấy khiếu nại cho đơn hàng này"),
+        COMPLAINT_ALREADY_EXISTS(409, HttpStatus.CONFLICT, "Đơn hàng này đã được khiếu nại trước đó"),
+        COMPLAINT_INVALID_STATUS(400, HttpStatus.BAD_REQUEST, "Trạng thái khiếu nại không hợp lệ");
 
         private final int code;
         private final HttpStatus httpStatus;

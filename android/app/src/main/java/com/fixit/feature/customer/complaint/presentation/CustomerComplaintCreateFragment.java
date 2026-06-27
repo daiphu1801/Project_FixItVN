@@ -20,11 +20,18 @@ import com.fixit.R;
 import com.fixit.core.ui.BaseFragment;
 import com.fixit.databinding.FragmentCustomerComplaintCreateBinding;
 import com.fixit.feature.upload.presentation.UploadViewModel;
+import com.fixit.feature.customer.booking.domain.usecase.GetBookingDetailUseCase;
+import com.fixit.feature.customer.booking.domain.model.CustomerBooking;
+import javax.inject.Inject;
+import java.text.DecimalFormat;
 
 import dagger.hilt.android.AndroidEntryPoint;
 
 @AndroidEntryPoint
 public class CustomerComplaintCreateFragment extends BaseFragment<FragmentCustomerComplaintCreateBinding> {
+
+    @Inject
+    GetBookingDetailUseCase getBookingDetailUseCase;
 
     private CustomerComplaintViewModel viewModel;
     private UploadViewModel uploadViewModel;
@@ -64,17 +71,22 @@ public class CustomerComplaintCreateFragment extends BaseFragment<FragmentCustom
         if (bookingId != null) {
             binding.tvOrderTitle.setText("📦 Đơn hàng #" + (bookingId.length() > 8 ? bookingId.substring(0, 8) : bookingId));
             
-            // Cài đặt thông tin hiển thị mock dựa trên bookingId
-            if ("ORD_PENDING_123".equals(bookingId)) {
-                binding.tvServiceTitle.setText("Dịch vụ: Sửa đường ống nước");
-                binding.tvPrice.setText("Giá trị: 350.000đ");
-            } else if ("ORD_RESPONDED_123".equals(bookingId)) {
-                binding.tvServiceTitle.setText("Dịch vụ: Sửa chữa điều hòa");
-                binding.tvPrice.setText("Giá trị: 500.000đ");
-            } else {
-                binding.tvServiceTitle.setText("Dịch vụ: Sửa chữa thiết bị gia dụng");
-                binding.tvPrice.setText("Giá trị: 250.000đ");
-            }
+            // Gọi API thật để lấy thông tin dịch vụ và giá trị đơn hàng
+            getBookingDetailUseCase.execute(bookingId, result -> {
+                if (result.isSuccess() && result.getData() != null) {
+                    CustomerBooking booking = result.getData();
+                    String serviceName = booking.getServiceName();
+                    if (serviceName == null || serviceName.isEmpty()) {
+                        serviceName = "Sửa chữa";
+                    }
+                    binding.tvServiceTitle.setText("Dịch vụ: " + serviceName);
+                    DecimalFormat df = new DecimalFormat("#,###đ");
+                    binding.tvPrice.setText("Giá trị: " + (booking.getFinalPrice() != null ? df.format(booking.getFinalPrice()) : "Chưa có giá"));
+                } else {
+                    binding.tvServiceTitle.setText("Dịch vụ: Sửa chữa thiết bị gia dụng");
+                    binding.tvPrice.setText("Giá trị: --");
+                }
+            });
         }
 
         // Toolbar Back click

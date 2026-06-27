@@ -19,6 +19,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.UUID;
+import com.fixit.domain.booking.repository.WorkerQuotationRepository;
+import com.fixit.domain.booking.repository.CancellationDetailRepository;
 
 @Slf4j
 @Service
@@ -28,6 +30,8 @@ public class CustomerBookingServiceImpl implements CustomerBookingService {
     private final BookingRepository bookingRepository;
     private final CustomerRepository customerRepository;
     private final ServiceCategoryRepository serviceCategoryRepository;
+    private final WorkerQuotationRepository workerQuotationRepository;
+    private final CancellationDetailRepository cancellationDetailRepository;
 
     @Override
     @Transactional
@@ -90,9 +94,32 @@ public class CustomerBookingServiceImpl implements CustomerBookingService {
                     .build();
         }
 
+        // Lấy chi tiết chi phí từ báo giá được chấp nhận
+        java.math.BigDecimal laborCost = null;
+        java.math.BigDecimal materialCost = null;
+        if (booking.getId() != null) {
+            java.util.Optional<com.fixit.domain.booking.entity.WorkerQuotation> quotationOpt =
+                    workerQuotationRepository.findFirstByBooking_IdAndStatusOrderByCreatedAtDesc(booking.getId(), com.fixit.domain.booking.entity.QuotationStatus.Accepted);
+            if (quotationOpt.isPresent()) {
+                laborCost = quotationOpt.get().getLaborCost();
+                materialCost = quotationOpt.get().getMaterialCost();
+            }
+        }
+
+        // Lấy lý do hủy nếu đơn bị hủy
+        String cancellationReason = null;
+        if (booking.getStatus() == BookingStatus.Cancelled && booking.getId() != null) {
+            java.util.Optional<com.fixit.domain.booking.entity.CancellationDetail> cancelOpt =
+                    cancellationDetailRepository.findById(booking.getId());
+            if (cancelOpt.isPresent()) {
+                cancellationReason = cancelOpt.get().getCancellationReason();
+            }
+        }
+
         return CustomerBookingResponse.builder()
                 .bookingId(booking.getId())
                 .serviceId(booking.getServiceCategory().getId())
+                .serviceName(booking.getServiceCategory() != null ? booking.getServiceCategory().getServiceName() : null)
                 .address(booking.getAddress())
                 .destinationLat(booking.getDestinationLat())
                 .destinationLng(booking.getDestinationLng())
@@ -100,6 +127,9 @@ public class CustomerBookingServiceImpl implements CustomerBookingService {
                 .paymentMethod(booking.getPaymentMethod())
                 .status(booking.getStatus())
                 .createdAt(booking.getCreatedAt())
+                .laborCost(laborCost)
+                .materialCost(materialCost)
+                .cancellationReason(cancellationReason)
                 .worker(workerInfo)
                 .build();
     }

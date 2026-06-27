@@ -8,4 +8,5 @@ public interface ComplaintRepository {
     void createComplaint(String bookingId, String reason, List<String> evidenceUrls, ResultCallback<Complaint> callback);
     void getBookingComplaint(String bookingId, ResultCallback<Complaint> callback);
     void cancelComplaint(String bookingId, String complaintId, ResultCallback<Void> callback);
+    void respondToComplaint(String bookingId, String workerResponse, List<String> evidenceUrls, ResultCallback<Complaint> callback);
 }

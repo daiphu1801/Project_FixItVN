@@ -54,7 +54,7 @@ public class CustomerSearchFragment extends BaseFragment<FragmentCustomerSearchB
                         category.getName());
                 bottomSheet.setOnServiceItemSelectedListener(item -> {
                     // Khi chọn xong 1 dịch vụ con -> Chuyển sang màn hình Đặt thợ
-                    navigateToFindingWorker(item.getName());
+                    navigateToFindingWorker(category.getId(), category.getName(), item.getName());
                 });
                 bottomSheet.show(getParentFragmentManager(), "ServiceCategoryBottomSheet");
             }
@@ -78,12 +78,13 @@ public class CustomerSearchFragment extends BaseFragment<FragmentCustomerSearchB
         viewModel.fetchCategories();
     }
 
-    private void navigateToFindingWorker(String serviceName) {
-        // Ta cần truyền tên dịch vụ đã chọn về màn hình booking
-        // Do màn hình search không có tvLocationValue, ta sẽ chuyển hướng thẳng với args (nếu cần thiết)
-        // Hiện tại tạm thời chỉ navigate sang nav_customer_booking
+    private void navigateToFindingWorker(int serviceId, String serviceName, String subServiceName) {
         if (navController != null) {
-            navController.navigate(R.id.nav_customer_booking);
+            android.os.Bundle args = new android.os.Bundle();
+            args.putInt("serviceId", serviceId);
+            args.putString("serviceName", serviceName);
+            args.putString("subServiceName", subServiceName);
+            navController.navigate(R.id.nav_customer_booking, args);
         }
     }
 
