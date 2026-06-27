@@ -30,16 +30,18 @@ public class CustomerFindingWorkerFragment extends BaseFragment<FragmentCustomer
 
         // Nơi xử lý các hiệu ứng radar hoặc nút 'Hủy yêu cầu'
         binding.btnCancelSearch.setOnClickListener(v -> {
-            // Khi nhấn hủy, xóa trạng thái đơn hàng
-            orderViewModel.cancelOrder();
+            // Khi nhấn hủy, gọi API hủy đơn hàng trên backend
+            orderViewModel.cancelCurrentBooking("Khách hàng hủy tìm kiếm thợ", false);
         });
 
-        // GIẢ LẬP: Sau 3 giây tìm thấy thợ (Dùng cho demo)
+        // Đã gỡ bỏ phần giả lập 3 giây tìm thấy thợ để hệ thống chạy bằng dữ liệu ghép cặp thật của backend
+        /*
         binding.getRoot().postDelayed(() -> {
             if (orderViewModel.orderStatus.getValue() != null && orderViewModel.orderStatus.getValue() == 1) {
                 orderViewModel.onWorkerAccepted();
             }
         }, 3000);
+        */
     }
 
     @Override
