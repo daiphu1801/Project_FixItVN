@@ -183,4 +183,40 @@ public class AuthRepositoryImpl implements AuthRepository {
             }
         });
     }
+
+    @Override
+    public void loginWithGoogle(String idToken, String role, ResultCallback<Session> callback) {
+        authApi.loginWithGoogle(new AuthRequest.GoogleLogin(idToken, role))
+                .enqueue(new Callback<AuthResponse>() {
+                    @Override
+                    public void onResponse(Call<AuthResponse> call, Response<AuthResponse> response) {
+                        if (!response.isSuccessful()) {
+                            ApiResponse<?> apiResponse = ApiResponse.parseError(response);
+                            String errorMessage = (apiResponse != null && apiResponse.getMessage() != null)
+                                    ? apiResponse.getMessage()
+                                    : "Đăng nhập Google thất bại. HTTP " + response.code();
+                            callback.onResult(Result.error(new AppError(errorMessage)));
+                            return;
+                        }
+
+                        Session session = AuthMapper.toSession(response.body());
+                        if (session == null) {
+                            callback.onResult(Result.error(
+                                    new AppError("Dữ liệu đăng nhập Google không hợp lệ")
+                            ));
+                            return;
+                        }
+
+                        sessionStorage.saveSession(session);
+                        callback.onResult(Result.success(session));
+                    }
+
+                    @Override
+                    public void onFailure(Call<AuthResponse> call, Throwable t) {
+                        callback.onResult(Result.error(
+                                new AppError("Lỗi kết nối đăng nhập Google: " + t.getMessage(), t)
+                        ));
+                    }
+                });
+    }
 }

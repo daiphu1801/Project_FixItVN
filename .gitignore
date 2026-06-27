@@ -63,3 +63,6 @@ google-services.json
 
 # VNPT SDK configs
 configs/
+
+#local.properties
+android/app/local.properties
