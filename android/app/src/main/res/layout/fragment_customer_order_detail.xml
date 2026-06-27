@@ -507,6 +507,56 @@
                     app:layout_constraintTop_toBottomOf="@id/tvAddress"
                     app:layout_constraintBottom_toBottomOf="parent"/>
 
+                <!-- Approval Section -->
+                <LinearLayout
+                    android:id="@+id/llApprovalSection"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:layout_marginHorizontal="16dp"
+                    android:layout_marginTop="20dp"
+                    android:layout_marginBottom="20dp"
+                    android:visibility="gone"
+                    app:layout_constraintTop_toBottomOf="@id/tvAddress"
+                    app:layout_constraintBottom_toBottomOf="parent">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:background="@drawable/bg_badge_orange_light"
+                        android:padding="12dp"
+                        android:layout_marginBottom="16dp">
+
+                        <ImageView
+                            android:layout_width="20dp"
+                            android:layout_height="20dp"
+                            android:src="@drawable/ic_note"
+                            app:tint="#F97316"
+                            android:layout_marginEnd="8dp" />
+
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="Lý do nghiệm thu: Nghiệm thu giúp bạn kiểm tra và xác nhận công việc đã được thợ hoàn thành đúng chất lượng yêu cầu trước khi chuyển tiền. Hãy kiểm tra kỹ thiết bị/khu vực sửa chữa xem đã hoạt động ổn định chưa nhé!"
+                            android:textSize="12sp"
+                            android:textColor="#C2410C"
+                            android:lineSpacingExtra="2dp" />
+                    </LinearLayout>
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btnConfirmAcceptance"
+                        android:layout_width="match_parent"
+                        android:layout_height="52dp"
+                        android:text="Xác nhận nghiệm thu &amp; Thanh toán"
+                        android:textColor="@color/white"
+                        android:textSize="15sp"
+                        android:textStyle="bold"
+                        app:cornerRadius="26dp"
+                        android:backgroundTint="?attr/colorPrimary" />
+                </LinearLayout>
+
             </androidx.constraintlayout.widget.ConstraintLayout>
         </androidx.core.widget.NestedScrollView>
     </com.google.android.material.card.MaterialCardView>

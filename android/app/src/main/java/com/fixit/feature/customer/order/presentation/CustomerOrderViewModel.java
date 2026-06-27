@@ -10,6 +10,7 @@ import com.fixit.feature.customer.booking.domain.usecase.CreateBookingUseCase;
 import com.fixit.feature.customer.booking.domain.usecase.GetBookingDetailUseCase;
 import com.fixit.feature.customer.booking.domain.usecase.GetBookingsUseCase;
 import com.fixit.feature.customer.booking.domain.usecase.CancelBookingUseCase;
+import com.fixit.feature.customer.booking.domain.usecase.ProcessPaymentUseCase;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -32,6 +33,7 @@ public class CustomerOrderViewModel extends BaseViewModel {
     private final GetBookingDetailUseCase getBookingDetailUseCase;
     private final GetBookingsUseCase getBookingsUseCase;
     private final CancelBookingUseCase cancelBookingUseCase;
+    private final ProcessPaymentUseCase processPaymentUseCase;
 
     private String currentBookingId;
 
@@ -40,11 +42,13 @@ public class CustomerOrderViewModel extends BaseViewModel {
             CreateBookingUseCase createBookingUseCase, 
             GetBookingDetailUseCase getBookingDetailUseCase,
             GetBookingsUseCase getBookingsUseCase,
-            CancelBookingUseCase cancelBookingUseCase) {
+            CancelBookingUseCase cancelBookingUseCase,
+            ProcessPaymentUseCase processPaymentUseCase) {
         this.createBookingUseCase = createBookingUseCase;
         this.getBookingDetailUseCase = getBookingDetailUseCase;
         this.getBookingsUseCase = getBookingsUseCase;
         this.cancelBookingUseCase = cancelBookingUseCase;
+        this.processPaymentUseCase = processPaymentUseCase;
     }
 
     public void setStatus(int status) {
@@ -90,10 +94,11 @@ public class CustomerOrderViewModel extends BaseViewModel {
                 _currentBooking.setValue(booking);
                 
                 // Cập nhật UI dựa vào trạng thái booking
-                if ("ASSIGNED".equals(booking.getStatus()) || "ACCEPTED".equals(booking.getStatus())) {
+                if ("Accepted".equalsIgnoreCase(booking.getStatus()) || "Surveying".equalsIgnoreCase(booking.getStatus()) || 
+                    "In_Progress".equalsIgnoreCase(booking.getStatus()) || "Waiting_Approval".equalsIgnoreCase(booking.getStatus())) {
                     onWorkerAccepted();
-                } else if ("PENDING".equals(booking.getStatus())) {
-                    // Tiếp tục gọi lại sau 3 giây nếu vẫn PENDING
+                } else if ("Pending".equalsIgnoreCase(booking.getStatus())) {
+                    // Tiếp tục gọi lại sau 3 giây nếu vẫn Pending
                     new android.os.Handler(android.os.Looper.getMainLooper()).postDelayed(this::pollBookingDetail, 3000);
                 }
             } else if (result != null) {
@@ -133,6 +138,17 @@ public class CustomerOrderViewModel extends BaseViewModel {
             } else if (result != null) {
                 _error.setValue(result.getError().getMessage());
             }
+        });
+    }
+
+    public void confirmAndPayBooking(String bookingId, com.fixit.core.common.ResultCallback<Void> callback) {
+        setLoading(true);
+        processPaymentUseCase.execute(bookingId, result -> {
+            setLoading(false);
+            if (result != null && result.isSuccess()) {
+                cancelOrder();
+            }
+            callback.onResult(result);
         });
     }
 }

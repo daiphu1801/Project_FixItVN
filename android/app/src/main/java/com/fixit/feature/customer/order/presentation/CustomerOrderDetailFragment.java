@@ -46,6 +46,29 @@ public class CustomerOrderDetailFragment extends BaseFragment<FragmentCustomerOr
                 navController.navigate(R.id.nav_customer_cancel_order);
             }
         });
+
+        binding.btnConfirmAcceptance.setOnClickListener(v -> {
+            CustomerBooking booking = viewModel.currentBooking.getValue();
+            if (booking != null && booking.getBookingId() != null) {
+                binding.btnConfirmAcceptance.setEnabled(false);
+                binding.btnConfirmAcceptance.setText("Đang xử lý...");
+                viewModel.confirmAndPayBooking(booking.getBookingId(), result -> {
+                    binding.btnConfirmAcceptance.setEnabled(true);
+                    binding.btnConfirmAcceptance.setText("Xác nhận nghiệm thu & Thanh toán");
+                    if (result != null && result.isSuccess()) {
+                        Toast.makeText(requireContext(), "Nghiệm thu & thanh toán thành công!", Toast.LENGTH_SHORT).show();
+                        if (navController != null) {
+                            navController.popBackStack();
+                        }
+                    } else {
+                        String errorMsg = result != null && result.getError() != null 
+                                ? result.getError().getMessage() 
+                                : "Lỗi không xác định";
+                        Toast.makeText(requireContext(), "Thất bại: " + errorMsg, Toast.LENGTH_LONG).show();
+                    }
+                });
+            }
+        });
     }
 
     @Override
@@ -146,6 +169,18 @@ public class CustomerOrderDetailFragment extends BaseFragment<FragmentCustomerOr
             binding.layoutRating.setVisibility(View.GONE);
             binding.btnCall.setVisibility(View.GONE);
             binding.btnMessage.setVisibility(View.GONE);
+        }
+
+        // Quản lý hiển thị nút dựa vào trạng thái booking
+        if ("Waiting_Approval".equalsIgnoreCase(booking.getStatus())) {
+            binding.llApprovalSection.setVisibility(View.VISIBLE);
+            binding.btnCancelOrder.setVisibility(View.GONE);
+        } else if ("Completed".equalsIgnoreCase(booking.getStatus()) || "Cancelled".equalsIgnoreCase(booking.getStatus())) {
+            binding.llApprovalSection.setVisibility(View.GONE);
+            binding.btnCancelOrder.setVisibility(View.GONE);
+        } else {
+            binding.llApprovalSection.setVisibility(View.GONE);
+            binding.btnCancelOrder.setVisibility(View.VISIBLE);
         }
     }
 
