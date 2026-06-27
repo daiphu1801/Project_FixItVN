@@ -32,38 +32,38 @@
             android:weightSum="7">
             <!-- Day 1 -->
             <LinearLayout android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1" android:gravity="bottom|center_horizontal" android:orientation="vertical">
-                <View android:layout_width="20dp" android:layout_height="60dp" android:background="#E0E0E0" />
-                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="4dp" android:text="T2" android:textSize="10sp" />
+                <View android:id="@+id/barMon" android:layout_width="20dp" android:layout_height="0dp" android:background="#E0E0E0" />
+                <TextView android:id="@+id/lblMon" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="4dp" android:text="T2" android:textSize="10sp" />
             </LinearLayout>
             <!-- Day 2 -->
             <LinearLayout android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1" android:gravity="bottom|center_horizontal" android:orientation="vertical">
-                <View android:layout_width="20dp" android:layout_height="80dp" android:background="#E0E0E0" />
-                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="4dp" android:text="T3" android:textSize="10sp" />
+                <View android:id="@+id/barTue" android:layout_width="20dp" android:layout_height="0dp" android:background="#E0E0E0" />
+                <TextView android:id="@+id/lblTue" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="4dp" android:text="T3" android:textSize="10sp" />
             </LinearLayout>
             <!-- Day 3 -->
             <LinearLayout android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1" android:gravity="bottom|center_horizontal" android:orientation="vertical">
-                <View android:layout_width="20dp" android:layout_height="40dp" android:background="#E0E0E0" />
-                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="4dp" android:text="T4" android:textSize="10sp" />
+                <View android:id="@+id/barWed" android:layout_width="20dp" android:layout_height="0dp" android:background="#E0E0E0" />
+                <TextView android:id="@+id/lblWed" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="4dp" android:text="T4" android:textSize="10sp" />
             </LinearLayout>
             <!-- Day 4 -->
             <LinearLayout android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1" android:gravity="bottom|center_horizontal" android:orientation="vertical">
-                <View android:layout_width="20dp" android:layout_height="100dp" android:background="#42c2ff" />
-                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="4dp" android:text="T5" android:textSize="10sp" android:textStyle="bold" />
+                <View android:id="@+id/barThu" android:layout_width="20dp" android:layout_height="0dp" android:background="#E0E0E0" />
+                <TextView android:id="@+id/lblThu" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="4dp" android:text="T5" android:textSize="10sp" />
             </LinearLayout>
             <!-- Day 5 -->
             <LinearLayout android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1" android:gravity="bottom|center_horizontal" android:orientation="vertical">
-                <View android:layout_width="20dp" android:layout_height="0dp" android:background="#E0E0E0" />
-                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="4dp" android:text="T6" android:textSize="10sp" />
+                <View android:id="@+id/barFri" android:layout_width="20dp" android:layout_height="0dp" android:background="#E0E0E0" />
+                <TextView android:id="@+id/lblFri" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="4dp" android:text="T6" android:textSize="10sp" />
             </LinearLayout>
             <!-- Day 6 -->
             <LinearLayout android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1" android:gravity="bottom|center_horizontal" android:orientation="vertical">
-                <View android:layout_width="20dp" android:layout_height="0dp" android:background="#E0E0E0" />
-                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="4dp" android:text="T7" android:textSize="10sp" />
+                <View android:id="@+id/barSat" android:layout_width="20dp" android:layout_height="0dp" android:background="#E0E0E0" />
+                <TextView android:id="@+id/lblSat" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="4dp" android:text="T7" android:textSize="10sp" />
             </LinearLayout>
             <!-- Day 7 -->
             <LinearLayout android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1" android:gravity="bottom|center_horizontal" android:orientation="vertical">
-                <View android:layout_width="20dp" android:layout_height="0dp" android:background="#E0E0E0" />
-                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="4dp" android:text="CN" android:textSize="10sp" />
+                <View android:id="@+id/barSun" android:layout_width="20dp" android:layout_height="0dp" android:background="#E0E0E0" />
+                <TextView android:id="@+id/lblSun" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="4dp" android:text="CN" android:textSize="10sp" />
             </LinearLayout>
         </LinearLayout>
     </LinearLayout>

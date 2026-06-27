@@ -15,6 +15,16 @@ android {
         targetSdk 35
         versionCode 1
         versionName "1.0.0"
+
+        // Load google.web.client.id from local.properties
+        Properties properties = new Properties()
+        if (project.rootProject.file('local.properties').exists()) {
+            properties.load(project.rootProject.file('local.properties').newDataInputStream())
+        } else if (project.file('local.properties').exists()) {
+            properties.load(project.file('local.properties').newDataInputStream())
+        }
+        String googleClientId = properties.getProperty('google.web.client.id', 'YOUR_GOOGLE_WEB_CLIENT_ID.apps.googleusercontent.com')
+        resValue "string", "google_web_client_id", googleClientId
     }
 
     buildTypes {
@@ -65,6 +75,7 @@ dependencies {
     // Google Maps & Location
     implementation 'com.google.android.gms:play-services-maps:19.0.0'
     implementation 'com.google.android.gms:play-services-location:21.3.0'
+    implementation 'com.google.android.gms:play-services-auth:21.2.0'
 
     // Glide
     implementation 'com.github.bumptech.glide:glide:4.16.0'

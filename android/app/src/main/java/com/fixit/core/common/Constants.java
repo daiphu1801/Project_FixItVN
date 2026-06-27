@@ -2,17 +2,9 @@ package com.fixit.core.common;
 
 public class Constants {
     // Network
-
     // Dùng 10.0.2.2 cho máy ảo, hoặc IP máy tính cho máy thật/LDPlayer
-    public static final String BASE_URL = "http://172.16.1.2:8080/";
-
-    // Dùng 10.0.2.2 cho máy ảo, hoặc IP máy tính cho máy thật
     // public static final String BASE_URL = "http://172.16.1.2:8080/";
-
-    // public static final String BASE_URL = "http://10.0.2.2:8080/";
-
-    // public static final String BASE_URL =
-    // "https://finley-unvituperated-saccharinely.ngrok-free.dev/";
+    public static final String BASE_URL = "https://finley-unvituperated-saccharinely.ngrok-free.dev/";
 
     // DEV ONLY: dùng khi backend chưa lấy worker từ JWT thật.
     // Đổi thành worker_id thật trong bảng workers.
