@@ -315,14 +315,12 @@ public class AuthServiceImpl implements AuthService {
     @Override
     @Transactional
     public void forgotPassword(ForgotPasswordRequest request) {
-        String identifier = request.getPhoneNumber() != null ? request.getPhoneNumber() : request.getEmail();
-        User user = userRepository.findByPhoneNumber(identifier)
-                .orElseGet(() -> userRepository.findByEmail(identifier)
-                        .orElseThrow(() -> new RuntimeException("Người dùng không tồn tại")));
+        String email = request.getEmail();
+        userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("Người dùng không tồn tại"));
 
         SendOtpRequest sendOtpRequest = SendOtpRequest.builder()
-                .phoneNumber(request.getPhoneNumber())
-                .email(request.getEmail())
+                .email(email)
                 .actionType(OtpActionType.FORGOT_PASSWORD)
                 .build();
         sendOtp(sendOtpRequest);
