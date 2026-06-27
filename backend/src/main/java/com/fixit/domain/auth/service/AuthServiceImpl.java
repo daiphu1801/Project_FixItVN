@@ -7,6 +7,8 @@ import com.fixit.domain.auth.repository.OtpCodeRepository;
 import com.fixit.domain.auth.repository.RefreshTokenRepository;
 import com.fixit.domain.auth.repository.UserRepository;
 import com.fixit.domain.auth.repository.UserSocialLoginRepository;
+import com.fixit.domain.customer.entity.Customer;
+import com.fixit.domain.customer.repository.CustomerRepository;
 import com.fixit.domain.wallet.entity.WorkerWallet;
 import com.fixit.domain.wallet.repository.WorkerWalletRepository;
 import com.fixit.domain.worker.entity.Worker;
@@ -32,6 +34,7 @@ import java.util.UUID;
 public class AuthServiceImpl implements AuthService {
 
     private final UserRepository userRepository;
+    private final CustomerRepository customerRepository;
     private final WorkerRepository workerRepository;
     private final WorkerWalletRepository workerWalletRepository;
     private final RefreshTokenRepository refreshTokenRepository;
@@ -86,6 +89,14 @@ public class AuthServiceImpl implements AuthService {
                     .build();
 
             workerWalletRepository.save(wallet);
+        } else if (request.getRole() == UserRole.Customer) {
+            String customerName = (request.getFullName() != null && !request.getFullName().trim().isEmpty()) 
+                    ? request.getFullName().trim() : "Khách hàng mới";
+            Customer customer = Customer.builder()
+                    .user(savedUser)
+                    .fullName(customerName)
+                    .build();
+            customerRepository.save(customer);
         }
 
         String accessToken = jwtService.generateToken(savedUser);
@@ -154,7 +165,13 @@ public class AuthServiceImpl implements AuthService {
                         .role(UserRole.Customer)
                         .active(true)
                         .build();
-                userRepository.save(user);
+                user = userRepository.save(user);
+
+                Customer customer = Customer.builder()
+                        .user(user)
+                        .fullName(name)
+                        .build();
+                customerRepository.save(customer);
             }
             UserSocialLogin newSocialLogin = UserSocialLogin.builder()
                     .user(user)

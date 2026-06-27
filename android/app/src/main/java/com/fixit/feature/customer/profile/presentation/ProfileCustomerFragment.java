@@ -26,6 +26,7 @@ import dagger.hilt.android.AndroidEntryPoint;
 public class ProfileCustomerFragment extends BaseFragment<FragmentProfileCustomerBinding> {
 
     private UploadViewModel uploadViewModel;
+    private CustomerProfileViewModel profileViewModel;
 
     // Image picker cho avatar khách hàng
     private final ActivityResultLauncher<String> pickAvatarLauncher = registerForActivityResult(
@@ -57,6 +58,9 @@ public class ProfileCustomerFragment extends BaseFragment<FragmentProfileCustome
 
     @Override
     protected void setupViews() {
+        profileViewModel = new ViewModelProvider(this).get(CustomerProfileViewModel.class);
+        uploadViewModel = new ViewModelProvider(this).get(UploadViewModel.class);
+
         // Chuyển đến màn hình thông tin tài khoản
         binding.cardProfile.setOnClickListener(v -> {
             if (navController != null) {
@@ -69,30 +73,48 @@ public class ProfileCustomerFragment extends BaseFragment<FragmentProfileCustome
 
         // Đăng xuất
         binding.btnLogout.setOnClickListener(v -> {
-            // Thực hiện logout (xóa token, session...) tại đây nếu cần
-            
-            // Chuyển về màn hình đăng nhập (AuthActivity)
-            Intent intent = new Intent(requireContext(), AuthActivity.class);
-            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-            startActivity(intent);
-            requireActivity().finish();
+            new com.google.android.material.dialog.MaterialAlertDialogBuilder(requireContext())
+                    .setTitle("Đăng xuất")
+                    .setMessage("Bạn có chắc muốn đăng xuất khỏi FixIt VN không?")
+                    .setPositiveButton("Đăng xuất", (dialog, which) -> profileViewModel.logout())
+                    .setNegativeButton("Huỷ", (dialog, which) -> dialog.dismiss())
+                    .show();
         });
     }
 
     @Override
     protected void observeData() {
-        uploadViewModel = new ViewModelProvider(this).get(UploadViewModel.class);
-
         // Observe kết quả upload avatar
         uploadViewModel.uploadResult.observe(getViewLifecycleOwner(), result -> {
             if (result == null) return;
             if (result.isSuccess()) {
                 Toast.makeText(requireContext(), "Ảnh đại diện đã cập nhật", Toast.LENGTH_SHORT).show();
-                // TODO: Gọi API cập nhật profile với URL mới
-                // result.getConfirmedUpload().getFileUrl()
             } else {
                 Toast.makeText(requireContext(), result.getErrorMessage(), Toast.LENGTH_SHORT).show();
             }
         });
+
+        profileViewModel.getProfileData().observe(getViewLifecycleOwner(), profile -> {
+            if (profile != null) {
+                binding.tvProfileName.setText(profile.getFullName());
+            }
+        });
+
+        profileViewModel.getLogoutSuccess().observe(getViewLifecycleOwner(), success -> {
+            if (Boolean.TRUE.equals(success)) {
+                Intent intent = new Intent(requireContext(), AuthActivity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                startActivity(intent);
+                requireActivity().finish();
+            }
+        });
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (profileViewModel != null) {
+            profileViewModel.loadProfile();
+        }
     }
 }

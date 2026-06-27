@@ -7,6 +7,7 @@ import com.fixit.core.common.Result;
 import com.fixit.core.common.ResultCallback;
 import com.fixit.core.network.ApiResponse;
 import com.fixit.feature.customer.booking.data.remote.api.CustomerBookingApi;
+import com.fixit.feature.customer.booking.data.remote.dto.request.CustomerBookingCancelRequestDto;
 import com.fixit.feature.customer.booking.data.remote.dto.request.CustomerBookingCreateRequestDto;
 import com.fixit.feature.customer.booking.data.remote.dto.response.CustomerBookingResponseDto;
 import com.fixit.feature.customer.booking.data.remote.mapper.CustomerBookingMapper;

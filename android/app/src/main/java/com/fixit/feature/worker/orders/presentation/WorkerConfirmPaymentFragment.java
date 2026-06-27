@@ -36,11 +36,11 @@ public class WorkerConfirmPaymentFragment extends BaseFragment<FragmentConfirmPa
 
         binding.btnConfirm.setOnClickListener(v -> submitQuotation());
         
-        binding.llWorkerTopbar.ivBack.setOnClickListener(v -> {
+        binding.llWorkerTopbar.btnBack.setOnClickListener(v -> {
             if (navController != null) navController.popBackStack();
         });
         
-        binding.llWorkerTopbar.tvTitle.setText("Xác nhận thanh toán");
+        binding.llWorkerTopbar.tvToolbarTitle.setText("Xác nhận thanh toán");
         
         calculateTotal();
     }
@@ -103,9 +103,9 @@ public class WorkerConfirmPaymentFragment extends BaseFragment<FragmentConfirmPa
             BigDecimal labor = laborStr.isEmpty() ? BigDecimal.ZERO : new BigDecimal(laborStr);
             BigDecimal material = materialStr.isEmpty() ? BigDecimal.ZERO : new BigDecimal(materialStr);
 
-            setLoading(true);
+            binding.btnConfirm.setEnabled(false);
             submitQuotationUseCase.execute(bookingId, labor, material, result -> {
-                setLoading(false);
+                binding.btnConfirm.setEnabled(true);
                 if (result != null && result.isSuccess()) {
                     Toast.makeText(requireContext(), "Đã gửi báo giá cho khách hàng", Toast.LENGTH_SHORT).show();
                     if (navController != null) navController.popBackStack();

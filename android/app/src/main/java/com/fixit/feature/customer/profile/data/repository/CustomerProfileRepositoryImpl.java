@@ -60,8 +60,9 @@ public class CustomerProfileRepositoryImpl implements CustomerProfileRepository 
                     // Bấm bộ đàm báo TIN VUI về cho màn hình Android vẽ ra
                     callback.onResult(Result.success(result));
                 } else {
-                    // NẾU THẤT BẠI (Mã 400, 500...): Bấm bộ đàm báo TIN BUỒN
-                    callback.onResult(Result.error(new AppError("Lỗi tải thông tin: " + response.message())));
+                    String errMsg = "Mã lỗi " + response.code();
+                    try { if (response.errorBody() != null) errMsg += ": " + response.errorBody().string(); } catch (Exception ignored) {}
+                    callback.onResult(Result.error(new AppError("Lỗi tải thông tin (" + errMsg + ")")));
                 }
             }
 
@@ -93,7 +94,9 @@ public class CustomerProfileRepositoryImpl implements CustomerProfileRepository 
                     CustomerProfile result = CustomerProfileMapper.toDomain(response.body().getData());
                     callback.onResult(Result.success(result));
                 } else {
-                    callback.onResult(Result.error(new AppError("Không thể cập nhật hồ sơ: " + response.message())));
+                    String errMsg = "Mã lỗi " + response.code();
+                    try { if (response.errorBody() != null) errMsg += ": " + response.errorBody().string(); } catch (Exception ignored) {}
+                    callback.onResult(Result.error(new AppError("Không thể cập nhật hồ sơ (" + errMsg + ")")));
                 }
             }
 

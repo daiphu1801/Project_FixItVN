@@ -1,6 +1,6 @@
 package com.fixit.feature.worker.orders.data.remote.api;
 
-import com.fixit.core.common.ApiResponse;
+import com.fixit.core.network.ApiResponse;
 import com.fixit.feature.worker.orders.data.remote.dto.request.WorkerQuotationRequestDto;
 import retrofit2.Call;
 import retrofit2.http.Body;

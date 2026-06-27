@@ -1,7 +1,7 @@
 package com.fixit.feature.worker.orders.data.repository;
 
 import androidx.annotation.NonNull;
-import com.fixit.core.common.ApiResponse;
+import com.fixit.core.network.ApiResponse;
 import com.fixit.core.common.AppError;
 import com.fixit.core.common.Result;
 import com.fixit.core.common.ResultCallback;

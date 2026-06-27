@@ -15,8 +15,13 @@ import java.util.Calendar;
 import java.util.Locale;
 import dagger.hilt.android.AndroidEntryPoint;
 
+import android.widget.Toast;
+import androidx.lifecycle.ViewModelProvider;
+
 @AndroidEntryPoint
 public class CustomerAccountInfoFragment extends BaseFragment<FragmentCustomerAccountInfoBinding> {
+
+    private CustomerProfileViewModel viewModel;
 
     @NonNull
     @Override
@@ -39,9 +44,13 @@ public class CustomerAccountInfoFragment extends BaseFragment<FragmentCustomerAc
         binding.boxDob.setOnClickListener(v -> showDatePicker());
 
         binding.btnSave.setOnClickListener(v -> {
-            // Xử lý cập nhật thông tin tại đây
-            if (navController != null) {
-                navController.popBackStack();
+            String fullName = binding.etFullName.getText().toString().trim();
+            if (fullName.isEmpty()) {
+                Toast.makeText(requireContext(), "Vui lòng nhập họ tên", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            if (viewModel != null) {
+                viewModel.updateProfile(fullName);
             }
         });
     }
@@ -102,5 +111,32 @@ public class CustomerAccountInfoFragment extends BaseFragment<FragmentCustomerAc
 
     @Override
     protected void observeData() {
+        viewModel = new ViewModelProvider(this).get(CustomerProfileViewModel.class);
+
+        viewModel.getProfileData().observe(getViewLifecycleOwner(), profile -> {
+            if (profile != null) {
+                binding.tvUserNameDisplay.setText(profile.getFullName());
+                if (binding.etFullName.getText().toString().isEmpty()) {
+                    binding.etFullName.setText(profile.getFullName());
+                }
+            }
+        });
+
+        viewModel.getUpdateSuccess().observe(getViewLifecycleOwner(), success -> {
+            if (success != null && success) {
+                Toast.makeText(requireContext(), "Cập nhật thành công!", Toast.LENGTH_SHORT).show();
+                if (navController != null) {
+                    navController.popBackStack();
+                }
+            }
+        });
+
+        viewModel.getErrorMessage().observe(getViewLifecycleOwner(), error -> {
+            if (error != null) {
+                Toast.makeText(requireContext(), "Lỗi: " + error, Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        viewModel.loadProfile();
     }
 }

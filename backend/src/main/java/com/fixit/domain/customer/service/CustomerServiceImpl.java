@@ -43,12 +43,19 @@ public class CustomerServiceImpl implements CustomerService {
     // CÚ PHÁP: @Override
     // Ý NGHĨA: Báo hiệu đây là hàm được viết đè (thực thi) từ Interface cha.
     @Override
+    @Transactional
     public CustomerProfileResponse getProfile(UUID userId) {
-        // Lấy Customer từ DB. Nếu không tìm thấy, ném ra lỗi (báo cho Android biết).
-        Customer customer = customerRepository.findByUser_Id(userId)
-                .orElseThrow(() -> new RuntimeException("Không tìm thấy thông tin khách hàng"));
+        Customer customer = customerRepository.findByUser_Id(userId).orElse(null);
+        if (customer == null) {
+            User user = userRepository.findById(userId)
+                    .orElseThrow(() -> new RuntimeException("Tài khoản không tồn tại"));
+            customer = Customer.builder()
+                    .user(user)
+                    .fullName("Khách hàng mới")
+                    .build();
+            customer = customerRepository.save(customer);
+        }
 
-        // Gói dữ liệu từ Entity (Customer) vào DTO (CustomerProfileResponse) để trả về
         return CustomerProfileResponse.builder()
                 .id(customer.getCustomerId())
                 .fullName(customer.getFullName())
