@@ -1,5 +1,6 @@
 package com.fixit.feature.worker.availability.domain.usecase;
 
+import com.fixit.core.common.ResultCallback;
 import com.fixit.feature.worker.availability.domain.repository.WorkerAvailabilityRepository;
 
 import javax.inject.Inject;
@@ -12,7 +13,7 @@ public class GetWorkerAvailabilityUseCase {
         this.repository = repository;
     }
 
-    public boolean execute() {
-        return repository.isOnline();
+    public void execute(ResultCallback<Boolean> callback) {
+        repository.isOnline(callback);
     }
 }

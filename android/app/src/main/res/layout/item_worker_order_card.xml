@@ -2,173 +2,212 @@
 <com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    style="@style/FixIt.Card.Content"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_marginBottom="12dp"
-    app:cardCornerRadius="12dp">
+    app:cardCornerRadius="16dp"
+    app:cardElevation="2dp"
+    app:strokeWidth="1dp"
+    app:strokeColor="#e2e8f0"
+    app:cardBackgroundColor="@android:color/white">
 
-    <LinearLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
         android:padding="16dp">
 
-        <LinearLayout
-            android:layout_width="match_parent"
+        <!-- Status Badge -->
+        <TextView
+            android:id="@+id/tvOrderStatus"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:gravity="center_vertical"
-            android:orientation="horizontal">
+            android:background="#eff6ff"
+            android:text="Chờ xác nhận"
+            android:textColor="#2563eb"
+            android:textSize="11sp"
+            android:textStyle="bold"
+            android:paddingHorizontal="10dp"
+            android:paddingVertical="5dp"
+            android:backgroundTint="#eff6ff"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
-            <TextView
-                android:id="@+id/tvOrderStatus"
-                style="@style/FixIt.Order.Badge"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:background="#E3F2FD"
-                android:text="Chờ xác nhận"
-                android:textColor="#42c2ff" />
+        <!-- Complaint Badge -->
+        <TextView
+            android:id="@+id/tvComplaintBadge"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:background="#fee2e2"
+            android:text="Khiếu nại"
+            android:textColor="#ef4444"
+            android:textSize="11sp"
+            android:textStyle="bold"
+            android:paddingHorizontal="10dp"
+            android:paddingVertical="5dp"
+            android:visibility="gone"
+            app:layout_constraintStart_toEndOf="@id/tvOrderStatus"
+            app:layout_constraintTop_toTopOf="@id/tvOrderStatus"
+            tools:visibility="visible" />
 
-            <TextView
-                android:id="@+id/tvComplaintBadge"
-                style="@style/FixIt.Order.Badge"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:background="#fee2e2"
-                android:text="Khiếu nại"
-                android:textColor="#ef4444"
-                android:visibility="gone"
-                tools:visibility="visible" />
+        <!-- Time text -->
+        <TextView
+            android:id="@+id/tvOrderTime"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Hôm nay 14:30"
+            android:textColor="#64748b"
+            android:textSize="12sp"
+            app:layout_constraintBottom_toBottomOf="@id/tvOrderStatus"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@id/tvOrderStatus" />
 
-            <View
-                android:layout_width="0dp"
-                android:layout_height="0dp"
-                android:layout_weight="1" />
-
-            <TextView
-                android:id="@+id/tvOrderTime"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Hôm nay 14:30"
-                android:textColor="#888888"
-                android:textSize="12sp" />
-        </LinearLayout>
-
+        <!-- Service title -->
         <TextView
             android:id="@+id/tvOrderService"
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="12dp"
             android:text="Sửa rò rỉ ống nước bồn rửa chén"
-            android:textColor="#333333"
+            android:textColor="#0f172a"
             android:textSize="16sp"
-            android:textStyle="bold" />
+            android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tvOrderStatus" />
 
-        <LinearLayout
-            android:layout_width="match_parent"
+        <!-- Customer Icon -->
+        <ImageView
+            android:id="@+id/ivCustomerIcon"
+            android:layout_width="16dp"
+            android:layout_height="16dp"
+            android:layout_marginTop="10dp"
+            android:src="@drawable/ic_lucide_user"
+            app:tint="#64748b"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tvOrderService" />
+
+        <!-- Customer Name -->
+        <TextView
+            android:id="@+id/tvCustomerName"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:text="Nguyễn Văn B"
+            android:textColor="#475569"
+            android:textSize="14sp"
+            app:layout_constraintBottom_toBottomOf="@id/ivCustomerIcon"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/ivCustomerIcon"
+            app:layout_constraintTop_toTopOf="@id/ivCustomerIcon" />
+
+        <!-- Address Icon -->
+        <ImageView
+            android:id="@+id/ivAddressIcon"
+            android:layout_width="16dp"
+            android:layout_height="16dp"
             android:layout_marginTop="8dp"
-            android:gravity="center_vertical"
-            android:orientation="horizontal">
+            android:src="@drawable/ic_lucide_map_pin"
+            app:tint="#64748b"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/ivCustomerIcon" />
 
-            <ImageView
-                android:layout_width="16dp"
-                android:layout_height="16dp"
-                android:src="@drawable/ic_lucide_user"
-                app:tint="#888888" />
-
-            <TextView
-                android:id="@+id/tvCustomerName"
-                style="@style/FixIt.Text.InfoRow"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:text="Nguyễn Văn B"
-                android:textColor="#666666" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
+        <!-- Address Text -->
+        <TextView
+            android:id="@+id/tvOrderAddress"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginTop="6dp"
-            android:gravity="center_vertical"
-            android:orientation="horizontal">
+            android:layout_marginStart="8dp"
+            android:text="123 Nguyễn Văn Linh, Quận 7, TP.HCM"
+            android:textColor="#475569"
+            android:textSize="13sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/ivAddressIcon"
+            app:layout_constraintTop_toTopOf="@id/ivAddressIcon" />
 
-            <ImageView
-                android:layout_width="16dp"
-                android:layout_height="16dp"
-                android:src="@drawable/ic_lucide_map_pin"
-                app:tint="#888888" />
+        <!-- Description / Issue Container -->
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/cardIssue"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            app:cardCornerRadius="8dp"
+            app:cardElevation="0dp"
+            app:cardBackgroundColor="#f8fafc"
+            app:strokeWidth="1dp"
+            app:strokeColor="#e2e8f0"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tvOrderAddress">
 
             <TextView
-                android:id="@+id/tvOrderAddress"
-                style="@style/FixIt.Text.InfoRow"
+                android:id="@+id/tvOrderIssue"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:text="123 Nguyễn Văn Linh, Quận 7, TP.HCM"
-                android:textColor="#666666" />
-        </LinearLayout>
+                android:padding="8dp"
+                android:text="Mô tả: Vòi nước bị gãy chân, cần thay mới..."
+                android:textColor="#475569"
+                android:textSize="12sp"
+                android:maxLines="2"
+                android:ellipsize="end" />
+        </com.google.android.material.card.MaterialCardView>
 
-        <TextView
-            android:id="@+id/tvOrderIssue"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:background="#F8F9FA"
-            android:padding="8dp"
-            android:text="Mô tả: Vòi nước bị gãy chân, cần thay mới..."
-            android:textColor="#666666"
-            android:textSize="13sp"
-            android:maxLines="2"
-            android:ellipsize="end"/>
-
+        <!-- Divider line -->
         <View
-            android:layout_width="match_parent"
+            android:id="@+id/dividerCard"
+            android:layout_width="0dp"
             android:layout_height="1dp"
+            android:layout_marginTop="14dp"
+            android:background="#e2e8f0"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/cardIssue" />
+
+        <!-- Payment method -->
+        <TextView
+            android:id="@+id/tvPaymentMethod"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:layout_marginTop="12dp"
-            android:layout_marginBottom="12dp"
-            android:background="#EEEEEE" />
+            android:text="Tiền mặt"
+            android:textColor="#64748b"
+            android:textSize="12sp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/dividerCard" />
 
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+        <!-- Price -->
+        <TextView
+            android:id="@+id/tvOrderPrice"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="150.000 đ"
+            android:textColor="#ef4444"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tvPaymentMethod" />
 
-            <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_centerVertical="true"
-                android:orientation="vertical">
-
-                <TextView
-                    android:id="@+id/tvPaymentMethod"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Tiền mặt"
-                    android:textColor="#888888"
-                    android:textSize="12sp" />
-
-                <TextView
-                    android:id="@+id/tvOrderPrice"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="150.000 đ"
-                    android:textColor="#F44336"
-                    android:textSize="18sp"
-                    android:textStyle="bold" />
-            </LinearLayout>
-
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/btnOrderDetail"
-                style="@style/Widget.MaterialComponents.Button.TextButton"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentEnd="true"
-                android:layout_centerVertical="true"
-                android:text="Chi tiết"
-                android:textColor="#42c2ff"
-                app:rippleColor="#2042c2ff" />
-        </RelativeLayout>
-    </LinearLayout>
+        <!-- Detail Button -->
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnOrderDetail"
+            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+            android:layout_width="wrap_content"
+            android:layout_height="38dp"
+            android:text="Chi tiết"
+            android:textColor="#2563eb"
+            android:textSize="12sp"
+            android:textStyle="bold"
+            android:textAllCaps="false"
+            android:paddingHorizontal="12dp"
+            android:paddingVertical="0dp"
+            android:insetTop="0dp"
+            android:insetBottom="0dp"
+            app:strokeColor="#bfdbfe"
+            app:strokeWidth="1dp"
+            app:cornerRadius="8dp"
+            app:rippleColor="#102563eb"
+            app:layout_constraintBottom_toBottomOf="@id/tvOrderPrice"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@id/tvPaymentMethod" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
 </com.google.android.material.card.MaterialCardView>

@@ -11,4 +11,6 @@ public interface ProofOfWorkService {
     ProofOfWorkResponse createProofOfWork(UUID bookingId, ProofOfWorkCreateRequest request);
 
     List<ProofOfWorkResponse> getProofOfWorks(UUID bookingId);
+
+    void deleteProofOfWork(UUID bookingId, UUID proofId);
 }

@@ -8,7 +8,13 @@ public interface AuthRepository {
 
     void register(String phone,String email, String password, String fullName, String role, ResultCallback<Session> callback);
 
+    void loginWithGoogle(String idToken, String role, ResultCallback<Session> callback);
+
     void logout(ResultCallback<Void> callback);
 
+    void refreshToken(String refreshToken, ResultCallback<Session> callback);
+
     Session getCurrentSession();
+
+    void changePassword(String oldPassword, String newPassword, ResultCallback<Void> callback);
 }

@@ -17,5 +17,8 @@ public class WorkerKycSubmitRequest {
     @NotNull(message = "backImageUploadId không được để trống")
     private UUID backImageUploadId;
 
+    @NotNull(message = "selfieImageUploadId không được để trống")
+    private UUID selfieImageUploadId;
+
     private List<UUID> certificateUploadIds;
 }

@@ -24,18 +24,21 @@ public class AuthActivity extends BaseActivity<ActivityAuthBinding> {
     protected void setupViews() {
         viewModel = new ViewModelProvider(this).get(AuthViewModel.class);
         // Kiểm tra ngay khi khởi động: nếu có session đã lưu thì bỏ qua màn login
-        viewModel.checkExistingSession();
+        // viewModel.checkExistingSession();
     }
 
     @Override
     protected void observeData() {
         viewModel.event.observe(this, event -> {
+            android.util.Log.d("FixIt_AuthActivity", "observeData: event = " + (event != null ? event.getType() : "null"));
             if (event == null) return;
 
             // Chỉ xử lý auto-navigate (REGISTER_SUCCESS không cần redirect ở đây)
             if (event.getType() == AuthEvent.Type.NAVIGATE_TO_WORKER) {
+                android.util.Log.d("FixIt_AuthActivity", "observeData: Navigate to WorkerActivity");
                 navigateTo(com.fixit.feature.worker.presentation.WorkerActivity.class);
             } else if (event.getType() == AuthEvent.Type.NAVIGATE_TO_CUSTOMER) {
+                android.util.Log.d("FixIt_AuthActivity", "observeData: Navigate to CustomerActivity");
                 navigateTo(com.fixit.feature.customer.presentation.CustomerActivity.class);
             }
         });

@@ -1,8 +1,10 @@
 package com.fixit.domain.wallet.controller;
 
 import com.fixit.domain.wallet.dto.request.DepositCreateRequest;
+import com.fixit.domain.wallet.dto.request.WithdrawRequest;
 import com.fixit.domain.wallet.dto.response.DepositQrResponse;
 import com.fixit.domain.wallet.dto.response.DepositResponse;
+import com.fixit.domain.wallet.dto.response.WithdrawResponse;
 import com.fixit.domain.wallet.dto.response.WorkerWalletResponse;
 import com.fixit.domain.wallet.dto.response.WorkerWalletTransactionsResponse;
 import com.fixit.domain.wallet.service.WorkerWalletService;
@@ -57,5 +59,36 @@ public class WorkerWalletController {
             @PathVariable UUID transactionId
     ) {
         return ApiResponse.success(workerWalletService.getMyDepositQr(transactionId));
+    }
+
+    @PostMapping("/deposits/{transactionId}/cancel")
+    public ApiResponse<Void> cancelDeposit(
+            @PathVariable UUID transactionId
+    ) {
+        workerWalletService.cancelMyDeposit(transactionId);
+        return ApiResponse.success(null, "Hủy yêu cầu nạp tiền thành công");
+    }
+
+    @PostMapping("/withdrawals")
+    public ApiResponse<WithdrawResponse> createWithdraw(
+            @Valid @RequestBody WithdrawRequest request
+    ) {
+        WithdrawResponse response = workerWalletService.createMyWithdraw(request);
+        return ApiResponse.success(response, "Tạo yêu cầu rút tiền thành công");
+    }
+
+    @GetMapping("/withdrawals/{transactionId}")
+    public ApiResponse<WithdrawResponse> getWithdrawDetail(
+            @PathVariable UUID transactionId
+    ) {
+        return ApiResponse.success(workerWalletService.getMyWithdrawDetail(transactionId));
+    }
+
+    @PostMapping("/withdrawals/{transactionId}/cancel")
+    public ApiResponse<Void> cancelWithdraw(
+            @PathVariable UUID transactionId
+    ) {
+        workerWalletService.cancelMyWithdraw(transactionId);
+        return ApiResponse.success(null, "Hủy yêu cầu rút tiền thành công");
     }
 }

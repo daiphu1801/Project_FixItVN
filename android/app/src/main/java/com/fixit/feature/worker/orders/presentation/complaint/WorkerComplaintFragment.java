@@ -13,6 +13,7 @@ import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.annotation.Nullable;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.bumptech.glide.Glide;
@@ -21,11 +22,16 @@ import com.fixit.feature.worker.orders.domain.model.WorkerOrder;
 import com.fixit.databinding.FragmentWorkerComplaintBinding;
 import com.fixit.feature.upload.domain.model.UploadPurpose;
 import com.fixit.feature.upload.presentation.UploadViewModel;
+import com.fixit.feature.customer.complaint.domain.repository.ComplaintRepository;
+import javax.inject.Inject;
 
 import dagger.hilt.android.AndroidEntryPoint;
 
 @AndroidEntryPoint
 public class WorkerComplaintFragment extends BaseFragment<FragmentWorkerComplaintBinding> {
+
+    @Inject
+    ComplaintRepository complaintRepository;
 
     private WorkerOrdersViewModel viewModel;
     private UploadViewModel uploadViewModel;
@@ -41,6 +47,13 @@ public class WorkerComplaintFragment extends BaseFragment<FragmentWorkerComplain
                 }
             }
     );
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        viewModel = new ViewModelProvider(requireActivity()).get(WorkerOrdersViewModel.class);
+        uploadViewModel = new ViewModelProvider(this).get(UploadViewModel.class);
+    }
 
     @Override
     protected FragmentWorkerComplaintBinding inflateViewBinding(LayoutInflater inflater, ViewGroup container) {
@@ -63,10 +76,28 @@ public class WorkerComplaintFragment extends BaseFragment<FragmentWorkerComplain
                 return;
             }
             
-            // TODO: Gửi response + danh sách ảnh bằng chứng đã upload lên API
-            // uploadViewModel.getConfirmedFileUrls() chứa danh sách URL ảnh
-            Toast.makeText(requireContext(), "Đã gửi phản hồi thành công", Toast.LENGTH_SHORT).show();
-            requireActivity().getOnBackPressedDispatcher().onBackPressed();
+            if (orderId == null) {
+                Toast.makeText(requireContext(), "Không tìm thấy thông tin đơn hàng", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            if (binding.layoutLoading != null) {
+                binding.layoutLoading.getRoot().setVisibility(View.VISIBLE);
+            }
+            
+            complaintRepository.respondToComplaint(orderId, response, uploadViewModel.getConfirmedFileUrls(), result -> {
+                if (binding.layoutLoading != null) {
+                    binding.layoutLoading.getRoot().setVisibility(View.GONE);
+                }
+                if (result.isSuccess()) {
+                    Toast.makeText(requireContext(), "Đã gửi phản hồi thành công", Toast.LENGTH_SHORT).show();
+                    viewModel.loadOrderDetails(orderId, false);
+                    requireActivity().getOnBackPressedDispatcher().onBackPressed();
+                } else {
+                    String errorMsg = result.getError() != null ? result.getError().getMessage() : "Gửi giải trình thất bại";
+                    Toast.makeText(requireContext(), errorMsg, Toast.LENGTH_SHORT).show();
+                }
+            });
         });
 
         // Setup Toolbar
@@ -82,15 +113,23 @@ public class WorkerComplaintFragment extends BaseFragment<FragmentWorkerComplain
 
     @Override
     protected void observeData() {
-        viewModel = new ViewModelProvider(requireActivity()).get(WorkerOrdersViewModel.class);
-        uploadViewModel = new ViewModelProvider(this).get(UploadViewModel.class);
+        viewModel.orderDetails.observe(getViewLifecycleOwner(), order -> {
+            if (order != null) {
+                binding.tvOrderTitle.setText("📦 Đơn #" + order.getOrderId() + " – " + order.getServiceTitle());
+                binding.tvComplaintReason.setText(order.getComplaintReason());
+                binding.tvCountdown.setText(order.getComplaintDeadline());
+                binding.tvFrozenAmount.setText(order.getPrice());
+            }
+        });
 
-        WorkerOrder order = viewModel.getOrderById(orderId);
-        if (order != null) {
-            binding.tvOrderTitle.setText("📦 Đơn #" + order.getOrderId() + " – " + order.getServiceTitle());
-            binding.tvComplaintReason.setText(order.getComplaintReason());
-            binding.tvCountdown.setText(order.getComplaintDeadline());
-            binding.tvFrozenAmount.setText(order.getPrice());
+        viewModel.isLoading.observe(getViewLifecycleOwner(), loading -> {
+            if (binding.layoutLoading != null) {
+                binding.layoutLoading.getRoot().setVisibility(loading ? View.VISIBLE : View.GONE);
+            }
+        });
+
+        if (orderId != null) {
+            viewModel.loadOrderDetails(orderId);
         }
 
         // Observe kết quả upload ảnh bằng chứng

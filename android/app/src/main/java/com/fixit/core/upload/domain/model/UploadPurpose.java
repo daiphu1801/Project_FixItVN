@@ -1,0 +1,14 @@
+package com.fixit.core.upload.domain.model;
+
+public enum UploadPurpose {
+    WORKER_KYC_ID_FRONT,
+    WORKER_KYC_ID_BACK,
+    WORKER_KYC_SELFIE,
+    WORKER_KYC_CERTIFICATE,
+    WORKER_AVATAR,
+    CUSTOMER_AVATAR,
+    PROOF_OF_WORK_BEFORE,
+    PROOF_OF_WORK_AFTER,
+    CHAT_IMAGE,
+    COMPLAINT_EVIDENCE
+}

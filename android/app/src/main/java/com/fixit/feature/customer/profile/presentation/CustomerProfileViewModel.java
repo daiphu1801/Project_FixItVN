@@ -10,8 +10,6 @@ import com.fixit.feature.customer.profile.domain.model.CustomerProfile;
 import com.fixit.feature.customer.profile.domain.usecase.GetCustomerProfileUseCase;
 import com.fixit.feature.customer.profile.domain.usecase.UpdateCustomerProfileUseCase;
 
-import com.fixit.feature.auth.domain.usecase.LogoutUseCase;
-
 import javax.inject.Inject;
 import dagger.hilt.android.lifecycle.HiltViewModel;
 
@@ -20,21 +18,19 @@ public class CustomerProfileViewModel extends ViewModel {
 
     private final GetCustomerProfileUseCase getCustomerProfileUseCase;
     private final UpdateCustomerProfileUseCase updateCustomerProfileUseCase;
-    private final LogoutUseCase logoutUseCase;
 
     private final MutableLiveData<CustomerProfile> profileData = new MutableLiveData<>();
     private final MutableLiveData<Boolean> isLoading = new MutableLiveData<>(false);
     private final MutableLiveData<String> errorMessage = new MutableLiveData<>();
     private final MutableLiveData<Boolean> updateSuccess = new MutableLiveData<>();
-    private final MutableLiveData<Boolean> logoutSuccess = new MutableLiveData<>();
 
     @Inject
-    public CustomerProfileViewModel(GetCustomerProfileUseCase getCustomerProfileUseCase,
-                                    UpdateCustomerProfileUseCase updateCustomerProfileUseCase,
-                                    LogoutUseCase logoutUseCase) {
+    public CustomerProfileViewModel(
+            GetCustomerProfileUseCase getCustomerProfileUseCase,
+            UpdateCustomerProfileUseCase updateCustomerProfileUseCase
+    ) {
         this.getCustomerProfileUseCase = getCustomerProfileUseCase;
         this.updateCustomerProfileUseCase = updateCustomerProfileUseCase;
-        this.logoutUseCase = logoutUseCase;
     }
 
     public void loadProfile() {
@@ -52,9 +48,10 @@ public class CustomerProfileViewModel extends ViewModel {
         });
     }
 
-    public void updateProfile(String fullName) {
+    public void updateProfile(String fullName, String email, String gender, String dob) {
         isLoading.setValue(true);
-        updateCustomerProfileUseCase.execute(fullName, new ResultCallback<CustomerProfile>() {
+        updateSuccess.setValue(null);
+        updateCustomerProfileUseCase.execute(fullName, email, gender, dob, new ResultCallback<CustomerProfile>() {
             @Override
             public void onResult(Result<CustomerProfile> result) {
                 isLoading.postValue(false);
@@ -67,6 +64,20 @@ public class CustomerProfileViewModel extends ViewModel {
                 }
             }
         });
+    }
+
+    public void clearUpdateSuccess() {
+        updateSuccess.setValue(null);
+    }
+
+    // ----------------------------------------------------
+    // CHỖ ĐỂ TIVI (FRAGMENT) CẮM ĂNG-TEN VÀO BẮT SÓNG
+    // ----------------------------------------------------
+    // Khúc này trả về LiveData (Không có chữ Mutable).
+    // Có nghĩa là Tivi (Fragment) chỉ được phép xem phim, KHÔNG ĐƯỢC PHÉP nhảy vào sửa đổi nội dung kênh truyền hình.
+    
+    public LiveData<CustomerProfile> getProfileData() {
+        return profileData;
     }
 
     public LiveData<CustomerProfile> getProfileData() { return profileData; }
@@ -88,5 +99,9 @@ public class CustomerProfileViewModel extends ViewModel {
                 }
             }
         });
+    }
+
+    public LiveData<Boolean> getUpdateSuccess() {
+        return updateSuccess;
     }
 }

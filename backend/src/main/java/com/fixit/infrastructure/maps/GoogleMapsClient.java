@@ -32,12 +32,17 @@ public class GoogleMapsClient {
      * @return GoogleMapsResponse chứa duration (thời gian) và distance (khoảng cách)
      */
     public GoogleMapsResponse getDistanceMatrix(double originLat, double originLng, double destLat, double destLng) {
+        String apiKey = googleMapsConfig.getApiKey();
+        if (apiKey == null || apiKey.trim().isEmpty() || "YOUR_GOOGLE_MAPS_API_KEY".equals(apiKey.trim())) {
+            log.debug("Google Maps API Key is not configured. Bypassing API call and falling back to Haversine calculation.");
+            return null;
+        }
         
         // Cấu trúc URL: https://maps.googleapis.com/.../json?origins=lat,lng&destinations=lat,lng&key=YOUR_API_KEY
         String url = UriComponentsBuilder.fromHttpUrl(DISTANCE_MATRIX_URL)
                 .queryParam("origins", originLat + "," + originLng)
                 .queryParam("destinations", destLat + "," + destLng)
-                .queryParam("key", googleMapsConfig.getApiKey())
+                .queryParam("key", apiKey)
                 .toUriString();
 
         log.debug("Calling Google Maps API for distance matrix. Origin: [{}, {}], Dest: [{}, {}]", 

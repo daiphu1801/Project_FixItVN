@@ -47,7 +47,8 @@ public class WorkerPublicProfileFragment extends Fragment {
 
     @Nullable
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
+            @Nullable Bundle savedInstanceState) {
         binding = FragmentWorkerPublicProfileBinding.inflate(inflater, container, false);
         return binding.getRoot();
     }
@@ -95,7 +96,9 @@ public class WorkerPublicProfileFragment extends Fragment {
 
     private void observeViewModel() {
         viewModel.getIsLoading().observe(getViewLifecycleOwner(), isLoading -> {
-            binding.progressBar.setVisibility(isLoading ? View.VISIBLE : View.GONE);
+            if (isLoading != null && binding.layoutLoading != null) {
+                binding.layoutLoading.getRoot().setVisibility(isLoading ? View.VISIBLE : View.GONE);
+            }
         });
 
         viewModel.getError().observe(getViewLifecycleOwner(), error -> {
@@ -107,8 +110,10 @@ public class WorkerPublicProfileFragment extends Fragment {
         viewModel.getProfile().observe(getViewLifecycleOwner(), profile -> {
             if (profile != null) {
                 binding.tvWorkerName.setText(profile.getFullName() != null ? profile.getFullName() : "Thợ FixIt");
-                binding.tvRating.setText(String.format("%s (%d đánh giá)", profile.getReputationScore() != null ? profile.getReputationScore().toString() : "5.0", profile.getTotalReviews() != null ? profile.getTotalReviews() : 0));
-                
+                binding.tvRating.setText(String.format("%s (%d đánh giá)",
+                        profile.getReputationScore() != null ? profile.getReputationScore().toString() : "5.0",
+                        profile.getTotalReviews() != null ? profile.getTotalReviews() : 0));
+
                 if (profile.getExperienceDescription() != null && !profile.getExperienceDescription().isEmpty()) {
                     binding.tvExperience.setText(profile.getExperienceDescription());
                 } else {

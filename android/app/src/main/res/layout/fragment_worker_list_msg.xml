@@ -5,35 +5,36 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#F5F8FD"> <!-- Màu nền xanh xám nhạt -->
+    android:background="#F8FAFC"> <!-- Slate 50 background -->
 
     <!-- ================= 1. HEADER (Thanh tiêu đề) ================= -->
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/layoutHeader"
         android:layout_width="match_parent"
-        android:layout_height="60dp"
+        android:layout_height="64dp"
         android:background="@android:color/white"
+        android:elevation="1dp"
         android:paddingHorizontal="16dp"
         app:layout_constraintTop_toTopOf="parent">
 
         <ImageButton
             android:id="@+id/btnMenu"
-            android:layout_width="32dp"
-            android:layout_height="32dp"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
             android:background="?attr/selectableItemBackgroundBorderless"
-            android:src="@android:drawable/ic_menu_sort_by_size"
+            android:src="@drawable/ic_lucide_arrow_left"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:tint="#666666" />
+            app:tint="#475569" />
 
         <TextView
             android:id="@+id/tvTitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
+            android:layout_marginStart="12dp"
             android:text="Tin nhắn"
-            android:textColor="#29B6F6"
+            android:textColor="#1E293B"
             android:textSize="20sp"
             android:textStyle="bold"
             app:layout_constraintBottom_toBottomOf="parent"
@@ -42,69 +43,78 @@
 
         <ImageButton
             android:id="@+id/btnSearchTop"
-            android:layout_width="32dp"
-            android:layout_height="32dp"
-            android:layout_marginEnd="16dp"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_marginEnd="8dp"
             android:background="?attr/selectableItemBackgroundBorderless"
-            android:src="@android:drawable/ic_menu_search"
+            android:src="@drawable/ic_lucide_search"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@id/ivUserAvatar"
             app:layout_constraintTop_toTopOf="parent"
-            app:tint="#666666" />
+            app:tint="#475569" />
 
         <!-- Avatar Góc phải -->
-        <ImageView
+        <com.google.android.material.imageview.ShapeableImageView
             android:id="@+id/ivUserAvatar"
             android:layout_width="36dp"
             android:layout_height="36dp"
-            android:background="@drawable/bg_bottom_sheet"
-            android:src="@android:drawable/ic_menu_myplaces"
+            android:src="@drawable/ic_person"
+            android:scaleType="centerCrop"
+            app:shapeAppearanceOverlay="@style/CircleImageView"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <!-- ================= 2. THANH TÌM KIẾM ================= -->
-    <LinearLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/layoutSearch"
         android:layout_width="match_parent"
-        android:layout_height="50dp"
+        android:layout_height="48dp"
         android:layout_marginHorizontal="16dp"
         android:layout_marginTop="16dp"
         android:background="@drawable/bg_bottom_sheet"
         android:backgroundTint="@android:color/white"
-        android:elevation="2dp"
-        android:gravity="center_vertical"
-        android:orientation="horizontal"
+        android:elevation="1dp"
         android:paddingHorizontal="12dp"
         app:layout_constraintTop_toBottomOf="@id/layoutHeader">
 
         <ImageView
-            android:layout_width="24dp"
-            android:layout_height="24dp"
-            android:src="@android:drawable/ic_menu_search"
-            app:tint="#AAAAAA" />
+            android:id="@+id/ivSearchIcon"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:src="@drawable/ic_lucide_search"
+            app:tint="#94A3B8"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"/>
 
         <EditText
             android:id="@+id/etSearch"
             android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:layout_weight="1"
             android:background="@null"
             android:hint="Tìm kiếm khách hàng..."
             android:paddingHorizontal="8dp"
-            android:textColor="#333333"
-            android:textColorHint="#AAAAAA"
-            android:textSize="15sp" />
+            android:textColor="#1E293B"
+            android:textColorHint="#94A3B8"
+            android:textSize="15sp"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toEndOf="@id/ivSearchIcon"
+            app:layout_constraintEnd_toStartOf="@id/btnFilter"/>
 
         <ImageButton
             android:id="@+id/btnFilter"
-            android:layout_width="24dp"
-            android:layout_height="24dp"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
             android:background="?attr/selectableItemBackgroundBorderless"
-            android:src="@android:drawable/ic_menu_sort_alphabetically"
-            app:tint="#29B6F6" />
-    </LinearLayout>
+            android:src="@drawable/ic_filter"
+            app:tint="#42c2ff"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
     <!-- ================= 3. BỘ LỌC (Chips) ================= -->
     <HorizontalScrollView
@@ -117,50 +127,61 @@
         android:scrollbars="none"
         app:layout_constraintTop_toBottomOf="@id/layoutSearch">
 
-        <LinearLayout
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
+            android:layout_height="wrap_content">
 
             <!-- Chip đang chọn (Màu xanh) -->
             <TextView
+                android:id="@+id/chipAll"
                 android:layout_width="wrap_content"
-                android:layout_height="36dp"
+                android:layout_height="32dp"
                 android:layout_marginEnd="8dp"
-                android:background="@drawable/bg_bottom_sheet"
-                android:backgroundTint="#29B6F6"
+                android:background="@drawable/bg_chip_active"
                 android:gravity="center"
-                android:paddingHorizontal="20dp"
+                android:paddingHorizontal="16dp"
                 android:text="Tất cả"
                 android:textColor="@android:color/white"
                 android:textSize="14sp"
-                android:textStyle="bold" />
+                android:textStyle="bold"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"/>
 
-            <!-- Chip chưa chọn (Màu trắng) -->
+            <!-- Chip chưa chọn (Màu trắng/xám nhạt) -->
             <TextView
+                android:id="@+id/chipUnread"
                 android:layout_width="wrap_content"
-                android:layout_height="36dp"
+                android:layout_height="32dp"
                 android:layout_marginEnd="8dp"
-                android:background="@drawable/bg_bottom_sheet"
-                android:backgroundTint="@android:color/white"
+                android:layout_marginStart="4dp"
+                android:background="@drawable/bg_chip_inactive"
                 android:gravity="center"
                 android:paddingHorizontal="16dp"
                 android:text="Chưa đọc"
-                android:textColor="#666666"
-                android:textSize="14sp" />
+                android:textColor="#64748B"
+                android:textSize="14sp"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toEndOf="@id/chipAll"/>
 
             <TextView
+                android:id="@+id/chipActive"
                 android:layout_width="wrap_content"
-                android:layout_height="36dp"
+                android:layout_height="32dp"
                 android:layout_marginEnd="8dp"
-                android:background="@drawable/bg_bottom_sheet"
-                android:backgroundTint="@android:color/white"
+                android:layout_marginStart="4dp"
+                android:background="@drawable/bg_chip_inactive"
                 android:gravity="center"
                 android:paddingHorizontal="16dp"
                 android:text="Việc đang làm"
-                android:textColor="#666666"
-                android:textSize="14sp" />
-        </LinearLayout>
+                android:textColor="#64748B"
+                android:textSize="14sp"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toEndOf="@id/chipUnread"
+                app:layout_constraintEnd_toEndOf="parent"/>
+        </androidx.constraintlayout.widget.ConstraintLayout>
     </HorizontalScrollView>
 
     <!-- ================= 4. DANH SÁCH TIN NHẮN ================= -->
@@ -170,10 +191,12 @@
         android:layout_height="0dp"
         android:layout_marginTop="12dp"
         android:clipToPadding="false"
-        android:paddingBottom="80dp"
+        android:paddingBottom="88dp"
+        android:background="@android:color/white"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toBottomOf="@id/scrollFilters"
-        tools:listitem="@layout/item_chat_worker" />
+        tools:listitem="@layout/item_chat_worker"
+        tools:itemCount="3"/>
 
     <!-- ================= 5. NÚT TẠO TIN NHẮN MỚI (FAB) ================= -->
     <com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -181,12 +204,13 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="20dp"
-        android:layout_marginBottom="20dp"
-        android:src="@android:drawable/ic_input_add"
-        app:backgroundTint="#29B6F6"
+        android:layout_marginBottom="24dp"
+        android:src="@drawable/ic_add"
+        app:backgroundTint="#42c2ff"
         app:elevation="4dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:tint="@android:color/white" />
+        app:tint="@android:color/white"
+        tools:ignore="SpeakableTextPresentCheck" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

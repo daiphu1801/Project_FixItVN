@@ -2,6 +2,7 @@ package com.fixit.feature.worker.wallet.presentation;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
+import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Toast;
@@ -118,6 +119,10 @@ public class WorkerBankAddEditFragment extends BaseFragment<FragmentWorkerBankAd
                 viewModel.clearSaveSuccess();
                 requireActivity().getOnBackPressedDispatcher().onBackPressed();
             }
+        });
+
+        viewModel.loading.observe(getViewLifecycleOwner(), isLoading -> {
+            binding.layoutLoading.getRoot().setVisibility(isLoading ? View.VISIBLE : View.GONE);
         });
     }
 }

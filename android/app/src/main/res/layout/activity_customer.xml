@@ -3,6 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:fitsSystemWindows="true"
     android:clipChildren="false"
     android:background="#F8FAFC">
 
@@ -14,33 +15,52 @@
         app:defaultNavHost="true"
         app:navGraph="@navigation/nav_customer"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toTopOf="@id/bottomNavCard" />
+        app:layout_constraintBottom_toTopOf="@id/coordinatorLayoutCustomer" />
 
-    <!-- Thanh điều hướng thiết kế dạng Floating Card để trông gọn gàng và hiện đại hơn -->
-    <com.google.android.material.card.MaterialCardView
-        android:id="@+id/bottomNavCard"
+    <androidx.coordinatorlayout.widget.CoordinatorLayout
+        android:id="@+id/coordinatorLayoutCustomer"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginHorizontal="12dp"
-        android:layout_marginBottom="12dp"
-        app:cardCornerRadius="20dp"
-        app:cardElevation="12dp"
-        app:strokeWidth="0dp"
+        android:clipChildren="false"
         app:layout_constraintBottom_toBottomOf="parent">
 
-        <com.google.android.material.bottomnavigation.BottomNavigationView
-            android:id="@+id/bottomNavigationView"
+        <com.google.android.material.bottomappbar.BottomAppBar
+            android:id="@+id/bottomAppBarCustomer"
             android:layout_width="match_parent"
-            android:layout_height="72dp"
-            android:background="@android:color/transparent"
-            app:elevation="0dp"
-            app:itemIconSize="22dp"
-            app:itemIconTint="@color/bottom_nav_color"
-            app:itemTextColor="@color/bottom_nav_color"
-            app:itemRippleColor="#1525A9EF"
-            app:labelVisibilityMode="labeled"
-            app:menu="@menu/bottom_nav_customer" />
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom"
+            app:fabCradleMargin="8dp"
+            app:fabCradleRoundedCornerRadius="16dp"
+            app:fabCradleVerticalOffset="8dp">
 
-    </com.google.android.material.card.MaterialCardView>
+            <com.google.android.material.bottomnavigation.BottomNavigationView
+                android:id="@+id/bottomNavigationView"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginEnd="16dp"
+                android:background="@android:color/transparent"
+                app:backgroundTint="@android:color/transparent"
+                app:elevation="0dp"
+                app:itemIconSize="22dp"
+                app:itemIconTint="@color/bottom_nav_color"
+                app:itemTextColor="@color/bottom_nav_color"
+                app:itemRippleColor="#1525A9EF"
+                app:labelVisibilityMode="labeled"
+                app:menu="@menu/bottom_nav_customer" />
+
+        </com.google.android.material.bottomappbar.BottomAppBar>
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/fabFindWorker"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_search" 
+            app:tint="@android:color/white"
+            app:backgroundTint="?attr/colorPrimary"
+            app:elevation="13dp"
+            app:layout_anchor="@id/bottomAppBarCustomer"
+            android:contentDescription="Tìm thợ" />
+
+    </androidx.coordinatorlayout.widget.CoordinatorLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

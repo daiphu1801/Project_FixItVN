@@ -118,6 +118,14 @@ public class WorkerConfirmPaymentFragment extends BaseFragment<FragmentConfirmPa
         }
     }
 
+    private void setLoading(boolean loading) {
+        binding.btnConfirm.setEnabled(!loading);
+        binding.btnConfirm.setText(loading ? "Đang xử lý..." : "Xác nhận");
+        if (binding.layoutLoading != null) {
+            binding.layoutLoading.getRoot().setVisibility(loading ? android.view.View.VISIBLE : android.view.View.GONE);
+        }
+    }
+
     @Override
     protected void observeData() {
     }

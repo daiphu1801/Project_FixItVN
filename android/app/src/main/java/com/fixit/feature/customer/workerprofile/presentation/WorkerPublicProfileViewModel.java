@@ -22,16 +22,28 @@ public class WorkerPublicProfileViewModel extends ViewModel {
     private final PublicWorkerRepository repository;
 
     private final MutableLiveData<PublicWorkerProfile> _profile = new MutableLiveData<>();
-    public LiveData<PublicWorkerProfile> getProfile() { return _profile; }
+
+    public LiveData<PublicWorkerProfile> getProfile() {
+        return _profile;
+    }
 
     private final MutableLiveData<List<PublicWorkerSkill>> _skills = new MutableLiveData<>();
-    public LiveData<List<PublicWorkerSkill>> getSkills() { return _skills; }
+
+    public LiveData<List<PublicWorkerSkill>> getSkills() {
+        return _skills;
+    }
 
     private final MutableLiveData<Boolean> _isLoading = new MutableLiveData<>(false);
-    public LiveData<Boolean> getIsLoading() { return _isLoading; }
+
+    public LiveData<Boolean> getIsLoading() {
+        return _isLoading;
+    }
 
     private final MutableLiveData<String> _error = new MutableLiveData<>();
-    public LiveData<String> getError() { return _error; }
+
+    public LiveData<String> getError() {
+        return _error;
+    }
 
     @Inject
     public WorkerPublicProfileViewModel(PublicWorkerRepository repository) {
@@ -40,7 +52,7 @@ public class WorkerPublicProfileViewModel extends ViewModel {
 
     public void loadWorkerProfile(String workerId) {
         _isLoading.setValue(true);
-        
+
         repository.getWorkerProfile(workerId, new ResultCallback<PublicWorkerProfile>() {
             @Override
             public void onResult(Result<PublicWorkerProfile> result) {

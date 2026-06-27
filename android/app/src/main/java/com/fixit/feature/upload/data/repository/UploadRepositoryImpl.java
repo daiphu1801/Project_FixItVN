@@ -29,8 +29,12 @@ import com.fixit.feature.upload.domain.model.UploadTicket;
 import com.fixit.feature.upload.domain.repository.UploadRepository;
 import com.google.gson.Gson;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import com.fixit.feature.upload.util.UploadFilePreparer;
+
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -338,7 +342,68 @@ public class UploadRepositoryImpl implements UploadRepository {
                 uploadWorkManagerScheduler.schedule();
                 postSuccess(callback, null);
             } catch (Exception ex) {
+                uploadWorkManagerScheduler.schedule();
                 postError(callback, "Lỗi bắt đầu tải lên KYC: " + ex.getMessage(), ex);
+            }
+        }).start();
+    }
+
+    @Override
+    public void getSubmittedActiveUploads(String targetType, ResultCallback<List<QueuedUpload>> callback) {
+        new Thread(() -> {
+            try {
+                List<PendingUploadEntity> entities = pendingUploadDao.getSubmittedActiveUploadsByTargetType(targetType);
+                List<QueuedUpload> list = new ArrayList<>();
+                for (PendingUploadEntity entity : entities) {
+                    list.add(new QueuedUpload(
+                            entity.getId(),
+                            entity.getPurpose(),
+                            entity.getStatus(),
+                            entity.getSlotKey(),
+                            entity.getLastError(),
+                            entity.getRetryCount(),
+                            entity.getGroupId()
+                    ));
+                }
+                postSuccess(callback, list);
+            } catch (Exception ex) {
+                postError(callback, "Lỗi lấy danh sách upload: " + ex.getMessage(), ex);
+            }
+        }).start();
+    }
+
+    @Override
+    public void retryKycGroup(String groupId, ResultCallback<Void> callback) {
+        new Thread(() -> {
+            try {
+                List<PendingUploadEntity> group = pendingUploadDao.getByGroupId(groupId);
+                for (PendingUploadEntity entity : group) {
+                    entity.setRetryCount(0);
+                    entity.setLastError(null);
+                    pendingUploadDao.update(entity);
+                }
+                uploadWorkflowProcessor.processAll();
+                uploadWorkManagerScheduler.schedule();
+                postSuccess(callback, null);
+            } catch (Exception ex) {
+                uploadWorkManagerScheduler.schedule();
+                postError(callback, "Lỗi thử lại tải lên KYC: " + ex.getMessage(), ex);
+            }
+        }).start();
+    }
+
+    @Override
+    public void cancelKycGroup(String groupId, ResultCallback<Void> callback) {
+        new Thread(() -> {
+            try {
+                List<PendingUploadEntity> group = pendingUploadDao.getByGroupId(groupId);
+                for (PendingUploadEntity entity : group) {
+                    UploadFilePreparer.deleteLocalFile(entity.getLocalFilePath());
+                    pendingUploadDao.deleteById(entity.getId());
+                }
+                postSuccess(callback, null);
+            } catch (Exception ex) {
+                postError(callback, "Lỗi hủy tải lên KYC: " + ex.getMessage(), ex);
             }
         }).start();
     }

@@ -1,5 +1,6 @@
 package com.fixit.feature.worker.orders.di;
 
+import com.fixit.feature.worker.orders.data.remote.api.WorkerOrdersApi;
 import com.fixit.feature.worker.orders.data.repository.WorkerOrdersRepositoryImpl;
 import com.fixit.feature.worker.orders.domain.repository.WorkerOrdersRepository;
 
@@ -7,6 +8,7 @@ import javax.inject.Singleton;
 
 import dagger.Binds;
 import dagger.Module;
+import dagger.Provides;
 import dagger.hilt.InstallIn;
 import dagger.hilt.components.SingletonComponent;
 
@@ -31,5 +33,11 @@ public abstract class WorkerOrdersModule {
     @Singleton
     public static WorkerBookingApi provideWorkerBookingApi(Retrofit retrofit) {
         return retrofit.create(WorkerBookingApi.class);
+    }
+
+    @Provides
+    @Singleton
+    public static WorkerOrdersApi provideWorkerOrdersApi(Retrofit retrofit) {
+        return retrofit.create(WorkerOrdersApi.class);
     }
 }

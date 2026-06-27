@@ -3,11 +3,14 @@ package com.fixit.domain.booking.service;
 import com.fixit.domain.booking.dto.request.ProofOfWorkCreateRequest;
 import com.fixit.domain.booking.dto.response.ProofOfWorkResponse;
 import com.fixit.domain.booking.entity.Booking;
+import com.fixit.domain.booking.entity.BookingStatus;
 import com.fixit.domain.booking.entity.ProofOfWork;
 import com.fixit.domain.booking.entity.ProofType;
+import com.fixit.domain.booking.repository.BookingHistoryRepository;
 import com.fixit.domain.booking.repository.BookingRepository;
 import com.fixit.domain.booking.repository.ProofOfWorkRepository;
 import com.fixit.domain.upload.entity.UploadLinkedEntityType;
+import com.fixit.domain.upload.entity.UploadedFile;
 import com.fixit.domain.upload.entity.UploadPurpose;
 import com.fixit.domain.upload.repository.UploadedFileRepository;
 import com.fixit.domain.upload.service.ConsumedUpload;
@@ -29,10 +32,10 @@ public class ProofOfWorkServiceImpl implements ProofOfWorkService {
 
     private final CurrentWorkerResolver currentWorkerResolver;
     private final BookingRepository bookingRepository;
+    private final BookingHistoryRepository bookingHistoryRepository;
     private final ProofOfWorkRepository proofOfWorkRepository;
     private final UploadedFileRepository uploadedFileRepository;
     private final UploadConsumeService uploadConsumeService;
-
     @Override
     @Transactional
     public ProofOfWorkResponse createProofOfWork(
@@ -43,6 +46,14 @@ public class ProofOfWorkServiceImpl implements ProofOfWorkService {
 
         Booking booking = bookingRepository.findWorkerBookingForUpdate(bookingId, workerId)
                 .orElseThrow(() -> new AppException(ErrorCode.BOOKING_NOT_FOUND));
+
+        if (booking.getStatus() == BookingStatus.Completed || booking.getStatus() == BookingStatus.Cancelled) {
+            throw new AppException(ErrorCode.BOOKING_INVALID_STATUS_TRANSITION);
+        }
+
+        if (bookingHistoryRepository.existsByBooking_IdAndStatusUpdate(bookingId, "Worker_Completed")) {
+            throw new AppException(ErrorCode.BOOKING_INVALID_STATUS_TRANSITION);
+        }
 
         ProofType proofType = parseProofType(request.getProofType());
 
@@ -126,5 +137,46 @@ public class ProofOfWorkServiceImpl implements ProofOfWorkService {
                 .proofType(proofOfWork.getProofType() != null ? proofOfWork.getProofType().name() : null)
                 .capturedAt(proofOfWork.getCapturedAt())
                 .build();
+    }
+
+    @Override
+    @Transactional
+    public void deleteProofOfWork(UUID bookingId, UUID proofId) {
+        UUID workerId = currentWorkerResolver.getCurrentWorkerId();
+
+        Booking booking = bookingRepository.findWorkerBookingForUpdate(bookingId, workerId)
+                .orElseThrow(() -> new AppException(ErrorCode.BOOKING_NOT_FOUND));
+
+        if (booking.getStatus() == BookingStatus.Completed || booking.getStatus() == BookingStatus.Cancelled) {
+            throw new AppException(ErrorCode.BOOKING_INVALID_STATUS_TRANSITION);
+        }
+
+        if (bookingHistoryRepository.existsByBooking_IdAndStatusUpdate(bookingId, "Worker_Completed")) {
+            throw new AppException(ErrorCode.BOOKING_INVALID_STATUS_TRANSITION);
+        }
+
+        ProofOfWork proofOfWork = proofOfWorkRepository.findById(proofId)
+                .orElseThrow(() -> new AppException(ErrorCode.PROOF_OF_WORK_NOT_FOUND));
+
+        if (!proofOfWork.getBooking().getId().equals(bookingId)) {
+            throw new AppException(ErrorCode.PROOF_OF_WORK_NOT_FOUND);
+        }
+
+        // Unlink the file from upload system
+        List<UploadedFile> files = uploadedFileRepository.findByLinkedEntityTypeAndLinkedEntityId(
+                UploadLinkedEntityType.PROOF_OF_WORK.name(),
+                bookingId
+        );
+        for (UploadedFile file : files) {
+            if (file.getFileUrl().equals(proofOfWork.getImageUrl())) {
+                file.setLinkedEntityType(null);
+                file.setLinkedEntityId(null);
+                file.setUsedAt(null);
+                uploadedFileRepository.save(file);
+                break;
+            }
+        }
+
+        proofOfWorkRepository.delete(proofOfWork);
     }
 }

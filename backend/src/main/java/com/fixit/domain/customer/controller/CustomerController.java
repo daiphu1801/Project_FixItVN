@@ -1,5 +1,6 @@
 package com.fixit.domain.customer.controller;
 
+import com.fixit.domain.auth.entity.User;
 import com.fixit.domain.customer.dto.request.CustomerAddressRequest;
 import com.fixit.domain.customer.dto.request.CustomerProfileRequest;
 import com.fixit.domain.customer.dto.response.CustomerAddressResponse;
@@ -8,10 +9,10 @@ import com.fixit.domain.customer.service.CustomerService;
 import com.fixit.global.response.ApiResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
-import com.fixit.global.util.SecurityUtil;
-import java.security.Principal;
 import java.util.List;
 import java.util.UUID;
 
@@ -32,6 +33,15 @@ public class CustomerController {
     // Lễ tân (Controller) bắt buộc phải có Bộ não (Service) để hỏi cách xử lý.
     private final CustomerService customerService;
 
+    // Helper: Lấy UUID của user từ JWT đã được xác thực.
+    // JwtAuthenticationFilter đặt User entity (UserDetails) làm principal trong Authentication,
+    // nên ta cast thẳng ra User entity và lấy id thật (UUID), không dùng getName() vì getName()
+    // trả về username = phoneNumber, không phải UUID.
+    private UUID getUserId(Authentication authentication) {
+        User user = (User) authentication.getPrincipal();
+        return user.getId();
+    }
+
     // ---------------------------------------------------------
     // NHÓM 1: PROFILE
     // ---------------------------------------------------------
@@ -39,17 +49,19 @@ public class CustomerController {
     // CÚ PHÁP: @[Tên_Annotation]("[Đường_dẫn_phụ]")
     // Ý NGHĨA: Khai báo API lấy thông tin. @GetMapping hứng request có method là GET (chỉ lấy dữ liệu, không sửa).
     @GetMapping("/profile")
-    public ApiResponse<CustomerProfileResponse> getProfile(Principal principal) {
-        UUID userId = SecurityUtil.getCurrentUserId();
-        return ApiResponse.success(customerService.getProfile(userId));
+    public ResponseEntity<CustomerProfileResponse> getProfile(Authentication authentication) {
+        UUID userId = getUserId(authentication);
+        
+        // Gọi Service xử lý và trả kết quả về cho Android với mã HTTP 200 OK.
+        return ResponseEntity.ok(customerService.getProfile(userId));
     }
 
     @PutMapping("/profile")
-    public ApiResponse<CustomerProfileResponse> updateProfile(
-            Principal principal, 
+    public ResponseEntity<CustomerProfileResponse> updateProfile(
+            Authentication authentication,
             @Valid @RequestBody CustomerProfileRequest request) {
-        UUID userId = SecurityUtil.getCurrentUserId();
-        return ApiResponse.success(customerService.updateProfile(userId, request));
+        UUID userId = getUserId(authentication);
+        return ResponseEntity.ok(customerService.updateProfile(userId, request));
     }
 
     // ---------------------------------------------------------
@@ -57,42 +69,46 @@ public class CustomerController {
     // ---------------------------------------------------------
 
     @GetMapping("/addresses")
-    public ApiResponse<List<CustomerAddressResponse>> getAddresses(Principal principal) {
-        UUID userId = SecurityUtil.getCurrentUserId();
-        return ApiResponse.success(customerService.getCustomerAddresses(userId));
+    public ResponseEntity<List<CustomerAddressResponse>> getAddresses(Authentication authentication) {
+        UUID userId = getUserId(authentication);
+        return ResponseEntity.ok(customerService.getCustomerAddresses(userId));
     }
 
     @PostMapping("/addresses")
-    public ApiResponse<CustomerAddressResponse> addAddress(
-            Principal principal, 
+    public ResponseEntity<CustomerAddressResponse> addAddress(
+            Authentication authentication,
             @Valid @RequestBody CustomerAddressRequest request) {
-        UUID userId = SecurityUtil.getCurrentUserId();
-        return ApiResponse.success(customerService.addAddress(userId, request));
+        UUID userId = getUserId(authentication);
+        return ResponseEntity.ok(customerService.addAddress(userId, request));
     }
 
+    // /{addressId}: Lấy biến addressId trực tiếp từ đường dẫn URL.
+    // Ví dụ: PUT /addresses/12345 -> addressId sẽ là 12345
     @PutMapping("/addresses/{addressId}")
-    public ApiResponse<CustomerAddressResponse> updateAddress(
-            Principal principal,
+    public ResponseEntity<CustomerAddressResponse> updateAddress(
+            Authentication authentication,
             @PathVariable UUID addressId,
             @Valid @RequestBody CustomerAddressRequest request) {
-        UUID userId = SecurityUtil.getCurrentUserId();
-        return ApiResponse.success(customerService.updateAddress(userId, addressId, request));
+        UUID userId = getUserId(authentication);
+        return ResponseEntity.ok(customerService.updateAddress(userId, addressId, request));
     }
 
     @DeleteMapping("/addresses/{addressId}")
-    public ApiResponse<Void> deleteAddress(
-            Principal principal,
+    public ResponseEntity<Void> deleteAddress(
+            Authentication authentication,
             @PathVariable UUID addressId) {
-        UUID userId = SecurityUtil.getCurrentUserId();
+        UUID userId = getUserId(authentication);
         customerService.deleteAddress(userId, addressId);
         return ApiResponse.success(null, "Xóa địa chỉ thành công");
     }
 
     @PatchMapping("/addresses/{addressId}/default")
-    public ApiResponse<CustomerAddressResponse> setDefaultAddress(
-            Principal principal,
+    public ResponseEntity<CustomerAddressResponse> setDefaultAddress(
+            Authentication authentication,
             @PathVariable UUID addressId) {
-        UUID userId = SecurityUtil.getCurrentUserId();
-        return ApiResponse.success(customerService.setDefaultAddress(userId, addressId));
+        UUID userId = getUserId(authentication);
+        return ResponseEntity.ok(customerService.setDefaultAddress(userId, addressId));
     }
 }
+
+

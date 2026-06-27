@@ -1,5 +1,8 @@
+// PATH: android/app/src/main/java/com/fixit/feature/worker/wallet/domain/usecase/GetWalletTransactionsUseCase.java
+
 package com.fixit.feature.worker.wallet.domain.usecase;
 
+import com.fixit.core.common.ResultCallback;
 import com.fixit.feature.worker.wallet.domain.model.WalletTransaction;
 import com.fixit.feature.worker.wallet.domain.repository.WorkerWalletRepository;
 
@@ -15,7 +18,7 @@ public class GetWalletTransactionsUseCase {
         this.repository = repository;
     }
 
-    public List<WalletTransaction> execute(String walletType) {
-        return repository.getTransactions(walletType);
+    public void execute(String walletType, ResultCallback<List<WalletTransaction>> callback) {
+        repository.getTransactions(walletType, callback);
     }
 }

@@ -39,7 +39,7 @@ public class UploadWorkManagerScheduler {
 
         WorkManager.getInstance(appContext).enqueueUniqueWork(
                 UNIQUE_WORK_NAME,
-                ExistingWorkPolicy.KEEP,
+                ExistingWorkPolicy.REPLACE,
                 request
         );
     }

@@ -1,7 +1,7 @@
 package com.fixit.domain.auth.dto.request;
 
 import com.fixit.domain.auth.entity.OtpActionType;
-import jakarta.validation.constraints.NotBlank;
+
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -13,10 +13,12 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class SendOtpRequest {
-    
-    @NotBlank(message = "Số điện thoại/Email không được để trống")
-    private String identifier; // phone or email
-    
+
+    private String phoneNumber;
+
+    private String email;
+    private String identifier;
+
     @NotNull(message = "Loại hành động không được để trống")
     private OtpActionType actionType;
 }

@@ -43,7 +43,7 @@ public class QuotationPaymentServiceImpl implements QuotationPaymentService {
                 .totalProposedPrice(total)
                 .status(QuotationStatus.Pending)
                 .build();
-        
+
         workerQuotationRepository.save(quotation);
 
         // Đổi trạng thái Booking chờ khách duyệt

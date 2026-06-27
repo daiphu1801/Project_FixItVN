@@ -9,12 +9,14 @@ import android.widget.Toast;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
+import com.fixit.core.common.AutoRefreshHelper;
 import com.fixit.core.ui.BaseFragment;
 import com.fixit.core.ui.ViewUtils;
 import com.fixit.databinding.FragmentWorkerHomeBinding;
 import com.fixit.feature.worker.home.domain.model.WorkerHome;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 
 import dagger.hilt.android.AndroidEntryPoint;
@@ -24,6 +26,7 @@ public class WorkerHomeFragment extends BaseFragment<FragmentWorkerHomeBinding> 
 
     private WorkerHomeViewModel viewModel;
     private AppointmentAdapter appointmentAdapter;
+    private AutoRefreshHelper autoRefreshHelper;
 
     @Override
     protected FragmentWorkerHomeBinding inflateViewBinding(
@@ -95,6 +98,12 @@ public class WorkerHomeFragment extends BaseFragment<FragmentWorkerHomeBinding> 
             binding.tvEmptyAppointments.setVisibility(empty ? View.VISIBLE : View.GONE);
         });
 
+        viewModel.isLoading.observe(getViewLifecycleOwner(), loading -> {
+            if (binding.layoutLoading != null) {
+                binding.layoutLoading.getRoot().setVisibility(loading ? View.VISIBLE : View.GONE);
+            }
+        });
+
         viewModel.errorMessage.observe(getViewLifecycleOwner(), message -> {
             if (message != null && !message.trim().isEmpty()) {
                 Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show();
@@ -130,6 +139,7 @@ public class WorkerHomeFragment extends BaseFragment<FragmentWorkerHomeBinding> 
         bindStatus(home);
         bindStats(home.getStatsOverview());
         bindActiveOrder(home.getActiveOrder());
+        bindIncomeChart(home.getIncomeChart());
     }
 
     private void bindStatus(WorkerHome home) {
@@ -208,5 +218,121 @@ public class WorkerHomeFragment extends BaseFragment<FragmentWorkerHomeBinding> 
             return fallback;
         }
         return value;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (autoRefreshHelper == null) {
+            autoRefreshHelper = new AutoRefreshHelper(
+                    requireContext(),
+                    0L,
+                    () -> {
+                        if (viewModel != null) {
+                            viewModel.loadWorkerHome(false);
+                        }
+                    },
+                    "com.fixit.BOOKING_UPDATE",
+                    "com.fixit.PROFILE_UPDATE"
+            );
+        }
+        autoRefreshHelper.start();
+    }
+
+    @Override
+    public void onPause() {
+        if (autoRefreshHelper != null) {
+            autoRefreshHelper.stop();
+        }
+        super.onPause();
+    }
+
+    private void bindIncomeChart(List<WorkerHome.IncomeChartPoint> chartPoints) {
+        if (chartPoints == null || chartPoints.isEmpty()) {
+            return;
+        }
+
+        View[] bars = new View[] {
+                binding.layoutChart.barMon, binding.layoutChart.barTue, binding.layoutChart.barWed,
+                binding.layoutChart.barThu, binding.layoutChart.barFri, binding.layoutChart.barSat,
+                binding.layoutChart.barSun
+        };
+        android.widget.TextView[] labels = new android.widget.TextView[] {
+                binding.layoutChart.lblMon, binding.layoutChart.lblTue, binding.layoutChart.lblWed,
+                binding.layoutChart.lblThu, binding.layoutChart.lblFri, binding.layoutChart.lblSat,
+                binding.layoutChart.lblSun
+        };
+
+        int count = Math.min(chartPoints.size(), bars.length);
+
+        long maxIncome = 0;
+        for (int i = 0; i < count; i++) {
+            long inc = chartPoints.get(i).getIncome();
+            if (inc > maxIncome) {
+                maxIncome = inc;
+            }
+        }
+
+        int maxBarHeightPx = (int) (120 * getResources().getDisplayMetrics().density);
+        int minBarHeightPx = (int) (4 * getResources().getDisplayMetrics().density);
+
+        for (int i = 0; i < bars.length; i++) {
+            if (i < count) {
+                WorkerHome.IncomeChartPoint point = chartPoints.get(i);
+
+                labels[i].setText(mapChartLabelToVietnamese(point.getLabel()));
+
+                int height = minBarHeightPx;
+                if (maxIncome > 0) {
+                    height = (int) ((point.getIncome() * maxBarHeightPx) / maxIncome);
+                    if (height < minBarHeightPx) {
+                        height = minBarHeightPx;
+                    }
+                }
+
+                ViewGroup.LayoutParams params = bars[i].getLayoutParams();
+                params.height = height;
+                bars[i].setLayoutParams(params);
+
+                if (maxIncome > 0 && point.getIncome() == maxIncome) {
+                    bars[i].setBackgroundColor(android.graphics.Color.parseColor("#42c2ff"));
+                    labels[i].setTextColor(android.graphics.Color.parseColor("#0d1b2a"));
+                    labels[i].setTypeface(android.graphics.Typeface.DEFAULT_BOLD);
+                } else {
+                    bars[i].setBackgroundColor(android.graphics.Color.parseColor("#d6f2ff"));
+                    labels[i].setTextColor(android.graphics.Color.parseColor("#4a5568"));
+                    labels[i].setTypeface(android.graphics.Typeface.DEFAULT);
+                }
+
+                bars[i].setOnClickListener(v -> {
+                    String msg = String.format("Doanh thu %s: %s (%d đơn)",
+                            mapChartLabelToVietnamese(point.getLabel()),
+                            ViewUtils.formatCurrency(point.getIncome()),
+                            point.getCompletedJobs()
+                    );
+                    Toast.makeText(requireContext(), msg, Toast.LENGTH_SHORT).show();
+                });
+            } else {
+                ViewGroup.LayoutParams params = bars[i].getLayoutParams();
+                params.height = minBarHeightPx;
+                bars[i].setLayoutParams(params);
+                bars[i].setBackgroundColor(android.graphics.Color.parseColor("#e2e8f0"));
+                labels[i].setText("");
+                bars[i].setOnClickListener(null);
+            }
+        }
+    }
+
+    private String mapChartLabelToVietnamese(String label) {
+        if (label == null) return "";
+        String lower = label.toLowerCase();
+        if (lower.contains("mon")) return "T2";
+        if (lower.contains("tue")) return "T3";
+        if (lower.contains("wed")) return "T4";
+        if (lower.contains("thu")) return "T5";
+        if (lower.contains("fri")) return "T6";
+        if (lower.contains("sat")) return "T7";
+        if (lower.contains("sun")) return "CN";
+        return label;
     }
 }

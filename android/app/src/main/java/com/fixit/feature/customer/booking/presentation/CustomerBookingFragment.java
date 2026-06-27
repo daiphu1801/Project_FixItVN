@@ -42,6 +42,8 @@ public class CustomerBookingFragment extends BaseFragment<FragmentCustomerBookin
     private String selectedTimeText = "Ngay bây giờ";
     private final List<Uri> selectedImages = new ArrayList<>();
     private UploadViewModel uploadViewModel;
+    private int serviceId = 1;
+    private String serviceName = "Dịch vụ sửa chữa";
 
     private final ActivityResultLauncher<String> pickImageLauncher = registerForActivityResult(
             new ActivityResultContracts.GetContent(),
@@ -65,6 +67,14 @@ public class CustomerBookingFragment extends BaseFragment<FragmentCustomerBookin
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         uploadViewModel = new ViewModelProvider(this).get(UploadViewModel.class);        
+        if (getArguments() != null) {
+            serviceId = getArguments().getInt("serviceId", 1);
+            serviceName = getArguments().getString("serviceName", "Dịch vụ sửa chữa");
+            String subServiceName = getArguments().getString("subServiceName", "");
+            if (!subServiceName.isEmpty()) {
+                problemDescription = subServiceName;
+            }
+        }
         getParentFragmentManager().setFragmentResultListener(
             NoteInputFragment.REQUEST_KEY, 
             this, 
@@ -101,6 +111,8 @@ public class CustomerBookingFragment extends BaseFragment<FragmentCustomerBookin
     protected void setupViews() {
         CustomerOrderViewModel orderViewModel = new ViewModelProvider(requireActivity()).get(CustomerOrderViewModel.class);
 
+        binding.tvHeaderTitle.setText(serviceName);
+
         binding.btnBack.setOnClickListener(v -> {
             if (navController != null) navController.popBackStack();
         });
@@ -125,7 +137,6 @@ public class CustomerBookingFragment extends BaseFragment<FragmentCustomerBookin
 
         binding.btnFindWorker.setOnClickListener(v -> {
             // Lấy dữ liệu từ UI
-            Integer serviceId = 1; // TODO: Lấy từ arguments truyền vào
             java.math.BigDecimal lat = new java.math.BigDecimal("21.0285"); // Mặc định Hà Nội
             java.math.BigDecimal lng = new java.math.BigDecimal("105.8542"); // Mặc định Hà Nội
             String desc = problemDescription + (specialNote.isEmpty() ? "" : "\nGhi chú: " + specialNote);
@@ -283,6 +294,12 @@ public class CustomerBookingFragment extends BaseFragment<FragmentCustomerBookin
                 Toast.makeText(requireContext(), "Ảnh đã tải lên thành công", Toast.LENGTH_SHORT).show();
             } else {
                 Toast.makeText(requireContext(), result.getErrorMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        uploadViewModel.isUploading.observe(getViewLifecycleOwner(), isLoading -> {
+            if (isLoading != null && binding.layoutLoading != null) {
+                binding.layoutLoading.getRoot().setVisibility(isLoading ? android.view.View.VISIBLE : android.view.View.GONE);
             }
         });
     }

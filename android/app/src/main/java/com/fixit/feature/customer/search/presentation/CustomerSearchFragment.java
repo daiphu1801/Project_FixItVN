@@ -38,12 +38,7 @@ public class CustomerSearchFragment extends BaseFragment<FragmentCustomerSearchB
     protected void setupViews() {
         viewModel = new ViewModelProvider(this).get(CustomerSearchViewModel.class);
 
-        // Sự kiện khi nhấn nút Quay lại (Back)
-        binding.btnBack.setOnClickListener(v -> {
-            if (navController != null) {
-                navController.popBackStack();
-            }
-        });
+
 
         // Thiết lập Adapter cho RecyclerView (Dùng lại ServiceCategoryAdapter)
         serviceAdapter = new ServiceCategoryAdapter(new ServiceCategoryAdapter.OnCategoryClickListener() {
@@ -54,7 +49,7 @@ public class CustomerSearchFragment extends BaseFragment<FragmentCustomerSearchB
                         category.getName());
                 bottomSheet.setOnServiceItemSelectedListener(item -> {
                     // Khi chọn xong 1 dịch vụ con -> Chuyển sang màn hình Đặt thợ
-                    navigateToFindingWorker(item.getName());
+                    navigateToFindingWorker(category.getId(), category.getName(), item.getName());
                 });
                 bottomSheet.show(getParentFragmentManager(), "ServiceCategoryBottomSheet");
             }
@@ -78,12 +73,13 @@ public class CustomerSearchFragment extends BaseFragment<FragmentCustomerSearchB
         viewModel.fetchCategories();
     }
 
-    private void navigateToFindingWorker(String serviceName) {
-        // Ta cần truyền tên dịch vụ đã chọn về màn hình booking
-        // Do màn hình search không có tvLocationValue, ta sẽ chuyển hướng thẳng với args (nếu cần thiết)
-        // Hiện tại tạm thời chỉ navigate sang nav_customer_booking
+    private void navigateToFindingWorker(int serviceId, String serviceName, String subServiceName) {
         if (navController != null) {
-            navController.navigate(R.id.nav_customer_booking);
+            android.os.Bundle args = new android.os.Bundle();
+            args.putInt("serviceId", serviceId);
+            args.putString("serviceName", serviceName);
+            args.putString("subServiceName", subServiceName);
+            navController.navigate(R.id.nav_customer_booking, args);
         }
     }
 
@@ -93,6 +89,12 @@ public class CustomerSearchFragment extends BaseFragment<FragmentCustomerSearchB
     protected void observeData() {
         viewModel.categories.observe(getViewLifecycleOwner(), categories -> {
             serviceAdapter.submitList(categories);
+        });
+
+        viewModel.getIsLoading().observe(getViewLifecycleOwner(), isLoading -> {
+            if (isLoading != null && binding.layoutLoading != null) {
+                binding.layoutLoading.getRoot().setVisibility(isLoading ? android.view.View.VISIBLE : android.view.View.GONE);
+            }
         });
 
         viewModel.getErrorMessage().observe(getViewLifecycleOwner(), error -> {

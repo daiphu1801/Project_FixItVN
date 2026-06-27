@@ -11,22 +11,29 @@ public class CustomerProfileResponseDto {
     @SerializedName("id")
     private String id;
 
-    // Ý NGHĨA: Tìm chữ 'fullName' trong JSON nhét vào biến fullName.
-    // LƯU Ý: Tên key ("fullName") BẮT BUỘC PHẢI KHỚP 100% với tên biến trong File 5 (DTO Backend).
     @SerializedName("fullName")
     private String fullName;
 
+    @SerializedName("email")
+    private String email;
+
+    @SerializedName("phoneNumber")
+    private String phoneNumber;
+
+    @SerializedName("gender")
+    private String gender;
+
+    @SerializedName("dob")
+    private String dob;
+
     // ----------------------------------------------------
     // CÁC HÀM GETTER VÀ SETTER
-    // Bên Android, chúng ta ít xài thư viện Lombok (để app nhẹ hơn), nên ta phải gõ tay các hàm này.
     // ----------------------------------------------------
 
-    // CÚ PHÁP: public [Kiểu_trả_về] get[Tên_Biến_Viết_Hoa]()
     public String getId() {
         return id;
     }
 
-    // CÚ PHÁP: public void set[Tên_Biến_Viết_Hoa]([Kiểu] [Tên_Biến])
     public void setId(String id) {
         this.id = id;
     }
@@ -37,6 +44,38 @@ public class CustomerProfileResponseDto {
 
     public void setFullName(String fullName) {
         this.fullName = fullName;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public String getPhoneNumber() {
+        return phoneNumber;
+    }
+
+    public void setPhoneNumber(String phoneNumber) {
+        this.phoneNumber = phoneNumber;
+    }
+
+    public String getGender() {
+        return gender;
+    }
+
+    public void setGender(String gender) {
+        this.gender = gender;
+    }
+
+    public String getDob() {
+        return dob;
+    }
+
+    public void setDob(String dob) {
+        this.dob = dob;
     }
 // CÚ PHÁP: }
 }

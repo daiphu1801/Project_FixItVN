@@ -6,18 +6,17 @@
         android:icon="@drawable/ic_lucide_home"
         android:title="Trang chủ" />
         
-    <!-- Mục Đơn hàng (Đơn hiện tại/đang xử lý) -->
-    <item
-        android:id="@+id/nav_customer_order"
-        android:icon="@drawable/ic_lucide_clipboard_list"
-        android:title="Đơn hàng" />
-
-    <!-- Mục Lịch sử (Đơn đã hoàn thành/đã hủy) -->
-    <!-- Tôi đã thêm mục này và dùng icon ic_lucide_clock (đồng hồ) thay thế -->
+    <!-- Mục Lịch sử (Đơn hiện tại/đang xử lý & đã hoàn thành) -->
     <item
         android:id="@+id/nav_customer_history"
         android:icon="@drawable/ic_lucide_clock"
         android:title="Lịch sử" />
+
+    <!-- Nút giữa (Placeholder) cho FAB Tìm thợ -->
+    <item
+        android:id="@+id/nav_placeholder"
+        android:title=""
+        android:enabled="false" />
 
     <!-- Mục Thợ quen -->
     <item

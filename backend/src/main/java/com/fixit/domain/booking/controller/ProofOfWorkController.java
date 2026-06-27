@@ -33,4 +33,13 @@ public class ProofOfWorkController {
     ) {
         return ApiResponse.success(proofOfWorkService.getProofOfWorks(bookingId));
     }
+
+    @DeleteMapping("/{proofId}")
+    public ApiResponse<Void> deleteProofOfWork(
+            @PathVariable UUID bookingId,
+            @PathVariable UUID proofId
+    ) {
+        proofOfWorkService.deleteProofOfWork(bookingId, proofId);
+        return ApiResponse.success(null, "Xóa ảnh bằng chứng thành công");
+    }
 }

@@ -21,8 +21,15 @@ public class CustomerProfileResponse {
     // Ý NGHĨA: Biến chứa ID của khách hàng. Cần trả về ID để Android biết đang xử lý dữ liệu của ai.
     private UUID id;
 
-    // Ý NGHĨA: Biến chứa họ tên của khách hàng để Android hiển thị lên màn hình Profile.
     private String fullName;
+
+    private String email;
+
+    private String phoneNumber;
+
+    private String gender;
+
+    private String dob;
 
 // CÚ PHÁP: }
 // Ý NGHĨA: Đóng class.

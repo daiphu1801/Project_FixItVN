@@ -12,16 +12,21 @@ public class WorkerKycSubmitRequest {
     @SerializedName("backImageUploadId")
     private final String backImageUploadId;
 
+    @SerializedName("selfieImageUploadId")
+    private final String selfieImageUploadId;
+
     @SerializedName("certificateUploadIds")
     private final List<String> certificateUploadIds;
 
     public WorkerKycSubmitRequest(
             String frontImageUploadId,
             String backImageUploadId,
+            String selfieImageUploadId,
             List<String> certificateUploadIds
     ) {
         this.frontImageUploadId = frontImageUploadId;
         this.backImageUploadId = backImageUploadId;
+        this.selfieImageUploadId = selfieImageUploadId;
         this.certificateUploadIds = certificateUploadIds;
     }
 }

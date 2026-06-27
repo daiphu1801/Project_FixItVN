@@ -80,6 +80,11 @@ public class CustomerPaymentFragment extends BaseFragment<FragmentCustomerPaymen
         });
     }
 
+    private void setLoading(boolean loading) {
+        binding.btnConfirmPayment.setEnabled(!loading);
+        binding.btnConfirmPayment.setText(loading ? "Đang xử lý..." : "Xác nhận thanh toán");
+    }
+
     @Override
     protected void observeData() {
     }

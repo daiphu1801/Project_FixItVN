@@ -15,7 +15,7 @@ public class UpdateCustomerProfileUseCase {
         this.repository = repository;
     }
 
-    public void execute(String fullName, ResultCallback<CustomerProfile> callback) {
-        repository.updateProfile(fullName, callback);
+    public void execute(String fullName, String email, String gender, String dob, ResultCallback<CustomerProfile> callback) {
+        repository.updateProfile(fullName, email, gender, dob, callback);
     }
 }

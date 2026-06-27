@@ -14,6 +14,10 @@ import dagger.hilt.android.AndroidEntryPoint;
 @AndroidEntryPoint
 public class CustomerCancelOrderFragment extends BaseFragment<FragmentCustomerCancelOrderBinding> {
 
+    private CustomerOrderViewModel orderViewModel;
+    private boolean isCancelling = false;
+    private boolean isWorkerFault = false;
+
     @NonNull
     @Override
     protected FragmentCustomerCancelOrderBinding inflateViewBinding(@NonNull LayoutInflater inflater, ViewGroup container) {
@@ -22,7 +26,7 @@ public class CustomerCancelOrderFragment extends BaseFragment<FragmentCustomerCa
 
     @Override
     protected void setupViews() {
-        CustomerOrderViewModel orderViewModel = new ViewModelProvider(requireActivity()).get(CustomerOrderViewModel.class);
+        orderViewModel = new ViewModelProvider(requireActivity()).get(CustomerOrderViewModel.class);
 
         binding.ivBack.setOnClickListener(v -> {
             if (navController != null) {
@@ -55,19 +59,13 @@ public class CustomerCancelOrderFragment extends BaseFragment<FragmentCustomerCa
             int workerCheckedId = binding.rgReasonWorker.getCheckedRadioButtonId();
 
             if (customerCheckedId != -1) {
-                // THAY ĐỔI TỪ PHÍA TÔI -> Quay về Trang chủ và Hủy đơn
+                isCancelling = true;
+                isWorkerFault = false;
                 orderViewModel.cancelCurrentBooking("Lý do cá nhân", false);
-                Toast.makeText(requireContext(), "Đã hủy đơn thành công", Toast.LENGTH_SHORT).show();
-                if (navController != null) {
-                    navController.navigate(R.id.nav_customer_home);
-                }
             } else if (workerCheckedId != -1) {
-                // VẤN ĐỀ TỪ PHÍA THỢ -> Quay về màn hình Finding Worker (Radar) trong tab Order
+                isCancelling = true;
+                isWorkerFault = true;
                 orderViewModel.cancelCurrentBooking("Lỗi do thợ", true);
-                Toast.makeText(requireContext(), "Đang tìm thợ khác cho bạn", Toast.LENGTH_SHORT).show();
-                if (navController != null) {
-                    navController.navigate(R.id.nav_customer_order);
-                }
             } else {
                 Toast.makeText(requireContext(), "Vui lòng chọn lý do hủy", Toast.LENGTH_SHORT).show();
             }
@@ -76,5 +74,37 @@ public class CustomerCancelOrderFragment extends BaseFragment<FragmentCustomerCa
 
     @Override
     protected void observeData() {
+        if (orderViewModel != null) {
+            orderViewModel.getIsLoading().observe(getViewLifecycleOwner(), isLoading -> {
+                if (isLoading != null && binding.layoutLoading != null) {
+                    binding.layoutLoading.getRoot().setVisibility(isLoading ? android.view.View.VISIBLE : android.view.View.GONE);
+                }
+            });
+
+            orderViewModel.orderStatus.observe(getViewLifecycleOwner(), status -> {
+                if (isCancelling) {
+                    if (!isWorkerFault && status == 0) {
+                        isCancelling = false;
+                        Toast.makeText(requireContext(), "Đã hủy đơn thành công", Toast.LENGTH_SHORT).show();
+                        if (navController != null) {
+                            navController.navigate(R.id.nav_customer_home);
+                        }
+                    } else if (isWorkerFault && status == 1) {
+                        isCancelling = false;
+                        Toast.makeText(requireContext(), "Đang tìm thợ khác cho bạn", Toast.LENGTH_SHORT).show();
+                        if (navController != null) {
+                            navController.navigate(R.id.nav_customer_order);
+                        }
+                    }
+                }
+            });
+
+            orderViewModel.error.observe(getViewLifecycleOwner(), error -> {
+                if (isCancelling && error != null && !error.isEmpty()) {
+                    isCancelling = false;
+                    Toast.makeText(requireContext(), error, Toast.LENGTH_SHORT).show();
+                }
+            });
+        }
     }
 }

@@ -32,6 +32,9 @@ public class ComplaintWarranty {
     @Column(name = "evidence_image_urls", columnDefinition = "text")
     private String evidenceImageUrls;
 
+    @Column(name = "worker_evidence_image_urls", columnDefinition = "text")
+    private String workerEvidenceImageUrls;
+
     @Builder.Default
     @Enumerated(EnumType.STRING)
     @Column(name = "status", length = 50)

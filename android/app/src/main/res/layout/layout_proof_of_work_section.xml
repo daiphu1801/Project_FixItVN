@@ -57,7 +57,7 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintVertical_chainStyle="packed"
-                app:tint="#0ea5e9" />
+                app:tint="#2563eb" />
 
             <TextView
                 android:id="@+id/tvProofBeforeLabel"
@@ -117,7 +117,7 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintVertical_chainStyle="packed"
-                app:tint="#0ea5e9" />
+                app:tint="#2563eb" />
 
             <TextView
                 android:id="@+id/tvProofAfterLabel"

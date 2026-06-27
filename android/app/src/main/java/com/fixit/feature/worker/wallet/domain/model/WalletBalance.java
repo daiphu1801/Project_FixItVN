@@ -4,11 +4,15 @@ public class WalletBalance {
     private final String availableBalance;
     private final String heldBalance;
     private final String debtBalance;
+    private final String incomeThisWeek;
+    private final String incomeThisMonth;
 
-    public WalletBalance(String availableBalance, String heldBalance, String debtBalance) {
+    public WalletBalance(String availableBalance, String heldBalance, String debtBalance, String incomeThisWeek, String incomeThisMonth) {
         this.availableBalance = availableBalance;
         this.heldBalance = heldBalance;
         this.debtBalance = debtBalance;
+        this.incomeThisWeek = incomeThisWeek;
+        this.incomeThisMonth = incomeThisMonth;
     }
 
     public String getAvailableBalance() {
@@ -21,5 +25,13 @@ public class WalletBalance {
 
     public String getDebtBalance() {
         return debtBalance;
+    }
+
+    public String getIncomeThisWeek() {
+        return incomeThisWeek;
+    }
+
+    public String getIncomeThisMonth() {
+        return incomeThisMonth;
     }
 }

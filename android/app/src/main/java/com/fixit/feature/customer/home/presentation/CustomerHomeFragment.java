@@ -44,7 +44,7 @@ public class CustomerHomeFragment extends BaseFragment<FragmentCustomerHomeBindi
                             category.getName());
                     bottomSheet.setOnServiceItemSelectedListener(item -> {
                         // Khi chọn xong 1 dịch vụ con -> Chuyển sang màn hình Đặt thợ
-                        navigateToFindingWorker(item.getName());
+                        navigateToFindingWorker(category.getId(), category.getName(), item.getName());
                     });
                     bottomSheet.show(getParentFragmentManager(), "ServiceCategoryBottomSheet");
                 }
@@ -91,10 +91,14 @@ public class CustomerHomeFragment extends BaseFragment<FragmentCustomerHomeBindi
         viewModel.fetchCategories();
     }
 
-    private void navigateToFindingWorker(String serviceName) {
-        binding.tvLocationValue.setText(serviceName);
+    private void navigateToFindingWorker(int serviceId, String serviceName, String subServiceName) {
+        binding.tvLocationValue.setText(subServiceName);
         if (navController != null) {
-            navController.navigate(R.id.nav_customer_booking);
+            android.os.Bundle args = new android.os.Bundle();
+            args.putInt("serviceId", serviceId);
+            args.putString("serviceName", serviceName);
+            args.putString("subServiceName", subServiceName);
+            navController.navigate(R.id.nav_customer_booking, args);
         }
     }
 
@@ -115,7 +119,9 @@ public class CustomerHomeFragment extends BaseFragment<FragmentCustomerHomeBindi
         });
 
         viewModel.getIsLoading().observe(getViewLifecycleOwner(), isLoading -> {
-            // Có thể hiển thị ProgressBar nếu muốn
+            if (isLoading != null && binding.layoutLoading != null) {
+                binding.layoutLoading.getRoot().setVisibility(isLoading ? android.view.View.VISIBLE : android.view.View.GONE);
+            }
         });
 
         viewModel.getErrorMessage().observe(getViewLifecycleOwner(), error -> {

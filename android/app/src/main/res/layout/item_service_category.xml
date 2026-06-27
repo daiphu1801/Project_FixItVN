@@ -37,8 +37,22 @@
             android:textColor="#111827"
             app:layout_constraintStart_toEndOf="@id/ivServiceIcon"
             app:layout_constraintEnd_toStartOf="@id/ivArrow"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent" />
+            app:layout_constraintTop_toTopOf="@id/ivServiceIcon"
+            app:layout_constraintBottom_toTopOf="@id/tvWorkerCount"
+            app:layout_constraintVertical_chainStyle="packed" />
+
+        <TextView
+            android:id="@+id/tvWorkerCount"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:text="24 thợ sẵn sàng"
+            android:textSize="12sp"
+            android:textColor="#6B7280"
+            app:layout_constraintStart_toEndOf="@id/ivServiceIcon"
+            app:layout_constraintEnd_toStartOf="@id/ivArrow"
+            app:layout_constraintTop_toBottomOf="@id/tvServiceName"
+            app:layout_constraintBottom_toBottomOf="@id/ivServiceIcon" />
 
         <ImageView
             android:id="@+id/ivArrow"

@@ -79,10 +79,10 @@ public class CustomerProfileRepositoryImpl implements CustomerProfileRepository 
     // LOGIC 2: CẬP NHẬT THÔNG TIN (UPDATE PROFILE)
     // ==========================================
     @Override
-    public void updateProfile(String fullName, ResultCallback<CustomerProfile> callback) {
+    public void updateProfile(String fullName, String email, String gender, String dob, ResultCallback<CustomerProfile> callback) {
         
-        // BƯỚC 1: Lấy cái tên người dùng vừa gõ, nhét vào HỘP DTO ĐỎ (RequestDto)
-        CustomerProfileRequestDto requestDto = new CustomerProfileRequestDto(fullName);
+        // BƯỚC 1: Lấy thông tin người dùng vừa gõ, nhét vào HỘP DTO ĐỎ (RequestDto)
+        CustomerProfileRequestDto requestDto = new CustomerProfileRequestDto(fullName, email, gender, dob);
 
         // BƯỚC 2: Bấm gọi lên mạng, quăng cái hộp đỏ đi kèm
         api.updateProfile(requestDto).enqueue(new Callback<ApiResponse<CustomerProfileResponseDto>>() {

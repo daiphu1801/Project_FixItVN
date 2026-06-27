@@ -1,11 +1,14 @@
 package com.fixit.feature.auth.presentation;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
@@ -14,6 +17,12 @@ import androidx.navigation.Navigation;
 
 import com.fixit.R;
 import com.fixit.databinding.FragmentLoginBinding;
+import com.google.android.gms.auth.api.signin.GoogleSignIn;
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
+import com.google.android.gms.auth.api.signin.GoogleSignInClient;
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+import com.google.android.gms.common.api.ApiException;
+import com.google.android.gms.tasks.Task;
 
 import dagger.hilt.android.AndroidEntryPoint;
 
@@ -23,6 +32,10 @@ public class LoginFragment extends Fragment {
     private FragmentLoginBinding binding;
     private AuthViewModel viewModel;
     private String selectedRole = "CUSTOMER";
+
+    private GoogleSignInClient googleSignInClient;
+    private ActivityResultLauncher<Intent> googleSignInLauncher;
+    private String googleIdToken = null;
 
     @Nullable
     @Override
@@ -34,6 +47,42 @@ public class LoginFragment extends Fragment {
         if (getArguments() != null) {
             selectedRole = getArguments().getString("role", "CUSTOMER");
         }
+
+        // Configure Google Sign-In
+        String webClientId = getString(R.string.google_web_client_id);
+        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                .requestIdToken(webClientId)
+                .requestEmail()
+                .build();
+        googleSignInClient = GoogleSignIn.getClient(requireActivity(), gso);
+
+        // Register ActivityResultLauncher for Google Sign-In
+        googleSignInLauncher = registerForActivityResult(
+                new ActivityResultContracts.StartActivityForResult(),
+                result -> {
+                    if (result.getResultCode() == android.app.Activity.RESULT_OK && result.getData() != null) {
+                        Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(result.getData());
+                        try {
+                            GoogleSignInAccount account = task.getResult(ApiException.class);
+                            if (account != null) {
+                                googleIdToken = account.getIdToken();
+                                String email = account.getEmail();
+
+                                // Điền email tự động và chuyển sang bước bổ sung thông tin
+                                binding.etGoogleEmail.setText(email);
+                                showGoogleExtraStep();
+                            }
+                        } catch (ApiException e) {
+                            android.util.Log.e("FixIt_LoginFragment", "Google Sign-In failed", e);
+                            String errorMsg = "Google Sign-In thất bại (mã " + e.getStatusCode() + "). ";
+                            if (e.getStatusCode() == 10) {
+                                errorMsg += "Vui lòng kiểm tra lại Web Client ID trong local.properties hoặc SHA-1 trong Firebase.";
+                            }
+                            Toast.makeText(getContext(), errorMsg, Toast.LENGTH_LONG).show();
+                        }
+                    }
+                }
+        );
 
         return binding.getRoot();
     }
@@ -50,10 +99,20 @@ public class LoginFragment extends Fragment {
             }
         });
 
-        binding.btnLoginGG.setOnClickListener(v -> showGoogleExtraStep());
+        binding.btnLoginGG.setOnClickListener(v -> {
+            // Đăng xuất trước để đảm bảo hiển thị hộp thoại chọn tài khoản Google mọi lúc
+            googleSignInClient.signOut().addOnCompleteListener(task -> {
+                Intent signInIntent = googleSignInClient.getSignInIntent();
+                googleSignInLauncher.launch(signInIntent);
+            });
+        });
 
         binding.btnConfirmGoogle.setOnClickListener(v -> {
-            // TODO: Complete Google login flow.
+            if (googleIdToken == null) {
+                Toast.makeText(getContext(), "Không lấy được token Google. Vui lòng thử lại.", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            viewModel.loginWithGoogle(googleIdToken, selectedRole);
         });
 
         binding.tvRegister.setOnClickListener(v ->
@@ -78,8 +137,13 @@ public class LoginFragment extends Fragment {
         // Việc navigate được xử lý tập trung tại AuthActivity observer.
         viewModel.uiState.observe(getViewLifecycleOwner(), state -> {
             if (state == null) return;
-            binding.btnLogin.setEnabled(!state.isLoading());
-            binding.btnLogin.setText(state.isLoading() ? "Đang xử lý..." : "Đăng nhập");
+            boolean isLoading = state.isLoading();
+            binding.btnLogin.setEnabled(!isLoading);
+            binding.btnLogin.setText(isLoading ? "Đang xử lý..." : "Đăng nhập");
+            binding.btnLoginGG.setEnabled(!isLoading);
+            binding.btnConfirmGoogle.setEnabled(!isLoading);
+            binding.btnConfirmGoogle.setText(isLoading ? "Đang xử lý..." : "Tiếp tục");
+            
             if (state.getErrorMessage() != null) {
                 Toast.makeText(getContext(), state.getErrorMessage(), Toast.LENGTH_LONG).show();
             }
@@ -103,3 +167,4 @@ public class LoginFragment extends Fragment {
         binding = null;
     }
 }
+

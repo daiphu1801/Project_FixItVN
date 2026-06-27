@@ -15,6 +15,7 @@ import com.fixit.core.ui.BaseFragment;
 import com.fixit.databinding.FragmentListMsgBinding;
 import com.fixit.databinding.ItemChatWorkerBinding;
 import com.fixit.feature.customer.chat.domain.model.ChatPreview;
+import com.fixit.feature.customer.chat.presentation.ConversationsViewModel;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,6 +30,10 @@ import dagger.hilt.android.AndroidEntryPoint;
 @AndroidEntryPoint
 public class WorkerListMsgFragment extends BaseFragment<FragmentListMsgBinding> {
 
+    private ConversationsViewModel viewModel;
+    private final List<ChatPreview> conversationList = new ArrayList<>();
+    private WorkerChatPreviewAdapter adapter;
+
     @NonNull
     @Override
     protected FragmentListMsgBinding inflateViewBinding(
@@ -38,8 +43,20 @@ public class WorkerListMsgFragment extends BaseFragment<FragmentListMsgBinding> 
 
     @Override
     protected void setupViews() {
+        viewModel = new androidx.lifecycle.ViewModelProvider(this).get(ConversationsViewModel.class);
         configureTopBar();
         setupRecyclerView();
+        viewModel.startListening();
+
+        // Cấu hình sự kiện cho nút FAB (dấu cộng) để mở chat với khách hàng mẫu phục vụ việc test
+        binding.fabNewChat.setOnClickListener(v -> {
+            Bundle args = new Bundle();
+            args.putString("workerId", "customer_b_id"); // key giữ nguyên làm receiverId trong ChatCustomerFragment
+            args.putString("workerName", "Trần Thị B (Khách hàng Test)");
+            if (navController != null) {
+                navController.navigate(R.id.action_worker_list_msg_to_chat, args);
+            }
+        });
     }
 
     /**
@@ -62,8 +79,7 @@ public class WorkerListMsgFragment extends BaseFragment<FragmentListMsgBinding> 
     }
 
     private void setupRecyclerView() {
-        List<ChatPreview> fakeData = buildFakeConversations();
-        WorkerChatPreviewAdapter adapter = new WorkerChatPreviewAdapter(fakeData, this::onConversationClicked);
+        adapter = new WorkerChatPreviewAdapter(conversationList, this::onConversationClicked);
 
         binding.rvChats.setLayoutManager(new LinearLayoutManager(requireContext()));
         binding.rvChats.setAdapter(adapter);
@@ -83,23 +99,19 @@ public class WorkerListMsgFragment extends BaseFragment<FragmentListMsgBinding> 
 
     @Override
     protected void observeData() {
-        // Sẽ kết nối ViewModel/API thực ở đây sau
-    }
+        viewModel.conversations.observe(getViewLifecycleOwner(), list -> {
+            conversationList.clear();
+            if (list != null) {
+                conversationList.addAll(list);
+            }
+            adapter.notifyDataSetChanged();
+        });
 
-    // ============ Fake data — phía thợ thấy danh sách khách hàng ============
-    private List<ChatPreview> buildFakeConversations() {
-        List<ChatPreview> list = new ArrayList<>();
-        list.add(new ChatPreview("c1", "Chị Hương (Quận 3)",
-                "Anh ơi máy giặt nhà em vẫn không vắt được!", "Vừa xong", true, true));
-        list.add(new ChatPreview("c2", "Anh Bình (Bình Thạnh)",
-                "Điều hoà phòng khách bị chảy nước anh ơi.", "11:20", true, true));
-        list.add(new ChatPreview("c3", "Chị Lan (Quận 7)",
-                "Anh đã đến chưa? Em đợi mãi rồi ạ.", "09:05", false, false));
-        list.add(new ChatPreview("c4", "Anh Tuấn (Thủ Đức)",
-                "Ok anh nhé, cảm ơn anh nhiều lắm!", "Hôm qua", false, false));
-        list.add(new ChatPreview("c5", "Chị Mai (Quận 1)",
-                "Bếp từ vẫn còn lỗi anh ơi.", "T4", false, false));
-        return list;
+        viewModel.error.observe(getViewLifecycleOwner(), errorMsg -> {
+            if (errorMsg != null && !errorMsg.isEmpty()) {
+                android.widget.Toast.makeText(requireContext(), errorMsg, android.widget.Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     // ============ Inner Adapter dùng ItemChatWorkerBinding ============

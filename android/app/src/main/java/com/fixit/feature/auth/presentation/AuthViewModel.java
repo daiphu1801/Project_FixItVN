@@ -8,6 +8,7 @@ import com.fixit.core.common.Result;
 import com.fixit.feature.auth.domain.model.Session;
 import com.fixit.feature.auth.domain.usecase.GetCurrentSessionUseCase;
 import com.fixit.feature.auth.domain.usecase.LoginUseCase;
+import com.fixit.feature.auth.domain.usecase.LoginWithGoogleUseCase;
 import com.fixit.feature.auth.domain.usecase.RegisterUseCase;
 
 import javax.inject.Inject;
@@ -19,6 +20,7 @@ public class AuthViewModel extends ViewModel {
     private final LoginUseCase loginUseCase;
     private final RegisterUseCase registerUseCase;
     private final GetCurrentSessionUseCase getCurrentSessionUseCase;
+    private final LoginWithGoogleUseCase loginWithGoogleUseCase;
 
     private final MutableLiveData<AuthUiState> _uiState = new MutableLiveData<>(AuthUiState.idle());
     public LiveData<AuthUiState> uiState = _uiState;
@@ -28,10 +30,12 @@ public class AuthViewModel extends ViewModel {
 
     @Inject
     public AuthViewModel(LoginUseCase loginUseCase, RegisterUseCase registerUseCase,
-                         GetCurrentSessionUseCase getCurrentSessionUseCase) {
+                         GetCurrentSessionUseCase getCurrentSessionUseCase,
+                         LoginWithGoogleUseCase loginWithGoogleUseCase) {
         this.loginUseCase = loginUseCase;
         this.registerUseCase = registerUseCase;
         this.getCurrentSessionUseCase = getCurrentSessionUseCase;
+        this.loginWithGoogleUseCase = loginWithGoogleUseCase;
     }
 
     /**
@@ -41,8 +45,13 @@ public class AuthViewModel extends ViewModel {
      */
     public void checkExistingSession() {
         Session session = getCurrentSessionUseCase.execute();
+        android.util.Log.d("FixIt_AuthViewModel", "checkExistingSession: session = " + session);
         if (session != null) {
+            android.util.Log.d("FixIt_AuthViewModel", "checkExistingSession: session is NOT null! Navigating automatically to role: " + 
+                (session.getUser() != null ? session.getUser().getRole() : "null"));
             _event.setValue(AuthEvent.navigate(session));
+        } else {
+            android.util.Log.d("FixIt_AuthViewModel", "checkExistingSession: session is null. Showing login screen.");
         }
     }
 
@@ -72,5 +81,10 @@ public class AuthViewModel extends ViewModel {
         } else {
             _uiState.setValue(AuthUiState.error(result.getError().getMessage()));
         }
+    }
+
+    public void loginWithGoogle(String idToken, String role) {
+        _uiState.setValue(AuthUiState.loading());
+        loginWithGoogleUseCase.execute(idToken, role, this::handleLoginResult);
     }
 }

@@ -54,12 +54,14 @@ public class WorkerEditSpecializationFragment extends BaseFragment<FragmentWorke
 
         binding.btnAddService.setOnClickListener(v -> {
             WorkerSelectServiceBottomSheet bottomSheet = new WorkerSelectServiceBottomSheet();
+            bottomSheet.setCategoriesAndSelected(availableCategories, myServices);
             bottomSheet.setOnServicesSelectedListener(selectedList -> {
                 if (selectedList != null && !selectedList.isEmpty()) {
                     for (SpecializationItem newItem : selectedList) {
                         boolean exists = false;
                         for (SpecializationItem existing : myServices) {
-                            if (existing.getName().equalsIgnoreCase(newItem.getName())) {
+                            if ((existing.getId() != null && existing.getId().equals(newItem.getId()))
+                                    || existing.getName().equalsIgnoreCase(newItem.getName())) {
                                 exists = true;
                                 break;
                             }
@@ -110,6 +112,12 @@ public class WorkerEditSpecializationFragment extends BaseFragment<FragmentWorke
             availableCategories.clear();
             if (categories != null) {
                 availableCategories.addAll(categories);
+            }
+        });
+
+        viewModel.isLoading.observe(getViewLifecycleOwner(), loading -> {
+            if (binding.layoutLoading != null) {
+                binding.layoutLoading.getRoot().setVisibility(loading ? android.view.View.VISIBLE : android.view.View.GONE);
             }
         });
 

@@ -23,6 +23,11 @@ public class CustomerBookingResponse {
     private BookingStatus status;
     private OffsetDateTime createdAt;
 
+    private String serviceName;
+    private BigDecimal laborCost;
+    private BigDecimal materialCost;
+    private String cancellationReason;
+
     // Thông tin thợ (Sẽ null nếu đơn đang ở trạng thái Pending chưa ghép được thợ)
     private WorkerInfo worker;
 

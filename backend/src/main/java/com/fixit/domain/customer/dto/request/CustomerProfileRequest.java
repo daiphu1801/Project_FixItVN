@@ -16,12 +16,14 @@ public class CustomerProfileRequest {
 
     // Bắt buộc khách hàng phải nhập họ tên. Nếu rỗng, báo lỗi "Họ tên không được để trống" trả về cho Android.
     @NotBlank(message = "Họ tên không được để trống")
-    
-    // Ràng buộc độ dài: Tối đa 100 ký tự (cho khớp với độ dài cột trong Database)
     @Size(max = 100, message = "Họ tên quá dài, tối đa 100 ký tự")
-    
-    // Biến lưu họ tên khách hàng gửi lên
     private String fullName;
+
+    private String email;
+
+    private String gender;
+
+    private String dob;
 
     // LƯU Ý: Hiện tại Database (Customer.java) chỉ mới có cột fullName. 
     // Màn hình Android của bạn đang có thêm Giới tính và Ngày sinh.

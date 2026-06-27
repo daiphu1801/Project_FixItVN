@@ -1,6 +1,8 @@
 package com.fixit.feature.worker.kyc.presentation;
 
+import android.content.Intent;
 import android.net.Uri;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,6 +21,7 @@ import com.fixit.feature.upload.domain.model.UploadPurpose;
 import com.fixit.feature.upload.domain.model.UploadTargetType;
 import com.fixit.feature.upload.presentation.UploadViewModel;
 
+import java.io.File;
 import java.util.UUID;
 
 import dagger.hilt.android.AndroidEntryPoint;
@@ -27,6 +30,7 @@ import dagger.hilt.android.AndroidEntryPoint;
 public class WorkerKycFragment extends BaseFragment<FragmentWorkerKycBinding> {
 
     private UploadViewModel uploadViewModel;
+    private WorkerKycViewModel workerKycViewModel;
 
     // Theo dõi trạng thái "đã lưu vào hàng đợi local" của 3 ảnh
     private boolean isFrontQueued = false;
@@ -35,13 +39,37 @@ public class WorkerKycFragment extends BaseFragment<FragmentWorkerKycBinding> {
     private boolean isSubmitting = false;
     private final String kycGroupId = UUID.randomUUID().toString();
 
-    // 3 launcher cho 3 loại ảnh KYC
+    private boolean isVnptFlow = false;
+    private android.app.AlertDialog progressDialog;
+
+    // Launcher cho VNPT eKYC SDK Activity
+    private final ActivityResultLauncher<Intent> vnptKycLauncher = registerForActivityResult(
+            new ActivityResultContracts.StartActivityForResult(),
+            result -> {
+                if (result.getResultCode() == android.app.Activity.RESULT_OK && result.getData() != null) {
+                    com.fixit.core.ekyc.VnptKycHelper.VnptKycResult kycResult = 
+                            com.fixit.core.ekyc.VnptKycHelper.parseResult(result.getData());
+                    if (kycResult != null) {
+                        // Nén và lưu các ảnh nhận được từ SDK vào Room
+                        processAndEnqueueLocalImage(kycResult.getFrontImagePath(), UploadPurpose.WORKER_KYC_FRONT, "front");
+                        processAndEnqueueLocalImage(kycResult.getBackImagePath(), UploadPurpose.WORKER_KYC_BACK, "back");
+                        processAndEnqueueLocalImage(kycResult.getSelfieImagePath(), UploadPurpose.WORKER_KYC_SELFIE, "selfie");
+                    } else {
+                        Toast.makeText(requireContext(), "Không nhận được kết quả từ VNPT eKYC", Toast.LENGTH_SHORT).show();
+                    }
+                } else {
+                    Toast.makeText(requireContext(), "Xác thực VNPT eKYC bị hủy", Toast.LENGTH_SHORT).show();
+                }
+            }
+    );
+
+    // 3 launcher chọn ảnh thủ công từ gallery
     private final ActivityResultLauncher<String> pickFrontLauncher = registerForActivityResult(
             new ActivityResultContracts.GetContent(),
             uri -> {
                 if (uri != null) {
-                    displayImage(uri, "front");
-                    enqueueKycImage(uri, UploadPurpose.WORKER_KYC_FRONT, "front");
+                    isVnptFlow = false;
+                    processAndEnqueueUri(uri, UploadPurpose.WORKER_KYC_FRONT, "front");
                 }
             });
 
@@ -49,8 +77,8 @@ public class WorkerKycFragment extends BaseFragment<FragmentWorkerKycBinding> {
             new ActivityResultContracts.GetContent(),
             uri -> {
                 if (uri != null) {
-                    displayImage(uri, "back");
-                    enqueueKycImage(uri, UploadPurpose.WORKER_KYC_BACK, "back");
+                    isVnptFlow = false;
+                    processAndEnqueueUri(uri, UploadPurpose.WORKER_KYC_BACK, "back");
                 }
             });
 
@@ -58,8 +86,8 @@ public class WorkerKycFragment extends BaseFragment<FragmentWorkerKycBinding> {
             new ActivityResultContracts.GetContent(),
             uri -> {
                 if (uri != null) {
-                    displayImage(uri, "portrait");
-                    enqueueKycImage(uri, UploadPurpose.WORKER_CERTIFICATE, "certificate");
+                    isVnptFlow = false;
+                    processAndEnqueueUri(uri, UploadPurpose.WORKER_KYC_SELFIE, "selfie");
                 }
             });
 
@@ -72,7 +100,6 @@ public class WorkerKycFragment extends BaseFragment<FragmentWorkerKycBinding> {
     public void onResume() {
         super.onResume();
         // Kiểm tra Room DB: nếu đang có KYC upload ngầm → redirect sang Pending ngay
-        // Tránh user upload lại khi WorkManager đang chạy dở
         if (uploadViewModel != null) {
             uploadViewModel.clearStaleKycUploads(() -> {
                 uploadViewModel.checkHasPendingKyc();
@@ -82,8 +109,9 @@ public class WorkerKycFragment extends BaseFragment<FragmentWorkerKycBinding> {
 
     @Override
     protected void setupViews() {
-        // init ViewModel sớm nhất có thể (trước khi setupViews cần nó)
+        // init ViewModels
         uploadViewModel = new ViewModelProvider(this).get(UploadViewModel.class);
+        workerKycViewModel = new ViewModelProvider(this).get(WorkerKycViewModel.class);
 
         // Nút back trên toolbar
         binding.appBarLayout.toolbar.setTitle("Xác minh danh tính");
@@ -103,6 +131,25 @@ public class WorkerKycFragment extends BaseFragment<FragmentWorkerKycBinding> {
         binding.actvDocType.setAdapter(adapter);
         binding.actvDocType.setText(docTypes[0], false);
 
+        // Cấu hình hiển thị VNPT eKYC SDK
+        if (com.fixit.core.ekyc.VnptKycHelper.isSdkAvailable()) {
+            binding.cardVnptKyc.setVisibility(View.VISIBLE);
+            binding.groupManualUpload.setVisibility(View.GONE);
+
+            binding.btnStartVnptKyc.setOnClickListener(v -> {
+                isVnptFlow = true;
+                workerKycViewModel.loadKycConfig();
+            });
+
+            binding.tvSwitchToManual.setOnClickListener(v -> {
+                binding.cardVnptKyc.setVisibility(View.GONE);
+                binding.groupManualUpload.setVisibility(View.VISIBLE);
+            });
+        } else {
+            binding.cardVnptKyc.setVisibility(View.GONE);
+            binding.groupManualUpload.setVisibility(View.VISIBLE);
+        }
+
         // Click card → mở gallery chọn ảnh
         binding.cardUploadFront.setOnClickListener(v -> pickFrontLauncher.launch("image/*"));
         binding.cardUploadBack.setOnClickListener(v -> pickBackLauncher.launch("image/*"));
@@ -120,8 +167,7 @@ public class WorkerKycFragment extends BaseFragment<FragmentWorkerKycBinding> {
                 return;
             isSubmitting = true;
 
-            // Fire & Navigate: kích hoạt upload nền qua WorkManager rồi navigate ngay
-            // Không chờ upload hoàn tất — WorkManager tự xử lý trong nền.
+            // Kích hoạt upload nền qua WorkManager rồi chuyển màn
             uploadViewModel.scheduleKycUpload(kycGroupId);
             Navigation.findNavController(requireView())
                     .navigate(com.fixit.R.id.workerKycUploadingFragment);
@@ -145,12 +191,20 @@ public class WorkerKycFragment extends BaseFragment<FragmentWorkerKycBinding> {
                         isBackQueued = true;
                         Toast.makeText(requireContext(), "✓ Ảnh mặt sau đã chọn", Toast.LENGTH_SHORT).show();
                         break;
-                    case UploadPurpose.WORKER_CERTIFICATE:
+                    case UploadPurpose.WORKER_KYC_SELFIE:
                         isPortraitQueued = true;
                         Toast.makeText(requireContext(), "✓ Ảnh chân dung đã chọn", Toast.LENGTH_SHORT).show();
                         break;
                 }
                 updateSubmitButton();
+
+                // Nếu chạy luồng VNPT eKYC và cả 3 ảnh đã enqueue thành công -> Tự động submit
+                if (isVnptFlow && isFrontQueued && isBackQueued && isPortraitQueued && !isSubmitting) {
+                    isSubmitting = true;
+                    uploadViewModel.scheduleKycUpload(kycGroupId);
+                    Navigation.findNavController(requireView())
+                            .navigate(com.fixit.R.id.workerKycUploadingFragment);
+                }
             } else {
                 Toast.makeText(requireContext(),
                         "Lỗi: " + result.getErrorMessage(), Toast.LENGTH_SHORT).show();
@@ -164,6 +218,93 @@ public class WorkerKycFragment extends BaseFragment<FragmentWorkerKycBinding> {
                         .navigate(com.fixit.R.id.workerKycUploadingFragment);
             }
         });
+
+        // Lắng nghe trạng thái loading cấu hình VNPT eKYC
+        workerKycViewModel.isLoading.observe(getViewLifecycleOwner(), this::showLoading);
+
+        // Lắng nghe kết quả trả về cấu hình VNPT eKYC
+        workerKycViewModel.kycConfig.observe(getViewLifecycleOwner(), config -> {
+            if (config != null) {
+                Intent intent = com.fixit.core.ekyc.VnptKycHelper.createKycIntent(
+                        requireContext(),
+                        config.getTokenId(),
+                        config.getTokenKey(),
+                        config.getApiUrl()
+                );
+                if (intent != null) {
+                    vnptKycLauncher.launch(intent);
+                } else {
+                    Toast.makeText(requireContext(), "Không thể khởi tạo VNPT eKYC SDK", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+
+        // Lắng nghe thông báo lỗi
+        workerKycViewModel.error.observe(getViewLifecycleOwner(), errorMsg -> {
+            if (errorMsg != null) {
+                Toast.makeText(requireContext(), errorMsg, Toast.LENGTH_LONG).show();
+            }
+        });
+    }
+
+    private void showLoading(boolean show) {
+        if (binding.layoutLoading != null) {
+            binding.layoutLoading.getRoot().setVisibility(show ? View.VISIBLE : View.GONE);
+        }
+    }
+
+    private void processAndEnqueueUri(Uri uri, String purpose, String slotKey) {
+        if (uri == null) return;
+        try {
+            // 1. Copy Uri sang file tạm trong cache
+            com.fixit.feature.upload.domain.model.LocalUploadFile tempFile =
+                    com.fixit.feature.upload.util.UploadFilePreparer.fromUri(requireContext(), uri, purpose);
+
+            // 2. Nén ảnh chất lượng 80% JPEG
+            File originalFile = tempFile.getFile();
+            File compressedFile = com.fixit.core.common.ImageCompressor.compressImage(
+                    requireContext(),
+                    originalFile,
+                    "ekyc_" + slotKey + "_" + System.currentTimeMillis() + ".jpg"
+            );
+
+            // 3. Xóa file tạm gốc
+            if (originalFile.exists()) {
+                originalFile.delete();
+            }
+
+            Uri compressedUri = Uri.fromFile(compressedFile);
+
+            // 4. Hiển thị và enqueue lên Room
+            displayImage(compressedUri, slotKey.equals("selfie") ? "portrait" : slotKey);
+            enqueueKycImage(compressedUri, purpose, slotKey);
+        } catch (Exception e) {
+            Toast.makeText(requireContext(), "Lỗi xử lý ảnh: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private void processAndEnqueueLocalImage(String path, String purpose, String slotKey) {
+        if (path == null || path.isEmpty()) {
+            return;
+        }
+        try {
+            File originalFile = new File(path);
+            if (!originalFile.exists()) {
+                return;
+            }
+            // Nén ảnh chất lượng 80% JPEG
+            File compressedFile = com.fixit.core.common.ImageCompressor.compressImage(
+                    requireContext(),
+                    originalFile,
+                    "ekyc_" + slotKey + "_" + System.currentTimeMillis() + ".jpg"
+            );
+            Uri uri = Uri.fromFile(compressedFile);
+
+            displayImage(uri, slotKey.equals("selfie") ? "portrait" : slotKey);
+            enqueueKycImage(uri, purpose, slotKey);
+        } catch (Exception e) {
+            Toast.makeText(requireContext(), "Lỗi xử lý ảnh từ SDK: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+        }
     }
 
     /**
@@ -217,3 +358,4 @@ public class WorkerKycFragment extends BaseFragment<FragmentWorkerKycBinding> {
         binding.btnSubmitKYC.setAlpha(allReady ? 1.0f : 0.5f);
     }
 }
+

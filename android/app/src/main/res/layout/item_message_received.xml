@@ -6,38 +6,34 @@
     android:layout_height="wrap_content"
     android:paddingTop="8dp">
 
-    <ImageView
+    <com.google.android.material.imageview.ShapeableImageView
         android:id="@+id/ivReceivedAvatar"
         android:layout_width="32dp"
         android:layout_height="32dp"
-        android:background="@drawable/bg_bottom_sheet"
-        android:src="@android:drawable/ic_menu_myplaces"
-        app:layout_constraintBottom_toBottomOf="@id/cardReceivedMessage"
+        android:background="#E2E8F0"
+        android:padding="4dp"
+        android:src="@drawable/ic_person"
+        android:scaleType="centerCrop"
+        app:tint="#94A3B8"
+        app:shapeAppearanceOverlay="@style/CircleImageView"
+        app:layout_constraintBottom_toBottomOf="@id/tvReceivedMessage"
         app:layout_constraintStart_toStartOf="parent" />
 
-    <com.google.android.material.card.MaterialCardView
-        android:id="@+id/cardReceivedMessage"
+    <TextView
+        android:id="@+id/tvReceivedMessage"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:layout_marginEnd="60dp"
-        app:cardBackgroundColor="#FFFFFF"
-        app:cardCornerRadius="16dp"
-        app:cardElevation="1dp"
-        app:strokeWidth="0dp"
+        android:background="@drawable/bg_message_received_bubble"
+        android:maxWidth="280dp"
+        android:paddingHorizontal="16dp"
+        android:paddingVertical="10dp"
+        android:text="Vâng, em hiểu rồi ạ. Khoảng 30 phút nữa em sẽ có mặt ở nhà chị để kiểm tra nhé!"
+        android:textColor="#1E293B"
+        android:textSize="15sp"
         app:layout_constraintStart_toEndOf="@id/ivReceivedAvatar"
-        app:layout_constraintTop_toTopOf="parent">
-
-        <TextView
-            android:id="@+id/tvReceivedMessage"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:paddingHorizontal="16dp"
-            android:paddingVertical="10dp"
-            android:text="Vâng, em hiểu rồi ạ. Khoảng 30 phút nữa em sẽ có mặt ở nhà chị để kiểm tra nhé!"
-            android:textColor="#333333"
-            android:textSize="15sp" />
-    </com.google.android.material.card.MaterialCardView>
+        app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/tvReceivedTime"
@@ -46,9 +42,9 @@
         android:layout_marginStart="8dp"
         android:layout_marginTop="4dp"
         android:text="14:22"
-        android:textColor="#AAAAAA"
+        android:textColor="#94A3B8"
         android:textSize="11sp"
         app:layout_constraintStart_toEndOf="@id/ivReceivedAvatar"
-        app:layout_constraintTop_toBottomOf="@id/cardReceivedMessage" />
+        app:layout_constraintTop_toBottomOf="@id/tvReceivedMessage" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

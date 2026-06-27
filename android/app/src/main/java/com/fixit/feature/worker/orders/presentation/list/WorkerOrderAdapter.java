@@ -86,6 +86,34 @@ public class WorkerOrderAdapter extends RecyclerView.Adapter<WorkerOrderAdapter.
             binding.tvOrderTime.setText(order.getTimeSlot());
             binding.tvOrderPrice.setText(order.getPrice());
 
+            // Bind customer name
+            binding.tvCustomerName.setText(order.getCustomerName() != null ? order.getCustomerName() : "Khách hàng");
+
+            // Format and bind payment method
+            String paymentMethodText = "Tiền mặt";
+            String pm = order.getPaymentMethod();
+            if (pm != null) {
+                if ("CASH".equalsIgnoreCase(pm) || "TIEN_MAT".equalsIgnoreCase(pm)) {
+                    paymentMethodText = "Tiền mặt";
+                } else if ("WALLET".equalsIgnoreCase(pm)) {
+                    paymentMethodText = "Ví FixIt";
+                } else if ("sepay".equalsIgnoreCase(pm)) {
+                    paymentMethodText = "Chuyển khoản QR";
+                } else {
+                    paymentMethodText = pm;
+                }
+            }
+            binding.tvPaymentMethod.setText("Thanh toán: " + paymentMethodText);
+
+            // Bind issue description with dynamic visibility
+            String desc = order.getIssueDescription();
+            if (desc != null && !desc.trim().isEmpty()) {
+                binding.cardIssue.setVisibility(android.view.View.VISIBLE);
+                binding.tvOrderIssue.setText("Mô tả: " + desc);
+            } else {
+                binding.cardIssue.setVisibility(android.view.View.GONE);
+            }
+
             // Hiển thị nhãn trạng thái với màu tương ứng
             applyStatusStyle(order.getStatus());
 
@@ -105,34 +133,34 @@ public class WorkerOrderAdapter extends RecyclerView.Adapter<WorkerOrderAdapter.
         private void applyStatusStyle(String status) {
             String label;
             String textColor;
-            String bgColor;
+            int bgResId;
 
             switch (status) {
                 case "ongoing":
                     label     = "Đang làm";
-                    textColor = "#f59e0b";   // amber
-                    bgColor   = "#fef3c7";
+                    textColor = "#c2410c";   // dark amber/orange
+                    bgResId   = com.fixit.R.drawable.bg_badge_orange_light;
                     break;
                 case "completed":
                     label     = "Hoàn thành";
-                    textColor = "#22c55e";   // green
-                    bgColor   = "#dcfce7";
+                    textColor = "#15803d";   // dark green
+                    bgResId   = com.fixit.R.drawable.bg_badge_green_light;
                     break;
                 case "cancelled":
                     label     = "Đã huỷ";
-                    textColor = "#ef4444";   // red
-                    bgColor   = "#fee2e2";
+                    textColor = "#b91c1c";   // dark red
+                    bgResId   = com.fixit.R.drawable.bg_badge_red;
                     break;
                 default: // "pending"
                     label     = "Chờ làm";
-                    textColor = "#42c2ff";   // brand blue
-                    bgColor   = "#e0f5ff";
+                    textColor = "#1d4ed8";   // dark blue
+                    bgResId   = com.fixit.R.drawable.bg_badge_light_blue;
                     break;
             }
 
             binding.tvOrderStatus.setText(label);
             binding.tvOrderStatus.setTextColor(Color.parseColor(textColor));
-            binding.tvOrderStatus.setBackgroundColor(Color.parseColor(bgColor));
+            binding.tvOrderStatus.setBackgroundResource(bgResId);
         }
     }
 }

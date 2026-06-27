@@ -28,6 +28,18 @@ public class WorkerIdentityCard {
     @Column(name = "back_image_url", columnDefinition = "text")
     private String backImageUrl;
 
+    @Column(name = "selfie_image_url", columnDefinition = "text")
+    private String selfieImageUrl;
+
+    @Column(name = "ocr_full_name", length = 100)
+    private String ocrFullName;
+
+    @Column(name = "ocr_identity_card", length = 20)
+    private String ocrIdentityCard;
+
+    @Column(name = "similarity_score", precision = 5, scale = 2)
+    private java.math.BigDecimal similarityScore;
+
     @Column(name = "vnpt_ekyc_hash")
     private String vnptEkycHash;
 

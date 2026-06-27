@@ -12,6 +12,12 @@ public class WorkerKycMapper {
         return new WorkerKyc(
                 response.getKycId(),
                 normalizeStatus(response.getStatus()),
+                response.getFrontImageUrl(),
+                response.getBackImageUrl(),
+                response.getSelfieImageUrl(),
+                response.getOcrFullName(),
+                response.getOcrIdentityCard(),
+                response.getSimilarityScore(),
                 response.getCertificateUrls()
         );
     }
