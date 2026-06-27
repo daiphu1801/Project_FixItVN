@@ -273,9 +273,12 @@ public class WorkerAssignmentServiceImpl implements WorkerAssignmentService {
         }
 
         private PendingAssignmentItemResponse toPendingItem(PendingAssignmentProjection p) {
-                // Trong WorkerAssignmentServiceImpl.java, đổi thành:
-                OffsetDateTime assignedAt = p.getAssignedAt();
-                OffsetDateTime scheduledTime = p.getScheduledTime();
+                OffsetDateTime assignedAt = p.getAssignedAt() != null
+                                ? p.getAssignedAt().atZone(APP_ZONE).toOffsetDateTime()
+                                : null;
+                OffsetDateTime scheduledTime = p.getScheduledTime() != null
+                                ? p.getScheduledTime().atZone(APP_ZONE).toOffsetDateTime()
+                                : null;
 
                 OffsetDateTime expiresAt = assignedAt != null
                                 ? assignedAt.plusMinutes(ASSIGNMENT_TIMEOUT_MINUTES)
