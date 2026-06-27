@@ -6,6 +6,7 @@ import com.fixit.domain.customer.dto.request.CustomerProfileRequest;
 import com.fixit.domain.customer.dto.response.CustomerAddressResponse;
 import com.fixit.domain.customer.dto.response.CustomerProfileResponse;
 import com.fixit.domain.customer.service.CustomerService;
+import com.fixit.global.response.ApiResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -55,9 +56,6 @@ public class CustomerController {
         return ResponseEntity.ok(customerService.getProfile(userId));
     }
 
-    // Ý NGHĨA: @PutMapping hứng request sửa dữ liệu.
-    // @Valid: Bật chế độ "máy quét" DTO lên. Nếu gõ tên rỗng, nó sẽ chặn lại ngay ở cửa, không cho đi tiếp vào Service.
-    // @RequestBody: Lấy cục JSON từ điện thoại gửi lên ném vào cái thùng xốp CustomerProfileRequest.
     @PutMapping("/profile")
     public ResponseEntity<CustomerProfileResponse> updateProfile(
             Authentication authentication,
@@ -76,7 +74,6 @@ public class CustomerController {
         return ResponseEntity.ok(customerService.getCustomerAddresses(userId));
     }
 
-    // @PostMapping: Hứng request tạo mới (Create).
     @PostMapping("/addresses")
     public ResponseEntity<CustomerAddressResponse> addAddress(
             Authentication authentication,
@@ -96,18 +93,15 @@ public class CustomerController {
         return ResponseEntity.ok(customerService.updateAddress(userId, addressId, request));
     }
 
-    // @DeleteMapping: Hứng request Xóa.
     @DeleteMapping("/addresses/{addressId}")
     public ResponseEntity<Void> deleteAddress(
             Authentication authentication,
             @PathVariable UUID addressId) {
         UUID userId = getUserId(authentication);
         customerService.deleteAddress(userId, addressId);
-        // Xóa xong thì trả về mã 204 No Content (Thành công nhưng không có dữ liệu trả về)
-        return ResponseEntity.noContent().build();
+        return ApiResponse.success(null, "Xóa địa chỉ thành công");
     }
 
-    // @PatchMapping: Hứng request sửa một phần nhỏ (ở đây là chỉ set cờ mặc định).
     @PatchMapping("/addresses/{addressId}/default")
     public ResponseEntity<CustomerAddressResponse> setDefaultAddress(
             Authentication authentication,

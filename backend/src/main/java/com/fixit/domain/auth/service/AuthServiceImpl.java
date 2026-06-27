@@ -7,6 +7,8 @@ import com.fixit.domain.auth.repository.OtpCodeRepository;
 import com.fixit.domain.auth.repository.RefreshTokenRepository;
 import com.fixit.domain.auth.repository.UserRepository;
 import com.fixit.domain.auth.repository.UserSocialLoginRepository;
+import com.fixit.domain.customer.entity.Customer;
+import com.fixit.domain.customer.repository.CustomerRepository;
 import com.fixit.domain.wallet.entity.WorkerWallet;
 import com.fixit.domain.customer.entity.Customer;
 import com.fixit.domain.customer.repository.CustomerRepository;
@@ -35,6 +37,7 @@ import java.util.UUID;
 public class AuthServiceImpl implements AuthService {
 
     private final UserRepository userRepository;
+    private final CustomerRepository customerRepository;
     private final WorkerRepository workerRepository;
     private final WorkerWalletRepository workerWalletRepository;
     private final RefreshTokenRepository refreshTokenRepository;

@@ -65,9 +65,9 @@ public class CustomerPaymentFragment extends BaseFragment<FragmentCustomerPaymen
             return;
         }
 
-        setLoading(true);
+        binding.btnConfirmPayment.setEnabled(false);
         processPaymentUseCase.execute(bookingId, result -> {
-            setLoading(false);
+            binding.btnConfirmPayment.setEnabled(true);
             if (result != null && result.isSuccess()) {
                 Toast.makeText(requireContext(), "Thanh toán thành công!", Toast.LENGTH_SHORT).show();
                 if (navController != null) {

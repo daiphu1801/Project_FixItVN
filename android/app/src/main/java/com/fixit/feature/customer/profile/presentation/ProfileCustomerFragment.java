@@ -198,8 +198,6 @@ public class ProfileCustomerFragment extends BaseFragment<FragmentProfileCustome
 
     @Override
     protected void observeData() {
-        uploadViewModel = new ViewModelProvider(this).get(UploadViewModel.class);
-
         // Observe kết quả upload avatar
         uploadViewModel.uploadResult.observe(getViewLifecycleOwner(), result -> {
             if (result == null) return;
@@ -222,6 +220,29 @@ public class ProfileCustomerFragment extends BaseFragment<FragmentProfileCustome
                 Toast.makeText(requireContext(), result.getErrorMessage(), Toast.LENGTH_SHORT).show();
             }
         });
+
+        profileViewModel.getProfileData().observe(getViewLifecycleOwner(), profile -> {
+            if (profile != null) {
+                binding.tvProfileName.setText(profile.getFullName());
+            }
+        });
+
+        profileViewModel.getLogoutSuccess().observe(getViewLifecycleOwner(), success -> {
+            if (Boolean.TRUE.equals(success)) {
+                Intent intent = new Intent(requireContext(), AuthActivity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                startActivity(intent);
+                requireActivity().finish();
+            }
+        });
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (profileViewModel != null) {
+            profileViewModel.loadProfile();
+        }
     }
 
     @Override
