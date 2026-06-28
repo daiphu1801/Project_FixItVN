@@ -353,7 +353,8 @@ public class WorkerBookingActionServiceImpl implements WorkerBookingActionServic
         return switch (status) {
             case "Accepted" -> "Đã nhận đơn";
             case "Surveying" -> "Đang khảo sát";
-            case "Waiting_Approval" -> "Chờ duyệt báo giá";
+            case "Waiting_Approval" -> "Chờ khách nghiệm thu";
+            case "Waiting_Payment" -> "Chờ xác nhận nhận tiền";
             case "In_Progress" -> "Đang sửa chữa";
             case "Completed" -> "Hoàn thành";
             case "Cancelled" -> "Đã hủy";
@@ -380,5 +381,53 @@ public class WorkerBookingActionServiceImpl implements WorkerBookingActionServic
             case "In_Progress" -> "WORKER_COMPLETE";
             default -> null;
         };
+    }
+    @Override
+    @Transactional
+    public BookingActionResponse workerConfirmPayment(UUID bookingId) {
+        Booking booking = getCurrentWorkerBookingForUpdate(bookingId);
+
+        requireStatus(booking, BookingStatus.Waiting_Payment);
+
+        OffsetDateTime now = OffsetDateTime.now();
+
+        booking.setStatus(BookingStatus.Completed);
+        saveHistory(booking, "Payment_Confirmed", now);
+
+        sendNotificationToCustomer(
+                booking,
+                "Đơn hàng hoàn tất",
+                "Thợ [Tên thợ] đã xác nhận nhận đủ tiền. Đơn hàng của bạn đã hoàn thành.",
+                "PAYMENT_CONFIRMED"
+        );
+
+        return buildResponse(
+                booking,
+                "Payment_Confirmed",
+                null,
+                "Xác nhận nhận tiền thành công",
+                now
+        );
+    }
+
+    private void sendNotificationToWorker(Booking booking, String title, String content, String type) {
+        try {
+            if (booking != null && booking.getWorker() != null && booking.getWorker().getUser() != null) {
+                UUID workerUserId = booking.getWorker().getUser().getId();
+                String customerName = booking.getCustomer() != null && booking.getCustomer().getFullName() != null
+                        ? booking.getCustomer().getFullName() : "Khách hàng";
+                String formattedContent = content.replace("[Tên khách]", customerName);
+                Map<String, String> data = Map.of(
+                        "bookingId", booking.getId().toString(),
+                        "status", booking.getStatus().name(),
+                        "type", type
+                );
+                notificationSenderService.sendNotification(workerUserId, title, formattedContent, data);
+            } else {
+                log.warn("Cannot send notification to worker: booking or worker is null.");
+            }
+        } catch (Exception e) {
+            log.error("Failed to send notification '{}' to worker for booking: {}", type, booking != null ? booking.getId() : null, e);
+        }
     }
 }

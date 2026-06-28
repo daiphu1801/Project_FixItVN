@@ -31,8 +31,8 @@ public class CustomerBookingRepositoryImpl implements CustomerBookingRepository 
     }
 
     @Override
-    public void createBooking(Integer serviceId, String address, BigDecimal lat, BigDecimal lng, String issueDescription, ResultCallback<CustomerBooking> callback) {
-        CustomerBookingCreateRequestDto request = new CustomerBookingCreateRequestDto(serviceId, address, lat, lng, issueDescription, "CASH");
+    public void createBooking(Integer serviceId, String address, BigDecimal lat, BigDecimal lng, String issueDescription, String paymentMethod, ResultCallback<CustomerBooking> callback) {
+        CustomerBookingCreateRequestDto request = new CustomerBookingCreateRequestDto(serviceId, address, lat, lng, issueDescription, paymentMethod);
         api.createBooking(request).enqueue(new Callback<ApiResponse<CustomerBookingResponseDto>>() {
             @Override
             public void onResponse(@NonNull Call<ApiResponse<CustomerBookingResponseDto>> call, @NonNull Response<ApiResponse<CustomerBookingResponseDto>> response) {
@@ -137,14 +137,33 @@ public class CustomerBookingRepositoryImpl implements CustomerBookingRepository 
     }
 
     @Override
-    public void processPayment(String bookingId, ResultCallback<Void> callback) {
-        api.processPayment(bookingId).enqueue(new Callback<ApiResponse<Void>>() {
+    public void processPayment(String bookingId, String paymentMethod, ResultCallback<Void> callback) {
+        api.processPayment(bookingId, paymentMethod).enqueue(new Callback<ApiResponse<Void>>() {
             @Override
             public void onResponse(@NonNull Call<ApiResponse<Void>> call, @NonNull Response<ApiResponse<Void>> response) {
                 if (response.isSuccessful() && response.body() != null && response.body().isSuccess()) {
                     callback.onResult(Result.success(null));
                 } else {
                     callback.onResult(Result.error(new AppError("Thanh toán thất bại")));
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<ApiResponse<Void>> call, @NonNull Throwable t) {
+                callback.onResult(Result.error(new AppError(t.getMessage())));
+            }
+        });
+    }
+
+    @Override
+    public void simulateBankTransfer(String bookingId, ResultCallback<Void> callback) {
+        api.simulateBankTransfer(bookingId).enqueue(new Callback<ApiResponse<Void>>() {
+            @Override
+            public void onResponse(@NonNull Call<ApiResponse<Void>> call, @NonNull Response<ApiResponse<Void>> response) {
+                if (response.isSuccessful() && response.body() != null && response.body().isSuccess()) {
+                    callback.onResult(Result.success(null));
+                } else {
+                    callback.onResult(Result.error(new AppError("Giả lập chuyển khoản thất bại")));
                 }
             }
 

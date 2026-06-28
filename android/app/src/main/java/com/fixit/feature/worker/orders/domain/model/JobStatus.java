@@ -6,7 +6,8 @@ public enum JobStatus {
     SURVEYING(3, "Bắt đầu sửa chữa"),
     REPAIRING(4, "Xác nhận hoàn thành"),
     WAITING_APPROVAL(5, "Chờ khách nghiệm thu"),
-    COMPLETED(5, "Đã hoàn thành");
+    WAITING_PAYMENT(6, "Xác nhận đã nhận tiền"),
+    COMPLETED(7, "Đã hoàn thành");
 
     private final int step;
     private final String nextActionText;

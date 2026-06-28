@@ -63,4 +63,12 @@ public class WorkerBookingActionController {
         BookingActionResponse response = workerBookingActionService.workerComplete(bookingId);
         return ApiResponse.success(response, "Thợ đã báo hoàn thành");
     }
+
+    @PostMapping("/{bookingId}/confirm-payment")
+    public ApiResponse<BookingActionResponse> workerConfirmPayment(
+            @PathVariable UUID bookingId
+    ) {
+        BookingActionResponse response = workerBookingActionService.workerConfirmPayment(bookingId);
+        return ApiResponse.success(response, "Xác nhận nhận tiền thành công");
+    }
 }

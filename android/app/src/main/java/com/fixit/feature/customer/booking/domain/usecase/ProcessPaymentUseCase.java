@@ -13,7 +13,7 @@ public class ProcessPaymentUseCase {
         this.repository = repository;
     }
 
-    public void execute(String bookingId, ResultCallback<Void> callback) {
-        repository.processPayment(bookingId, callback);
+    public void execute(String bookingId, String paymentMethod, ResultCallback<Void> callback) {
+        repository.processPayment(bookingId, paymentMethod, callback);
     }
 }

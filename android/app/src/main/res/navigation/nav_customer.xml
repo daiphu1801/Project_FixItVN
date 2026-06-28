@@ -192,4 +192,40 @@
             app:argType="string" />
     </fragment>
 
+    <!-- ĐỊA CHỈ & ĐỔI MẬT KHẨU CUSTOMER -->
+    <fragment
+        android:id="@+id/nav_customer_address"
+        android:name="com.fixit.feature.customer.profile.presentation.AddressFragment"
+        android:label="Địa chỉ của tôi"
+        tools:layout="@layout/fragment_customer_address_list" />
+
+    <fragment
+        android:id="@+id/nav_customer_address_add_edit"
+        android:name="com.fixit.feature.customer.profile.presentation.CustomerAddressAddEditFragment"
+        android:label="Cập nhật địa chỉ"
+        tools:layout="@layout/fragment_customer_address_add_edit">
+        <argument
+            android:name="addressId"
+            app:argType="string"
+            android:defaultValue="" />
+        <argument
+            android:name="label"
+            app:argType="string"
+            android:defaultValue="" />
+        <argument
+            android:name="address"
+            app:argType="string"
+            android:defaultValue="" />
+        <argument
+            android:name="defaultAddress"
+            app:argType="boolean"
+            android:defaultValue="false" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/nav_customer_change_password"
+        android:name="com.fixit.feature.worker.profile.presentation.ChangePasswordFragment"
+        android:label="Đổi mật khẩu"
+        tools:layout="@layout/fragment_change_password" />
+
 </navigation>

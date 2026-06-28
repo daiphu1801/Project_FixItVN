@@ -36,7 +36,10 @@ public class CustomerBookingMapper {
                 dto.getMaterialCost(),
                 dto.getCancellationReason(),
                 dto.getFinalPrice(),
-                workerInfo
+                workerInfo,
+                dto.getQuotationId(),
+                dto.getQuotationStatus(),
+                dto.getPaymentCode()
         );
     }
 }

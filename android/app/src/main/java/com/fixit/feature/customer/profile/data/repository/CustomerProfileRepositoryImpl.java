@@ -7,6 +7,8 @@ import com.fixit.core.common.Result;
 import com.fixit.core.common.ResultCallback;
 import com.fixit.core.network.ApiResponse;
 import com.fixit.feature.customer.profile.data.remote.api.CustomerProfileApi;
+import com.fixit.feature.customer.profile.data.remote.dto.request.CustomerAddressRequestDto;
+import com.fixit.feature.customer.profile.data.remote.dto.response.CustomerAddressResponseDto;
 import com.fixit.feature.customer.profile.data.remote.dto.request.CustomerProfileRequestDto;
 import com.fixit.feature.customer.profile.data.remote.dto.response.CustomerProfileResponseDto;
 import com.fixit.feature.customer.profile.data.remote.mapper.CustomerProfileMapper;
@@ -107,17 +109,126 @@ public class CustomerProfileRepositoryImpl implements CustomerProfileRepository 
         });
     }
 
-    // (Vì file sẽ rất dài nên mình viết demo 2 hàm đặc trưng nhất (GET và PUT) để bạn thấy logic.
-    // 5 hàm của phần Address sẽ có logic y hệt như 2 hàm trên: Cũng tạo hộp, enqueue, bắt lỗi 2 nhánh.)
-    
     @Override
-    public void getAddresses(ResultCallback<List<CustomerAddress>> callback) { }
+    public void getAddresses(ResultCallback<List<CustomerAddress>> callback) {
+        api.getAddresses().enqueue(new Callback<ApiResponse<List<CustomerAddressResponseDto>>>() {
+            @Override
+            public void onResponse(@NonNull Call<ApiResponse<List<CustomerAddressResponseDto>>> call, @NonNull Response<ApiResponse<List<CustomerAddressResponseDto>>> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    List<CustomerAddress> result = CustomerProfileMapper.toAddressDomainList(response.body().getData());
+                    callback.onResult(Result.success(result));
+                } else {
+                    String errMsg = "Mã lỗi " + response.code();
+                    try { if (response.errorBody() != null) errMsg += ": " + response.errorBody().string(); } catch (Exception ignored) {}
+                    callback.onResult(Result.error(new AppError("Lỗi tải danh sách địa chỉ (" + errMsg + ")")));
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<ApiResponse<List<CustomerAddressResponseDto>>> call, @NonNull Throwable t) {
+                callback.onResult(Result.error(new AppError("Lỗi kết nối mạng: " + t.getMessage(), t)));
+            }
+        });
+    }
+
     @Override
-    public void addAddress(CustomerAddress address, ResultCallback<CustomerAddress> callback) { }
+    public void addAddress(CustomerAddress address, ResultCallback<CustomerAddress> callback) {
+        CustomerAddressRequestDto requestDto = new CustomerAddressRequestDto(
+                address.getLabel(),
+                address.getAddress(),
+                address.getLatitude(),
+                address.getLongitude(),
+                address.getDefaultAddress()
+        );
+        api.addAddress(requestDto).enqueue(new Callback<ApiResponse<CustomerAddressResponseDto>>() {
+            @Override
+            public void onResponse(@NonNull Call<ApiResponse<CustomerAddressResponseDto>> call, @NonNull Response<ApiResponse<CustomerAddressResponseDto>> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    CustomerAddress result = CustomerProfileMapper.toDomain(response.body().getData());
+                    callback.onResult(Result.success(result));
+                } else {
+                    String errMsg = "Mã lỗi " + response.code();
+                    try { if (response.errorBody() != null) errMsg += ": " + response.errorBody().string(); } catch (Exception ignored) {}
+                    callback.onResult(Result.error(new AppError("Không thể thêm địa chỉ (" + errMsg + ")")));
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<ApiResponse<CustomerAddressResponseDto>> call, @NonNull Throwable t) {
+                callback.onResult(Result.error(new AppError("Rớt mạng khi thêm địa chỉ: " + t.getMessage(), t)));
+            }
+        });
+    }
+
     @Override
-    public void updateAddress(String addressId, CustomerAddress address, ResultCallback<CustomerAddress> callback) { }
+    public void updateAddress(String addressId, CustomerAddress address, ResultCallback<CustomerAddress> callback) {
+        CustomerAddressRequestDto requestDto = new CustomerAddressRequestDto(
+                address.getLabel(),
+                address.getAddress(),
+                address.getLatitude(),
+                address.getLongitude(),
+                address.getDefaultAddress()
+        );
+        api.updateAddress(addressId, requestDto).enqueue(new Callback<ApiResponse<CustomerAddressResponseDto>>() {
+            @Override
+            public void onResponse(@NonNull Call<ApiResponse<CustomerAddressResponseDto>> call, @NonNull Response<ApiResponse<CustomerAddressResponseDto>> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    CustomerAddress result = CustomerProfileMapper.toDomain(response.body().getData());
+                    callback.onResult(Result.success(result));
+                } else {
+                    String errMsg = "Mã lỗi " + response.code();
+                    try { if (response.errorBody() != null) errMsg += ": " + response.errorBody().string(); } catch (Exception ignored) {}
+                    callback.onResult(Result.error(new AppError("Không thể cập nhật địa chỉ (" + errMsg + ")")));
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<ApiResponse<CustomerAddressResponseDto>> call, @NonNull Throwable t) {
+                callback.onResult(Result.error(new AppError("Rớt mạng khi cập nhật địa chỉ: " + t.getMessage(), t)));
+            }
+        });
+    }
+
     @Override
-    public void deleteAddress(String addressId, ResultCallback<Void> callback) { }
+    public void deleteAddress(String addressId, ResultCallback<Void> callback) {
+        api.deleteAddress(addressId).enqueue(new Callback<ApiResponse<Void>>() {
+            @Override
+            public void onResponse(@NonNull Call<ApiResponse<Void>> call, @NonNull Response<ApiResponse<Void>> response) {
+                if (response.isSuccessful()) {
+                    callback.onResult(Result.success(null));
+                } else {
+                    String errMsg = "Mã lỗi " + response.code();
+                    try { if (response.errorBody() != null) errMsg += ": " + response.errorBody().string(); } catch (Exception ignored) {}
+                    callback.onResult(Result.error(new AppError("Không thể xóa địa chỉ (" + errMsg + ")")));
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<ApiResponse<Void>> call, @NonNull Throwable t) {
+                callback.onResult(Result.error(new AppError("Rớt mạng khi xóa địa chỉ: " + t.getMessage(), t)));
+            }
+        });
+    }
+
     @Override
-    public void setDefaultAddress(String addressId, ResultCallback<CustomerAddress> callback) { }
+    public void setDefaultAddress(String addressId, ResultCallback<CustomerAddress> callback) {
+        api.setDefaultAddress(addressId).enqueue(new Callback<ApiResponse<CustomerAddressResponseDto>>() {
+            @Override
+            public void onResponse(@NonNull Call<ApiResponse<CustomerAddressResponseDto>> call, @NonNull Response<ApiResponse<CustomerAddressResponseDto>> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    CustomerAddress result = CustomerProfileMapper.toDomain(response.body().getData());
+                    callback.onResult(Result.success(result));
+                } else {
+                    String errMsg = "Mã lỗi " + response.code();
+                    try { if (response.errorBody() != null) errMsg += ": " + response.errorBody().string(); } catch (Exception ignored) {}
+                    callback.onResult(Result.error(new AppError("Không thể đặt địa chỉ mặc định (" + errMsg + ")")));
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<ApiResponse<CustomerAddressResponseDto>> call, @NonNull Throwable t) {
+                callback.onResult(Result.error(new AppError("Rớt mạng khi đặt địa chỉ mặc định: " + t.getMessage(), t)));
+            }
+        });
+    }
 }

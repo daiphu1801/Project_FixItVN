@@ -5,6 +5,8 @@ import com.fixit.feature.worker.orders.data.remote.dto.WorkerBookingDetailRespon
 import com.fixit.feature.worker.orders.data.remote.dto.BookingActionResponseDto;
 import com.fixit.feature.worker.orders.data.remote.dto.WorkerScheduleResponseDto;
 import com.fixit.feature.worker.orders.data.remote.dto.WorkerHistoryResponseDto;
+import com.fixit.feature.worker.orders.data.remote.dto.PendingAssignmentResponseDto;
+import com.fixit.feature.worker.orders.data.remote.dto.AssignmentActionResponseDto;
 
 import retrofit2.Call;
 import retrofit2.http.GET;
@@ -44,11 +46,31 @@ public interface WorkerOrdersApi {
             @Path("bookingId") String bookingId
     );
 
+    @POST("api/v1/bookings/{bookingId}/confirm-payment")
+    Call<ApiResponse<BookingActionResponseDto>> confirmPayment(
+            @Path("bookingId") String bookingId
+    );
+
     @GET("api/v1/workers/me/schedule")
     Call<ApiResponse<WorkerScheduleResponseDto>> getSchedule();
 
     @GET("api/v1/workers/me/history")
     Call<ApiResponse<WorkerHistoryResponseDto>> getHistory(
             @Query("status") String status
+    );
+
+    @GET("api/v1/workers/me/assignments/pending")
+    Call<ApiResponse<PendingAssignmentResponseDto>> getPendingAssignments();
+
+    @POST("api/v1/bookings/{bookingId}/assignments/{assignmentId}/accept")
+    Call<ApiResponse<AssignmentActionResponseDto>> acceptAssignment(
+            @Path("bookingId") String bookingId,
+            @Path("assignmentId") String assignmentId
+    );
+
+    @POST("api/v1/bookings/{bookingId}/assignments/{assignmentId}/reject")
+    Call<ApiResponse<AssignmentActionResponseDto>> rejectAssignment(
+            @Path("bookingId") String bookingId,
+            @Path("assignmentId") String assignmentId
     );
 }

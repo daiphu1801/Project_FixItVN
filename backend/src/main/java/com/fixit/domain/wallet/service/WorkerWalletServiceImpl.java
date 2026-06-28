@@ -5,10 +5,10 @@ import com.fixit.domain.wallet.dto.request.SepayWebhookRequest;
 import com.fixit.domain.wallet.dto.request.WithdrawRequest;
 import com.fixit.domain.wallet.dto.response.DepositQrResponse;
 import com.fixit.domain.wallet.dto.response.DepositResponse;
-import com.fixit.domain.wallet.dto.response.WalletTransactionResponse;
 import com.fixit.domain.wallet.dto.response.WithdrawResponse;
 import com.fixit.domain.wallet.dto.response.WorkerWalletResponse;
 import com.fixit.domain.wallet.dto.response.WorkerWalletTransactionsResponse;
+import com.fixit.domain.wallet.dto.response.WalletTransactionResponse;
 import com.fixit.domain.wallet.entity.TransactionHistory;
 import com.fixit.domain.wallet.entity.TransactionStatus;
 import com.fixit.domain.wallet.entity.TransactionType;
@@ -17,11 +17,22 @@ import com.fixit.domain.wallet.entity.WorkerWallet;
 import com.fixit.domain.wallet.repository.TransactionHistoryRepository;
 import com.fixit.domain.wallet.repository.WorkerBankAccountRepository;
 import com.fixit.domain.wallet.repository.WorkerWalletRepository;
+import com.fixit.domain.wallet.mapper.WorkerWalletMapper;
+import com.fixit.domain.wallet.util.VietQrHelper;
+import com.fixit.domain.wallet.util.TransactionCodeGenerator;
 import com.fixit.domain.worker.repository.projection.WorkerPerformanceStatsProjection;
 import com.fixit.domain.worker.repository.query.WorkerHomeQueryRepository;
 import com.fixit.domain.worker.support.CurrentWorkerResolver;
 import com.fixit.global.exception.AppException;
 import com.fixit.global.exception.ErrorCode;
+import com.fixit.domain.booking.entity.Booking;
+import com.fixit.domain.booking.entity.BookingStatus;
+import com.fixit.domain.booking.entity.QuotationStatus;
+import com.fixit.domain.booking.entity.WorkerQuotation;
+import com.fixit.domain.booking.repository.BookingRepository;
+import com.fixit.domain.booking.repository.WorkerQuotationRepository;
+import com.fixit.domain.notification.service.NotificationSenderService;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
@@ -33,12 +44,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import java.security.SecureRandom;
 import java.time.OffsetDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -50,13 +58,19 @@ public class WorkerWalletServiceImpl implements WorkerWalletService {
     private static final int MAX_SIZE = 100;
     private static final BigDecimal MIN_DEPOSIT_AMOUNT = new BigDecimal("10000");
     private static final BigDecimal MAX_DEPOSIT_AMOUNT = new BigDecimal("50000000");
-    private static final SecureRandom SECURE_RANDOM = new SecureRandom();
 
     private final CurrentWorkerResolver currentWorkerResolver;
     private final WorkerWalletRepository workerWalletRepository;
     private final TransactionHistoryRepository transactionHistoryRepository;
     private final WorkerHomeQueryRepository workerHomeQueryRepository;
     private final WorkerBankAccountRepository workerBankAccountRepository;
+    private final BookingRepository bookingRepository;
+    private final WorkerQuotationRepository workerQuotationRepository;
+    private final NotificationSenderService notificationSenderService;
+
+    private final WorkerWalletMapper workerWalletMapper;
+    private final VietQrHelper vietQrHelper;
+    private final TransactionCodeGenerator transactionCodeGenerator;
 
     private WorkerWalletService self;
 
@@ -87,8 +101,8 @@ public class WorkerWalletServiceImpl implements WorkerWalletService {
         BigDecimal incomeThisMonth = stats != null && stats.getIncomeThisMonth() != null ? stats.getIncomeThisMonth() : BigDecimal.ZERO;
 
         return workerWalletRepository.findById(workerId)
-                .map(wallet -> toWalletResponse(wallet, incomeThisWeek, incomeThisMonth))
-                .orElseGet(() -> emptyWalletResponse(workerId, incomeThisWeek, incomeThisMonth));
+                .map(wallet -> workerWalletMapper.toWalletResponse(wallet, incomeThisWeek, incomeThisMonth))
+                .orElseGet(() -> workerWalletMapper.emptyWalletResponse(workerId, incomeThisWeek, incomeThisMonth));
     }
 
     @Override
@@ -110,7 +124,7 @@ public class WorkerWalletServiceImpl implements WorkerWalletService {
 
         List<WalletTransactionResponse> transactions = result.getContent()
                 .stream()
-                .map(this::toTransactionResponse)
+                .map(workerWalletMapper::toTransactionResponse)
                 .toList();
 
         return WorkerWalletTransactionsResponse.builder()
@@ -148,14 +162,15 @@ public class WorkerWalletServiceImpl implements WorkerWalletService {
                 .wallet(wallet)
                 .transactionType(TransactionType.Deposit)
                 .amount(amount)
-                .transactionCode(generateTransactionCode())
+                .transactionCode(transactionCodeGenerator.generateDepositCode(transactionHistoryRepository))
                 .status(TransactionStatus.Pending)
                 .adminNote("Nạp tiền trả nợ phí nền tảng. Nợ hiện tại: " + currentDebt.toPlainString())
                 .transactionTime(OffsetDateTime.now())
                 .build();
 
         TransactionHistory saved = transactionHistoryRepository.save(transaction);
-        return toDepositResponse(saved, currentDebt);
+        DepositQrResponse qr = buildDepositQrResponse(saved);
+        return workerWalletMapper.toDepositResponse(saved, currentDebt, qr);
     }
 
     @Override
@@ -168,7 +183,12 @@ public class WorkerWalletServiceImpl implements WorkerWalletService {
                 .map(wallet -> valueOrZero(wallet.getDebtBalance()))
                 .orElse(BigDecimal.ZERO);
 
-        return toDepositResponse(transaction, currentDebt);
+        DepositQrResponse qr = null;
+        if (transaction.getStatus() == TransactionStatus.Pending) {
+            qr = buildDepositQrResponse(transaction);
+        }
+
+        return workerWalletMapper.toDepositResponse(transaction, currentDebt, qr);
     }
 
     @Override
@@ -197,41 +217,6 @@ public class WorkerWalletServiceImpl implements WorkerWalletService {
                 .orElseThrow(() -> new AppException(ErrorCode.WALLET_DEPOSIT_NOT_FOUND));
     }
 
-    private DepositResponse toDepositResponse(TransactionHistory transaction, BigDecimal currentDebt) {
-        BigDecimal amount = valueOrZero(transaction.getAmount());
-        BigDecimal safeDebt = valueOrZero(currentDebt);
-        BigDecimal debtPaidAmount = BigDecimal.ZERO;
-        BigDecimal surplusToAvailable = BigDecimal.ZERO;
-
-        if (transaction.getStatus() == TransactionStatus.Success) {
-            debtPaidAmount = amount.min(safeDebt);
-            surplusToAvailable = amount.subtract(debtPaidAmount).max(BigDecimal.ZERO);
-        }
-
-        DepositQrResponse qr = null;
-        String nextAction = "VIEW_RESULT";
-
-        if (transaction.getStatus() == TransactionStatus.Pending) {
-            qr = buildDepositQrResponse(transaction);
-            nextAction = "SHOW_QR";
-        }
-
-        return DepositResponse.builder()
-                .transactionId(transaction.getId())
-                .workerId(transaction.getWallet() != null ? transaction.getWallet().getWorkerId() : null)
-                .amount(amount)
-                .transactionCode(transaction.getTransactionCode())
-                .status(transaction.getStatus() != null ? transaction.getStatus().name() : null)
-                .transactionType(transaction.getTransactionType() != null ? transaction.getTransactionType().name() : null)
-                .debtBefore(safeDebt)
-                .debtPaidAmount(debtPaidAmount)
-                .surplusToAvailable(surplusToAvailable)
-                .transactionTime(transaction.getTransactionTime())
-                .nextAction(nextAction)
-                .qr(qr)
-                .build();
-    }
-
     private BigDecimal normalizeDepositAmount(BigDecimal amount) {
         if (amount == null) {
             throw new AppException(ErrorCode.WALLET_DEPOSIT_INVALID_AMOUNT);
@@ -252,189 +237,37 @@ public class WorkerWalletServiceImpl implements WorkerWalletService {
         return amount;
     }
 
-    private String generateTransactionCode() {
-        String datePart = OffsetDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss"));
-
-        for (int attempt = 0; attempt < 5; attempt++) {
-            int randomPart = SECURE_RANDOM.nextInt(1000, 10000);
-            String code = "DEP" + datePart + randomPart;
-
-            if (!transactionHistoryRepository.existsByTransactionCode(code)) {
-                return code;
-            }
-        }
-
-        return "DEP" + UUID.randomUUID().toString().replace("-", "").substring(0, 20).toUpperCase();
-    }
-
-    private String buildVietQrUrl(BigDecimal amount, String transferContent) {
-        String encodedAccountName = encode(depositAccountName);
-        String encodedContent = encode(transferContent);
-        String amountValue = valueOrZero(amount).setScale(0, RoundingMode.UNNECESSARY).toPlainString();
-
-        return "https://img.vietqr.io/image/"
-                + depositBankCode
-                + "-"
-                + depositAccountNumber
-                + "-compact2.png?amount="
-                + amountValue
-                + "&addInfo="
-                + encodedContent
-                + "&accountName="
-                + encodedAccountName;
-    }
-
     private DepositQrResponse buildDepositQrResponse(TransactionHistory transaction) {
         String transferContent = transaction.getTransactionCode();
-        String qrUrl = buildVietQrUrl(transaction.getAmount(), transferContent);
-
-        return DepositQrResponse.builder()
-                .transactionId(transaction.getId())
-                .amount(valueOrZero(transaction.getAmount()))
-                .transactionCode(transaction.getTransactionCode())
-                .bankName(depositBankName)
-                .bankCode(depositBankCode)
-                .accountNumber(depositAccountNumber)
-                .accountName(depositAccountName)
-                .transferContent(transferContent)
-                .qrUrl(qrUrl)
-                .build();
+        String qrUrl = vietQrHelper.buildVietQrUrl(depositBankCode, depositAccountNumber, depositAccountName, transaction.getAmount(), transferContent);
+        return workerWalletMapper.buildDepositQrResponse(transaction, depositBankName, depositBankCode, depositAccountNumber, depositAccountName, qrUrl);
     }
-
-    private String encode(String value) {
-        return URLEncoder.encode(value != null ? value : "", StandardCharsets.UTF_8);
-    }
-
-    private WorkerWalletResponse toWalletResponse(WorkerWallet wallet, BigDecimal incomeThisWeek, BigDecimal incomeThisMonth) {
-        BigDecimal availableBalance = valueOrZero(wallet.getAvailableBalance());
-        BigDecimal heldBalance = valueOrZero(wallet.getHeldBalance());
-        BigDecimal debtBalance = valueOrZero(wallet.getDebtBalance());
-
-        return WorkerWalletResponse.builder()
-                .workerId(wallet.getWorkerId())
-                .availableBalance(availableBalance)
-                .heldBalance(heldBalance)
-                .debtBalance(debtBalance)
-                .totalBalance(availableBalance.add(heldBalance))
-                .canWithdraw(
-                        availableBalance.compareTo(BigDecimal.ZERO) > 0
-                                && debtBalance.compareTo(BigDecimal.ZERO) == 0
-                )
-                .incomeThisWeek(incomeThisWeek)
-                .incomeThisMonth(incomeThisMonth)
-                .build();
-    }
-
-    private WorkerWalletResponse emptyWalletResponse(UUID workerId, BigDecimal incomeThisWeek, BigDecimal incomeThisMonth) {
-        return WorkerWalletResponse.builder()
-                .workerId(workerId)
-                .availableBalance(BigDecimal.ZERO)
-                .heldBalance(BigDecimal.ZERO)
-                .debtBalance(BigDecimal.ZERO)
-                .totalBalance(BigDecimal.ZERO)
-                .canWithdraw(false)
-                .incomeThisWeek(incomeThisWeek)
-                .incomeThisMonth(incomeThisMonth)
-                .build();
-    }
-
-    private WalletTransactionResponse toTransactionResponse(TransactionHistory transaction) {
-        WorkerBankAccount targetBankAccount = transaction.getTargetBankAccount();
-
-        return WalletTransactionResponse.builder()
-                .transactionId(transaction.getId())
-                .bookingId(transaction.getBooking() != null ? transaction.getBooking().getId() : null)
-                .transactionType(transaction.getTransactionType() != null ? transaction.getTransactionType().name() : null)
-                .amount(valueOrZero(transaction.getAmount()))
-                .transactionCode(transaction.getTransactionCode())
-                .gatewayReferenceCode(transaction.getGatewayReferenceCode())
-                .targetBankAccountId(targetBankAccount != null ? targetBankAccount.getId() : null)
-                .targetBankName(targetBankAccount != null ? targetBankAccount.getBankName() : null)
-                .targetAccountNumberMasked(
-                        targetBankAccount != null
-                                ? maskAccountNumber(targetBankAccount.getAccountNumber())
-                                : null
-                )
-                .status(transaction.getStatus() != null ? transaction.getStatus().name() : null)
-                .adminNote(transaction.getAdminNote())
-                .heldReleaseAt(transaction.getHeldReleaseAt())
-                .transactionTime(transaction.getTransactionTime())
-                .build();
-    }
-
-    private TransactionType parseType(String type) {
-        if (type == null || type.isBlank()) {
-            return null;
-        }
-
-        try {
-            return TransactionType.valueOf(type.trim());
-        } catch (IllegalArgumentException exception) {
-            throw new AppException(ErrorCode.INVALID_REQUEST_PARAMETER);
-        }
-    }
-
-    private int normalizePage(int page) {
-        return Math.max(page, 0);
-    }
-
-    private int normalizeSize(int size) {
-        if (size <= 0) {
-            return DEFAULT_SIZE;
-        }
-
-        return Math.min(size, MAX_SIZE);
-    }
-
-    private BigDecimal valueOrZero(BigDecimal value) {
-        return value != null ? value : BigDecimal.ZERO;
-    }
-
-    private String maskAccountNumber(String accountNumber) {
-        if (accountNumber == null || accountNumber.isBlank()) {
-            return null;
-        }
-
-        String trimmed = accountNumber.trim();
-        int length = trimmed.length();
-
-        if (length <= 4) {
-            return "****";
-        }
-
-        return "****" + trimmed.substring(length - 4);
-    }
-
 
     @Override
     @Transactional
     public void processDepositWebhook(SepayWebhookRequest request) {
-        // Chỉ xử lý giao dịch tiền VÀO
         if (!"in".equalsIgnoreCase(request.getTransactionType())) {
             return;
         }
-        // Tìm mã giao dịch trong nội dung chuyển khoản
-        // SePay gửi nội dung dạng: "DEP20260612143022 1234" hoặc "Chuyen khoan DEP20260612143022"
+
         String content = request.getContent();
         if (content == null || content.isBlank()) {
             return;
         }
-        // Tìm TransactionHistory theo transactionCode trong nội dung
+
         Optional<TransactionHistory> transactionOpt =
                 transactionHistoryRepository.findByTransactionCodeInContent(content.trim());
         if (transactionOpt.isEmpty()) {
-            // Không tìm thấy giao dịch khớp — bỏ qua (có thể là giao dịch khác)
             return;
         }
         TransactionHistory transaction = transactionOpt.get();
-        // Chỉ xử lý giao dịch đang ở trạng thái Pending
+
         if (transaction.getStatus() != TransactionStatus.Pending) {
             return;
         }
-        // Kiểm tra số tiền khớp (cho phép chênh lệch không đáng kể)
+
         BigDecimal webhookAmount = request.getTransferAmount();
         if (webhookAmount == null || webhookAmount.compareTo(transaction.getAmount()) != 0) {
-            // Số tiền không khớp — đánh dấu lỗi, không xử lý
             transaction.setStatus(TransactionStatus.Failed);
             transaction.setAdminNote("Webhook: số tiền không khớp. Nhận: "
                     + (webhookAmount != null ? webhookAmount.toPlainString() : "null")
@@ -442,27 +275,98 @@ public class WorkerWalletServiceImpl implements WorkerWalletService {
             transactionHistoryRepository.save(transaction);
             return;
         }
-        // Lấy ví thợ với pessimistic lock
+
         WorkerWallet wallet = workerWalletRepository
                 .findByWorkerIdForUpdate(transaction.getWallet().getWorkerId())
                 .orElseThrow(() -> new AppException(ErrorCode.WALLET_NOT_FOUND));
-        BigDecimal depositAmount = valueOrZero(transaction.getAmount());
-        BigDecimal currentDebt = valueOrZero(wallet.getDebtBalance());
-        // Tính toán: trả nợ trước, phần dư cộng vào khả dụng
-        BigDecimal debtPaid = depositAmount.min(currentDebt);
-        BigDecimal surplus = depositAmount.subtract(debtPaid).max(BigDecimal.ZERO);
-        wallet.setDebtBalance(currentDebt.subtract(debtPaid).max(BigDecimal.ZERO));
-        wallet.setAvailableBalance(valueOrZero(wallet.getAvailableBalance()).add(surplus));
-        // Cập nhật giao dịch thành công
-        transaction.setStatus(TransactionStatus.Success);
-        transaction.setGatewayReferenceCode(request.getReferenceCode());
-        transaction.setAdminNote("Webhook SePay xác nhận: "
-                + request.getGateway() + " - " + request.getTransactionDate()
-                + ". Nợ đã trả: " + debtPaid.toPlainString()
-                + ". Dư cộng vào khả dụng: " + surplus.toPlainString());
-        transaction.setTransactionTime(java.time.OffsetDateTime.now());
-        workerWalletRepository.save(wallet);
-        transactionHistoryRepository.save(transaction);
+
+        if (transaction.getTransactionType() == TransactionType.Release) {
+            Booking booking = transaction.getBooking();
+            if (booking == null) {
+                throw new AppException(ErrorCode.BOOKING_NOT_FOUND);
+            }
+
+            WorkerQuotation quotation = workerQuotationRepository.findFirstByBooking_IdAndStatusOrderByCreatedAtDesc(booking.getId(), QuotationStatus.Accepted)
+                    .orElse(null);
+
+            BigDecimal laborCost = (quotation != null && quotation.getLaborCost() != null) ? quotation.getLaborCost() : BigDecimal.ZERO;
+            BigDecimal commission = laborCost.multiply(new BigDecimal("0.10")).setScale(0, RoundingMode.HALF_UP);
+            BigDecimal netAmount = transaction.getAmount().subtract(commission).max(BigDecimal.ZERO);
+
+            wallet.setAvailableBalance(valueOrZero(wallet.getAvailableBalance()).add(netAmount));
+
+            transaction.setStatus(TransactionStatus.Success);
+            transaction.setGatewayReferenceCode(request.getReferenceCode());
+            transaction.setAdminNote("Chuyển khoản SePay thành công qua: " + request.getGateway()
+                    + ". Nhận: " + transaction.getAmount().toPlainString()
+                    + ", Chiết khấu (10% công): " + commission.toPlainString()
+                    + ", Thực nhận: " + netAmount.toPlainString());
+            transaction.setTransactionTime(OffsetDateTime.now());
+
+            booking.setStatus(BookingStatus.Completed);
+            bookingRepository.save(booking);
+
+            workerWalletRepository.save(wallet);
+            transactionHistoryRepository.save(transaction);
+
+            try {
+                if (booking.getCustomer() != null && booking.getCustomer().getUser() != null) {
+                    UUID customerUserId = booking.getCustomer().getUser().getId();
+                    Map<String, String> data = Map.of(
+                            "bookingId", booking.getId().toString(),
+                            "status", "Completed",
+                            "type", "PAYMENT_CONFIRMED"
+                    );
+                    notificationSenderService.sendNotification(
+                            customerUserId,
+                            "Thanh toán thành công",
+                            "Đơn hàng của bạn đã được thanh toán thành công qua chuyển khoản ngân hàng. Đơn hàng đã hoàn tất!",
+                            data
+                    );
+                }
+            } catch (Exception e) {
+                System.err.println("Failed to send notification for customer: " + e.getMessage());
+            }
+
+            try {
+                if (booking.getWorker() != null && booking.getWorker().getUser() != null) {
+                    UUID workerUserId = booking.getWorker().getUser().getId();
+                    Map<String, String> data = Map.of(
+                            "bookingId", booking.getId().toString(),
+                            "status", "Completed",
+                            "type", "PAYMENT_CONFIRMED"
+                    );
+                    notificationSenderService.sendNotification(
+                            workerUserId,
+                            "Nhận tiền thanh toán",
+                            "Khách hàng đã chuyển khoản thành công. Ví khả dụng của bạn đã được cộng " + netAmount.toPlainString() + "đ (đã trừ 10% phí chiết khấu).",
+                            data
+                    );
+                }
+            } catch (Exception e) {
+                System.err.println("Failed to send notification for worker: " + e.getMessage());
+            }
+
+        } else {
+            BigDecimal depositAmount = valueOrZero(transaction.getAmount());
+            BigDecimal currentDebt = valueOrZero(wallet.getDebtBalance());
+            BigDecimal debtPaid = depositAmount.min(currentDebt);
+            BigDecimal surplus = depositAmount.subtract(debtPaid).max(BigDecimal.ZERO);
+
+            wallet.setDebtBalance(currentDebt.subtract(debtPaid).max(BigDecimal.ZERO));
+            wallet.setAvailableBalance(valueOrZero(wallet.getAvailableBalance()).add(surplus));
+
+            transaction.setStatus(TransactionStatus.Success);
+            transaction.setGatewayReferenceCode(request.getReferenceCode());
+            transaction.setAdminNote("Webhook SePay xác nhận: "
+                    + request.getGateway() + " - " + request.getTransactionDate()
+                    + ". Nợ đã trả: " + debtPaid.toPlainString()
+                    + ". Dư cộng vào khả dụng: " + surplus.toPlainString());
+            transaction.setTransactionTime(OffsetDateTime.now());
+
+            workerWalletRepository.save(wallet);
+            transactionHistoryRepository.save(transaction);
+        }
     }
 
     @Override
@@ -520,7 +424,7 @@ public class WorkerWalletServiceImpl implements WorkerWalletService {
                 .wallet(wallet)
                 .transactionType(TransactionType.Withdraw)
                 .amount(amount)
-                .transactionCode(generateWithdrawTransactionCode())
+                .transactionCode(transactionCodeGenerator.generateWithdrawCode(transactionHistoryRepository))
                 .status(TransactionStatus.Pending)
                 .targetBankAccount(bankAccount)
                 .adminNote("Yêu cầu rút tiền đang chờ xử lý.")
@@ -531,7 +435,7 @@ public class WorkerWalletServiceImpl implements WorkerWalletService {
 
         simulateAutomaticApproval(saved.getId());
 
-        return toWithdrawResponse(saved);
+        return workerWalletMapper.toWithdrawResponse(saved);
     }
 
     @Override
@@ -548,7 +452,7 @@ public class WorkerWalletServiceImpl implements WorkerWalletService {
                 TransactionType.Withdraw
         ).orElseThrow(() -> new AppException(ErrorCode.WALLET_WITHDRAW_NOT_FOUND));
 
-        return toWithdrawResponse(transaction);
+        return workerWalletMapper.toWithdrawResponse(transaction);
     }
 
     @Override
@@ -628,37 +532,32 @@ public class WorkerWalletServiceImpl implements WorkerWalletService {
         transactionHistoryRepository.save(transaction);
     }
 
-    private String generateWithdrawTransactionCode() {
-        String datePart = OffsetDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss"));
-
-        for (int attempt = 0; attempt < 5; attempt++) {
-            int randomPart = SECURE_RANDOM.nextInt(1000, 10000);
-            String code = "WDR" + datePart + randomPart;
-
-            if (!transactionHistoryRepository.existsByTransactionCode(code)) {
-                return code;
-            }
+    private TransactionType parseType(String type) {
+        if (type == null || type.isBlank()) {
+            return null;
         }
 
-        return "WDR" + UUID.randomUUID().toString().replace("-", "").substring(0, 20).toUpperCase();
+        try {
+            return TransactionType.valueOf(type.trim());
+        } catch (IllegalArgumentException exception) {
+            throw new AppException(ErrorCode.INVALID_REQUEST_PARAMETER);
+        }
     }
 
-    private WithdrawResponse toWithdrawResponse(TransactionHistory transaction) {
-        WorkerBankAccount targetBankAccount = transaction.getTargetBankAccount();
+    private int normalizePage(int page) {
+        return Math.max(page, 0);
+    }
 
-        return WithdrawResponse.builder()
-                .transactionId(transaction.getId())
-                .workerId(transaction.getWallet() != null ? transaction.getWallet().getWorkerId() : null)
-                .amount(valueOrZero(transaction.getAmount()))
-                .transactionCode(transaction.getTransactionCode())
-                .status(transaction.getStatus() != null ? transaction.getStatus().name() : null)
-                .transactionType(transaction.getTransactionType() != null ? transaction.getTransactionType().name() : null)
-                .targetBankName(targetBankAccount != null ? targetBankAccount.getBankName() : null)
-                .targetAccountNumber(targetBankAccount != null ? targetBankAccount.getAccountNumber() : null)
-                .targetAccountName(targetBankAccount != null ? targetBankAccount.getAccountName() : null)
-                .transactionTime(transaction.getTransactionTime())
-                .adminNote(transaction.getAdminNote())
-                .build();
+    private int normalizeSize(int size) {
+        if (size <= 0) {
+            return DEFAULT_SIZE;
+        }
+
+        return Math.min(size, MAX_SIZE);
+    }
+
+    private BigDecimal valueOrZero(BigDecimal value) {
+        return value != null ? value : BigDecimal.ZERO;
     }
 
     private void simulateAutomaticApproval(UUID transactionId) {

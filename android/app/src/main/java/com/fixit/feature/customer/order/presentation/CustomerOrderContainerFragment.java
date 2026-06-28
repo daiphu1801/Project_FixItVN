@@ -40,6 +40,16 @@ public class CustomerOrderContainerFragment extends BaseFragment<FragmentCustome
                 navController.navigate(R.id.nav_customer_search);
             }
         });
+
+        viewModel.checkActiveBooking();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (viewModel != null) {
+            viewModel.checkActiveBooking();
+        }
     }
 
     private void checkOrderStatusAndDisplay(int status) {

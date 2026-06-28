@@ -21,6 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.UUID;
 import com.fixit.domain.booking.repository.WorkerQuotationRepository;
 import com.fixit.domain.booking.repository.CancellationDetailRepository;
+import com.fixit.domain.wallet.repository.TransactionHistoryRepository;
 
 @Slf4j
 @Service
@@ -32,6 +33,7 @@ public class CustomerBookingServiceImpl implements CustomerBookingService {
     private final ServiceCategoryRepository serviceCategoryRepository;
     private final WorkerQuotationRepository workerQuotationRepository;
     private final CancellationDetailRepository cancellationDetailRepository;
+    private final TransactionHistoryRepository transactionHistoryRepository;
 
     @Override
     @Transactional
@@ -94,15 +96,31 @@ public class CustomerBookingServiceImpl implements CustomerBookingService {
                     .build();
         }
 
-        // Lấy chi tiết chi phí từ báo giá được chấp nhận
+        // Lấy chi tiết chi phí từ báo giá (Accepted), hoặc quotation Pending khi đang Surveying/Waiting_Approval
         java.math.BigDecimal laborCost = null;
         java.math.BigDecimal materialCost = null;
+        java.util.UUID quotationId = null;
+        String quotationStatus = null;
         if (booking.getId() != null) {
-            java.util.Optional<com.fixit.domain.booking.entity.WorkerQuotation> quotationOpt =
-                    workerQuotationRepository.findFirstByBooking_IdAndStatusOrderByCreatedAtDesc(booking.getId(), com.fixit.domain.booking.entity.QuotationStatus.Accepted);
-            if (quotationOpt.isPresent()) {
-                laborCost = quotationOpt.get().getLaborCost();
-                materialCost = quotationOpt.get().getMaterialCost();
+            // Ưu tiên lấy quotation Pending (khi thợ vừa gửi báo giá, khách chưa duyệt)
+            java.util.Optional<com.fixit.domain.booking.entity.WorkerQuotation> pendingOpt =
+                    workerQuotationRepository.findFirstByBooking_IdAndStatusOrderByCreatedAtDesc(booking.getId(), com.fixit.domain.booking.entity.QuotationStatus.Pending);
+            if (pendingOpt.isPresent()) {
+                laborCost = pendingOpt.get().getLaborCost();
+                materialCost = pendingOpt.get().getMaterialCost();
+                quotationId = pendingOpt.get().getId();
+                quotationStatus = "Pending";
+            }
+            // Nếu không có Pending, lấy quotation đã được chấp nhận
+            if (quotationId == null) {
+                java.util.Optional<com.fixit.domain.booking.entity.WorkerQuotation> acceptedOpt =
+                        workerQuotationRepository.findFirstByBooking_IdAndStatusOrderByCreatedAtDesc(booking.getId(), com.fixit.domain.booking.entity.QuotationStatus.Accepted);
+                if (acceptedOpt.isPresent()) {
+                    laborCost = acceptedOpt.get().getLaborCost();
+                    materialCost = acceptedOpt.get().getMaterialCost();
+                    quotationId = acceptedOpt.get().getId();
+                    quotationStatus = "Accepted";
+                }
             }
         }
 
@@ -115,6 +133,8 @@ public class CustomerBookingServiceImpl implements CustomerBookingService {
                 cancellationReason = cancelOpt.get().getCancellationReason();
             }
         }
+
+        String paymentCode = transactionHistoryRepository.findTransactionCodeByBookingId(booking.getId()).orElse(null);
 
         return CustomerBookingResponse.builder()
                 .bookingId(booking.getId())
@@ -130,7 +150,10 @@ public class CustomerBookingServiceImpl implements CustomerBookingService {
                 .laborCost(laborCost)
                 .materialCost(materialCost)
                 .cancellationReason(cancellationReason)
+                .quotationId(quotationId)
+                .quotationStatus(quotationStatus)
                 .worker(workerInfo)
+                .paymentCode(paymentCode)
                 .build();
     }
     @Override

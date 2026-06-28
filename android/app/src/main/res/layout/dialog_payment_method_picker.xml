@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="24dp"
+    android:background="@drawable/bg_bottom_sheet">
+
+    <!-- Handle bar -->
+    <View
+        android:layout_width="40dp"
+        android:layout_height="4dp"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginBottom="16dp"
+        android:background="#CBD5E1"/>
+
+    <!-- Tiêu đề -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginBottom="6dp"
+        android:text="Phương thức thanh toán"
+        android:textColor="#1E293B"
+        android:textSize="18sp"
+        android:textStyle="bold"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginBottom="24dp"
+        android:text="Chọn cách thanh toán cho dịch vụ này"
+        android:textColor="#64748B"
+        android:textSize="13sp"/>
+
+    <!-- RadioGroup chọn phương thức -->
+    <RadioGroup
+        android:id="@+id/rgPaymentMethodPicker"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <!-- Tiền mặt -->
+        <RadioButton
+            android:id="@+id/rbCash"
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:layout_marginBottom="12dp"
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp"
+            android:button="@null"
+            android:background="@drawable/bg_selector_payment_method"
+            android:checked="true"
+            android:gravity="center_vertical"
+            android:text="Tien mat"
+            android:textColor="@color/color_selector_payment_method"
+            android:textSize="15sp"
+            android:textStyle="bold"/>
+
+        <!-- Chuyển khoản -->
+        <RadioButton
+            android:id="@+id/rbBankTransfer"
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:layout_marginBottom="24dp"
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp"
+            android:button="@null"
+            android:background="@drawable/bg_selector_payment_method"
+            android:gravity="center_vertical"
+            android:text="Chuyen khoan (VietQR)"
+            android:textColor="@color/color_selector_payment_method"
+            android:textSize="15sp"
+            android:textStyle="bold"/>
+
+    </RadioGroup>
+
+    <!-- Nút xác nhận -->
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnConfirmPaymentMethod"
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:layout_marginBottom="8dp"
+        android:text="Xac nhan nghiem thu"
+        android:textColor="@color/white"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        app:backgroundTint="#0284c7"
+        app:cornerRadius="12dp"/>
+
+</LinearLayout>

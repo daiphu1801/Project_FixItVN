@@ -19,9 +19,14 @@ import com.fixit.databinding.FragmentWorkerExtraCostBinding;
 import com.fixit.databinding.ItemExtraCostBinding;
 
 import dagger.hilt.android.AndroidEntryPoint;
+import javax.inject.Inject;
+import com.fixit.feature.worker.orders.domain.usecase.SubmitQuotationUseCase;
 
 @AndroidEntryPoint
 public class WorkerExtraCostFragment extends BaseFragment<FragmentWorkerExtraCostBinding> {
+
+    @Inject
+    SubmitQuotationUseCase submitQuotationUseCase;
 
     private WorkerOrdersViewModel viewModel;
 
@@ -61,27 +66,68 @@ public class WorkerExtraCostFragment extends BaseFragment<FragmentWorkerExtraCos
 
         binding.btnSubmitExtra.setOnClickListener(v -> {
             java.util.List<ExtraCostItem> items = new java.util.ArrayList<>();
+            java.math.BigDecimal materialCost = java.math.BigDecimal.ZERO;
             for (int i = 0; i < binding.llItemsContainer.getChildCount(); i++) {
                 View view = binding.llItemsContainer.getChildAt(i);
                 ItemExtraCostBinding itemBinding = ItemExtraCostBinding.bind(view);
                 
-                String name = itemBinding.etItemName.getText().toString();
-                String qtyStr = itemBinding.etQuantity.getText().toString();
-                String priceStr = itemBinding.etPrice.getText().toString();
+                String name = itemBinding.etItemName.getText().toString().trim();
+                String qtyStr = itemBinding.etQuantity.getText().toString().trim();
+                String priceStr = itemBinding.etPrice.getText().toString().trim();
 
                 if (!name.isEmpty() && !qtyStr.isEmpty() && !priceStr.isEmpty()) {
-                    items.add(new ExtraCostItem(
-                        name,
-                        Integer.parseInt(qtyStr),
-                        Long.parseLong(priceStr.replaceAll("[^\\d]", ""))
-                    ));
+                    try {
+                        int qty = Integer.parseInt(qtyStr);
+                        long price = Long.parseLong(priceStr.replaceAll("[^\\d]", ""));
+                        items.add(new ExtraCostItem(name, qty, price));
+                        materialCost = materialCost.add(java.math.BigDecimal.valueOf((long) qty * price));
+                    } catch (Exception ignored) {}
                 }
             }
 
             viewModel.setExtraItems(items);
-            Toast.makeText(requireContext(), "Đã cập nhật báo giá phát sinh!", Toast.LENGTH_SHORT).show();
-            Navigation.findNavController(v).navigateUp();
+
+            com.fixit.feature.worker.orders.domain.model.WorkerOrder order = viewModel.orderDetails.getValue();
+            if (order == null || order.getOrderId() == null) {
+                Toast.makeText(requireContext(), "Lỗi: Không tìm thấy thông tin đơn hàng để gửi báo giá", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            String bookingId = order.getOrderId();
+            java.math.BigDecimal laborCost = parsePrice(order.getPrice());
+
+            binding.btnSubmitExtra.setEnabled(false);
+            binding.btnSubmitExtra.setText("Đang gửi báo giá...");
+
+            submitQuotationUseCase.execute(bookingId, laborCost, materialCost, result -> {
+                if (getActivity() == null) return;
+                getActivity().runOnUiThread(() -> {
+                    if (result.isSuccess()) {
+                        Toast.makeText(requireContext(), "Đã gửi báo giá chi tiết cho khách hàng!", Toast.LENGTH_SHORT).show();
+                        viewModel.loadOrderDetails(bookingId, false);
+                        Navigation.findNavController(v).navigateUp();
+                    } else {
+                        binding.btnSubmitExtra.setEnabled(true);
+                        binding.btnSubmitExtra.setText("Gửi báo giá cho khách");
+                        String error = result.getError() != null ? result.getError().getMessage() : "Lỗi không xác định";
+                        Toast.makeText(requireContext(), "Lỗi gửi báo giá: " + error, Toast.LENGTH_SHORT).show();
+                    }
+                });
+            });
         });
+    }
+
+    private java.math.BigDecimal parsePrice(String priceStr) {
+        if (priceStr == null || priceStr.isEmpty()) {
+            return java.math.BigDecimal.ZERO;
+        }
+        try {
+            String clean = priceStr.replaceAll("[^\\d]", "");
+            if (clean.isEmpty()) return java.math.BigDecimal.ZERO;
+            return new java.math.BigDecimal(clean);
+        } catch (Exception e) {
+            return java.math.BigDecimal.ZERO;
+        }
     }
 
     private void addItemRow() {

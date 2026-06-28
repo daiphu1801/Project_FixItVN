@@ -70,35 +70,16 @@ public class CustomerProfileViewModel extends ViewModel {
         updateSuccess.setValue(null);
     }
 
-    // ----------------------------------------------------
-    // CHỖ ĐỂ TIVI (FRAGMENT) CẮM ĂNG-TEN VÀO BẮT SÓNG
-    // ----------------------------------------------------
-    // Khúc này trả về LiveData (Không có chữ Mutable).
-    // Có nghĩa là Tivi (Fragment) chỉ được phép xem phim, KHÔNG ĐƯỢC PHÉP nhảy vào sửa đổi nội dung kênh truyền hình.
-    
     public LiveData<CustomerProfile> getProfileData() {
         return profileData;
     }
 
-    public LiveData<CustomerProfile> getProfileData() { return profileData; }
-    public LiveData<Boolean> getIsLoading() { return isLoading; }
-    public LiveData<String> getErrorMessage() { return errorMessage; }
-    public LiveData<Boolean> getUpdateSuccess() { return updateSuccess; }
-    public LiveData<Boolean> getLogoutSuccess() { return logoutSuccess; }
+    public LiveData<Boolean> getIsLoading() {
+        return isLoading;
+    }
 
-    public void logout() {
-        isLoading.setValue(true);
-        logoutUseCase.execute(new ResultCallback<Void>() {
-            @Override
-            public void onResult(Result<Void> result) {
-                isLoading.postValue(false);
-                if (result.isSuccess()) {
-                    logoutSuccess.postValue(true);
-                } else {
-                    errorMessage.postValue(result.getError().getMessage());
-                }
-            }
-        });
+    public LiveData<String> getErrorMessage() {
+        return errorMessage;
     }
 
     public LiveData<Boolean> getUpdateSuccess() {

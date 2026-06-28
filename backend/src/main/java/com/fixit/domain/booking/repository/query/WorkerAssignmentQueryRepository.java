@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.Repository;
 import org.springframework.data.repository.query.Param;
 
+import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -38,10 +39,11 @@ public interface WorkerAssignmentQueryRepository extends Repository<BookingWorke
             WHERE bwa.worker_id = :workerId
               AND bwa.status = 'Pending'
               AND b.status = 'Pending'
-              AND bwa.assigned_at > now() - INTERVAL '3 minutes'
+              AND bwa.assigned_at > :expiredAfter
             ORDER BY bwa.assigned_at ASC
             """, nativeQuery = true)
     List<PendingAssignmentProjection> findPendingAssignmentsByWorkerId(
-            @Param("workerId") UUID workerId
+            @Param("workerId") UUID workerId,
+            @Param("expiredAfter") OffsetDateTime expiredAfter
     );
 }

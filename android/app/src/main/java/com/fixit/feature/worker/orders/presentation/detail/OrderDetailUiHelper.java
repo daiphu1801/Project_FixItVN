@@ -109,9 +109,37 @@ public class OrderDetailUiHelper {
             binding.tvOrderId.setText(orderId != null ? "#" + orderId : "");
         }
         binding.tvOrderDetailService.setText(order.getServiceTitle());
+
+        // Bind customer info
         customerBinding.tvOrderDetailCustomerName.setText(order.getCustomerName());
+        String phone = order.getCustomerPhone();
+        customerBinding.tvOrderDetailCustomerPhone.setText(
+                (phone != null && !phone.isEmpty()) ? phone : "Không có số điện thoại"
+        );
+        if (order.getCustomerAvatar() != null && !order.getCustomerAvatar().isEmpty()) {
+            com.bumptech.glide.Glide.with(fragment)
+                    .load(order.getCustomerAvatar())
+                    .placeholder(R.drawable.ic_lucide_user)
+                    .circleCrop()
+                    .into(customerBinding.ivCustomerAvatar);
+        }
+
+        // Bind meta info
         metaBinding.tvOrderDetailAddress.setText(order.getAddress());
         metaBinding.tvOrderDetailScheduledTime.setText(order.getTimeSlot());
+
+        // Format payment method label
+        String pm = order.getPaymentMethod();
+        String pmLabel = "Thanh toán: ";
+        if ("CASH".equalsIgnoreCase(pm) || "TIEN_MAT".equalsIgnoreCase(pm)) {
+            pmLabel += "Tiền mặt";
+        } else if (pm != null && (pm.contains("BANK") || pm.contains("QR") || pm.contains("TRANSFER"))) {
+            pmLabel += "Chuyển khoản";
+        } else {
+            pmLabel += (pm != null ? pm : "Không xác định");
+        }
+        metaBinding.tvOrderDetailPaymentMethod.setText(pmLabel);
+
         pricingBinding.tvOrderDetailPrice.setText(order.getPrice());
 
         if (order.getProofBeforeUrl() != null && !order.getProofBeforeUrl().isEmpty()) {
@@ -122,7 +150,12 @@ public class OrderDetailUiHelper {
         }
 
         if (mapHelper != null) {
-            mapHelper.loadMap(fragment.requireContext(), order.getAddress());
+            // Prefer lat/lng coords for accuracy, fallback to address geocoding
+            if (order.getDestinationLat() != null && order.getDestinationLng() != null) {
+                mapHelper.loadMapByCoords(order.getDestinationLat(), order.getDestinationLng());
+            } else {
+                mapHelper.loadMap(fragment.requireContext(), order.getAddress());
+            }
         }
 
         String status = order.getStatus();
@@ -135,7 +168,7 @@ public class OrderDetailUiHelper {
             binding.tvOrderDetailStatus.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#DCFCE7")));
             binding.tvOrderDetailStatus.setTextColor(Color.parseColor("#22c55e"));
         } else {
-            binding.tvOrderDetailStatus.setText("CHỜ XỬ LÝ");
+            binding.tvOrderDetailStatus.setText("CHờ Xử LÝ");
             binding.tvOrderDetailStatus.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#F1F5F9")));
             binding.tvOrderDetailStatus.setTextColor(Color.parseColor("#64748b"));
         }
@@ -162,17 +195,15 @@ public class OrderDetailUiHelper {
 
         if (status == JobStatus.REPAIRING) {
             binding.btnCancelOrderDetail.setVisibility(View.GONE);
-            binding.btnCompleteOrderDetail.setVisibility(View.GONE);
+            binding.btnCompleteOrderDetail.setVisibility(View.VISIBLE);
+            binding.btnCompleteOrderDetail.setEnabled(true);
+            binding.btnCompleteOrderDetail.setAlpha(1.0f);
+            binding.btnCompleteOrderDetail.setText("Xác nhận hoàn thành");
+            binding.btnCompleteOrderDetail.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#2563eb")));
 
-            binding.btnBottomConfirmCash.setVisibility(View.VISIBLE);
-            binding.btnBottomConfirmCash.setEnabled(true);
-            binding.btnBottomShowQr.setVisibility(View.VISIBLE);
-            binding.btnBottomShowQr.setEnabled(true);
-
-            paymentBinding.cardPaymentSection.setVisibility(View.VISIBLE);
-            paymentBinding.tvPaymentStatus.setText("Chờ khách thanh toán");
-            paymentBinding.tvPaymentStatus.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#FEF3C7")));
-            paymentBinding.tvPaymentStatus.setTextColor(Color.parseColor("#D97706"));
+            binding.btnBottomConfirmCash.setVisibility(View.GONE);
+            binding.btnBottomShowQr.setVisibility(View.GONE);
+            paymentBinding.cardPaymentSection.setVisibility(View.GONE);
 
         } else if (status == JobStatus.WAITING_APPROVAL) {
             binding.btnCancelOrderDetail.setVisibility(View.GONE);
@@ -183,12 +214,31 @@ public class OrderDetailUiHelper {
             binding.btnCompleteOrderDetail.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#f59e0b")));
 
             paymentBinding.cardPaymentSection.setVisibility(View.VISIBLE);
+            paymentBinding.tvPaymentStatus.setText("Đang chờ khách hàng nghiệm thu công việc");
+            paymentBinding.tvPaymentStatus.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#FEF3C7")));
+            paymentBinding.tvPaymentStatus.setTextColor(Color.parseColor("#D97706"));
+
+            binding.btnBottomConfirmCash.setVisibility(View.GONE);
+            binding.btnBottomShowQr.setVisibility(View.GONE);
+            paymentBinding.btnShowQr.setVisibility(View.GONE);
+            paymentBinding.btnConfirmCash.setVisibility(View.GONE);
+            paymentBinding.llQrContainer.setVisibility(View.GONE);
+
+        } else if (status == JobStatus.WAITING_PAYMENT) {
+            binding.btnCancelOrderDetail.setVisibility(View.GONE);
+            paymentBinding.cardPaymentSection.setVisibility(View.VISIBLE);
 
             if (currentOrder != null && ("CASH".equalsIgnoreCase(currentOrder.getPaymentMethod())
                     || "TIEN_MAT".equalsIgnoreCase(currentOrder.getPaymentMethod()))) {
-                paymentBinding.tvPaymentStatus.setText("Đã nhận tiền mặt (Chờ duyệt)");
-                paymentBinding.tvPaymentStatus.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#DCFCE7")));
-                paymentBinding.tvPaymentStatus.setTextColor(Color.parseColor("#22C55E"));
+                binding.btnCompleteOrderDetail.setVisibility(View.VISIBLE);
+                binding.btnCompleteOrderDetail.setEnabled(true);
+                binding.btnCompleteOrderDetail.setAlpha(1.0f);
+                binding.btnCompleteOrderDetail.setText("Đã nhận tiền - Hoàn tất đơn");
+                binding.btnCompleteOrderDetail.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#10b981")));
+
+                paymentBinding.tvPaymentStatus.setText("Khách chọn Tiền mặt - Chờ xác nhận nhận tiền");
+                paymentBinding.tvPaymentStatus.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#F0FDF4")));
+                paymentBinding.tvPaymentStatus.setTextColor(Color.parseColor("#16a34a"));
 
                 binding.btnBottomConfirmCash.setVisibility(View.GONE);
                 binding.btnBottomShowQr.setVisibility(View.GONE);
@@ -196,7 +246,13 @@ public class OrderDetailUiHelper {
                 paymentBinding.btnConfirmCash.setVisibility(View.GONE);
                 paymentBinding.llQrContainer.setVisibility(View.GONE);
             } else {
-                paymentBinding.tvPaymentStatus.setText("Chờ khách thanh toán qua QR");
+                binding.btnCompleteOrderDetail.setVisibility(View.VISIBLE);
+                binding.btnCompleteOrderDetail.setEnabled(false);
+                binding.btnCompleteOrderDetail.setAlpha(0.7f);
+                binding.btnCompleteOrderDetail.setText("Chờ thanh toán chuyển khoản...");
+                binding.btnCompleteOrderDetail.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#f59e0b")));
+
+                paymentBinding.tvPaymentStatus.setText("Chờ khách quét mã QR chuyển khoản");
                 paymentBinding.tvPaymentStatus.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#eff6ff")));
                 paymentBinding.tvPaymentStatus.setTextColor(Color.parseColor("#2563eb"));
 
@@ -309,6 +365,14 @@ public class OrderDetailUiHelper {
                         return;
                     }
                 }
+                if (currentStatus == JobStatus.REPAIRING) {
+                    if (order.getProofAfterUrl() == null || order.getProofAfterUrl().isEmpty()) {
+                        Toast.makeText(fragment.requireContext(),
+                                "Bạn phải tải lên ảnh bằng chứng SAU khi sửa chữa!",
+                                Toast.LENGTH_LONG).show();
+                        return;
+                    }
+                }
                 String nextAction = binding.btnCompleteOrderDetail.getText().toString();
                 new AlertDialog.Builder(fragment.requireContext())
                         .setTitle("Xác nhận trạng thái")
@@ -322,8 +386,29 @@ public class OrderDetailUiHelper {
             }
         });
 
-        pricingBinding.btnAddExtraFee.setOnClickListener(v -> Navigation.findNavController(v)
-                .navigate(R.id.workerExtraCostFragment));
+        pricingBinding.btnAddExtraFee.setOnClickListener(v -> {
+            WorkerOrder order = fragment.getCurrentOrder();
+            if (order != null) {
+                android.os.Bundle args = new android.os.Bundle();
+                args.putString("bookingId", order.getOrderId());
+                long laborCostVal = 0;
+                if (order.getFinalPrice() != null) {
+                    laborCostVal = order.getFinalPrice().longValue();
+                } else if (order.getPrice() != null) {
+                    try {
+                        String cleanedPrice = order.getPrice().replaceAll("[^0-9]", "");
+                        if (!cleanedPrice.isEmpty()) {
+                            laborCostVal = Long.parseLong(cleanedPrice);
+                        }
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+                args.putLong("laborCost", laborCostVal);
+                Navigation.findNavController(v)
+                        .navigate(R.id.workerExtraCostFragment, args);
+            }
+        });
 
         paymentBinding.btnShowQr.setOnClickListener(v -> fragment.showPaymentQrCode());
         paymentBinding.btnConfirmCash.setOnClickListener(v -> fragment.confirmCashPayment());

@@ -99,6 +99,22 @@ public class OrderHistoryAdapter extends RecyclerView.Adapter<OrderHistoryAdapte
                 binding.tvStatusBadge.setText("ĐÃ NHẬN ĐƠN");
                 binding.tvStatusBadge.setBackgroundResource(R.drawable.bg_badge_light_blue);
                 binding.tvStatusBadge.setTextColor(android.graphics.Color.parseColor("#0284C7")); // Blue
+            } else if ("SURVEYING".equalsIgnoreCase(status)) {
+                binding.tvStatusBadge.setText("ĐANG KHẢO SÁT");
+                binding.tvStatusBadge.setBackgroundResource(R.drawable.bg_badge_light_blue);
+                binding.tvStatusBadge.setTextColor(android.graphics.Color.parseColor("#0284C7")); // Blue
+            } else if ("WAITING_APPROVAL".equalsIgnoreCase(status)) {
+                binding.tvStatusBadge.setText("CHỜ DUYỆT BÁO GIÁ");
+                binding.tvStatusBadge.setBackgroundResource(R.drawable.bg_badge_orange_light);
+                binding.tvStatusBadge.setTextColor(android.graphics.Color.parseColor("#F59E0B")); // Amber
+            } else if ("WAITING_PAYMENT".equalsIgnoreCase(status)) {
+                binding.tvStatusBadge.setText("CHỜ THANH TOÁN");
+                binding.tvStatusBadge.setBackgroundResource(R.drawable.bg_badge_orange_light);
+                binding.tvStatusBadge.setTextColor(android.graphics.Color.parseColor("#F59E0B")); // Amber
+            } else if ("IN_PROGRESS".equalsIgnoreCase(status)) {
+                binding.tvStatusBadge.setText("ĐANG THI CÔNG");
+                binding.tvStatusBadge.setBackgroundResource(R.drawable.bg_badge_light_blue);
+                binding.tvStatusBadge.setTextColor(android.graphics.Color.parseColor("#0284C7")); // Blue
             } else if ("CANCELLED".equalsIgnoreCase(status)) {
                 binding.tvStatusBadge.setText("ĐÃ HỦY");
                 binding.tvStatusBadge.setBackgroundResource(R.drawable.bg_badge_red);
@@ -108,7 +124,7 @@ public class OrderHistoryAdapter extends RecyclerView.Adapter<OrderHistoryAdapte
                 binding.tvStatusBadge.setBackgroundResource(R.drawable.bg_badge_green_light);
                 binding.tvStatusBadge.setTextColor(android.graphics.Color.parseColor("#10B981")); // Green
             } else {
-                binding.tvStatusBadge.setText(status);
+                binding.tvStatusBadge.setText(status != null ? status.toUpperCase() : "");
                 binding.tvStatusBadge.setBackgroundResource(R.drawable.bg_badge_light_blue);
                 binding.tvStatusBadge.setTextColor(android.graphics.Color.parseColor("#0284C7"));
             }

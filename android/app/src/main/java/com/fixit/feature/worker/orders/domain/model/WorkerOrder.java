@@ -25,6 +25,11 @@ public class WorkerOrder {
     private JobStatus jobStatus;
     private String paymentMethod;
     private String issueDescription;
+    private String customerPhone;
+    private String customerAvatar;
+    private Double destinationLat;
+    private Double destinationLng;
+    private Double finalPrice;
 
     public WorkerOrder(String orderId, String customerId, String serviceTitle, String address,
             String timeSlot, String price, String status, String customerName) {
@@ -118,6 +123,38 @@ public class WorkerOrder {
         this.issueDescription = issueDescription;
     }
 
+    public String getCustomerPhone() {
+        return customerPhone;
+    }
+
+    public void setCustomerPhone(String customerPhone) {
+        this.customerPhone = customerPhone;
+    }
+
+    public String getCustomerAvatar() {
+        return customerAvatar;
+    }
+
+    public void setCustomerAvatar(String customerAvatar) {
+        this.customerAvatar = customerAvatar;
+    }
+
+    public Double getDestinationLat() {
+        return destinationLat;
+    }
+
+    public void setDestinationLat(Double destinationLat) {
+        this.destinationLat = destinationLat;
+    }
+
+    public Double getDestinationLng() {
+        return destinationLng;
+    }
+
+    public void setDestinationLng(Double destinationLng) {
+        this.destinationLng = destinationLng;
+    }
+
     private String proofBeforeUrl;
     private String proofAfterUrl;
 
@@ -135,6 +172,14 @@ public class WorkerOrder {
 
     public void setProofAfterUrl(String proofAfterUrl) {
         this.proofAfterUrl = proofAfterUrl;
+    }
+
+    public Double getFinalPrice() {
+        return finalPrice;
+    }
+
+    public void setFinalPrice(Double finalPrice) {
+        this.finalPrice = finalPrice;
     }
 }
 

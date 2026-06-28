@@ -49,19 +49,19 @@ public class CustomerController {
     // CÚ PHÁP: @[Tên_Annotation]("[Đường_dẫn_phụ]")
     // Ý NGHĨA: Khai báo API lấy thông tin. @GetMapping hứng request có method là GET (chỉ lấy dữ liệu, không sửa).
     @GetMapping("/profile")
-    public ResponseEntity<CustomerProfileResponse> getProfile(Authentication authentication) {
+    public ResponseEntity<ApiResponse<CustomerProfileResponse>> getProfile(Authentication authentication) {
         UUID userId = getUserId(authentication);
         
         // Gọi Service xử lý và trả kết quả về cho Android với mã HTTP 200 OK.
-        return ResponseEntity.ok(customerService.getProfile(userId));
+        return ResponseEntity.ok(ApiResponse.success(customerService.getProfile(userId)));
     }
 
     @PutMapping("/profile")
-    public ResponseEntity<CustomerProfileResponse> updateProfile(
+    public ResponseEntity<ApiResponse<CustomerProfileResponse>> updateProfile(
             Authentication authentication,
             @Valid @RequestBody CustomerProfileRequest request) {
         UUID userId = getUserId(authentication);
-        return ResponseEntity.ok(customerService.updateProfile(userId, request));
+        return ResponseEntity.ok(ApiResponse.success(customerService.updateProfile(userId, request)));
     }
 
     // ---------------------------------------------------------
@@ -69,45 +69,45 @@ public class CustomerController {
     // ---------------------------------------------------------
 
     @GetMapping("/addresses")
-    public ResponseEntity<List<CustomerAddressResponse>> getAddresses(Authentication authentication) {
+    public ResponseEntity<ApiResponse<List<CustomerAddressResponse>>> getAddresses(Authentication authentication) {
         UUID userId = getUserId(authentication);
-        return ResponseEntity.ok(customerService.getCustomerAddresses(userId));
+        return ResponseEntity.ok(ApiResponse.success(customerService.getCustomerAddresses(userId)));
     }
 
     @PostMapping("/addresses")
-    public ResponseEntity<CustomerAddressResponse> addAddress(
+    public ResponseEntity<ApiResponse<CustomerAddressResponse>> addAddress(
             Authentication authentication,
             @Valid @RequestBody CustomerAddressRequest request) {
         UUID userId = getUserId(authentication);
-        return ResponseEntity.ok(customerService.addAddress(userId, request));
+        return ResponseEntity.ok(ApiResponse.success(customerService.addAddress(userId, request)));
     }
 
     // /{addressId}: Lấy biến addressId trực tiếp từ đường dẫn URL.
     // Ví dụ: PUT /addresses/12345 -> addressId sẽ là 12345
     @PutMapping("/addresses/{addressId}")
-    public ResponseEntity<CustomerAddressResponse> updateAddress(
+    public ResponseEntity<ApiResponse<CustomerAddressResponse>> updateAddress(
             Authentication authentication,
             @PathVariable UUID addressId,
             @Valid @RequestBody CustomerAddressRequest request) {
         UUID userId = getUserId(authentication);
-        return ResponseEntity.ok(customerService.updateAddress(userId, addressId, request));
+        return ResponseEntity.ok(ApiResponse.success(customerService.updateAddress(userId, addressId, request)));
     }
 
     @DeleteMapping("/addresses/{addressId}")
-    public ResponseEntity<Void> deleteAddress(
+    public ResponseEntity<ApiResponse<Void>> deleteAddress(
             Authentication authentication,
             @PathVariable UUID addressId) {
         UUID userId = getUserId(authentication);
         customerService.deleteAddress(userId, addressId);
-        return ApiResponse.success(null, "Xóa địa chỉ thành công");
+        return ResponseEntity.ok(ApiResponse.success(null, "Xóa địa chỉ thành công"));
     }
 
     @PatchMapping("/addresses/{addressId}/default")
-    public ResponseEntity<CustomerAddressResponse> setDefaultAddress(
+    public ResponseEntity<ApiResponse<CustomerAddressResponse>> setDefaultAddress(
             Authentication authentication,
             @PathVariable UUID addressId) {
         UUID userId = getUserId(authentication);
-        return ResponseEntity.ok(customerService.setDefaultAddress(userId, addressId));
+        return ResponseEntity.ok(ApiResponse.success(customerService.setDefaultAddress(userId, addressId)));
     }
 }
 

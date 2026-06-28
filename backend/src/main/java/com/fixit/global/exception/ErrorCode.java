@@ -88,6 +88,7 @@ public enum ErrorCode {
         WALLET_WITHDRAW_INVALID_AMOUNT(400, HttpStatus.BAD_REQUEST, "Số tiền rút không hợp lệ"),
         WALLET_WITHDRAW_PENDING_EXISTS(409, HttpStatus.CONFLICT, "Đang có yêu cầu rút tiền chờ duyệt"),
         WALLET_WITHDRAW_NOT_FOUND(404, HttpStatus.NOT_FOUND, "Không tìm thấy yêu cầu rút tiền"),
+        TRANSACTION_NOT_FOUND(404, HttpStatus.NOT_FOUND, "Không tìm thấy giao dịch thanh toán"),
 
         // Review
         BOOKING_NOT_COMPLETED(400, HttpStatus.BAD_REQUEST, "Đơn hàng chưa hoàn thành, không thể đánh giá"),

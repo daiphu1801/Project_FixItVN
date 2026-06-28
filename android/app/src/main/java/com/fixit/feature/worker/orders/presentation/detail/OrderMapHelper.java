@@ -80,4 +80,21 @@ public class OrderMapHelper {
             }).start();
         });
     }
+
+    public void loadMapByCoords(double lat, double lng) {
+        if (mapView == null) return;
+
+        mapView.getMapAsync(googleMap -> {
+            LatLng latLng = new LatLng(lat, lng);
+            new Handler(Looper.getMainLooper()).post(() -> {
+                if (mapView != null) {
+                    googleMap.clear();
+                    googleMap.addMarker(new MarkerOptions()
+                            .position(latLng)
+                            .title("Địa điểm"));
+                    googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 15f));
+                }
+            });
+        });
+    }
 }

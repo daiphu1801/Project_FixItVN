@@ -27,6 +27,9 @@ public class CustomerBookingResponse {
     private BigDecimal laborCost;
     private BigDecimal materialCost;
     private String cancellationReason;
+    private UUID quotationId; // ID của quotation Pending (khi Surveying) hoặc Accepted
+    private String quotationStatus; // "Pending" hoặc "Accepted"
+    private String paymentCode;
 
     // Thông tin thợ (Sẽ null nếu đơn đang ở trạng thái Pending chưa ghép được thợ)
     private WorkerInfo worker;

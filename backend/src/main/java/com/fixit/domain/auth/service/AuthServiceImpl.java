@@ -44,9 +44,7 @@ public class AuthServiceImpl implements AuthService {
     private final OtpCodeRepository otpCodeRepository;
     private final UserSocialLoginRepository userSocialLoginRepository;
     private final PasswordEncoder passwordEncoder;
-    private final AuthenticationManager authenticationManager;
     private final JwtService jwtService;
-    private final CustomerRepository customerRepository;
 
     @Override
     @Transactional

@@ -39,6 +39,7 @@ public class ProfileCustomerFragment extends BaseFragment<FragmentProfileCustome
     @Inject
     com.fixit.feature.customer.profile.domain.usecase.GetCustomerProfileUseCase getCustomerProfileUseCase;
 
+    private CustomerProfileViewModel profileViewModel;
     private UploadViewModel uploadViewModel;
     private AutoRefreshHelper autoRefreshHelper;
 
@@ -88,8 +89,9 @@ public class ProfileCustomerFragment extends BaseFragment<FragmentProfileCustome
 
         // Click vào mục "Địa chỉ của tôi"
         binding.layoutAddress.setOnClickListener(v -> {
-            // TODO: navigate tới màn hình quản lý địa chỉ khi đã có
-            Toast.makeText(requireContext(), "Tính năng đang phát triển", Toast.LENGTH_SHORT).show();
+            if (navController != null) {
+                navController.navigate(R.id.nav_customer_address);
+            }
         });
 
         // Click vào mục "Trung tâm hỗ trợ"
@@ -100,8 +102,9 @@ public class ProfileCustomerFragment extends BaseFragment<FragmentProfileCustome
 
         // Click vào mục "Đổi mật khẩu"
         binding.layoutChangePassword.setOnClickListener(v -> {
-            // TODO: navigate tới màn hình đổi mật khẩu khi đã có
-            Toast.makeText(requireContext(), "Tính năng đang phát triển", Toast.LENGTH_SHORT).show();
+            if (navController != null) {
+                navController.navigate(R.id.nav_customer_change_password);
+            }
         });
 
         // Click vào avatar (kèm icon camera) → mở gallery chọn ảnh đại diện
@@ -198,6 +201,9 @@ public class ProfileCustomerFragment extends BaseFragment<FragmentProfileCustome
 
     @Override
     protected void observeData() {
+        profileViewModel = new ViewModelProvider(this).get(CustomerProfileViewModel.class);
+        uploadViewModel = new ViewModelProvider(this).get(UploadViewModel.class);
+
         // Observe kết quả upload avatar
         uploadViewModel.uploadResult.observe(getViewLifecycleOwner(), result -> {
             if (result == null) return;
@@ -223,16 +229,14 @@ public class ProfileCustomerFragment extends BaseFragment<FragmentProfileCustome
 
         profileViewModel.getProfileData().observe(getViewLifecycleOwner(), profile -> {
             if (profile != null) {
-                binding.tvProfileName.setText(profile.getFullName());
-            }
-        });
-
-        profileViewModel.getLogoutSuccess().observe(getViewLifecycleOwner(), success -> {
-            if (Boolean.TRUE.equals(success)) {
-                Intent intent = new Intent(requireContext(), AuthActivity.class);
-                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                startActivity(intent);
-                requireActivity().finish();
+                if (profile.getFullName() != null && !profile.getFullName().isEmpty()) {
+                    binding.tvProfileName.setText(profile.getFullName());
+                } else {
+                    binding.tvProfileName.setText("Khách hàng");
+                }
+                if (profile.getPhoneNumber() != null && !profile.getPhoneNumber().isEmpty()) {
+                    binding.tvProfilePhone.setText(profile.getPhoneNumber());
+                }
             }
         });
     }
@@ -243,11 +247,6 @@ public class ProfileCustomerFragment extends BaseFragment<FragmentProfileCustome
         if (profileViewModel != null) {
             profileViewModel.loadProfile();
         }
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
         if (autoRefreshHelper == null) {
             autoRefreshHelper = new AutoRefreshHelper(
                     requireContext(),

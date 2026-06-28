@@ -14,6 +14,14 @@ import org.springframework.web.bind.annotation.*;
 import java.util.UUID;
 
 import com.fixit.domain.booking.service.QuotationPaymentService;
+import com.fixit.domain.wallet.entity.TransactionHistory;
+import com.fixit.domain.wallet.entity.TransactionType;
+import com.fixit.domain.wallet.entity.TransactionStatus;
+import com.fixit.domain.wallet.dto.request.SepayWebhookRequest;
+import com.fixit.domain.wallet.service.WorkerWalletService;
+import com.fixit.domain.wallet.repository.TransactionHistoryRepository;
+import com.fixit.global.exception.AppException;
+import com.fixit.global.exception.ErrorCode;
 
 /**
  * Controller dành riêng cho thao tác đặt đơn của Khách hàng.
@@ -25,6 +33,8 @@ public class CustomerBookingController {
 
     private final CustomerBookingService customerBookingService;
     private final QuotationPaymentService quotationPaymentService;
+    private final WorkerWalletService workerWalletService;
+    private final TransactionHistoryRepository transactionHistoryRepository;
 
     /**
      * Khách hàng tạo một đơn đặt thợ mới.
@@ -99,15 +109,43 @@ public class CustomerBookingController {
     }
 
     /**
-     * Khách hàng thanh toán tiền mặt
+     * Khách hàng xác nhận nghiệm thu chất lượng công việc
+     * → Booking chuyển sang Waiting_Payment (chờ thợ xác nhận đã nhận tiền)
      */
     @PostMapping("/{bookingId}/payments")
     @PreAuthorize("hasRole('Customer')")
-    public ApiResponse<Void> processPayment(
+    public ApiResponse<Void> confirmAcceptance(
+            @AuthenticationPrincipal User userDetails,
+            @PathVariable UUID bookingId,
+            @RequestParam(required = false) com.fixit.domain.booking.entity.BookingPaymentMethod paymentMethod
+    ) {
+        quotationPaymentService.customerConfirmAcceptance(userDetails.getId(), bookingId, paymentMethod);
+        return ApiResponse.success(null, "Nghiệm thu thành công, chờ thợ xác nhận nhận tiền");
+    }
+
+    /**
+     * Giả lập thanh toán chuyển khoản ngân hàng (Option B) qua SePay webhook
+     */
+    @PostMapping("/{bookingId}/payments/simulate-bank-transfer")
+    @PreAuthorize("hasRole('Customer')")
+    public ApiResponse<Void> simulateBankTransfer(
             @AuthenticationPrincipal User userDetails,
             @PathVariable UUID bookingId
     ) {
-        quotationPaymentService.processPayment(userDetails.getId(), bookingId);
-        return ApiResponse.success(null, "Thanh toán thành công");
+        TransactionHistory transaction = transactionHistoryRepository.findByBooking_IdAndTransactionTypeAndStatus(
+                bookingId, TransactionType.Release, TransactionStatus.Pending
+        ).orElseThrow(() -> new AppException(ErrorCode.TRANSACTION_NOT_FOUND));
+
+        SepayWebhookRequest request = new SepayWebhookRequest();
+        request.setTransactionType("in");
+        request.setContent("Chuyen khoan " + transaction.getTransactionCode());
+        request.setTransferAmount(transaction.getAmount());
+        request.setReferenceCode("MOCK_REF_" + UUID.randomUUID().toString().substring(0, 8).toUpperCase());
+        request.setGateway("MOCK_BANK");
+        request.setTransactionDate(java.time.LocalDateTime.now().toString());
+
+        workerWalletService.processDepositWebhook(request);
+
+        return ApiResponse.success(null, "Giả lập chuyển khoản thành công");
     }
 }

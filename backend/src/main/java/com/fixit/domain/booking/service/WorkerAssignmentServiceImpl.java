@@ -59,9 +59,10 @@ public class WorkerAssignmentServiceImpl implements WorkerAssignmentService {
         @Transactional(readOnly = true)
         public PendingAssignmentResponse getPendingAssignments() {
                 UUID workerId = currentWorkerResolver.getCurrentWorkerId();
+                OffsetDateTime expiredAfter = OffsetDateTime.now(APP_ZONE).minusMinutes(ASSIGNMENT_TIMEOUT_MINUTES);
 
                 List<PendingAssignmentItemResponse> items = workerAssignmentQueryRepository
-                                .findPendingAssignmentsByWorkerId(workerId)
+                                .findPendingAssignmentsByWorkerId(workerId, expiredAfter)
                                 .stream()
                                 .map(this::toPendingItem)
                                 .toList();

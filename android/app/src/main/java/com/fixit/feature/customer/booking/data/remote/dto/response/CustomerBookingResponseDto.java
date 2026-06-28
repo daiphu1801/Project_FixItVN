@@ -46,6 +46,9 @@ public class CustomerBookingResponseDto {
     @SerializedName("finalPrice")
     private BigDecimal finalPrice;
 
+    @SerializedName("quotationId")
+    private String quotationId;
+
     @SerializedName("worker")
     private BookingWorkerInfoDto worker;
 
@@ -90,6 +93,21 @@ public class CustomerBookingResponseDto {
 
     public BigDecimal getFinalPrice() { return finalPrice; }
     public void setFinalPrice(BigDecimal finalPrice) { this.finalPrice = finalPrice; }
+
+    public String getQuotationId() { return quotationId; }
+    public void setQuotationId(String quotationId) { this.quotationId = quotationId; }
+
+    @SerializedName("quotationStatus")
+    private String quotationStatus;
+
+    public String getQuotationStatus() { return quotationStatus; }
+    public void setQuotationStatus(String quotationStatus) { this.quotationStatus = quotationStatus; }
+
+    @SerializedName("paymentCode")
+    private String paymentCode;
+
+    public String getPaymentCode() { return paymentCode; }
+    public void setPaymentCode(String paymentCode) { this.paymentCode = paymentCode; }
 
     public BookingWorkerInfoDto getWorker() { return worker; }
     public void setWorker(BookingWorkerInfoDto worker) { this.worker = worker; }

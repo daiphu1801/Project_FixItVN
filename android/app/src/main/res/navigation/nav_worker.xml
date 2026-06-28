@@ -170,9 +170,16 @@
 
     <fragment
         android:id="@+id/workerExtraCostFragment"
-        android:name="com.fixit.feature.worker.orders.presentation.extra_cost.WorkerExtraCostFragment"
-        android:label="Thêm chi phí"
-        tools:layout="@layout/fragment_worker_extra_cost" />
+        android:name="com.fixit.feature.worker.orders.presentation.WorkerConfirmPaymentFragment"
+        android:label="Báo giá sửa chữa"
+        tools:layout="@layout/fragment_confirm_payment">
+        <argument
+            android:name="bookingId"
+            app:argType="string" />
+        <argument
+            android:name="laborCost"
+            app:argType="long" />
+    </fragment>
 
     <fragment
         android:id="@+id/workerInvoiceFragment"
