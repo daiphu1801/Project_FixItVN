@@ -10,9 +10,13 @@ public class AuthRequest {
         @SerializedName("password")
         private String password;
 
-        public Login(String phoneNumber, String password) {
+        @SerializedName("role")
+        private String role;
+
+        public Login(String phoneNumber, String password, String role) {
             this.phoneNumber = phoneNumber;
             this.password = password;
+            this.role = role;
         }
     }
 
@@ -90,15 +94,18 @@ public class AuthRequest {
     }
 
     public static class ResetPassword {
-        @SerializedName("identifier")
-        private String identifier;
+        @SerializedName("email")
+        private String email;
+        @SerializedName("phoneNumber")
+        private String phoneNumber;
         @SerializedName("otpCode")
         private String otpCode;
         @SerializedName("newPassword")
         private String newPassword;
 
-        public ResetPassword(String identifier, String otpCode, String newPassword) {
-            this.identifier = identifier;
+        public ResetPassword(String email, String phoneNumber, String otpCode, String newPassword) {
+            this.email = email;
+            this.phoneNumber = phoneNumber;
             this.otpCode = otpCode;
             this.newPassword = newPassword;
         }
@@ -125,6 +132,19 @@ public class AuthRequest {
         public UpdateCurrentUser(String fullName, String avatarUrl) {
             this.fullName = fullName;
             this.avatarUrl = avatarUrl;
+        }
+    }
+
+    public static class ForgotPassword {
+        @SerializedName("email")
+        private String email;
+
+        @SerializedName("phoneNumber")
+        private String phoneNumber;
+
+        public ForgotPassword(String email, String phoneNumber) {
+            this.email = email;
+            this.phoneNumber = phoneNumber;
         }
     }
 }

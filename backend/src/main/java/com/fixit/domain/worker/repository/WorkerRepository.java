@@ -142,6 +142,18 @@ public interface WorkerRepository extends JpaRepository<Worker, UUID> {
                           AND ws.service_id = :serviceId
                           AND w.latitude IS NOT NULL
                           AND w.longitude IS NOT NULL
+                          AND NOT EXISTS (
+                              SELECT 1
+                              FROM booking_worker_assignments bwa
+                              WHERE bwa.worker_id = w.worker_id
+                                AND bwa.status = 'Pending'
+                          )
+                          AND NOT EXISTS (
+                              SELECT 1
+                              FROM bookings b
+                              WHERE b.worker_id = w.worker_id
+                                AND b.status IN ('Accepted', 'Surveying', 'Waiting_Approval', 'Waiting_Payment', 'In_Progress')
+                          )
                           AND (
                               6371 * acos(
                                   cos(radians(:latitude)) * cos(radians(w.latitude)) * cos(radians(w.longitude) - radians(:longitude)) +

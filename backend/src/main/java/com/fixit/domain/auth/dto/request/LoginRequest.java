@@ -16,4 +16,8 @@ public class LoginRequest {
 
     @NotBlank(message = "Mật khẩu không được để trống")
     private String password;
+
+    // Role mà client đang đăng nhập ("Customer" hoặc "Worker")
+    // Dùng để kiểm tra tài khoản có đúng vai trò không
+    private String role;
 }

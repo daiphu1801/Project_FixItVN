@@ -41,13 +41,17 @@ public class CustomerOrderContainerFragment extends BaseFragment<FragmentCustome
             }
         });
 
-        viewModel.checkActiveBooking();
+        // Chỉ kiểm tra active booking từ server khi trạng thái hiện tại là trống (0) hoặc chưa khởi tạo (null)
+        if (viewModel.orderStatus.getValue() == null || viewModel.orderStatus.getValue() == 0) {
+            viewModel.checkActiveBooking();
+        }
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        if (viewModel != null) {
+        // Chỉ gọi checkActiveBooking khi không có đơn hàng đang hoạt động trong ViewModel
+        if (viewModel != null && (viewModel.orderStatus.getValue() == null || viewModel.orderStatus.getValue() == 0)) {
             viewModel.checkActiveBooking();
         }
     }

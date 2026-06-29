@@ -17,4 +17,8 @@ public interface AuthRepository {
     Session getCurrentSession();
 
     void changePassword(String oldPassword, String newPassword, ResultCallback<Void> callback);
+
+    void forgotPassword(String email, String phone, ResultCallback<Void> callback);
+
+    void resetPassword(String email, String phone, String otpCode, String newPassword, ResultCallback<Void> callback);
 }

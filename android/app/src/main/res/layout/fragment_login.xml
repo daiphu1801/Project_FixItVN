@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#f5fbff"
     android:padding="24dp">
 
-    <!-- Trang trí nền (Subtle Decorative Circle) -->
+    <!-- Trang trí nền -->
     <View
+        android:id="@+id/decorCircle"
         android:layout_width="220dp"
         android:layout_height="220dp"
         android:background="@drawable/bg_circle_light_blue"
@@ -18,7 +18,7 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintEnd_toEndOf="parent"/>
 
-    <!-- Nút quay lại thiết kế tròn thanh lịch -->
+    <!-- Nút quay lại -->
     <FrameLayout
         android:id="@+id/btnBackFrame"
         android:layout_width="48dp"
@@ -47,36 +47,69 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toBottomOf="@id/btnBackFrame">
 
+        <!-- Role Badge — hiển thị vai trò đang đăng nhập -->
+        <LinearLayout
+            android:id="@+id/layoutRoleBadge"
+            android:layout_width="wrap_content"
+            android:layout_height="36dp"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:paddingHorizontal="14dp"
+            android:paddingVertical="6dp"
+            android:layout_marginTop="28dp"
+            android:background="@drawable/bg_badge_light_blue"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <ImageView
+                android:id="@+id/ivRoleIcon"
+                android:layout_width="16dp"
+                android:layout_height="16dp"
+                android:src="@drawable/ic_lucide_user"
+                app:tint="#42c2ff" />
+
+            <TextView
+                android:id="@+id/tvRoleBadge"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="6dp"
+                android:text="Khách hàng"
+                android:textColor="#42c2ff"
+                android:textSize="13sp"
+                android:textStyle="bold" />
+        </LinearLayout>
+
+        <!-- Tiêu đề -->
         <TextView
             android:id="@+id/tvLoginHeader"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="32dp"
+            android:layout_marginTop="14dp"
             android:text="@string/login"
             android:textColor="#0f172a"
             android:textSize="30sp"
             android:textStyle="bold"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toBottomOf="@id/layoutRoleBadge" />
 
         <TextView
             android:id="@+id/tvLoginSubtitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
+            android:layout_marginTop="6dp"
             android:text="@string/welcome_back"
             android:textColor="#64748b"
             android:textSize="14sp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/tvLoginHeader" />
 
-        <!-- Ô nhập Số điện thoại với bo góc và start icon -->
+        <!-- Ô nhập Số điện thoại -->
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/tilPhone"
             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="36dp"
+            android:layout_marginTop="32dp"
             android:hint="@string/phone_number"
             app:boxStrokeColor="#42c2ff"
             app:hintTextColor="#42c2ff"
@@ -96,7 +129,7 @@
                 android:paddingVertical="16dp"/>
         </com.google.android.material.textfield.TextInputLayout>
 
-        <!-- Ô nhập Mật khẩu với bo góc và start icon -->
+        <!-- Ô nhập Mật khẩu -->
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/tilPassword"
             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
@@ -136,12 +169,12 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="@id/tilPassword" />
 
-        <!-- Nút Đăng nhập -->
+        <!-- Nút Đăng nhập (màu thay đổi theo role) -->
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btnLogin"
             android:layout_width="match_parent"
             android:layout_height="56dp"
-            android:layout_marginTop="32dp"
+            android:layout_marginTop="28dp"
             android:backgroundTint="#42c2ff"
             android:text="@string/login"
             android:textAllCaps="false"
@@ -151,13 +184,44 @@
             android:elevation="4dp"
             app:layout_constraintTop_toBottomOf="@id/tvForgotPassword" />
 
-        <!-- Nút Đăng nhập với Google siêu đẹp -->
+        <!-- Divider "hoặc" -->
+        <LinearLayout
+            android:id="@+id/layoutDivider"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:layout_marginTop="20dp"
+            app:layout_constraintTop_toBottomOf="@id/btnLogin">
+
+            <View
+                android:layout_width="0dp"
+                android:layout_height="1dp"
+                android:layout_weight="1"
+                android:background="#e2e8f0"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingHorizontal="12dp"
+                android:text="hoặc"
+                android:textColor="#94a3b8"
+                android:textSize="13sp"/>
+
+            <View
+                android:layout_width="0dp"
+                android:layout_height="1dp"
+                android:layout_weight="1"
+                android:background="#e2e8f0"/>
+        </LinearLayout>
+
+        <!-- Nút Google (chỉ hiện cho Khách hàng) -->
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btnLoginGG"
             style="@style/Widget.MaterialComponents.Button.OutlinedButton"
             android:layout_width="match_parent"
             android:layout_height="56dp"
-            android:layout_marginTop="16dp"
+            android:layout_marginTop="12dp"
             android:text="Tiếp tục với Google"
             android:textAllCaps="false"
             android:textColor="#0f172a"
@@ -167,7 +231,7 @@
             app:icon="@drawable/ic_google"
             app:iconGravity="textStart"
             app:iconTint="@null"
-            app:layout_constraintTop_toBottomOf="@id/btnLogin"
+            app:layout_constraintTop_toBottomOf="@id/layoutDivider"
             app:strokeColor="#cbd5e1"
             android:backgroundTint="@android:color/white"
             android:elevation="1dp" />
@@ -187,7 +251,7 @@
                 android:layout_height="wrap_content"
                 android:text="@string/no_account_yet"
                 android:textColor="#64748b"
-                android:textSize="14sp" 
+                android:textSize="14sp"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -200,7 +264,7 @@
                 android:text="@string/register_now"
                 android:textColor="#42c2ff"
                 android:textSize="14sp"
-                android:textStyle="bold" 
+                android:textStyle="bold"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toEndOf="@id/tvNoAccount"
@@ -218,7 +282,6 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toBottomOf="@id/btnBackFrame">
 
-        <!-- Icon Container tròn điệu nghệ -->
         <FrameLayout
             android:id="@+id/iconGoogleContainer"
             android:layout_width="88dp"
@@ -260,7 +323,6 @@
             android:lineSpacingExtra="3sp"
             app:layout_constraintTop_toBottomOf="@id/tvGoogleTitle" />
 
-        <!-- Ô nhập email với bo góc tròn -->
         <com.google.android.material.textfield.TextInputLayout
             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
             android:layout_width="match_parent"

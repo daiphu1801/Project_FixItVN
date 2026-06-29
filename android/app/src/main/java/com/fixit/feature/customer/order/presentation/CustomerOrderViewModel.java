@@ -98,24 +98,35 @@ public class CustomerOrderViewModel extends BaseViewModel {
 
     public void createBooking(Integer serviceId, String address, BigDecimal lat, BigDecimal lng, String issueDescription, String paymentMethod) {
         setLoading(true);
+        startFinding(); // Chuyển trạng thái sang tìm thợ ngay lập tức để cập nhật giao diện và chặn checkActiveBooking
         createBookingUseCase.execute(serviceId, address, lat, lng, issueDescription, paymentMethod, result -> {
             setLoading(false);
             if (result != null && result.isSuccess()) {
                 CustomerBooking booking = result.getData();
                 currentBookingId = booking.getBookingId();
                 _currentBooking.setValue(booking);
-                startFinding();
-                pollBookingDetail(); // Start polling
-            } else if (result != null) {
-                _error.setValue(result.getError().getMessage());
+                pollBookingDetail(); // Bắt đầu polling thông tin chi tiết
+            } else {
+                cancelOrder(); // Trả trạng thái về trống nếu tạo đơn thất bại
+                if (result != null) {
+                    _error.setValue(result.getError().getMessage());
+                }
             }
         });
     }
 
     public void checkActiveBooking() {
+        // Nếu đã có đơn hàng được thiết lập hoặc đang tìm/sửa chữa (status != 0), bỏ qua checkActiveBooking
+        if (_orderStatus.getValue() != null && _orderStatus.getValue() != 0) {
+            return;
+        }
         setLoading(true);
         getBookingsUseCase.execute(result -> {
             setLoading(false);
+            // Kiểm tra lại trạng thái trước khi xử lý callback đề phòng tranh chấp dữ liệu (Race Condition)
+            if (_orderStatus.getValue() != null && _orderStatus.getValue() != 0) {
+                return;
+            }
             if (result != null && result.isSuccess() && result.getData() != null) {
                 List<CustomerBooking> bookings = result.getData();
                 CustomerBooking activeBooking = null;

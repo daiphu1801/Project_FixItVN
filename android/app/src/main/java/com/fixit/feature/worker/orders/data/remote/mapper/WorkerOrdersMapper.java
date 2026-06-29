@@ -20,7 +20,7 @@ public class WorkerOrdersMapper {
  
         WorkerOrder order = new WorkerOrder(
                 dto.getBookingId(),
-                null,
+                dto.getCustomerId(),
                 dto.getServiceName(),
                 dto.getAddress(),
                 formattedTime,

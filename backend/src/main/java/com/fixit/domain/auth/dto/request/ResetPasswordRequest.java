@@ -13,8 +13,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class ResetPasswordRequest {
 
-    @NotBlank(message = "Số điện thoại/Email không được để trống")
-
+    // Một trong hai phải có giá trị (kiểm tra trong service)
     private String phoneNumber;
     private String email;
 

@@ -73,6 +73,7 @@ public class WorkerBookingActionServiceImpl implements WorkerBookingActionServic
 
         return WorkerBookingDetailResponse.builder()
                 .bookingId(booking.getId())
+                .customerId(booking.getCustomer() != null ? booking.getCustomer().getCustomerId() : null)
                 .serviceName(booking.getServiceCategory() != null ? booking.getServiceCategory().getServiceName() : null)
                 .customerName(booking.getCustomer() != null ? booking.getCustomer().getFullName() : null)
                 .customerPhone(booking.getCustomer() != null && booking.getCustomer().getUser() != null ? booking.getCustomer().getUser().getPhoneNumber() : null)

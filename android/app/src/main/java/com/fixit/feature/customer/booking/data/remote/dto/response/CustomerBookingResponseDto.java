@@ -109,6 +109,12 @@ public class CustomerBookingResponseDto {
     public String getPaymentCode() { return paymentCode; }
     public void setPaymentCode(String paymentCode) { this.paymentCode = paymentCode; }
 
+    @SerializedName("doneActions")
+    private java.util.List<String> doneActions;
+
+    public java.util.List<String> getDoneActions() { return doneActions; }
+    public void setDoneActions(java.util.List<String> doneActions) { this.doneActions = doneActions; }
+
     public BookingWorkerInfoDto getWorker() { return worker; }
     public void setWorker(BookingWorkerInfoDto worker) { this.worker = worker; }
 }

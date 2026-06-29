@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#F3F4F6">
+    android:background="#F8FAFC">
 
     <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
@@ -30,41 +30,47 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:paddingBottom="80dp">
+            android:paddingBottom="100dp">
 
             <!-- Profile Header Card -->
             <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="16dp"
+                android:layout_marginTop="16dp"
                 app:cardElevation="2dp"
-                app:cardCornerRadius="0dp">
+                app:cardCornerRadius="16dp"
+                app:strokeWidth="0dp">
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
-                    android:padding="20dp"
+                    android:padding="24dp"
                     android:gravity="center_horizontal">
 
                     <com.google.android.material.imageview.ShapeableImageView
                         android:id="@+id/iv_avatar"
-                        android:layout_width="100dp"
-                        android:layout_height="100dp"
+                        android:layout_width="96dp"
+                        android:layout_height="96dp"
                         android:scaleType="centerCrop"
                         android:src="@drawable/ic_lucide_user"
                         app:shapeAppearanceOverlay="@style/CircleImageView"
-                        android:background="#E5E7EB"
-                        android:padding="1dp"/>
+                        android:background="#FFFFFF"
+                        android:padding="2dp"
+                        app:strokeWidth="2dp"
+                        app:strokeColor="#0284c7" />
 
                     <TextView
                         android:id="@+id/tv_worker_name"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="12dp"
+                        android:layout_marginTop="16dp"
                         tools:text="Nguyễn Văn A"
-                        android:textSize="20sp"
+                        android:textSize="22sp"
                         android:textStyle="bold"
-                        android:textColor="#111827"/>
+                        android:textColor="#0F172A"/>
 
                     <LinearLayout
                         android:layout_width="wrap_content"
@@ -74,8 +80,8 @@
                         android:gravity="center_vertical">
 
                         <ImageView
-                            android:layout_width="16dp"
-                            android:layout_height="16dp"
+                            android:layout_width="18dp"
+                            android:layout_height="18dp"
                             android:src="@drawable/ic_lucide_star"
                             app:tint="#F59E0B"/>
 
@@ -83,21 +89,27 @@
                             android:id="@+id/tv_rating"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_marginStart="4dp"
+                            android:layout_marginStart="6dp"
                             tools:text="4.8 (120 đánh giá)"
-                            android:textSize="14sp"
-                            android:textColor="#4B5563"/>
+                            android:textSize="15sp"
+                            android:textColor="#475569"/>
                     </LinearLayout>
 
                     <com.google.android.material.chip.Chip
                         android:id="@+id/chip_status"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="8dp"
+                        android:layout_marginTop="12dp"
                         tools:text="Sẵn sàng nhận việc"
                         app:chipBackgroundColor="#D1FAE5"
                         android:textColor="#065F46"
-                        app:chipStrokeWidth="0dp"/>
+                        app:chipStrokeWidth="0dp"
+                        app:chipCornerRadius="16dp"
+                        android:textSize="13sp"
+                        android:textStyle="bold"
+                        app:chipMinHeight="32dp"
+                        app:chipStartPadding="12dp"
+                        app:chipEndPadding="12dp" />
 
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
@@ -106,9 +118,12 @@
             <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="16dp"
                 android:layout_marginTop="12dp"
-                app:cardElevation="1dp"
-                app:cardCornerRadius="0dp">
+                app:cardElevation="2dp"
+                app:cardCornerRadius="16dp"
+                app:strokeWidth="0dp">
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -122,16 +137,16 @@
                         android:text="Giới thiệu kinh nghiệm"
                         android:textSize="16sp"
                         android:textStyle="bold"
-                        android:textColor="#111827"/>
+                        android:textColor="#0F172A"/>
 
                     <TextView
                         android:id="@+id/tv_experience"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="8dp"
+                        android:layout_marginTop="10dp"
                         tools:text="Hơn 5 năm kinh nghiệm sửa chữa điện nước gia đình. Chuyên trị các ca khó, sửa nhanh gọn, bảo hành dài hạn."
-                        android:textSize="14sp"
-                        android:textColor="#374151"
+                        android:textSize="15sp"
+                        android:textColor="#334155"
                         android:lineSpacingExtra="4dp"/>
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
@@ -140,9 +155,12 @@
             <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="16dp"
                 android:layout_marginTop="12dp"
-                app:cardElevation="1dp"
-                app:cardCornerRadius="0dp">
+                app:cardElevation="2dp"
+                app:cardCornerRadius="16dp"
+                app:strokeWidth="0dp">
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -156,7 +174,7 @@
                         android:text="Dịch vụ cung cấp"
                         android:textSize="16sp"
                         android:textStyle="bold"
-                        android:textColor="#111827"/>
+                        android:textColor="#0F172A"/>
 
                     <androidx.recyclerview.widget.RecyclerView
                         android:id="@+id/rv_skills"
@@ -177,28 +195,48 @@
         android:layout_gravity="bottom"
         android:background="@color/white"
         android:elevation="8dp"
-        android:padding="16dp"
-        android:orientation="horizontal">
+        android:paddingHorizontal="16dp"
+        android:paddingTop="16dp"
+        android:paddingBottom="28dp"
+        android:orientation="horizontal"
+        android:gravity="center_vertical">
         
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btn_favorite"
             style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
             android:layout_marginEnd="12dp"
+            android:padding="0dp"
+            android:insetLeft="0dp"
+            android:insetRight="0dp"
+            android:insetTop="0dp"
+            android:insetBottom="0dp"
             app:icon="@drawable/ic_heart_outline"
+            app:iconGravity="textStart"
+            app:iconPadding="0dp"
+            app:iconSize="22dp"
             app:iconTint="#EF4444"
-            app:strokeColor="#E5E7EB"/>
+            app:strokeColor="#EF4444"
+            app:strokeWidth="1.5dp"
+            app:cornerRadius="12dp"/>
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btn_book_worker"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
+            android:layout_height="50dp"
             android:layout_weight="1"
-            android:text="Chọn thợ này"
-            android:textSize="16sp"
-            app:cornerRadius="8dp"
-            android:paddingVertical="12dp"/>
+            android:insetLeft="0dp"
+            android:insetRight="0dp"
+            android:insetTop="0dp"
+            android:insetBottom="0dp"
+            android:text="CHỌN THỢ NÀY"
+            android:textSize="15sp"
+            android:textStyle="bold"
+            android:textColor="@color/white"
+            app:backgroundTint="#0284c7"
+            app:cornerRadius="12dp"
+            android:gravity="center"/>
     </LinearLayout>
 
     <include

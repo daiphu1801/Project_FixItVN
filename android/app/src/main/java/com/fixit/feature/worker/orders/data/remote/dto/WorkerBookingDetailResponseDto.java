@@ -8,6 +8,9 @@ public class WorkerBookingDetailResponseDto {
     @SerializedName("bookingId")
     private String bookingId;
 
+    @SerializedName("customerId")
+    private String customerId;
+
     @SerializedName("serviceName")
     private String serviceName;
 
@@ -59,6 +62,9 @@ public class WorkerBookingDetailResponseDto {
     // Getters and Setters
     public String getBookingId() { return bookingId; }
     public void setBookingId(String bookingId) { this.bookingId = bookingId; }
+
+    public String getCustomerId() { return customerId; }
+    public void setCustomerId(String customerId) { this.customerId = customerId; }
 
     public String getServiceName() { return serviceName; }
     public void setServiceName(String serviceName) { this.serviceName = serviceName; }

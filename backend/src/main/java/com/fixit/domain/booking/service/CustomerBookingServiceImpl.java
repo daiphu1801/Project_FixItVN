@@ -22,6 +22,7 @@ import java.util.UUID;
 import com.fixit.domain.booking.repository.WorkerQuotationRepository;
 import com.fixit.domain.booking.repository.CancellationDetailRepository;
 import com.fixit.domain.wallet.repository.TransactionHistoryRepository;
+import com.fixit.domain.booking.repository.BookingHistoryRepository;
 
 @Slf4j
 @Service
@@ -34,6 +35,7 @@ public class CustomerBookingServiceImpl implements CustomerBookingService {
     private final WorkerQuotationRepository workerQuotationRepository;
     private final CancellationDetailRepository cancellationDetailRepository;
     private final TransactionHistoryRepository transactionHistoryRepository;
+    private final BookingHistoryRepository bookingHistoryRepository;
 
     @Override
     @Transactional
@@ -93,6 +95,8 @@ public class CustomerBookingServiceImpl implements CustomerBookingService {
                     .fullName(worker.getFullName())
                     .avatarUrl(workerUser != null ? workerUser.getAvatarUrl() : null)
                     .phoneNumber(workerUser != null ? workerUser.getPhoneNumber() : null)
+                    .latitude(worker.getLatitude())
+                    .longitude(worker.getLongitude())
                     .build();
         }
 
@@ -136,6 +140,11 @@ public class CustomerBookingServiceImpl implements CustomerBookingService {
 
         String paymentCode = transactionHistoryRepository.findTransactionCodeByBookingId(booking.getId()).orElse(null);
 
+        java.util.List<String> doneActions = java.util.Collections.emptyList();
+        if (booking.getId() != null) {
+            doneActions = bookingHistoryRepository.findStatusUpdatesByBookingId(booking.getId());
+        }
+
         return CustomerBookingResponse.builder()
                 .bookingId(booking.getId())
                 .serviceId(booking.getServiceCategory().getId())
@@ -154,6 +163,7 @@ public class CustomerBookingServiceImpl implements CustomerBookingService {
                 .quotationStatus(quotationStatus)
                 .worker(workerInfo)
                 .paymentCode(paymentCode)
+                .doneActions(doneActions)
                 .build();
     }
     @Override

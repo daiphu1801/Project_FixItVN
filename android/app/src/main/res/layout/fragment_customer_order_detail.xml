@@ -8,12 +8,10 @@
     android:background="#F8FAFC">
 
     <!-- Map Background -->
-    <ImageView
-        android:id="@+id/ivMapBackground"
+    <org.osmdroid.views.MapView
+        android:id="@+id/mapView"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:scaleType="centerCrop"
-        android:src="@drawable/img_map_placeholder" />
+        android:layout_height="match_parent" />
 
     <!-- Bottom Sheet Card -->
     <com.google.android.material.card.MaterialCardView
@@ -251,6 +249,18 @@
                     </androidx.constraintlayout.widget.ConstraintLayout>
                 </com.google.android.material.card.MaterialCardView>
 
+                <!-- Timeline Card -->
+                <include
+                    android:id="@+id/layoutTimeline"
+                    layout="@layout/layout_order_timeline_card"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="16dp"
+                    android:layout_marginTop="12dp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/cvTechnicianCard" />
+
                 <!-- Quotation Detail Card (appears when technician sends a quotation) -->
                 <LinearLayout
                     android:id="@+id/llQuotationDetail"
@@ -263,7 +273,7 @@
                     android:backgroundTint="#F0FDFA"
                     android:padding="16dp"
                     android:visibility="gone"
-                    app:layout_constraintTop_toBottomOf="@id/cvTechnicianCard"
+                    app:layout_constraintTop_toBottomOf="@id/layoutTimeline"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintEnd_toEndOf="parent">
 

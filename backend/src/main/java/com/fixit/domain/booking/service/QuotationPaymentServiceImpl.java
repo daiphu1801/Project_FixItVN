@@ -2,9 +2,11 @@ package com.fixit.domain.booking.service;
 
 import com.fixit.domain.booking.dto.request.WorkerQuotationCreateRequest;
 import com.fixit.domain.booking.entity.Booking;
+import com.fixit.domain.booking.entity.BookingHistory;
 import com.fixit.domain.booking.entity.BookingStatus;
 import com.fixit.domain.booking.entity.QuotationStatus;
 import com.fixit.domain.booking.entity.WorkerQuotation;
+import com.fixit.domain.booking.repository.BookingHistoryRepository;
 import com.fixit.domain.booking.repository.BookingRepository;
 import com.fixit.domain.booking.repository.WorkerQuotationRepository;
 import com.fixit.domain.notification.service.NotificationSenderService;
@@ -38,6 +40,7 @@ public class QuotationPaymentServiceImpl implements QuotationPaymentService {
     private final NotificationSenderService notificationSenderService;
     private final WorkerWalletRepository workerWalletRepository;
     private final TransactionHistoryRepository transactionHistoryRepository;
+    private final BookingHistoryRepository bookingHistoryRepository;
 
     @Override
     @Transactional
@@ -118,6 +121,15 @@ public class QuotationPaymentServiceImpl implements QuotationPaymentService {
 
         booking.setStatus(BookingStatus.In_Progress);
         bookingRepository.save(booking);
+
+        // Lưu lịch sử trạng thái In_Progress vào booking_histories để thợ hoàn thành đơn không bị báo lỗi thiếu bước
+        bookingHistoryRepository.save(
+                BookingHistory.builder()
+                        .booking(booking)
+                        .statusUpdate("In_Progress")
+                        .updatedAt(OffsetDateTime.now())
+                        .build()
+        );
     }
 
     @Override

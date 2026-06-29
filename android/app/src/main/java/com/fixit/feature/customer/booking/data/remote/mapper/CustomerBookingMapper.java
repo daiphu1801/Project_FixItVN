@@ -17,7 +17,9 @@ public class CustomerBookingMapper {
                     wDto.getWorkerId(),
                     wDto.getFullName(),
                     wDto.getAvatarUrl(),
-                    wDto.getPhoneNumber()
+                    wDto.getPhoneNumber(),
+                    wDto.getLatitude(),
+                    wDto.getLongitude()
             );
         }
 
@@ -39,7 +41,8 @@ public class CustomerBookingMapper {
                 workerInfo,
                 dto.getQuotationId(),
                 dto.getQuotationStatus(),
-                dto.getPaymentCode()
+                dto.getPaymentCode(),
+                dto.getDoneActions()
         );
     }
 }

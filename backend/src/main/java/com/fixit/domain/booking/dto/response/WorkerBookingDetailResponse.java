@@ -13,6 +13,7 @@ import java.util.UUID;
 @AllArgsConstructor
 public class WorkerBookingDetailResponse {
     private UUID bookingId;
+    private UUID customerId;
     private String serviceName;
     private String customerName;
     private String customerPhone;

@@ -15,6 +15,7 @@ public enum ErrorCode {
         PHONE_ALREADY_EXISTS(409, HttpStatus.CONFLICT, "Số điện thoại đã được đăng ký"),
         EMAIL_ALREADY_EXISTS(409, HttpStatus.CONFLICT, "Email đã được đăng ký"),
         USER_BLOCKED(403, HttpStatus.FORBIDDEN, "Tài khoản đã bị khóa"),
+        WRONG_ROLE(400, HttpStatus.BAD_REQUEST, "Số điện thoại hoặc mật khẩu không chính xác"),
         NOTIFICATION_NOT_FOUND(404, HttpStatus.NOT_FOUND, "Notification not found"),
 
         // Worker assignment
@@ -78,7 +79,8 @@ public enum ErrorCode {
         // Worker wallet
         WALLET_NOT_FOUND(404, HttpStatus.NOT_FOUND, "Không tìm thấy ví của thợ hiện tại"),
         WALLET_DEBT_NOT_FOUND(409, HttpStatus.CONFLICT, "Không có khoản nợ cần thanh toán"),
-        WALLET_DEPOSIT_AMOUNT_TOO_SMALL(400, HttpStatus.BAD_REQUEST, "Số tiền nạp phải lớn hơn hoặc bằng khoản nợ hiện tại"),
+        WALLET_DEPOSIT_AMOUNT_TOO_SMALL(400, HttpStatus.BAD_REQUEST,
+                        "Số tiền nạp phải lớn hơn hoặc bằng khoản nợ hiện tại"),
         WALLET_DEPOSIT_INVALID_AMOUNT(400, HttpStatus.BAD_REQUEST, "Số tiền nạp không hợp lệ"),
         WALLET_DEPOSIT_NOT_FOUND(404, HttpStatus.NOT_FOUND, "Không tìm thấy giao dịch nạp tiền của thợ hiện tại"),
         WALLET_DEPOSIT_INVALID_STATUS(409, HttpStatus.CONFLICT, "Trạng thái giao dịch nạp tiền không hợp lệ"),
