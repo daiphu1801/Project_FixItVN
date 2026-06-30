@@ -178,14 +178,19 @@ public class OrderDetailUiHelper {
         if (status == null) return;
 
         if (status == JobStatus.SURVEYING) {
-            pricingBinding.btnAddExtraFee.setVisibility(View.VISIBLE);
+            pricingBinding.getRoot().setVisibility(View.GONE);
         } else {
+            pricingBinding.getRoot().setVisibility(View.VISIBLE);
             pricingBinding.btnAddExtraFee.setVisibility(View.GONE);
         }
 
         binding.btnCancelOrderDetail.setVisibility(View.VISIBLE);
         binding.btnCompleteOrderDetail.setVisibility(View.VISIBLE);
-        binding.btnCompleteOrderDetail.setText(status.getNextActionText());
+        if (status == JobStatus.SURVEYING) {
+            binding.btnCompleteOrderDetail.setText("Báo giá dịch vụ");
+        } else {
+            binding.btnCompleteOrderDetail.setText(status.getNextActionText());
+        }
         binding.btnCompleteOrderDetail.setEnabled(true);
         binding.btnCompleteOrderDetail.setAlpha(1.0f);
         binding.btnCompleteOrderDetail.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#2563eb")));
@@ -360,10 +365,29 @@ public class OrderDetailUiHelper {
                 if (currentStatus == JobStatus.SURVEYING) {
                     if (order.getProofBeforeUrl() == null || order.getProofBeforeUrl().isEmpty()) {
                         Toast.makeText(fragment.requireContext(),
-                                "Bạn phải tải lên ảnh bằng chứng TRƯỚC khi sửa chữa!",
+                                "Bạn phải tải lên ảnh bằng chứng TRƯỚC khi báo giá!",
                                 Toast.LENGTH_LONG).show();
                         return;
                     }
+                    android.os.Bundle args = new android.os.Bundle();
+                    args.putString("bookingId", order.getOrderId());
+                    long laborCostVal = 0;
+                    if (order.getFinalPrice() != null) {
+                        laborCostVal = order.getFinalPrice().longValue();
+                    } else if (order.getPrice() != null) {
+                        try {
+                            String cleanedPrice = order.getPrice().replaceAll("[^0-9]", "");
+                            if (!cleanedPrice.isEmpty()) {
+                                laborCostVal = Long.parseLong(cleanedPrice);
+                            }
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    }
+                    args.putLong("laborCost", laborCostVal);
+                    Navigation.findNavController(v)
+                            .navigate(R.id.workerExtraCostFragment, args);
+                    return;
                 }
                 if (currentStatus == JobStatus.REPAIRING) {
                     if (order.getProofAfterUrl() == null || order.getProofAfterUrl().isEmpty()) {
