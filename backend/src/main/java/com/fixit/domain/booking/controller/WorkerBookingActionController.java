@@ -1,6 +1,7 @@
 package com.fixit.domain.booking.controller;
 
 import com.fixit.domain.booking.dto.response.BookingActionResponse;
+import com.fixit.domain.booking.dto.response.WorkerBookingDetailResponse;
 import com.fixit.domain.booking.service.WorkerBookingActionService;
 import com.fixit.global.response.ApiResponse;
 import lombok.RequiredArgsConstructor;
@@ -14,6 +15,14 @@ import java.util.UUID;
 public class WorkerBookingActionController {
 
     private final WorkerBookingActionService workerBookingActionService;
+
+    @GetMapping("/{bookingId}")
+    public ApiResponse<WorkerBookingDetailResponse> getBookingDetails(
+            @PathVariable UUID bookingId
+    ) {
+        WorkerBookingDetailResponse response = workerBookingActionService.getBookingDetails(bookingId);
+        return ApiResponse.success(response);
+    }
 
     @PostMapping("/{bookingId}/start-moving")
     public ApiResponse<BookingActionResponse> startMoving(

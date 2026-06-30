@@ -1,7 +1,9 @@
 package com.fixit.feature.worker.availability.domain.repository;
 
-public interface WorkerAvailabilityRepository {
-    boolean isOnline();
+import com.fixit.core.common.ResultCallback;
 
-    boolean toggleOnline();
+public interface WorkerAvailabilityRepository {
+    void isOnline(ResultCallback<Boolean> callback);
+
+    void setOnline(boolean online, ResultCallback<Boolean> callback);
 }

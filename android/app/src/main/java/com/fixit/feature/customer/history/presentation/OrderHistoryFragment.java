@@ -1,17 +1,24 @@
 package com.fixit.feature.customer.history.presentation;
 
 import android.graphics.Color;
+import android.os.Bundle;
 import android.view.LayoutInflater;
+import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
-import androidx.core.content.ContextCompat;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
 import com.fixit.R;
 import com.fixit.core.ui.BaseFragment;
 import com.fixit.databinding.FragmentCustomerOrderHistoryBinding;
+import com.fixit.databinding.ItemOrderHistoryBinding;
+
 import dagger.hilt.android.AndroidEntryPoint;
 import java.util.ArrayList;
 import java.util.List;
+import com.fixit.feature.customer.order.presentation.CustomerOrderViewModel;
 
 /**
  * FILE ĐIỀU KHIỂN MÀN HÌNH LỊCH SỬ ĐƠN HÀNG
@@ -20,9 +27,13 @@ import java.util.List;
 @AndroidEntryPoint
 public class OrderHistoryFragment extends BaseFragment<FragmentCustomerOrderHistoryBinding> {
 
+    private OrderHistoryAdapter adapter;
+    private CustomerOrderViewModel orderViewModel;
+
     @NonNull
     @Override
-    protected FragmentCustomerOrderHistoryBinding inflateViewBinding(@NonNull LayoutInflater inflater, ViewGroup container) {
+    protected FragmentCustomerOrderHistoryBinding inflateViewBinding(@NonNull LayoutInflater inflater,
+            ViewGroup container) {
         // Kết nối file giao diện fragment_customer_order_history.xml với code Java này
         return FragmentCustomerOrderHistoryBinding.inflate(inflater, container, false);
     }
@@ -37,6 +48,13 @@ public class OrderHistoryFragment extends BaseFragment<FragmentCustomerOrderHist
         });
 
         setupFilterChips();
+
+        adapter = new OrderHistoryAdapter();
+        binding.rvOrders.setLayoutManager(new androidx.recyclerview.widget.LinearLayoutManager(requireContext()));
+        binding.rvOrders.setAdapter(adapter);
+
+        orderViewModel = new androidx.lifecycle.ViewModelProvider(requireActivity()).get(CustomerOrderViewModel.class);
+        orderViewModel.fetchBookings();
     }
 
     private void setupFilterChips() {
@@ -49,7 +67,6 @@ public class OrderHistoryFragment extends BaseFragment<FragmentCustomerOrderHist
         for (TextView chip : chips) {
             chip.setOnClickListener(v -> {
                 updateChipsState(chips, chip);
-                // Sau này sẽ thêm logic gọi API hoặc lọc dữ liệu tại đây
                 filterData(chip.getText().toString());
             });
         }
@@ -68,11 +85,20 @@ public class OrderHistoryFragment extends BaseFragment<FragmentCustomerOrderHist
     }
 
     private void filterData(String status) {
-        // Mock logic lọc dữ liệu
+        // Có thể filter list ở đây
     }
 
     @Override
     protected void observeData() {
-        // Gợi ý: Sau này bạn sẽ lấy dữ liệu đơn hàng từ ViewModel tại đây
+        orderViewModel.bookingHistory.observe(getViewLifecycleOwner(), list -> {
+            adapter.submitList(list);
+        });
+
+        orderViewModel.getIsLoading().observe(getViewLifecycleOwner(), isLoading -> {
+            if (isLoading != null && binding.layoutLoading != null) {
+                binding.layoutLoading.getRoot()
+                        .setVisibility(isLoading ? android.view.View.VISIBLE : android.view.View.GONE);
+            }
+        });
     }
 }

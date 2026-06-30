@@ -13,6 +13,8 @@ public class WorkerProfile {
     private final double reputationScore;
     private final String experienceDescription;
     private final String serviceArea;
+    private final double latitude;
+    private final double longitude;
 
     public WorkerProfile(
             String workerId,
@@ -25,7 +27,9 @@ public class WorkerProfile {
             boolean available,
             double reputationScore,
             String experienceDescription,
-            String serviceArea
+            String serviceArea,
+            double latitude,
+            double longitude
     ) {
         this.workerId = workerId;
         this.fullName = fullName;
@@ -38,6 +42,8 @@ public class WorkerProfile {
         this.reputationScore = reputationScore;
         this.experienceDescription = experienceDescription;
         this.serviceArea = serviceArea;
+        this.latitude = latitude;
+        this.longitude = longitude;
     }
 
     public String getWorkerId() {
@@ -82,5 +88,13 @@ public class WorkerProfile {
 
     public String getServiceArea() {
         return serviceArea;
+    }
+
+    public double getLatitude() {
+        return latitude;
+    }
+
+    public double getLongitude() {
+        return longitude;
     }
 }

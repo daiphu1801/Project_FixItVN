@@ -35,17 +35,6 @@
     app:layout_constraintStart_toEndOf="@id/btnBack"
     app:layout_constraintTop_toTopOf="parent" />
 
-    <ImageView
-        android:id="@+id/ivNotification"
-        android:layout_width="28dp"
-        android:layout_height="28dp"
-        android:background="?attr/selectableItemBackgroundBorderless"
-        android:padding="4dp"
-        android:src="@drawable/ic_lucide_bell"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:tint="#0284C7" />
 </androidx.constraintlayout.widget.ConstraintLayout>
 
     <EditText
@@ -75,4 +64,10 @@
         app:layout_constraintTop_toBottomOf="@id/etSearchWorker"
         tools:listitem="@layout/item_favorite_worker" />
 
+    <include
+        android:id="@+id/layoutLoading"
+        layout="@layout/layout_loading"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone" />
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -31,13 +31,13 @@ public class AuthRoleFragment extends Fragment {
 
         binding.cardCustomer.setOnClickListener(v -> {
             Bundle bundle = new Bundle();
-            bundle.putString("role", "CUSTOMER");
+            bundle.putString("role", "Customer");
             Navigation.findNavController(view).navigate(R.id.action_authRoleFragment_to_loginFragment, bundle);
         });
 
         binding.cardWorker.setOnClickListener(v -> {
             Bundle bundle = new Bundle();
-            bundle.putString("role", "WORKER");
+            bundle.putString("role", "Worker");
             Navigation.findNavController(view).navigate(R.id.action_authRoleFragment_to_loginFragment, bundle);
         });
     }

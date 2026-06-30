@@ -19,17 +19,27 @@ public class WorkerProfileUpdateRequest {
     @SerializedName("serviceArea")
     private final String serviceArea;
 
+    @SerializedName("latitude")
+    private final Double latitude;
+
+    @SerializedName("longitude")
+    private final Double longitude;
+
     public WorkerProfileUpdateRequest(
             String fullName,
             String email,
             String avatarUrl,
             String experienceDescription,
-            String serviceArea
+            String serviceArea,
+            Double latitude,
+            Double longitude
     ) {
         this.fullName = fullName;
         this.email = email;
         this.avatarUrl = avatarUrl;
         this.experienceDescription = experienceDescription;
         this.serviceArea = serviceArea;
+        this.latitude = latitude;
+        this.longitude = longitude;
     }
 }

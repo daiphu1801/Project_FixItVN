@@ -107,8 +107,10 @@ public class WorkerMeController {
     }
 
     @GetMapping("/stats")
-    public ApiResponse<WorkerStatsResponse> getStats() {
-        WorkerStatsResponse response = workerStatsService.getMyStats();
+    public ApiResponse<WorkerStatsResponse> getStats(
+            @RequestParam(defaultValue = "week") String period
+    ) {
+        WorkerStatsResponse response = workerStatsService.getMyStats(period);
         return ApiResponse.success(response);
     }
 

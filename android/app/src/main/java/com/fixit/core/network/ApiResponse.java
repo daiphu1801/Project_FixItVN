@@ -28,4 +28,16 @@ public class ApiResponse<T> {
     public boolean isSuccess() {
         return code >= 200 && code < 300;
     }
+
+    public static ApiResponse<?> parseError(retrofit2.Response<?> response) {
+        try {
+            if (response == null || response.errorBody() == null) {
+                return null;
+            }
+            String rawJson = response.errorBody().string();
+            return new com.google.gson.Gson().fromJson(rawJson, ApiResponse.class);
+        } catch (Exception e) {
+            return null;
+        }
+    }
 }

@@ -1,5 +1,6 @@
 package com.fixit.feature.worker.orders.domain.repository;
 
+import com.fixit.core.common.ResultCallback;
 import com.fixit.feature.worker.orders.domain.model.ExtraCostItem;
 import com.fixit.feature.worker.orders.domain.model.JobStatus;
 import com.fixit.feature.worker.orders.domain.model.WorkerOrder;
@@ -7,15 +8,15 @@ import com.fixit.feature.worker.orders.domain.model.WorkerOrder;
 import java.util.List;
 
 public interface WorkerOrdersRepository {
-    List<WorkerOrder> getOrders();
+    void getOrders(ResultCallback<List<WorkerOrder>> callback);
 
-    List<WorkerOrder> filterOrders(String status);
+    void filterOrders(String status, ResultCallback<List<WorkerOrder>> callback);
 
-    WorkerOrder getOrderById(String orderId);
+    void getOrderById(String orderId, ResultCallback<WorkerOrder> callback);
 
     JobStatus getInitialStatus(String orderStatus);
 
-    JobStatus advanceStatus(JobStatus currentStatus);
+    void advanceStatus(String orderId, JobStatus currentStatus, ResultCallback<JobStatus> callback);
 
     void saveExtraCosts(List<ExtraCostItem> items);
 

@@ -23,4 +23,8 @@ public class WorkerProfileUpdateRequest {
 
     @Size(max = 255, message = "Khu vực hoạt động không được vượt quá 255 ký tự")
     private String serviceArea;
+
+    private java.math.BigDecimal latitude;
+
+    private java.math.BigDecimal longitude;
 }

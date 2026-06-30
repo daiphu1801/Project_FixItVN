@@ -28,7 +28,8 @@ public class LoginFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         binding = FragmentLoginBinding.inflate(inflater, container, false);
-        viewModel = new ViewModelProvider(this).get(AuthViewModel.class);
+        // Dùng Activity scope để chia sẻ cùng ViewModel với AuthActivity
+        viewModel = new ViewModelProvider(requireActivity()).get(AuthViewModel.class);
 
         if (getArguments() != null) {
             selectedRole = getArguments().getString("role", "CUSTOMER");
@@ -73,35 +74,17 @@ public class LoginFragment extends Fragment {
             viewModel.login(phone, password, selectedRole);
         });
 
-        viewModel.event.observe(getViewLifecycleOwner(), event -> {
-            if (event == null) {
-                return;
-            }
-
-            String fullName = event.getSession() != null && event.getSession().getUser() != null
-                    ? event.getSession().getUser().getFullName()
-                    : "";
-            Toast.makeText(getContext(), "Đăng nhập thành công! Chào " + fullName, Toast.LENGTH_SHORT).show();
-
-            Class<?> destination = event.getType() == AuthEvent.Type.NAVIGATE_TO_WORKER
-                    ? com.fixit.feature.worker.presentation.WorkerActivity.class
-                    : com.fixit.feature.customer.presentation.CustomerActivity.class;
-
-            android.content.Intent intent = new android.content.Intent(getActivity(), destination);
-            startActivity(intent);
-            requireActivity().finish();
-        });
-
+        // Chỉ observe uiState để hiển thị loading/error trong Fragment.
+        // Việc navigate được xử lý tập trung tại AuthActivity observer.
         viewModel.uiState.observe(getViewLifecycleOwner(), state -> {
-            if (state == null) {
-                return;
-            }
+            if (state == null) return;
             binding.btnLogin.setEnabled(!state.isLoading());
             binding.btnLogin.setText(state.isLoading() ? "Đang xử lý..." : "Đăng nhập");
             if (state.getErrorMessage() != null) {
                 Toast.makeText(getContext(), state.getErrorMessage(), Toast.LENGTH_LONG).show();
             }
         });
+
     }
 
     private void showMainLogin() {

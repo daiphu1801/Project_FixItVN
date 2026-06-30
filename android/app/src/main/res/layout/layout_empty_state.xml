@@ -10,10 +10,10 @@
     android:visibility="gone">
 
     <ImageView
-        android:layout_width="80dp"
-        android:layout_height="80dp"
-        android:src="@android:drawable/ic_menu_search"
-        app:tint="#BDBDBD" />
+        android:layout_width="64dp"
+        android:layout_height="64dp"
+        android:src="@drawable/ic_lucide_clipboard_list"
+        app:tint="#cbd5e1" />
 
     <TextView
         android:id="@+id/tvEmptyMessage"
@@ -21,7 +21,17 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
         android:gravity="center"
-        android:text="Chưa có dữ liệu"
-        android:textColor="#888888"
-        android:textSize="16sp" />
+        android:text="Chưa có đơn hàng nào"
+        android:textColor="#94a3b8"
+        android:textSize="15sp"
+        android:fontFamily="sans-serif-medium" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="6dp"
+        android:gravity="center"
+        android:text="Kéo xuống để cập nhật danh sách"
+        android:textColor="#cbd5e1"
+        android:textSize="12sp" />
 </LinearLayout>

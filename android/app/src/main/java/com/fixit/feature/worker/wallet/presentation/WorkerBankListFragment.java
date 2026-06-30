@@ -83,6 +83,10 @@ public class WorkerBankListFragment extends BaseFragment<FragmentWorkerBankListB
                 Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show();
             }
         });
+
+        viewModel.loading.observe(getViewLifecycleOwner(), isLoading -> {
+            binding.layoutLoading.getRoot().setVisibility(isLoading ? View.VISIBLE : View.GONE);
+        });
     }
 
     @Override

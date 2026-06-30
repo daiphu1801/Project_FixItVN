@@ -30,6 +30,7 @@ import dagger.hilt.android.AndroidEntryPoint;
 @AndroidEntryPoint
 public class ChatCustomerFragment extends BaseFragment<FragmentChatCustomerBinding> {
 
+    private ChatViewModel viewModel;
     private ChatMessageAdapter adapter;
     private final List<ChatMessage> messageList = new ArrayList<>();
     private LinearLayoutManager layoutManager;
@@ -43,30 +44,31 @@ public class ChatCustomerFragment extends BaseFragment<FragmentChatCustomerBindi
 
     @Override
     protected void setupViews() {
-        // Lấy tên thợ được truyền từ màn hình danh sách
-        Bundle args = getArguments();
-        String workerName = (args != null) ? args.getString("workerName", "Thợ") : "Thợ";
+        // Khởi tạo ViewModel
+        viewModel = new androidx.lifecycle.ViewModelProvider(this).get(ChatViewModel.class);
 
-        // Hiển thị tên thợ trên header
+        // Lấy thông tin thợ/khách được truyền từ màn hình danh sách
+        Bundle args = getArguments();
+        String workerName = (args != null) ? args.getString("workerName", "Người dùng") : "Người dùng";
+        String workerId = (args != null) ? args.getString("workerId", "") : "";
+
+        // Hiển thị tên đối phương trên header
         binding.tvName.setText(workerName);
+
+        // Khởi tạo ViewModel với thông tin người đối thoại
+        viewModel.init(workerId, workerName);
 
         setupRecyclerView();
         setupInputActions();
     }
 
     private void setupRecyclerView() {
-        // Nạp tin nhắn giả lập
-        messageList.addAll(buildFakeMessages());
-
         adapter = new ChatMessageAdapter(messageList);
         layoutManager = new LinearLayoutManager(requireContext());
         layoutManager.setStackFromEnd(true); // Cuộn xuống cuối mặc định
 
         binding.rvChatMessages.setLayoutManager(layoutManager);
         binding.rvChatMessages.setAdapter(adapter);
-
-        // Cuộn tới tin nhắn cuối cùng
-        scrollToBottom();
     }
 
     private void setupInputActions() {
@@ -92,21 +94,9 @@ public class ChatCustomerFragment extends BaseFragment<FragmentChatCustomerBindi
         String text = binding.etMessageInput.getText().toString().trim();
         if (TextUtils.isEmpty(text)) return;
 
-        // Lấy giờ hiện tại làm timestamp
-        String timestamp = new SimpleDateFormat("HH:mm", Locale.getDefault()).format(new Date());
-
-        // Tạo tin nhắn mới (isSentByMe = true)
-        ChatMessage newMessage = new ChatMessage(
-                UUID.randomUUID().toString(),
-                text,
-                timestamp,
-                true
-        );
-
-        // Thêm vào adapter và cuộn xuống
-        adapter.addMessage(newMessage);
+        // Gửi qua ViewModel
+        viewModel.sendMessage(text);
         binding.etMessageInput.setText("");
-        scrollToBottom();
     }
 
     private void scrollToBottom() {
@@ -117,30 +107,26 @@ public class ChatCustomerFragment extends BaseFragment<FragmentChatCustomerBindi
 
     @Override
     protected void observeData() {
-        // Sẽ kết nối ViewModel/WebSocket thực ở đây sau
-    }
+        // Lắng nghe danh sách tin nhắn thời gian thực từ Firestore
+        viewModel.messages.observe(getViewLifecycleOwner(), messages -> {
+            messageList.clear();
+            if (messages != null) {
+                messageList.addAll(messages);
+            }
+            adapter.notifyDataSetChanged();
+            scrollToBottom();
+        });
 
-    // ============ Fake data ============
-    private List<ChatMessage> buildFakeMessages() {
-        List<ChatMessage> list = new ArrayList<>();
-        list.add(new ChatMessage("1",
-                "Chào chị, em là thợ được phân công cho đơn hàng sửa tủ lạnh của chị ạ.",
-                "08:30", false));
-        list.add(new ChatMessage("2",
-                "Chào anh! Anh có thể đến sớm không?",
-                "08:32", true));
-        list.add(new ChatMessage("3",
-                "Dạ em đang trên đường rồi ạ, khoảng 15 phút nữa em đến!",
-                "08:33", false));
-        list.add(new ChatMessage("4",
-                "Ok anh nhé, em mở cửa sẵn cho.",
-                "08:35", true));
-        list.add(new ChatMessage("5",
-                "Vâng ạ! Em cảm ơn chị 😊",
-                "08:35", false));
-        list.add(new ChatMessage("6",
-                "Em sẽ có mặt trong 15 phút ạ!",
-                "08:47", false));
-        return list;
+        // Đánh dấu đã đọc khi có tin nhắn mới và Fragment đang hiển thị
+        viewModel.messages.observe(getViewLifecycleOwner(), messages -> {
+            viewModel.markAsRead();
+        });
+
+        // Lắng nghe thông báo lỗi
+        viewModel.error.observe(getViewLifecycleOwner(), errorMsg -> {
+            if (errorMsg != null && !errorMsg.isEmpty()) {
+                android.widget.Toast.makeText(requireContext(), errorMsg, android.widget.Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 }

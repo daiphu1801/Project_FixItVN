@@ -1,5 +1,15 @@
 package com.fixit.feature.worker.orders.data.repository;
 
+import com.fixit.core.common.AppError;
+import com.fixit.core.common.Result;
+import com.fixit.core.common.ResultCallback;
+import com.fixit.core.network.ApiResponse;
+import com.fixit.feature.worker.orders.data.remote.api.WorkerOrdersApi;
+import com.fixit.feature.worker.orders.data.remote.dto.BookingActionResponseDto;
+import com.fixit.feature.worker.orders.data.remote.dto.WorkerBookingDetailResponseDto;
+import com.fixit.feature.worker.orders.data.remote.dto.WorkerHistoryResponseDto;
+import com.fixit.feature.worker.orders.data.remote.dto.WorkerScheduleResponseDto;
+import com.fixit.feature.worker.orders.data.remote.mapper.WorkerOrdersMapper;
 import com.fixit.feature.worker.orders.domain.model.ExtraCostItem;
 import com.fixit.feature.worker.orders.domain.model.JobStatus;
 import com.fixit.feature.worker.orders.domain.model.WorkerOrder;
@@ -8,12 +18,15 @@ import com.fixit.feature.worker.orders.domain.repository.WorkerOrdersRepository;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 @Singleton
 public class WorkerOrdersRepositoryImpl implements WorkerOrdersRepository {
@@ -21,65 +34,225 @@ public class WorkerOrdersRepositoryImpl implements WorkerOrdersRepository {
     private static final String ADMIN_ACCOUNT_NO = "0859226688";
     private static final String ADMIN_ACCOUNT_NAME = "CONG TY FIXIT VN";
 
-    private final List<WorkerOrder> orders;
+    private final WorkerOrdersApi api;
     private List<ExtraCostItem> extraCosts = new ArrayList<>();
 
     @Inject
-    public WorkerOrdersRepositoryImpl() {
-        orders = createMockOrders();
+    public WorkerOrdersRepositoryImpl(WorkerOrdersApi api) {
+        this.api = api;
     }
 
     @Override
-    public List<WorkerOrder> getOrders() {
-        return orders;
+    public void getOrders(ResultCallback<List<WorkerOrder>> callback) {
+        api.getSchedule().enqueue(new Callback<ApiResponse<WorkerScheduleResponseDto>>() {
+            @Override
+            public void onResponse(Call<ApiResponse<WorkerScheduleResponseDto>> call,
+                    Response<ApiResponse<WorkerScheduleResponseDto>> response) {
+                if (!response.isSuccessful() || response.body() == null || !response.body().isSuccess()) {
+                    callback.onResult(Result.error(new AppError("Không tải được danh sách đơn hàng")));
+                    return;
+                }
+
+                List<WorkerOrder> orders = new ArrayList<>();
+                if (response.body().getData() != null && response.body().getData().getItems() != null) {
+                    orders = response.body().getData().getItems().stream()
+                            .map(WorkerOrdersMapper::map)
+                            .collect(Collectors.toList());
+                }
+                callback.onResult(Result.success(orders));
+            }
+
+            @Override
+            public void onFailure(Call<ApiResponse<WorkerScheduleResponseDto>> call, Throwable t) {
+                callback.onResult(Result.error(new AppError("Lỗi kết nối: " + t.getMessage(), t)));
+            }
+        });
     }
 
     @Override
-    public List<WorkerOrder> filterOrders(String status) {
+    public void filterOrders(String status, ResultCallback<List<WorkerOrder>> callback) {
         if ("history".equals(status)) {
-            return orders.stream()
-                    .filter(order -> "completed".equals(order.getStatus())
-                            || "cancelled".equals(order.getStatus()))
-                    .collect(Collectors.toList());
+            api.getHistory(null).enqueue(new Callback<ApiResponse<WorkerHistoryResponseDto>>() {
+                @Override
+                public void onResponse(Call<ApiResponse<WorkerHistoryResponseDto>> call,
+                        Response<ApiResponse<WorkerHistoryResponseDto>> response) {
+                    if (!response.isSuccessful() || response.body() == null || !response.body().isSuccess()) {
+                        callback.onResult(Result.error(new AppError("Không tải được lịch sử đơn hàng")));
+                        return;
+                    }
+
+                    List<WorkerOrder> orders = new ArrayList<>();
+                    if (response.body().getData() != null && response.body().getData().getItems() != null) {
+                        orders = response.body().getData().getItems().stream()
+                                .map(WorkerOrdersMapper::map)
+                                .collect(Collectors.toList());
+                    }
+                    callback.onResult(Result.success(orders));
+                }
+
+                @Override
+                public void onFailure(Call<ApiResponse<WorkerHistoryResponseDto>> call, Throwable t) {
+                    callback.onResult(Result.error(new AppError("Lỗi kết nối: " + t.getMessage(), t)));
+                }
+            });
+        } else {
+            getOrders(new ResultCallback<List<WorkerOrder>>() {
+                @Override
+                public void onResult(Result<List<WorkerOrder>> result) {
+                    if (result.isSuccess()) {
+                        List<WorkerOrder> filtered = result.getData().stream()
+                                .filter(order -> status.equals(order.getStatus()))
+                                .collect(Collectors.toList());
+                        callback.onResult(Result.success(filtered));
+                    } else {
+                        callback.onResult(result);
+                    }
+                }
+            });
         }
-        return orders.stream()
-                .filter(order -> status.equals(order.getStatus()))
-                .collect(Collectors.toList());
     }
 
     @Override
-    public WorkerOrder getOrderById(String orderId) {
-        return orders.stream()
-                .filter(order -> order.getOrderId().equals(orderId))
-                .findFirst()
-                .orElse(null);
+    public void getOrderById(String orderId, ResultCallback<WorkerOrder> callback) {
+        api.getBookingDetails(orderId).enqueue(new Callback<ApiResponse<WorkerBookingDetailResponseDto>>() {
+            @Override
+            public void onResponse(Call<ApiResponse<WorkerBookingDetailResponseDto>> call,
+                    Response<ApiResponse<WorkerBookingDetailResponseDto>> response) {
+                if (!response.isSuccessful() || response.body() == null || !response.body().isSuccess()) {
+                    callback.onResult(Result.error(new AppError("Không lấy được chi tiết đơn hàng")));
+                    return;
+                }
+
+                WorkerOrder order = WorkerOrdersMapper.map(response.body().getData());
+                if (order == null) {
+                    callback.onResult(Result.error(new AppError("Dữ liệu đơn hàng không hợp lệ")));
+                } else {
+                    callback.onResult(Result.success(order));
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ApiResponse<WorkerBookingDetailResponseDto>> call, Throwable t) {
+                callback.onResult(Result.error(new AppError("Lỗi kết nối: " + t.getMessage(), t)));
+            }
+        });
     }
 
     @Override
     public JobStatus getInitialStatus(String orderStatus) {
         if ("ongoing".equals(orderStatus)) {
             return JobStatus.SURVEYING;
+        } else if ("completed".equals(orderStatus) || "cancelled".equals(orderStatus)) {
+            return JobStatus.COMPLETED;
         }
         return JobStatus.ACCEPTED;
     }
 
     @Override
-    public JobStatus advanceStatus(JobStatus currentStatus) {
+    public void advanceStatus(String orderId, JobStatus currentStatus, ResultCallback<JobStatus> callback) {
         if (currentStatus == null) {
-            return null;
+            callback.onResult(Result.error(new AppError("Trạng thái hiện tại không hợp lệ")));
+            return;
         }
 
         switch (currentStatus) {
             case ACCEPTED:
-                return JobStatus.ARRIVING;
+                api.startMoving(orderId).enqueue(new Callback<ApiResponse<BookingActionResponseDto>>() {
+                    @Override
+                    public void onResponse(Call<ApiResponse<BookingActionResponseDto>> call,
+                            Response<ApiResponse<BookingActionResponseDto>> response) {
+                        if (response.isSuccessful() && response.body() != null && response.body().isSuccess()) {
+                            callback.onResult(Result.success(JobStatus.ARRIVING));
+                        } else {
+                            callback.onResult(Result.error(new AppError("Không thể bắt đầu di chuyển")));
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<ApiResponse<BookingActionResponseDto>> call, Throwable t) {
+                        callback.onResult(Result.error(new AppError("Lỗi kết nối: " + t.getMessage(), t)));
+                    }
+                });
+                break;
+
             case ARRIVING:
-                return JobStatus.SURVEYING;
+                api.arrive(orderId).enqueue(new Callback<ApiResponse<BookingActionResponseDto>>() {
+                    @Override
+                    public void onResponse(Call<ApiResponse<BookingActionResponseDto>> call,
+                            Response<ApiResponse<BookingActionResponseDto>> response) {
+                        if (response.isSuccessful() && response.body() != null && response.body().isSuccess()) {
+                            // Automatically transition to start survey
+                            api.startSurvey(orderId).enqueue(new Callback<ApiResponse<BookingActionResponseDto>>() {
+                                @Override
+                                public void onResponse(Call<ApiResponse<BookingActionResponseDto>> call,
+                                        Response<ApiResponse<BookingActionResponseDto>> res) {
+                                    if (res.isSuccessful() && res.body() != null && res.body().isSuccess()) {
+                                        callback.onResult(Result.success(JobStatus.SURVEYING));
+                                    } else {
+                                        callback.onResult(Result
+                                                .error(new AppError("Đã đến nơi nhưng không thể bắt đầu khảo sát")));
+                                    }
+                                }
+
+                                @Override
+                                public void onFailure(Call<ApiResponse<BookingActionResponseDto>> call, Throwable t) {
+                                    callback.onResult(
+                                            Result.error(new AppError("Lỗi kết nối khảo sát: " + t.getMessage(), t)));
+                                }
+                            });
+                        } else {
+                            callback.onResult(Result.error(new AppError("Không thể xác nhận đã đến nơi")));
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<ApiResponse<BookingActionResponseDto>> call, Throwable t) {
+                        callback.onResult(Result.error(new AppError("Lỗi kết nối: " + t.getMessage(), t)));
+                    }
+                });
+                break;
+
             case SURVEYING:
-                return JobStatus.REPAIRING;
+                api.startRepair(orderId).enqueue(new Callback<ApiResponse<BookingActionResponseDto>>() {
+                    @Override
+                    public void onResponse(Call<ApiResponse<BookingActionResponseDto>> call,
+                            Response<ApiResponse<BookingActionResponseDto>> response) {
+                        if (response.isSuccessful() && response.body() != null && response.body().isSuccess()) {
+                            callback.onResult(Result.success(JobStatus.REPAIRING));
+                        } else {
+                            callback.onResult(Result.error(new AppError("Không thể bắt đầu sửa chữa")));
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<ApiResponse<BookingActionResponseDto>> call, Throwable t) {
+                        callback.onResult(Result.error(new AppError("Lỗi kết nối: " + t.getMessage(), t)));
+                    }
+                });
+                break;
+
             case REPAIRING:
-                return JobStatus.COMPLETED;
+                api.workerComplete(orderId).enqueue(new Callback<ApiResponse<BookingActionResponseDto>>() {
+                    @Override
+                    public void onResponse(Call<ApiResponse<BookingActionResponseDto>> call,
+                            Response<ApiResponse<BookingActionResponseDto>> response) {
+                        if (response.isSuccessful() && response.body() != null && response.body().isSuccess()) {
+                            callback.onResult(Result.success(JobStatus.COMPLETED));
+                        } else {
+                            callback.onResult(Result.error(new AppError("Không thể hoàn thành đơn hàng")));
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<ApiResponse<BookingActionResponseDto>> call, Throwable t) {
+                        callback.onResult(Result.error(new AppError("Lỗi kết nối: " + t.getMessage(), t)));
+                    }
+                });
+                break;
+
             default:
-                return currentStatus;
+                callback.onResult(Result.success(currentStatus));
+                break;
         }
     }
 
@@ -118,38 +291,5 @@ public class WorkerOrdersRepositoryImpl implements WorkerOrdersRepository {
         } catch (UnsupportedEncodingException e) {
             return "";
         }
-    }
-
-    private List<WorkerOrder> createMockOrders() {
-        List<WorkerOrder> mockOrders = Arrays.asList(
-                new WorkerOrder("ORD001", "Sua ro ri ong nuoc bon rua chen",
-                        "123 Nguyen Van Linh, Quan 7, TP.HCM",
-                        "Hom nay 08:00", "150.000 d", "pending", "Tran Thi B"),
-                new WorkerOrder("ORD002", "Thay o khoa cua chinh",
-                        "78 Dinh Tien Hoang, Binh Thanh, TP.HCM",
-                        "Hom nay 10:30", "200.000 d", "pending", "Le Van C"),
-                new WorkerOrder("ORD003", "Sua dieu hoa khong mat",
-                        "456 Le Van Sy, Quan 3, TP.HCM",
-                        "Hom nay 14:00", "350.000 d", "ongoing", "Pham Thi D"),
-                new WorkerOrder("ORD004", "Thong tac bon rua bat",
-                        "99 Cach Mang Thang 8, Quan 10, TP.HCM",
-                        "Hom qua 09:00", "120.000 d", "completed", "Nguyen Van E"),
-                new WorkerOrder("ORD005", "Sua may giat khong vat",
-                        "21 Phan Van Tri, Go Vap, TP.HCM",
-                        "Hom qua 15:30", "250.000 d", "completed", "Hoang Thi F"),
-                new WorkerOrder("ORD006", "Lap den phong ngu",
-                        "5 Huynh Tan Phat, Nha Be, TP.HCM",
-                        "2 ngay truoc 11:00", "80.000 d", "cancelled", "Trinh Van G"));
-
-        WorkerOrder orderWithComplaint = mockOrders.stream()
-                .filter(order -> order.getOrderId().equals("ORD004"))
-                .findFirst()
-                .orElse(null);
-        if (orderWithComplaint != null) {
-            orderWithComplaint.setComplaintStatus("pending");
-            orderWithComplaint.setComplaintReason("May lanh van con keu sau khi sua, chay 2 ngay lai hong");
-            orderWithComplaint.setComplaintDeadline("18:42:00");
-        }
-        return mockOrders;
     }
 }

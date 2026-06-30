@@ -4,15 +4,21 @@ import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
+import androidx.lifecycle.ViewModelProvider;
 
 import com.fixit.R;
 import com.fixit.core.ui.BaseFragment;
 import com.fixit.databinding.FragmentCustomerHomeBinding;
+import com.fixit.feature.customer.service.domain.model.ServiceCategory;
+import com.fixit.feature.customer.service.domain.model.ServiceItem;
 
 import dagger.hilt.android.AndroidEntryPoint;
 
 @AndroidEntryPoint
 public class CustomerHomeFragment extends BaseFragment<FragmentCustomerHomeBinding> {
+
+    private CustomerHomeViewModel viewModel;
+    private HomeServiceGridAdapter serviceAdapter;
 
     @NonNull
     @Override
@@ -22,75 +28,71 @@ public class CustomerHomeFragment extends BaseFragment<FragmentCustomerHomeBindi
 
     @Override
     protected void setupViews() {
-        /**
-         * --- PHẦN 1: THIẾT LẬP DANH SÁCH DỊCH VỤ ---
-         */
-        
-        // Thiết lập tên và icon cho từng dịch vụ trong lưới (Grid)
-        binding.itemWashingMachine.tvServiceName.setText("Máy giặt");
-        binding.itemWashingMachine.ivServiceIcon.setImageResource(R.drawable.ic_lucide_radar); // Tạm thời dùng icon radar
+        viewModel = new ViewModelProvider(this).get(CustomerHomeViewModel.class);
 
-        binding.itemFridge.tvServiceName.setText("Tủ lạnh");
-        binding.itemFridge.ivServiceIcon.setImageResource(R.drawable.ic_lucide_radar);
-
-        binding.itemAirConditioner.tvServiceName.setText("Điều hòa");
-        binding.itemAirConditioner.ivServiceIcon.setImageResource(R.drawable.ic_lucide_radar);
-
-        binding.itemElectricity.tvServiceName.setText("Điện nước");
-        binding.itemElectricity.ivServiceIcon.setImageResource(R.drawable.ic_lucide_radar);
-
-        binding.itemPlumbing.tvServiceName.setText("Thông nghẹt");
-        binding.itemPlumbing.ivServiceIcon.setImageResource(R.drawable.ic_lucide_radar);
-
-        binding.itemFan.tvServiceName.setText("Quạt điện");
-        binding.itemFan.ivServiceIcon.setImageResource(R.drawable.ic_lucide_radar);
-
-        binding.itemStove.tvServiceName.setText("Bếp ga/từ");
-        binding.itemStove.ivServiceIcon.setImageResource(R.drawable.ic_lucide_radar);
-
-        binding.itemOther.tvServiceName.setText("Xem thêm");
-        binding.itemOther.ivServiceIcon.setImageResource(R.drawable.ic_lucide_menu);
-
-        /**
-         * --- PHẦN 2: XỬ LÝ SỰ KIỆN CLICK ĐỂ TEST ---
-         */
-
-        // Khi ấn vào bất kỳ dịch vụ nào cũng sẽ chuyển sang màn hình Tìm thợ (Radar) để test
-        binding.itemWashingMachine.getRoot().setOnClickListener(v -> navigateToFindingWorker("Sửa máy giặt"));
-        binding.itemFridge.getRoot().setOnClickListener(v -> navigateToFindingWorker("Sửa tủ lạnh"));
-        binding.itemAirConditioner.getRoot().setOnClickListener(v -> navigateToFindingWorker("Sửa điều hòa"));
-        binding.itemElectricity.getRoot().setOnClickListener(v -> navigateToFindingWorker("Điện nước"));
-        binding.itemPlumbing.getRoot().setOnClickListener(v -> navigateToFindingWorker("Thông nghẹt"));
-        binding.itemFan.getRoot().setOnClickListener(v -> navigateToFindingWorker("Quạt điện"));
-        binding.itemStove.getRoot().setOnClickListener(v -> navigateToFindingWorker("Bếp ga/từ"));
-        
-        // Ô "Xem thêm" vẫn cho qua trang tìm kiếm chung
-        binding.itemOther.getRoot().setOnClickListener(v -> {
-            if (navController != null) {
-                navController.navigate(R.id.nav_customer_search);
+        // Thiết lập Adapter cho RecyclerView
+        serviceAdapter = new HomeServiceGridAdapter(new HomeServiceGridAdapter.OnCategoryClickListener() {
+            @Override
+            public void onCategoryClick(ServiceCategory category, boolean isSeeAll) {
+                if (isSeeAll) {
+                    if (navController != null) {
+                        navController.navigate(R.id.nav_customer_search);
+                    }
+                } else {
+                    // Hiện BottomSheet để chọn dịch vụ con
+                    ServiceCategoryBottomSheet bottomSheet = ServiceCategoryBottomSheet.newInstance(category.getId(),
+                            category.getName());
+                    bottomSheet.setOnServiceItemSelectedListener(item -> {
+                        // Khi chọn xong 1 dịch vụ con -> Chuyển sang màn hình Đặt thợ
+                        navigateToFindingWorker(item.getName());
+                    });
+                    bottomSheet.show(getParentFragmentManager(), "ServiceCategoryBottomSheet");
+                }
             }
         });
+        binding.rvServices.setAdapter(serviceAdapter);
 
-        // Ô chọn dịch vụ phía trên (cardLocation)
+        // --- XỬ LÝ SỰ KIỆN KHÁC ---
+
+        // Ô chọn vị trí phía trên
         binding.cardLocation.setOnClickListener(v -> {
             if (navController != null) {
                 navController.navigate(R.id.nav_customer_search);
             }
         });
 
-        // Icon Chat ở góc phải header → mở danh sách tin nhắn
+        // Icon Chat ở góc phải header
         binding.ivChatIcon.setOnClickListener(v -> {
             if (navController != null) {
                 navController.navigate(R.id.nav_customer_list_msg);
             }
         });
+
+        // Avatar người dùng → mở tab Cá nhân qua BottomNavigationView
+        binding.ivUserAvatar.setOnClickListener(v -> {
+            com.google.android.material.bottomnavigation.BottomNavigationView bottomNav = requireActivity()
+                    .findViewById(R.id.bottomNavigationView);
+            if (bottomNav != null) {
+                bottomNav.setSelectedItemId(R.id.nav_customer_profile);
+            } else {
+                if (navController != null) {
+                    navController.navigate(R.id.nav_customer_profile);
+                }
+            }
+        });
+
+        binding.tvSeeAll.setOnClickListener(v -> {
+            if (navController != null) {
+                navController.navigate(R.id.nav_customer_search);
+            }
+        });
+
+        // Gọi API tải danh sách dịch vụ khi màn hình vừa mở lên
+        viewModel.fetchCategories();
     }
 
     private void navigateToFindingWorker(String serviceName) {
-        // 1. Cập nhật tên dịch vụ lên ô hiển thị phía trên để người dùng thấy
         binding.tvLocationValue.setText(serviceName);
-        
-        // 2. Chuyển sang màn hình Đặt thợ (Booking)
         if (navController != null) {
             navController.navigate(R.id.nav_customer_booking);
         }
@@ -98,6 +100,30 @@ public class CustomerHomeFragment extends BaseFragment<FragmentCustomerHomeBindi
 
     @Override
     protected void observeData() {
-        // Observe viewmodel
+        viewModel.categories.observe(getViewLifecycleOwner(), categories -> {
+            if (categories != null && !categories.isEmpty()) {
+                java.util.List<ServiceCategory> displayList = new java.util.ArrayList<>();
+                int limit = Math.min(categories.size(), 7);
+                for (int i = 0; i < limit; i++) {
+                    displayList.add(categories.get(i));
+                }
+                displayList.add(new ServiceCategory(-1, "Xem tất cả"));
+                serviceAdapter.submitList(displayList);
+            } else {
+                serviceAdapter.submitList(categories);
+            }
+        });
+
+        viewModel.getIsLoading().observe(getViewLifecycleOwner(), isLoading -> {
+            if (isLoading != null && binding.layoutLoading != null) {
+                binding.layoutLoading.getRoot().setVisibility(isLoading ? android.view.View.VISIBLE : android.view.View.GONE);
+            }
+        });
+
+        viewModel.getErrorMessage().observe(getViewLifecycleOwner(), error -> {
+            if (error != null) {
+                showToast(error);
+            }
+        });
     }
 }

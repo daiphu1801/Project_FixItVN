@@ -76,13 +76,8 @@ public class WorkerWithdrawFragment extends BaseFragment<FragmentWorkerWithdrawB
             return;
         }
 
-        boolean success = viewModel.submitWithdrawal(amount);
-        if (success) {
-            Toast.makeText(requireContext(), "Gửi yêu cầu rút tiền thành công!", Toast.LENGTH_SHORT).show();
-            requireActivity().getOnBackPressedDispatcher().onBackPressed();
-        } else {
-            Toast.makeText(requireContext(), "Rút tiền thất bại. Vui lòng thử lại.", Toast.LENGTH_SHORT).show();
-        }
+        // Gọi async — kết quả sẽ được xử lý qua observer message
+        viewModel.submitWithdrawal(amount);
     }
 
     @Override
@@ -111,6 +106,18 @@ public class WorkerWithdrawFragment extends BaseFragment<FragmentWorkerWithdrawB
                 binding.tvBankName.setText(acc.getBankName());
                 binding.tvAccountNumber.setText(acc.getAccountNumber());
                 binding.tvAccountHolder.setText(acc.getAccountHolderName());
+            }
+        });
+        viewModel.loading.observe(getViewLifecycleOwner(), isLoading -> {
+            binding.layoutLoading.getRoot().setVisibility(isLoading ? View.VISIBLE : View.GONE);
+        });
+
+        viewModel.message.observe(getViewLifecycleOwner(), msg -> {
+            if (msg == null || msg.isEmpty()) return;
+            Toast.makeText(requireContext(), msg, Toast.LENGTH_SHORT).show();
+            // Nếu thành công, quay về
+            if (msg.contains("thành công") || msg.contains("đã được gửi")) {
+                requireActivity().getOnBackPressedDispatcher().onBackPressed();
             }
         });
     }

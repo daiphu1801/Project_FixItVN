@@ -1,11 +1,12 @@
 package com.fixit.feature.worker.orders.domain.model;
 
 public enum JobStatus {
-    ACCEPTED(1, "Bat dau di chuyen"),
-    ARRIVING(2, "Da den noi"),
-    SURVEYING(3, "Bat dau sua chua"),
-    REPAIRING(4, "Xac nhan hoan thanh"),
-    COMPLETED(5, "Da hoan thanh");
+    ACCEPTED(1, "Bắt đầu di chuyển"),
+    ARRIVING(2, "Đã đến nơi"),
+    SURVEYING(3, "Bắt đầu sửa chữa"),
+    REPAIRING(4, "Xác nhận hoàn thành"),
+    WAITING_APPROVAL(5, "Chờ khách nghiệm thu"),
+    COMPLETED(5, "Đã hoàn thành");
 
     private final int step;
     private final String nextActionText;

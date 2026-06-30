@@ -1,37 +1,32 @@
 package com.fixit.feature.worker.orders.presentation.detail;
 
-import com.fixit.feature.worker.orders.presentation.WorkerOrdersViewModel;
-import com.fixit.feature.worker.orders.domain.model.JobStatus;
-import com.fixit.feature.worker.orders.domain.model.WorkerOrder;
-
 import android.content.res.ColorStateList;
 import android.graphics.Color;
-import android.graphics.drawable.Drawable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.DataSource;
-import com.bumptech.glide.load.engine.GlideException;
-import com.bumptech.glide.request.RequestListener;
-import com.bumptech.glide.request.target.Target;
-
-import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.contract.ActivityResultContracts;
 import com.fixit.core.ui.BaseFragment;
 import com.fixit.databinding.FragmentWorkerOrderDetailBinding;
 import com.fixit.databinding.LayoutOrderCustomerCardBinding;
 import com.fixit.databinding.LayoutOrderMetaCardBinding;
 import com.fixit.databinding.LayoutOrderTimelineCardBinding;
 import com.fixit.databinding.LayoutPricingSummaryCardBinding;
-import com.fixit.databinding.LayoutWorkerPaymentSectionBinding;
 import com.fixit.databinding.LayoutProofOfWorkSectionBinding;
+import com.fixit.databinding.LayoutWorkerPaymentSectionBinding;
+import com.fixit.core.common.AutoRefreshHelper;
+import com.fixit.feature.upload.domain.model.UploadPurpose;
+import com.fixit.feature.upload.domain.model.UploadTargetType;
+import com.fixit.feature.upload.presentation.UploadViewModel;
+import com.fixit.feature.worker.orders.domain.model.JobStatus;
+import com.fixit.feature.worker.orders.domain.model.WorkerOrder;
+import com.fixit.feature.worker.orders.presentation.WorkerOrdersViewModel;
 
 import dagger.hilt.android.AndroidEntryPoint;
 
@@ -39,43 +34,60 @@ import dagger.hilt.android.AndroidEntryPoint;
 public class WorkerOrderDetailFragment extends BaseFragment<FragmentWorkerOrderDetailBinding> {
 
     private WorkerOrdersViewModel viewModel;
+    private UploadViewModel uploadViewModel;
     private WorkerOrder currentOrder;
+    private boolean hasShownSurveyNotice = false;
+    private AutoRefreshHelper autoRefreshHelper;
+    private android.os.Bundle savedInstanceState;
 
-    // Sub-layout bindings cho các section đã tách
-    private LayoutOrderCustomerCardBinding customerBinding;
-    private LayoutOrderMetaCardBinding metaBinding;
-    private LayoutOrderTimelineCardBinding timelineBinding;
-    private LayoutPricingSummaryCardBinding pricingBinding;
-    private LayoutWorkerPaymentSectionBinding paymentBinding;
-    private LayoutProofOfWorkSectionBinding proofBinding;
+    // UI Helper coordinates layout states
+    private OrderDetailUiHelper uiHelper;
 
-    private android.net.Uri proofBeforeUri;
-    private android.net.Uri proofAfterUri;
-
+    // ActivityResult Launcher cho chọn ảnh từ gallery
     private final ActivityResultLauncher<String> pickBeforeImageLauncher = registerForActivityResult(
             new ActivityResultContracts.GetContent(),
             uri -> {
-                if (uri != null) {
-                    proofBeforeUri = uri;
-                    displayProofBeforeImage(uri);
+                if (uri != null && uiHelper != null) {
+                    uiHelper.displayProofBeforeImage(uri);
+                    uploadViewModel.upload(
+                            requireContext(),
+                            uri,
+                            UploadPurpose.PROOF_BEFORE_REPAIR,
+                            UploadTargetType.PROOF_OF_WORK,
+                            getCurrentOrderId(),
+                            null,
+                            null,
+                            null,
+                            true
+                    );
                 }
-            }
-    );
+            });
 
     private final ActivityResultLauncher<String> pickAfterImageLauncher = registerForActivityResult(
             new ActivityResultContracts.GetContent(),
             uri -> {
-                if (uri != null) {
-                    proofAfterUri = uri;
-                    displayProofAfterImage(uri);
+                if (uri != null && uiHelper != null) {
+                    uiHelper.displayProofAfterImage(uri);
+                    uploadViewModel.upload(
+                            requireContext(),
+                            uri,
+                            UploadPurpose.PROOF_AFTER_REPAIR,
+                            UploadTargetType.PROOF_OF_WORK,
+                            getCurrentOrderId(),
+                            null,
+                            null,
+                            null,
+                            true
+                    );
                 }
-            }
-    );
+            });
 
     @Override
     public void onCreate(android.os.Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        this.savedInstanceState = savedInstanceState;
         viewModel = new ViewModelProvider(requireActivity()).get(WorkerOrdersViewModel.class);
+        uploadViewModel = new ViewModelProvider(this).get(UploadViewModel.class);
     }
 
     @Override
@@ -86,316 +98,171 @@ public class WorkerOrderDetailFragment extends BaseFragment<FragmentWorkerOrderD
     @Override
     protected void setupViews() {
         // Lấy binding của các sub-layout từ include tags
-        customerBinding  = LayoutOrderCustomerCardBinding.bind(binding.cardCustomerInfo.getRoot());
-        metaBinding      = LayoutOrderMetaCardBinding.bind(binding.cardOrderMeta.getRoot());
-        timelineBinding  = LayoutOrderTimelineCardBinding.bind(binding.cardTimeline.getRoot());
-        pricingBinding   = LayoutPricingSummaryCardBinding.bind(binding.cardPricingSummary.getRoot());
-        paymentBinding   = LayoutWorkerPaymentSectionBinding.bind(binding.sectionPayment.getRoot());
-        proofBinding     = LayoutProofOfWorkSectionBinding.bind(binding.sectionProofOfWork.getRoot());
+        LayoutOrderCustomerCardBinding customerBinding = LayoutOrderCustomerCardBinding.bind(binding.cardCustomerInfo.getRoot());
+        LayoutOrderMetaCardBinding metaBinding = LayoutOrderMetaCardBinding.bind(binding.cardOrderMeta.getRoot());
+        LayoutOrderTimelineCardBinding timelineBinding = LayoutOrderTimelineCardBinding.bind(binding.cardTimeline.getRoot());
+        LayoutPricingSummaryCardBinding pricingBinding = LayoutPricingSummaryCardBinding.bind(binding.cardPricingSummary.getRoot());
+        LayoutWorkerPaymentSectionBinding paymentBinding = LayoutWorkerPaymentSectionBinding.bind(binding.sectionPayment.getRoot());
+        LayoutProofOfWorkSectionBinding proofBinding = LayoutProofOfWorkSectionBinding.bind(binding.sectionProofOfWork.getRoot());
 
-        // Chọn ảnh bằng chứng công việc
-        proofBinding.cardProofBefore.setOnClickListener(v -> pickBeforeImageLauncher.launch("image/*"));
-        proofBinding.cardProofAfter.setOnClickListener(v -> pickAfterImageLauncher.launch("image/*"));
-
-        // Setup Toolbar
-        if (binding.appBarLayout.toolbar != null) {
-            binding.appBarLayout.toolbar.setTitle("Chi tiết đơn hàng");
-            binding.appBarLayout.toolbar.setNavigationOnClickListener(v ->
-                androidx.navigation.Navigation.findNavController(v).navigateUp()
-            );
-        }
-
-        // Chat với khách hàng
-        customerBinding.btnChatCustomer.setOnClickListener(v -> {
-            String orderId = getArguments() != null ? getArguments().getString("orderId") : "ORD001";
-            android.os.Bundle args = new android.os.Bundle();
-            args.putString("orderId", orderId);
-            args.putString("chatTitle", customerBinding.tvOrderDetailCustomerName.getText().toString());
-            androidx.navigation.Navigation.findNavController(v).navigate(com.fixit.R.id.workerChatFragment, args);
-        });
-
-        // Hủy đơn
-        binding.btnCancelOrderDetail.setOnClickListener(v ->
-            Toast.makeText(requireContext(), "Hủy đơn hàng", Toast.LENGTH_SHORT).show()
+        uiHelper = new OrderDetailUiHelper(
+                this, binding,
+                customerBinding, metaBinding, timelineBinding,
+                pricingBinding, paymentBinding, proofBinding,
+                viewModel, savedInstanceState
         );
 
-        // Tiến độ tiếp theo
-        binding.btnCompleteOrderDetail.setOnClickListener(v -> {
-            viewModel.advanceStatus();
-            Toast.makeText(requireContext(), "Đã cập nhật trạng thái mới", Toast.LENGTH_SHORT).show();
-        });
-
-        // Thêm chi phí phát sinh
-        pricingBinding.btnAddExtraFee.setOnClickListener(v ->
-            androidx.navigation.Navigation.findNavController(v).navigate(com.fixit.R.id.workerExtraCostFragment)
+        uiHelper.setupClickListeners(
+                () -> pickBeforeImageLauncher.launch("image/*"),
+                () -> pickAfterImageLauncher.launch("image/*"),
+                viewModel
         );
-
-        // Hiển thị QR thanh toán
-        paymentBinding.btnShowQr.setOnClickListener(v -> showPaymentQrCode());
-
-        // Xác nhận tiền mặt
-        paymentBinding.btnConfirmCash.setOnClickListener(v -> confirmCashPayment());
-
-        // Hiển thị QR thanh toán ở thanh đáy thích ứng
-        binding.btnBottomShowQr.setOnClickListener(v -> {
-            showPaymentQrCode();
-            // Cuộn mượt đến phần thanh toán QR
-            binding.scrollOrderDetail.post(() -> 
-                binding.scrollOrderDetail.smoothScrollTo(0, binding.sectionPayment.getRoot().getTop())
-            );
-        });
-
-        // Xác nhận tiền mặt ở thanh đáy thích ứng
-        binding.btnBottomConfirmCash.setOnClickListener(v -> confirmCashPayment());
     }
 
     @Override
     protected void observeData() {
         String orderId = getArguments() != null ? getArguments().getString("orderId") : null;
 
-        if (orderId != null) {
-            WorkerOrder order = viewModel.getOrderById(orderId);
+        viewModel.orderDetails.observe(getViewLifecycleOwner(), order -> {
             if (order != null) {
                 currentOrder = order;
-                bindOrderData(order);
-                viewModel.initializeStatus(order.getStatus());
-            } else {
-                Toast.makeText(requireContext(), "Không tìm thấy đơn hàng: " + orderId, Toast.LENGTH_SHORT).show();
+                uiHelper.bindOrderData(order);
             }
+        });
+
+        if (orderId != null) {
+            viewModel.loadOrderDetails(orderId);
         } else {
             Toast.makeText(requireContext(), "Lỗi: Không nhận được ID đơn hàng", Toast.LENGTH_SHORT).show();
         }
 
-        viewModel.currentStatus.observe(getViewLifecycleOwner(), this::updateTimelineUI);
-    }
-
-    private void bindOrderData(WorkerOrder order) {
-        binding.tvOrderId.setText("#" + order.getOrderId());
-        binding.tvOrderDetailService.setText(order.getServiceTitle());
-        // Sub-layout bindings
-        customerBinding.tvOrderDetailCustomerName.setText(order.getCustomerName());
-        metaBinding.tvOrderDetailAddress.setText(order.getAddress());
-        metaBinding.tvOrderDetailScheduledTime.setText(order.getTimeSlot());
-        pricingBinding.tvOrderDetailPrice.setText(order.getPrice());
-
-        // Cập nhật nhãn trạng thái (Badge)
-        String status = order.getStatus();
-        if ("ongoing".equals(status)) {
-            binding.tvOrderDetailStatus.setText("ĐANG THỰC HIỆN");
-            binding.tvOrderDetailStatus.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#E0F2FE")));
-            binding.tvOrderDetailStatus.setTextColor(Color.parseColor("#0ea5e9"));
-        } else if ("completed".equals(status)) {
-            binding.tvOrderDetailStatus.setText("ĐÃ HOÀN THÀNH");
-            binding.tvOrderDetailStatus.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#DCFCE7")));
-            binding.tvOrderDetailStatus.setTextColor(Color.parseColor("#22c55e"));
-        } else {
-            binding.tvOrderDetailStatus.setText("CHỜ XỬ LÝ");
-            binding.tvOrderDetailStatus.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#F1F5F9")));
-            binding.tvOrderDetailStatus.setTextColor(Color.parseColor("#64748b"));
-        }
-    }
-
-    private void updateTimelineUI(JobStatus status) {
-        int currentStep = status.getStep();
-
-        // Cấu hình mặc định cho các trạng thái thông thường
-        binding.btnCancelOrderDetail.setVisibility(View.VISIBLE);
-        binding.btnCompleteOrderDetail.setVisibility(View.VISIBLE);
-        binding.btnCompleteOrderDetail.setText(status.getNextActionText());
-        binding.btnCompleteOrderDetail.setEnabled(true);
-        binding.btnCompleteOrderDetail.setAlpha(1.0f);
-        binding.btnCompleteOrderDetail.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#0ea5e9")));
-
-        binding.btnBottomConfirmCash.setVisibility(View.GONE);
-        binding.btnBottomShowQr.setVisibility(View.GONE);
-
-        if (status == JobStatus.REPAIRING) {
-            // Trạng thái đang sửa chữa & Chờ thanh toán -> Kích hoạt thanh đáy thích ứng kép
-            binding.btnCancelOrderDetail.setVisibility(View.GONE);
-            binding.btnCompleteOrderDetail.setVisibility(View.GONE);
-
-            binding.btnBottomConfirmCash.setVisibility(View.VISIBLE);
-            binding.btnBottomConfirmCash.setEnabled(true);
-            binding.btnBottomShowQr.setVisibility(View.VISIBLE);
-            binding.btnBottomShowQr.setEnabled(true);
-
-            paymentBinding.cardPaymentSection.setVisibility(View.VISIBLE);
-            paymentBinding.tvPaymentStatus.setText("Chờ khách thanh toán");
-            paymentBinding.tvPaymentStatus.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#FEF3C7")));
-            paymentBinding.tvPaymentStatus.setTextColor(Color.parseColor("#D97706"));
-
-        } else if (status == JobStatus.COMPLETED) {
-            // Trạng thái đã hoàn thành -> 1 nút chiếm 100% bề ngang, ẩn nút hủy
-            binding.btnCancelOrderDetail.setVisibility(View.GONE);
-            binding.btnCompleteOrderDetail.setVisibility(View.VISIBLE);
-            binding.btnCompleteOrderDetail.setEnabled(false);
-            binding.btnCompleteOrderDetail.setAlpha(0.5f);
-            binding.btnCompleteOrderDetail.setText("Đã hoàn thành & thanh toán");
-            binding.btnCompleteOrderDetail.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#10b981"))); // Xanh lá cây sang trọng
-
-            paymentBinding.cardPaymentSection.setVisibility(View.VISIBLE);
-            paymentBinding.tvPaymentStatus.setText("Đã thanh toán");
-            paymentBinding.tvPaymentStatus.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#DCFCE7")));
-            paymentBinding.tvPaymentStatus.setTextColor(Color.parseColor("#22C55E"));
-            paymentBinding.llQrContainer.setVisibility(View.GONE);
-
-        } else {
-            paymentBinding.cardPaymentSection.setVisibility(View.GONE);
-        }
-
-        updateStep(1, currentStep);
-        updateStep(2, currentStep);
-        updateStep(3, currentStep);
-        updateStep(4, currentStep);
-        updateStep(5, currentStep);
-    }
-
-    private void showPaymentQrCode() {
-        if (currentOrder == null) return;
-
-        paymentBinding.llQrContainer.setVisibility(View.VISIBLE);
-        paymentBinding.pbQrLoading.setVisibility(View.VISIBLE);
-
-        long totalAmount = calculateTotalAmount(currentOrder);
-        String qrUrl = viewModel.generateVietQrUrl(currentOrder.getOrderId(), totalAmount);
-
-        if (!qrUrl.isEmpty()) {
-            Glide.with(this)
-                .load(qrUrl)
-                .listener(new RequestListener<Drawable>() {
-                    @Override
-                    public boolean onLoadFailed(@Nullable GlideException e, Object model,
-                            Target<Drawable> target, boolean isFirstResource) {
-                        paymentBinding.pbQrLoading.setVisibility(View.GONE);
-                        return false;
-                    }
-
-                    @Override
-                    public boolean onResourceReady(Drawable resource, Object model,
-                            Target<Drawable> target, DataSource dataSource, boolean isFirstResource) {
-                        paymentBinding.pbQrLoading.setVisibility(View.GONE);
-                        return false;
-                    }
-                })
-                .into(paymentBinding.ivPaymentQr);
-        } else {
-            paymentBinding.pbQrLoading.setVisibility(View.GONE);
-            Toast.makeText(requireContext(), "Lỗi tạo mã QR", Toast.LENGTH_SHORT).show();
-        }
-
-        paymentBinding.tvPaymentStatus.setText("Chờ khách thanh toán");
-        paymentBinding.tvPaymentStatus.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#FEF3C7")));
-        paymentBinding.tvPaymentStatus.setTextColor(Color.parseColor("#D97706"));
-        paymentBinding.tvPaymentSimulationHint.setText("Đang chờ khách quét và thanh toán... (Tự động cập nhật)");
-
-        // Giả lập khách hàng thanh toán sau 4 giây
-        new android.os.Handler(android.os.Looper.getMainLooper()).postDelayed(() -> {
-            if (isAdded() && viewModel.currentStatus.getValue() == JobStatus.REPAIRING) {
-                paymentBinding.tvPaymentStatus.setText("Đã thanh toán qua QR");
-                paymentBinding.tvPaymentStatus.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#DCFCE7")));
-                paymentBinding.tvPaymentStatus.setTextColor(Color.parseColor("#22C55E"));
-                paymentBinding.tvPaymentSimulationHint.setText("Thanh toán trực tuyến thành công!");
-
-                Toast.makeText(requireContext(), "Khách hàng đã thanh toán qua QR thành công!", Toast.LENGTH_LONG).show();
-
-                paymentBinding.btnShowQr.setEnabled(false);
-                paymentBinding.btnConfirmCash.setVisibility(View.GONE);
-
-                viewModel.advanceStatus();
+        viewModel.currentStatus.observe(getViewLifecycleOwner(), status -> {
+            if (status != null) {
+                uiHelper.updateTimelineUI(status, currentOrder);
+                if (status == JobStatus.SURVEYING) {
+                    showSurveyNoticeDialog();
+                }
             }
-        }, 4000);
+        });
+
+        viewModel.statusUpdateSuccess.observe(getViewLifecycleOwner(), successMessage -> {
+            if (successMessage != null && !successMessage.isEmpty()) {
+                Toast.makeText(requireContext(), successMessage, Toast.LENGTH_SHORT).show();
+                viewModel.clearStatusUpdateSuccess();
+            }
+        });
+
+        viewModel.isLoading.observe(getViewLifecycleOwner(), loading -> {
+            if (binding.layoutLoading != null) {
+                binding.layoutLoading.getRoot().setVisibility(loading ? View.VISIBLE : View.GONE);
+            }
+        });
+
+        viewModel.errorMessage.observe(getViewLifecycleOwner(), error -> {
+            if (error != null && !error.isEmpty()) {
+                Toast.makeText(requireContext(), error, Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        // Observe kết quả upload ảnh bằng chứng
+        uploadViewModel.uploadResult.observe(getViewLifecycleOwner(), result -> {
+            if (result == null)
+                return;
+            if (result.isSuccess()) {
+                Toast.makeText(requireContext(), "Upload ảnh thành công", Toast.LENGTH_SHORT).show();
+                String currentId = getCurrentOrderId();
+                if (currentId != null) {
+                    viewModel.loadOrderDetails(currentId, false);
+                }
+            } else {
+                Toast.makeText(requireContext(), result.getErrorMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
-    private void confirmCashPayment() {
-        if (currentOrder == null) return;
-
-        paymentBinding.tvPaymentStatus.setText("Đã thanh toán (Tiền mặt)");
-        paymentBinding.tvPaymentStatus.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#DCFCE7")));
-        paymentBinding.tvPaymentStatus.setTextColor(Color.parseColor("#22C55E"));
-
-        Toast.makeText(requireContext(), "Đã xác nhận thu tiền mặt từ khách hàng!", Toast.LENGTH_SHORT).show();
-
-        paymentBinding.btnShowQr.setEnabled(false);
-        paymentBinding.btnConfirmCash.setEnabled(false);
-        paymentBinding.llQrContainer.setVisibility(View.GONE);
-
-        viewModel.advanceStatus();
-    }
-
-    private long calculateTotalAmount(WorkerOrder order) {
-        long basePrice = 0;
-        if (order != null) {
-            try {
-                basePrice = Long.parseLong(order.getPrice().replaceAll("[^\\d]", ""));
-            } catch (Exception ignored) {}
-        }
-        return basePrice + viewModel.calculateTotalExtra();
-    }
-
-    private void updateStep(int stepIndex, int currentStepIndex) {
-        int colorActive  = Color.parseColor("#0ea5e9");
-        int colorDone    = Color.parseColor("#0ea5e9");
-        int colorPending = Color.parseColor("#e2e8f0");
-        int textActive   = Color.parseColor("#0ea5e9");
-        int textDone     = Color.parseColor("#0d1b2a");
-        int textPending  = Color.parseColor("#94a3b8");
-
-        if (stepIndex < currentStepIndex) {
-            setStepState(stepIndex, true, false, colorDone, textDone);
-        } else if (stepIndex == currentStepIndex) {
-            setStepState(stepIndex, false, true, colorActive, textActive);
-        } else {
-            setStepState(stepIndex, false, false, colorPending, textPending);
+    public void showPaymentQrCode() {
+        if (uiHelper != null && uiHelper.getPaymentHelper() != null && currentOrder != null) {
+            uiHelper.getPaymentHelper().showPaymentQrCode(currentOrder);
         }
     }
 
-    private void setStepState(int stepIndex, boolean isDone, boolean isActive, int color, int textColor) {
-        switch (stepIndex) {
-            case 1:
-                timelineBinding.step1Icon.setImageResource(com.fixit.R.drawable.ic_lucide_check_circle);
-                timelineBinding.step1Icon.setImageTintList(ColorStateList.valueOf(color));
-                timelineBinding.step1Line.setBackgroundColor(color);
-                timelineBinding.step1Title.setTextColor(textColor);
-                break;
-            case 2:
-                timelineBinding.step2Icon.setImageResource(com.fixit.R.drawable.ic_lucide_check_circle);
-                timelineBinding.step2Icon.setImageTintList(ColorStateList.valueOf(color));
-                timelineBinding.step2Line.setBackgroundColor(color);
-                timelineBinding.step2Title.setTextColor(textColor);
-                break;
-            case 3:
-                timelineBinding.step3IconContainer.setVisibility(View.VISIBLE);
-                timelineBinding.step3Pulse.setVisibility(isActive ? View.VISIBLE : View.GONE);
-                timelineBinding.step3Dot.setVisibility(View.VISIBLE);
-                timelineBinding.step3Dot.setBackgroundTintList(ColorStateList.valueOf(color));
-                timelineBinding.step3Line.setBackgroundColor(color);
-                timelineBinding.step3Title.setTextColor(textColor);
-                break;
-            case 4:
-                timelineBinding.step4Dot.setBackgroundTintList(ColorStateList.valueOf(color));
-                timelineBinding.step4Line.setBackgroundColor(color);
-                timelineBinding.step4Title.setTextColor(textColor);
-                break;
-            case 5:
-                timelineBinding.step5Dot.setBackgroundTintList(ColorStateList.valueOf(color));
-                timelineBinding.step5Title.setTextColor(textColor);
-                break;
+    public void confirmCashPayment() {
+        if (uiHelper != null && uiHelper.getPaymentHelper() != null && currentOrder != null) {
+            uiHelper.getPaymentHelper().confirmCashPayment(currentOrder);
         }
     }
 
-    private void displayProofBeforeImage(android.net.Uri uri) {
-        if (proofBinding == null) return;
-        proofBinding.ivProofBeforeImage.setVisibility(View.VISIBLE);
-        proofBinding.icProofBeforeCamera.setVisibility(View.GONE);
-        proofBinding.tvProofBeforeLabel.setVisibility(View.GONE);
-        Glide.with(this).load(uri).into(proofBinding.ivProofBeforeImage);
+    public WorkerOrder getCurrentOrder() {
+        return currentOrder;
     }
 
-    private void displayProofAfterImage(android.net.Uri uri) {
-        if (proofBinding == null) return;
-        proofBinding.ivProofAfterImage.setVisibility(View.VISIBLE);
-        proofBinding.icProofAfterCamera.setVisibility(View.GONE);
-        proofBinding.tvProofAfterLabel.setVisibility(View.GONE);
-        Glide.with(this).load(uri).into(proofBinding.ivProofAfterImage);
+    public String getCurrentOrderId() {
+        if (currentOrder != null && currentOrder.getOrderId() != null) {
+            return currentOrder.getOrderId();
+        }
+        return getArguments() != null ? getArguments().getString("orderId") : null;
+    }
+
+    private void showSurveyNoticeDialog() {
+        if (hasShownSurveyNotice)
+            return;
+        hasShownSurveyNotice = true;
+
+        new com.google.android.material.dialog.MaterialAlertDialogBuilder(requireContext())
+                .setTitle("Khảo sát & Báo giá")
+                .setMessage(
+                        "Bạn đã chuyển sang bước Khảo sát. Nếu có chi phí phát sinh (như phụ tùng thay thế, dịch vụ phát sinh ngoài gói), hãy nhấn vào nút \"+ Thêm chi phí phát sinh\" bên dưới trước khi bắt đầu sửa chữa nhé!")
+                .setPositiveButton("Đã hiểu", null)
+                .setIcon(com.fixit.R.drawable.ic_lucide_info)
+                .show();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (uiHelper != null && uiHelper.getMapHelper() != null) {
+            uiHelper.getMapHelper().onResume();
+        }
+        if (autoRefreshHelper == null) {
+            autoRefreshHelper = new AutoRefreshHelper(
+                    requireContext(),
+                    0L,
+                    () -> {
+                        String orderId = getCurrentOrderId();
+                        if (viewModel != null && orderId != null) {
+                            viewModel.loadOrderDetails(orderId, false);
+                        }
+                    },
+                    "com.fixit.BOOKING_UPDATE"
+            );
+        }
+        autoRefreshHelper.start();
+    }
+
+    @Override
+    public void onPause() {
+        if (uiHelper != null && uiHelper.getMapHelper() != null) {
+            uiHelper.getMapHelper().onPause();
+        }
+        if (autoRefreshHelper != null) {
+            autoRefreshHelper.stop();
+        }
+        super.onPause();
+    }
+
+    @Override
+    public void onDestroy() {
+        if (uiHelper != null && uiHelper.getMapHelper() != null) {
+            uiHelper.getMapHelper().onDestroy();
+        }
+        super.onDestroy();
+    }
+
+    @Override
+    public void onLowMemory() {
+        super.onLowMemory();
+        if (uiHelper != null && uiHelper.getMapHelper() != null) {
+            uiHelper.getMapHelper().onLowMemory();
+        }
     }
 }

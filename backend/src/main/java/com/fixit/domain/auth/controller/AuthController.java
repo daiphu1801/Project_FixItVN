@@ -2,19 +2,12 @@ package com.fixit.domain.auth.controller;
 
 import com.fixit.domain.auth.dto.request.*;
 import com.fixit.domain.auth.dto.response.AuthResponse;
-import com.fixit.domain.auth.dto.response.NotificationResponse;
-import com.fixit.domain.auth.dto.response.UnreadCountResponse;
 import com.fixit.domain.auth.service.AuthService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/v1/auth")
@@ -105,12 +98,12 @@ public class AuthController {
 
         @PostMapping("/reset-password")
         public ResponseEntity<String> resetPassword(
-                        @Valid @RequestBody ResetPasswordRequest request) {
+                @Valid @RequestBody ResetPasswordRequest request) {
 
                 authService.resetPassword(request);
 
                 return ResponseEntity.ok(
-                                "Mật khẩu đã được đặt lại thành công");
+                        "Mật khẩu đã được đặt lại thành công");
         }
 
         // =========================
@@ -157,63 +150,5 @@ public class AuthController {
 
                 return ResponseEntity.ok(
                                 "Đăng xuất thành công");
-        }
-
-        // =========================
-        // DEVICE TOKEN
-        // =========================
-
-        @PostMapping("/device-tokens")
-        public ResponseEntity<String> registerDeviceToken(
-                        Authentication authentication,
-                        @Valid @RequestBody DeviceTokenRequest request) {
-                
-                String identifier = authentication.getName();
-                authService.registerDeviceToken(identifier, request);
-                return ResponseEntity.ok("Đăng ký device token thành công");
-        }
-
-        @DeleteMapping("/device-tokens/{deviceToken}")
-        public ResponseEntity<Void> removeDeviceToken(
-                        @PathVariable String deviceToken) {
-                
-                authService.removeDeviceToken(deviceToken);
-                return ResponseEntity.noContent().build();
-        }
-
-        // =========================
-        // NOTIFICATIONS
-        // =========================
-
-        @GetMapping("/notifications")
-        public ResponseEntity<Page<NotificationResponse>> getMyNotifications(
-                Authentication authentication,
-                @PageableDefault(size = 20) Pageable pageable) {
-                
-                String identifier = authentication.getName();
-                return ResponseEntity.ok(authService.getMyNotifications(identifier, pageable));
-        }
-
-        @GetMapping("/notifications/unread-count")
-        public ResponseEntity<UnreadCountResponse> getMyUnreadCount(Authentication authentication) {
-                String identifier = authentication.getName();
-                return ResponseEntity.ok(authService.getMyUnreadCount(identifier));
-        }
-
-        @PatchMapping("/notifications/{notificationId}/read")
-        public ResponseEntity<String> markAsRead(
-                Authentication authentication,
-                @PathVariable UUID notificationId) {
-                
-                String identifier = authentication.getName();
-                authService.markAsRead(identifier, notificationId);
-                return ResponseEntity.ok("Đã đánh dấu thông báo là đã đọc");
-        }
-
-        @PatchMapping("/notifications/read-all")
-        public ResponseEntity<String> markAllAsRead(Authentication authentication) {
-                String identifier = authentication.getName();
-                authService.markAllAsRead(identifier);
-                return ResponseEntity.ok("Đã đánh dấu tất cả thông báo là đã đọc");
         }
 }
