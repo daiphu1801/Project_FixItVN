@@ -227,7 +227,21 @@ public class OrderDetailFinishedFragment extends BaseFragment<FragmentOrderDetai
             binding.tvStatus.setTextColor(Color.parseColor("#10B981"));
             binding.tvStatus.setBackgroundResource(R.drawable.bg_badge_green_light);
         } else {
-            binding.tvStatus.setText("● " + status);
+            String statusText = status;
+            if ("pending".equalsIgnoreCase(status)) {
+                statusText = "Đang tìm thợ";
+            } else if ("assigned".equalsIgnoreCase(status) || "accepted".equalsIgnoreCase(status)) {
+                statusText = "Đã nhận đơn";
+            } else if ("surveying".equalsIgnoreCase(status)) {
+                statusText = "Đang khảo sát";
+            } else if ("waiting_approval".equalsIgnoreCase(status)) {
+                statusText = "Chờ duyệt báo giá";
+            } else if ("waiting_payment".equalsIgnoreCase(status)) {
+                statusText = "Chờ thanh toán";
+            } else if ("in_progress".equalsIgnoreCase(status)) {
+                statusText = "Đang thi công";
+            }
+            binding.tvStatus.setText("● " + statusText);
             binding.tvStatus.setTextColor(Color.parseColor("#0284C7"));
             binding.tvStatus.setBackgroundResource(R.drawable.bg_badge_light_blue);
         }

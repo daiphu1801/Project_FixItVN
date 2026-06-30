@@ -40,7 +40,16 @@ public interface TransactionHistoryRepository extends JpaRepository<TransactionH
 
     // Tìm giao dịch Pending theo transactionCode xuất hiện trong nội dung chuyển khoản (không phân biệt hoa thường)
     @Query("SELECT t FROM TransactionHistory t WHERE t.status = 'Pending' " +
-            "AND t.transactionType = 'Deposit' " +
+            "AND (t.transactionType = 'Deposit' OR t.transactionType = 'Release') " +
             "AND LOWER(:content) LIKE LOWER(CONCAT('%', t.transactionCode, '%'))")
     Optional<TransactionHistory> findByTransactionCodeInContent(@Param("content") String content);
+
+    @Query("SELECT t.transactionCode FROM TransactionHistory t WHERE t.booking.id = :bookingId AND t.transactionType = 'Release'")
+    Optional<String> findTransactionCodeByBookingId(@Param("bookingId") UUID bookingId);
+
+    Optional<TransactionHistory> findByBooking_IdAndTransactionTypeAndStatus(
+            UUID bookingId,
+            TransactionType transactionType,
+            TransactionStatus status
+    );
 }

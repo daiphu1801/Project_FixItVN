@@ -58,9 +58,14 @@ public class CustomerActivity extends BaseActivity<ActivityCustomerBinding> {
             // 2. Lấy bộ điều hướng (navController) - đây là 'người lái xe' cho ứng dụng
             navController = navHostFragment.getNavController();
             
-            // 3. TỰ ĐỘNG KẾT NỐI: Lệnh này giúp thanh Menu bên dưới tự động nhận diện 5 nút bấm
+            // 3. TỰ ĐỘNG KẾT NỐI: Lệnh này giúp thanh Menu bên dưới tự động nhận diện các nút bấm
             // Nó sẽ so khớp ID của nút bấm trong file Menu và ID của màn hình trong file Navigation.
             NavigationUI.setupWithNavController(binding.bottomNavigationView, navController);
+
+            // Nút Tìm thợ (FAB) chuyển đến giao diện tìm kiếm
+            binding.fabFindWorker.setOnClickListener(v -> {
+                navController.navigate(R.id.nav_customer_search);
+            });
 
             // Xử lý khi người dùng nhấn lại vào các mục trên Bottom Navigation
             binding.bottomNavigationView.setOnItemSelectedListener(item -> {

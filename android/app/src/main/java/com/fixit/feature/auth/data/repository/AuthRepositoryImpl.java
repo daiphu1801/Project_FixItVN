@@ -38,7 +38,7 @@ public class AuthRepositoryImpl implements AuthRepository {
 
     @Override
     public void login(String identifier, String password, String role, ResultCallback<Session> callback) {
-        authApi.login(new AuthRequest.Login(identifier, password))
+        authApi.login(new AuthRequest.Login(identifier, password, role))
                 .enqueue(new Callback<AuthResponse>() {
                     @Override
                     public void onResponse(Call<AuthResponse> call, Response<AuthResponse> response) {
@@ -216,6 +216,54 @@ public class AuthRepositoryImpl implements AuthRepository {
                         callback.onResult(Result.error(
                                 new AppError("Lỗi kết nối đăng nhập Google: " + t.getMessage(), t)
                         ));
+                    }
+                });
+    }
+
+    @Override
+    public void forgotPassword(String email, String phone, ResultCallback<Void> callback) {
+        authApi.forgotPassword(new AuthRequest.ForgotPassword(email, phone))
+                .enqueue(new Callback<okhttp3.ResponseBody>() {
+                    @Override
+                    public void onResponse(Call<okhttp3.ResponseBody> call, Response<okhttp3.ResponseBody> response) {
+                        if (response.isSuccessful()) {
+                            callback.onResult(Result.success(null));
+                        } else {
+                            ApiResponse<?> apiResponse = ApiResponse.parseError(response);
+                            String errorMessage = (apiResponse != null && apiResponse.getMessage() != null)
+                                    ? apiResponse.getMessage()
+                                    : "Gửi yêu cầu thất bại: " + response.code();
+                            callback.onResult(Result.error(new AppError(errorMessage)));
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<okhttp3.ResponseBody> call, Throwable t) {
+                        callback.onResult(Result.error(new AppError("Lỗi kết nối: " + t.getMessage(), t)));
+                    }
+                });
+    }
+
+    @Override
+    public void resetPassword(String email, String phone, String otpCode, String newPassword, ResultCallback<Void> callback) {
+        authApi.resetPassword(new AuthRequest.ResetPassword(email, phone, otpCode, newPassword))
+                .enqueue(new Callback<okhttp3.ResponseBody>() {
+                    @Override
+                    public void onResponse(Call<okhttp3.ResponseBody> call, Response<okhttp3.ResponseBody> response) {
+                        if (response.isSuccessful()) {
+                            callback.onResult(Result.success(null));
+                        } else {
+                            ApiResponse<?> apiResponse = ApiResponse.parseError(response);
+                            String errorMessage = (apiResponse != null && apiResponse.getMessage() != null)
+                                    ? apiResponse.getMessage()
+                                    : "Đặt lại mật khẩu thất bại: " + response.code();
+                            callback.onResult(Result.error(new AppError(errorMessage)));
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<okhttp3.ResponseBody> call, Throwable t) {
+                        callback.onResult(Result.error(new AppError("Lỗi kết nối: " + t.getMessage(), t)));
                     }
                 });
     }

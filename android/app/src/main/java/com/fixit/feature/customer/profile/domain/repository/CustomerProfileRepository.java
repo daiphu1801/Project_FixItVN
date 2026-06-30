@@ -24,7 +24,7 @@ public interface CustomerProfileRepository {
     // LƯU Ý: Ở tầng này, ta trả về dữ liệu thật (CustomerProfile) chứ KHÔNG PHẢI vỏ hộp (CustomerProfileResponseDto).
     void getProfile(ResultCallback<CustomerProfile> callback);
 
-    void updateProfile(String fullName, ResultCallback<CustomerProfile> callback);
+    void updateProfile(String fullName, String email, String gender, String dob, ResultCallback<CustomerProfile> callback);
 
     // ----------------------------------------------------
     // NHÓM 2: ADDRESS

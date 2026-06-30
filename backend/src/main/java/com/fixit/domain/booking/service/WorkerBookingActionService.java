@@ -18,4 +18,6 @@ public interface WorkerBookingActionService {
     BookingActionResponse startRepair(UUID bookingId);
 
     BookingActionResponse workerComplete(UUID bookingId);
+
+    BookingActionResponse workerConfirmPayment(UUID bookingId);
 }

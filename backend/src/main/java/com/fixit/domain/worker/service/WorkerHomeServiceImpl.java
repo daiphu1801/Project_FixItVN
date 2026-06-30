@@ -275,7 +275,8 @@ public class WorkerHomeServiceImpl implements WorkerHomeService {
         return switch (status) {
             case "Accepted" -> "Đã nhận đơn";
             case "Surveying" -> "Đang khảo sát";
-            case "Waiting_Approval" -> "Chờ duyệt báo giá";
+            case "Waiting_Approval" -> "Chờ khách nghiệm thu";
+            case "Waiting_Payment" -> "Chờ xác nhận nhận tiền";
             case "In_Progress" -> "Đang sửa chữa";
             case "Completed" -> "Hoàn thành";
             case "Cancelled" -> "Đã hủy";
@@ -292,6 +293,7 @@ public class WorkerHomeServiceImpl implements WorkerHomeService {
             case "Accepted" -> "START_MOVING";
             case "Surveying" -> "CREATE_QUOTATION";
             case "Waiting_Approval" -> "WAIT_CUSTOMER_APPROVAL";
+            case "Waiting_Payment" -> "CONFIRM_PAYMENT";
             case "In_Progress" -> "WORKER_COMPLETE";
             default -> null;
         };

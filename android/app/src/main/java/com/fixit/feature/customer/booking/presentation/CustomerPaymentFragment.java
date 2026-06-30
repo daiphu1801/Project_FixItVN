@@ -65,16 +65,20 @@ public class CustomerPaymentFragment extends BaseFragment<FragmentCustomerPaymen
             return;
         }
 
-        setLoading(true);
-        processPaymentUseCase.execute(bookingId, result -> {
-            setLoading(false);
+        // Lấy phương thức thanh toán từ UI (mặc định CASH vì flow này chạy qua dialog khác)
+        // CustomerPaymentFragment là màn hình cũ, payment method được chọn tại CustomerOrderDetailFragment
+        final String selectedPaymentMethod = "CASH";
+
+        binding.btnConfirmPayment.setEnabled(false);
+        processPaymentUseCase.execute(bookingId, selectedPaymentMethod, result -> {
+            binding.btnConfirmPayment.setEnabled(true);
             if (result != null && result.isSuccess()) {
                 Toast.makeText(requireContext(), "Thanh toán thành công!", Toast.LENGTH_SHORT).show();
                 if (navController != null) {
                     navController.popBackStack();
                 }
             } else {
-                String error = result != null ? result.getError().getMessage() : "Lỗi không xác định";
+                String error = result != null && result.getError() != null ? result.getError().getMessage() : "Lỗi không xác định";
                 Toast.makeText(requireContext(), "Thanh toán thất bại: " + error, Toast.LENGTH_LONG).show();
             }
         });

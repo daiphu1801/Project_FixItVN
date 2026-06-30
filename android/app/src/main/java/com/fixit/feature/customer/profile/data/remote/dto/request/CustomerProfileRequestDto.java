@@ -11,15 +11,24 @@ public class CustomerProfileRequestDto {
     @SerializedName("fullName")
     private String fullName;
 
+    @SerializedName("email")
+    private String email;
+
+    @SerializedName("gender")
+    private String gender;
+
+    @SerializedName("dob")
+    private String dob;
+
     // ----------------------------------------------------
     // CÁC HÀM KHỞI TẠO VÀ GETTER / SETTER
     // ----------------------------------------------------
 
-    // CÚ PHÁP: public [Tên_Class]([Kiểu] [tham_số]) { ... }
-    // Ý NGHĨA: Hàm tạo. Giúp ta tạo nhanh cái hộp và nhét luôn dữ liệu vào.
-    // VD: new CustomerProfileRequestDto("Thế Anh");
-    public CustomerProfileRequestDto(String fullName) {
+    public CustomerProfileRequestDto(String fullName, String email, String gender, String dob) {
         this.fullName = fullName;
+        this.email = email;
+        this.gender = gender;
+        this.dob = dob;
     }
 
     public String getFullName() {
@@ -28,5 +37,29 @@ public class CustomerProfileRequestDto {
 
     public void setFullName(String fullName) {
         this.fullName = fullName;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public String getGender() {
+        return gender;
+    }
+
+    public void setGender(String gender) {
+        this.gender = gender;
+    }
+
+    public String getDob() {
+        return dob;
+    }
+
+    public void setDob(String dob) {
+        this.dob = dob;
     }
 }

@@ -22,6 +22,9 @@ public class OtpCode {
     @Column(name = "phone_number", length = 100)
     private String phoneNumber;
 
+    @Column(name = "email", length = 100)
+    private String email;
+
     @Column(name = "otp_code", length = 6)
     private String otpCode;
 

@@ -33,10 +33,10 @@ public interface AuthApi {
     Call<AuthResponse> verifyOtp(@Body AuthRequest.VerifyOtp request);
 
     @POST("api/v1/auth/forgot-password")
-    Call<String> forgotPassword(@Body AuthRequest.SendOtp request);
+    Call<okhttp3.ResponseBody> forgotPassword(@Body AuthRequest.ForgotPassword request);
 
     @POST("api/v1/auth/reset-password")
-    Call<String> resetPassword(@Body AuthRequest.ResetPassword request);
+    Call<okhttp3.ResponseBody> resetPassword(@Body AuthRequest.ResetPassword request);
 
     @PATCH("api/v1/auth/change-password")
     Call<okhttp3.ResponseBody> changePassword(@Body AuthRequest.ChangePassword request);

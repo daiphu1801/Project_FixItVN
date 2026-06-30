@@ -10,6 +10,8 @@ import com.fixit.feature.auth.domain.usecase.GetCurrentSessionUseCase;
 import com.fixit.feature.auth.domain.usecase.LoginUseCase;
 import com.fixit.feature.auth.domain.usecase.LoginWithGoogleUseCase;
 import com.fixit.feature.auth.domain.usecase.RegisterUseCase;
+import com.fixit.feature.auth.domain.usecase.ForgotPasswordUseCase;
+import com.fixit.feature.auth.domain.usecase.ResetPasswordUseCase;
 
 import javax.inject.Inject;
 
@@ -21,6 +23,8 @@ public class AuthViewModel extends ViewModel {
     private final RegisterUseCase registerUseCase;
     private final GetCurrentSessionUseCase getCurrentSessionUseCase;
     private final LoginWithGoogleUseCase loginWithGoogleUseCase;
+    private final ForgotPasswordUseCase forgotPasswordUseCase;
+    private final ResetPasswordUseCase resetPasswordUseCase;
 
     private final MutableLiveData<AuthUiState> _uiState = new MutableLiveData<>(AuthUiState.idle());
     public LiveData<AuthUiState> uiState = _uiState;
@@ -31,11 +35,15 @@ public class AuthViewModel extends ViewModel {
     @Inject
     public AuthViewModel(LoginUseCase loginUseCase, RegisterUseCase registerUseCase,
                          GetCurrentSessionUseCase getCurrentSessionUseCase,
-                         LoginWithGoogleUseCase loginWithGoogleUseCase) {
+                         LoginWithGoogleUseCase loginWithGoogleUseCase,
+                         ForgotPasswordUseCase forgotPasswordUseCase,
+                         ResetPasswordUseCase resetPasswordUseCase) {
         this.loginUseCase = loginUseCase;
         this.registerUseCase = registerUseCase;
         this.getCurrentSessionUseCase = getCurrentSessionUseCase;
         this.loginWithGoogleUseCase = loginWithGoogleUseCase;
+        this.forgotPasswordUseCase = forgotPasswordUseCase;
+        this.resetPasswordUseCase = resetPasswordUseCase;
     }
 
     /**
@@ -86,5 +94,39 @@ public class AuthViewModel extends ViewModel {
     public void loginWithGoogle(String idToken, String role) {
         _uiState.setValue(AuthUiState.loading());
         loginWithGoogleUseCase.execute(idToken, role, this::handleLoginResult);
+    }
+
+    public void forgotPassword(String email, String phone) {
+        _uiState.setValue(AuthUiState.loading());
+        forgotPasswordUseCase.execute(email, phone, result -> {
+            if (result.isSuccess()) {
+                _uiState.setValue(AuthUiState.success());
+                _event.setValue(AuthEvent.forgotPasswordSuccess());
+            } else {
+                _uiState.setValue(AuthUiState.error(result.getError().getMessage()));
+            }
+        });
+    }
+
+    public void resetPassword(String email, String phone, String otpCode, String newPassword) {
+        _uiState.setValue(AuthUiState.loading());
+        resetPasswordUseCase.execute(email, phone, otpCode, newPassword, result -> {
+            if (result.isSuccess()) {
+                _uiState.setValue(AuthUiState.success());
+                _event.setValue(AuthEvent.resetPasswordSuccess());
+            } else {
+                _uiState.setValue(AuthUiState.error(result.getError().getMessage()));
+            }
+        });
+    }
+
+    /** Gọi sau khi Fragment đã xử lý xong lỗi để reset state về idle */
+    public void resetState() {
+        _uiState.setValue(AuthUiState.idle());
+    }
+
+    /** Gọi sau khi Fragment đã consume event để tránh phát lại khi re-observe */
+    public void consumeEvent() {
+        _event.setValue(null);
     }
 }

@@ -18,8 +18,19 @@ public class CustomerBooking {
     private String cancellationReason;
     private BigDecimal finalPrice;
     private BookingWorkerInfo worker;
+    private String quotationId; // ID của quotation cần xem/accept (Pending hoặc Accepted)
+    private String quotationStatus; // "Pending" (chờ khách duyệt báo giá) hoặc "Accepted" (đã duyệt)
+    private String paymentCode;
+    private java.util.List<String> doneActions;
 
-    public CustomerBooking(String bookingId, Integer serviceId, String address, BigDecimal destinationLat, BigDecimal destinationLng, String issueDescription, String paymentMethod, String status, String createdAt, String serviceName, BigDecimal laborCost, BigDecimal materialCost, String cancellationReason, BigDecimal finalPrice, BookingWorkerInfo worker) {
+    public CustomerBooking(String bookingId, Integer serviceId, String address,
+                           BigDecimal destinationLat, BigDecimal destinationLng,
+                           String issueDescription, String paymentMethod, String status,
+                           String createdAt, String serviceName,
+                           BigDecimal laborCost, BigDecimal materialCost,
+                           String cancellationReason, BigDecimal finalPrice,
+                           BookingWorkerInfo worker, String quotationId, String quotationStatus,
+                           String paymentCode, java.util.List<String> doneActions) {
         this.bookingId = bookingId;
         this.serviceId = serviceId;
         this.address = address;
@@ -35,6 +46,10 @@ public class CustomerBooking {
         this.cancellationReason = cancellationReason;
         this.finalPrice = finalPrice;
         this.worker = worker;
+        this.quotationId = quotationId;
+        this.quotationStatus = quotationStatus;
+        this.paymentCode = paymentCode;
+        this.doneActions = doneActions;
     }
 
     public String getBookingId() { return bookingId; }
@@ -52,4 +67,8 @@ public class CustomerBooking {
     public String getCancellationReason() { return cancellationReason; }
     public BigDecimal getFinalPrice() { return finalPrice; }
     public BookingWorkerInfo getWorker() { return worker; }
+    public String getQuotationId() { return quotationId; }
+    public String getQuotationStatus() { return quotationStatus; }
+    public String getPaymentCode() { return paymentCode; }
+    public java.util.List<String> getDoneActions() { return doneActions; }
 }

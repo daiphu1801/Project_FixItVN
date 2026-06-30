@@ -80,7 +80,8 @@ public class WorkerScheduleServiceImpl implements WorkerScheduleService {
         return switch (status) {
             case "Accepted" -> "Đã nhận đơn";
             case "Surveying" -> "Đang khảo sát";
-            case "Waiting_Approval" -> "Chờ duyệt báo giá";
+            case "Waiting_Approval" -> "Chờ khách nghiệm thu";
+            case "Waiting_Payment" -> "Chờ xác nhận nhận tiền";
             case "In_Progress" -> "Đang sửa chữa";
             case "Completed" -> "Hoàn thành";
             case "Cancelled" -> "Đã hủy";

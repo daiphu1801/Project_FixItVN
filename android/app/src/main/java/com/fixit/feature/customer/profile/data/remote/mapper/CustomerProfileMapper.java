@@ -22,7 +22,11 @@ public class CustomerProfileMapper {
         // Rút dữ liệu từ DTO ra, đổ vào Hàm khởi tạo của Domain Model (File 14)
         return new CustomerProfile(
                 dto.getId(), 
-                dto.getFullName()
+                dto.getFullName(),
+                dto.getEmail(),
+                dto.getPhoneNumber(),
+                dto.getGender(),
+                dto.getDob()
         );
     }
 

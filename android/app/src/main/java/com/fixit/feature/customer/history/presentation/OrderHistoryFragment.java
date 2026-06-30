@@ -43,12 +43,7 @@ public class OrderHistoryFragment extends BaseFragment<FragmentCustomerOrderHist
 
     @Override
     protected void setupViews() {
-        // Cài đặt nút quay lại (Back)
-        binding.ivBack.setOnClickListener(v -> {
-            if (navController != null) {
-                navController.popBackStack();
-            }
-        });
+
 
         setupFilterChips();
 

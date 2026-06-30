@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:layout_width="280dp"
+    android:layout_width="260dp"
     android:layout_height="wrap_content"
     android:layout_marginEnd="16dp"
     android:layout_marginVertical="8dp"
-    app:cardCornerRadius="16dp"
-    app:cardElevation="2dp"
+    app:cardCornerRadius="20dp"
+    app:cardElevation="4dp"
     app:cardBackgroundColor="#ffffff">
 
     <LinearLayout
@@ -14,36 +14,78 @@
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
-        <!-- Banner Image Placeholder -->
-        <View
+        <!-- Banner hình ảnh -->
+        <FrameLayout
             android:layout_width="match_parent"
-            android:layout_height="120dp"
-            android:background="#42c2ff" />
+            android:layout_height="110dp">
 
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="#42c2ff" />
+
+            <!-- Icon trang trí góc -->
+            <ImageView
+                android:layout_width="64dp"
+                android:layout_height="64dp"
+                android:layout_gravity="end|bottom"
+                android:layout_margin="-8dp"
+                android:src="@drawable/ic_lucide_wrench"
+                app:tint="#ffffff"
+                android:alpha="0.2" />
+
+            <!-- Badge tag -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="top|start"
+                android:layout_margin="12dp"
+                android:background="#1a6fa3"
+                android:paddingHorizontal="8dp"
+                android:paddingVertical="3dp"
+                android:text="HOT"
+                android:textColor="#ffffff"
+                android:textSize="10sp"
+                android:textStyle="bold" />
+
+        </FrameLayout>
+
+        <!-- Nội dung text -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:padding="16dp">
+            android:padding="14dp">
 
             <TextView
                 android:id="@+id/tvPromoTitle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Khuyến mãi"
+                android:text="Ưu đãi đặc biệt"
                 android:textColor="#42c2ff"
-                android:textSize="14sp"
-                android:textStyle="bold" />
+                android:textSize="11sp"
+                android:textStyle="bold"
+                android:textAllCaps="true" />
 
             <TextView
                 android:id="@+id/tvPromoDescription"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="4dp"
-                android:text="Mô tả khuyến mãi"
+                android:text="Giảm 50K khi đặt thợ"
                 android:textColor="#0d1b2a"
-                android:textSize="18sp"
+                android:textSize="17sp"
                 android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/tvPromoExpiry"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:text="⏰ Hết hạn 30/07"
+                android:textColor="#94A3B8"
+                android:textSize="11sp" />
+
         </LinearLayout>
     </LinearLayout>
 

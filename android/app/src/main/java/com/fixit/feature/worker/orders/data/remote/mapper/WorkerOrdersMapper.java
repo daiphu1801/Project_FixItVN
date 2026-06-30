@@ -20,7 +20,7 @@ public class WorkerOrdersMapper {
  
         WorkerOrder order = new WorkerOrder(
                 dto.getBookingId(),
-                null,
+                dto.getCustomerId(),
                 dto.getServiceName(),
                 dto.getAddress(),
                 formattedTime,
@@ -31,6 +31,11 @@ public class WorkerOrdersMapper {
         order.setJobStatus(mapJobStatus(dto.getStatus(), dto.getDoneActions()));
         order.setPaymentMethod(dto.getPaymentMethod());
         order.setIssueDescription(dto.getIssueDescription());
+        order.setCustomerPhone(dto.getCustomerPhone());
+        order.setCustomerAvatar(dto.getCustomerAvatar());
+        order.setDestinationLat(dto.getDestinationLat());
+        order.setDestinationLng(dto.getDestinationLng());
+        order.setFinalPrice(dto.getFinalPrice());
 
         if (dto.getProofOfWorks() != null) {
             for (com.fixit.feature.upload.data.remote.dto.response.ProofOfWorkResponse pow : dto.getProofOfWorks()) {
@@ -65,6 +70,7 @@ public class WorkerOrdersMapper {
         order.setJobStatus(mapJobStatus(dto.getStatus(), null));
         order.setPaymentMethod(dto.getPaymentMethod());
         order.setIssueDescription(dto.getIssueDescription());
+        order.setFinalPrice(dto.getFinalPrice());
         return order;
     }
 
@@ -88,7 +94,23 @@ public class WorkerOrdersMapper {
         order.setJobStatus(mapJobStatus(dto.getStatus(), null));
         order.setPaymentMethod(dto.getPaymentMethod());
         order.setIssueDescription(dto.getIssueDescription());
+        order.setFinalPrice(dto.getFinalPrice());
         return order;
+    }
+
+    public static com.fixit.feature.worker.orders.domain.model.WorkerAssignment map(com.fixit.feature.worker.orders.data.remote.dto.PendingAssignmentResponseDto.PendingAssignmentItemDto dto) {
+        if (dto == null) return null;
+        return new com.fixit.feature.worker.orders.domain.model.WorkerAssignment(
+                dto.getAssignmentId(),
+                dto.getBookingId(),
+                dto.getServiceName(),
+                dto.getCustomerName(),
+                dto.getAddressPreview(),
+                dto.getIssueDescription(),
+                dto.getRemainingSeconds() != null ? dto.getRemainingSeconds() : 0,
+                dto.getFinalPrice() != null ? dto.getFinalPrice() : 0.0,
+                dto.getPaymentMethod()
+        );
     }
     
     private static String mapStatus(String backendStatus, List<String> doneActions) {
@@ -108,6 +130,7 @@ public class WorkerOrdersMapper {
             case "Surveying":
             case "In_Progress":
             case "Waiting_Approval":
+            case "Waiting_Payment":
                 return "ongoing";
             default:
                 return "pending";
@@ -166,6 +189,8 @@ public class WorkerOrdersMapper {
                     }
                 }
                 return JobStatus.SURVEYING;
+            case "Waiting_Payment":
+                return JobStatus.WAITING_PAYMENT;
             case "Completed":
             case "Cancelled":
                 return JobStatus.COMPLETED;

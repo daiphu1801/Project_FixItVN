@@ -7,13 +7,10 @@
     android:layout_height="match_parent"
     android:background="?attr/android:colorBackground">
 
-    <ImageView
-        android:id="@+id/ivMapBackground"
+    <org.osmdroid.views.MapView
+        android:id="@+id/mapView"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:scaleType="centerCrop"
-        android:src="@drawable/img_map_placeholder"
-        android:alpha="0.6" />
+        android:layout_height="match_parent" />
 
     <ImageView
         android:id="@+id/ivBack"
@@ -102,13 +99,64 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
+            <!-- Chi tiết đơn hàng của khách hàng -->
+            <TextView
+                android:id="@+id/tvServiceName"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:text="Dịch vụ sửa chữa"
+                android:textAppearance="?attr/textAppearanceSubtitle1"
+                android:textColor="?attr/colorOnSurface"
+                android:textStyle="bold"
+                android:textSize="18sp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/dragHandle" />
+
+            <TextView
+                android:id="@+id/tvAddress"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="📍 Đang tải địa chỉ..."
+                android:textAppearance="?attr/textAppearanceBody2"
+                android:textColor="#4B5563"
+                android:textSize="14sp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/tvServiceName" />
+
+            <TextView
+                android:id="@+id/tvDescription"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="6dp"
+                android:text="Mô tả sự cố: Chưa có mô tả"
+                android:textAppearance="?attr/textAppearanceBody2"
+                android:textColor="#6B7280"
+                android:textSize="14sp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/tvAddress" />
+
+            <View
+                android:id="@+id/divider0"
+                android:layout_width="0dp"
+                android:layout_height="1dp"
+                android:layout_marginTop="16dp"
+                android:background="#F0F0F0"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/tvDescription" />
+
             <!-- Row 1: Đang tìm thợ + giá -->
 
             <TextView
                 android:id="@+id/tvFindingStatus"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="168dp"
+                android:layout_marginTop="16dp"
                 android:text="Đang tìm thợ"
                 android:textAppearance="?attr/textAppearanceBody1"
                 android:textColor="?attr/colorOnSurface"
@@ -116,7 +164,7 @@
                 app:layout_constraintEnd_toStartOf="@id/tvPriceRange"
                 app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/dragHandle" />
+                app:layout_constraintTop_toBottomOf="@id/divider0" />
 
             <TextView
                 android:id="@+id/tvPriceRange"

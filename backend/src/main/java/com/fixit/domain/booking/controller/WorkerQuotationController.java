@@ -22,12 +22,12 @@ public class WorkerQuotationController {
 
     @PostMapping("/{bookingId}/quotations")
     @PreAuthorize("hasRole('Worker')")
-    public ApiResponse<WorkerQuotation> submitQuotation(
+    public ApiResponse<com.fixit.domain.booking.dto.response.WorkerQuotationResponse> submitQuotation(
             @AuthenticationPrincipal User userDetails,
             @PathVariable UUID bookingId,
             @Valid @RequestBody WorkerQuotationCreateRequest request
     ) {
-        WorkerQuotation quotation = quotationPaymentService.submitQuotation(userDetails.getId(), bookingId, request);
+        com.fixit.domain.booking.dto.response.WorkerQuotationResponse quotation = quotationPaymentService.submitQuotation(userDetails.getId(), bookingId, request);
         return ApiResponse.success(quotation, "Đã gửi báo giá cho khách hàng");
     }
 }

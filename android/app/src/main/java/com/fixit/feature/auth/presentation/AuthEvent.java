@@ -7,7 +7,9 @@ public class AuthEvent {
     public enum Type {
         NAVIGATE_TO_CUSTOMER,
         NAVIGATE_TO_WORKER,
-        REGISTER_SUCCESS
+        REGISTER_SUCCESS,
+        FORGOT_PASSWORD_SUCCESS,
+        RESET_PASSWORD_SUCCESS
     }
 
     private final Type type;
@@ -27,6 +29,14 @@ public class AuthEvent {
 
     public static AuthEvent registerSuccess(Session session) {
         return new AuthEvent(Type.REGISTER_SUCCESS, session);
+    }
+
+    public static AuthEvent forgotPasswordSuccess() {
+        return new AuthEvent(Type.FORGOT_PASSWORD_SUCCESS, null);
+    }
+
+    public static AuthEvent resetPasswordSuccess() {
+        return new AuthEvent(Type.RESET_PASSWORD_SUCCESS, null);
     }
 
     public Type getType() {

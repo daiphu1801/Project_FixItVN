@@ -16,6 +16,8 @@ public interface OtpCodeRepository extends JpaRepository<OtpCode, UUID> {
     
     Optional<OtpCode> findByPhoneNumberAndActionTypeAndUsedFalse(String phoneNumber, OtpActionType actionType);
     
+    Optional<OtpCode> findByEmailAndActionTypeAndUsedFalse(String email, OtpActionType actionType);
+    
     @Modifying
     @Query("DELETE FROM OtpCode o WHERE o.expiresAt < :now")
     void deleteByExpiresAtBefore(OffsetDateTime now);

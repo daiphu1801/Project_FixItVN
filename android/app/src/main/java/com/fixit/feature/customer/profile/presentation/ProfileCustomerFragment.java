@@ -36,6 +36,10 @@ public class ProfileCustomerFragment extends BaseFragment<FragmentProfileCustome
     @Inject
     SessionStorage sessionStorage;
 
+    @Inject
+    com.fixit.feature.customer.profile.domain.usecase.GetCustomerProfileUseCase getCustomerProfileUseCase;
+
+    private CustomerProfileViewModel profileViewModel;
     private UploadViewModel uploadViewModel;
     private AutoRefreshHelper autoRefreshHelper;
 
@@ -69,10 +73,37 @@ public class ProfileCustomerFragment extends BaseFragment<FragmentProfileCustome
 
     @Override
     protected void setupViews() {
-        // Chuyển đến màn hình thông tin tài khoản
+        // Chuyển đến màn hình thông tin tài khoản khi click vào card profile
         binding.cardProfile.setOnClickListener(v -> {
             if (navController != null) {
                 navController.navigate(R.id.nav_customer_account_info);
+            }
+        });
+
+        // Click vào mục "Thông tin cá nhân" trong danh sách menu
+        binding.layoutAccountInfo.setOnClickListener(v -> {
+            if (navController != null) {
+                navController.navigate(R.id.nav_customer_account_info);
+            }
+        });
+
+        // Click vào mục "Địa chỉ của tôi"
+        binding.layoutAddress.setOnClickListener(v -> {
+            if (navController != null) {
+                navController.navigate(R.id.nav_customer_address);
+            }
+        });
+
+        // Click vào mục "Trung tâm hỗ trợ"
+        binding.layoutSupportCenter.setOnClickListener(v -> {
+            // TODO: navigate tới màn hình trung tâm hỗ trợ khi đã có
+            Toast.makeText(requireContext(), "Tính năng đang phát triển", Toast.LENGTH_SHORT).show();
+        });
+
+        // Click vào mục "Đổi mật khẩu"
+        binding.layoutChangePassword.setOnClickListener(v -> {
+            if (navController != null) {
+                navController.navigate(R.id.nav_customer_change_password);
             }
         });
 
@@ -109,13 +140,58 @@ public class ProfileCustomerFragment extends BaseFragment<FragmentProfileCustome
     }
 
     private void loadCustomerData() {
+        // Hiển thị dữ liệu từ session cache trước (tránh màn hình trống)
         if (sessionStorage != null && sessionStorage.getSession() != null) {
             com.fixit.feature.auth.domain.model.User user = sessionStorage.getSession().getUser();
             if (user != null) {
-                binding.tvProfileName.setText(user.getFullName());
-                binding.tvProfilePhone.setText(user.getPhone());
+                if (user.getFullName() != null && !user.getFullName().isEmpty()) {
+                    binding.tvProfileName.setText(user.getFullName());
+                }
+                if (user.getPhone() != null && !user.getPhone().isEmpty()) {
+                    binding.tvProfilePhone.setText(user.getPhone());
+                }
             }
         }
+
+        // Sau đó tải dữ liệu mới nhất từ server
+        if (getCustomerProfileUseCase != null) {
+            getCustomerProfileUseCase.execute(result -> {
+                if (result.isSuccess() && result.getData() != null) {
+                    com.fixit.feature.customer.profile.domain.model.CustomerProfile profile = result.getData();
+
+                    // Phải cập nhật UI trên Main Thread
+                    requireActivity().runOnUiThread(() -> {
+                        if (binding == null) return;
+                        if (profile.getFullName() != null && !profile.getFullName().isEmpty()) {
+                            binding.tvProfileName.setText(profile.getFullName());
+                        }
+                        if (profile.getPhoneNumber() != null && !profile.getPhoneNumber().isEmpty()) {
+                            binding.tvProfilePhone.setText(profile.getPhoneNumber());
+                        }
+                    });
+
+                    // Lưu lại vào session cache để hiển thị nhanh lần sau
+                    if (sessionStorage != null) {
+                        com.fixit.feature.auth.domain.model.Session currentSession = sessionStorage.getSession();
+                        if (currentSession != null && currentSession.getUser() != null) {
+                            com.fixit.feature.auth.domain.model.User updatedUser = new com.fixit.feature.auth.domain.model.User(
+                                    currentSession.getUser().getId(),
+                                    profile.getPhoneNumber() != null ? profile.getPhoneNumber() : currentSession.getUser().getPhone(),
+                                    profile.getFullName(),
+                                    currentSession.getUser().getRole()
+                            );
+                            com.fixit.feature.auth.domain.model.Session newSession = new com.fixit.feature.auth.domain.model.Session(
+                                    currentSession.getAccessToken(),
+                                    currentSession.getRefreshToken(),
+                                    updatedUser
+                            );
+                            sessionStorage.saveSession(newSession);
+                        }
+                    }
+                }
+            });
+        }
+
         String savedAvatar = requireContext().getSharedPreferences(com.fixit.core.common.Constants.PREF_NAME, android.content.Context.MODE_PRIVATE)
                 .getString("user_avatar", null);
         if (savedAvatar != null && !savedAvatar.isEmpty()) {
@@ -125,6 +201,7 @@ public class ProfileCustomerFragment extends BaseFragment<FragmentProfileCustome
 
     @Override
     protected void observeData() {
+        profileViewModel = new ViewModelProvider(this).get(CustomerProfileViewModel.class);
         uploadViewModel = new ViewModelProvider(this).get(UploadViewModel.class);
 
         // Observe kết quả upload avatar
@@ -149,11 +226,27 @@ public class ProfileCustomerFragment extends BaseFragment<FragmentProfileCustome
                 Toast.makeText(requireContext(), result.getErrorMessage(), Toast.LENGTH_SHORT).show();
             }
         });
+
+        profileViewModel.getProfileData().observe(getViewLifecycleOwner(), profile -> {
+            if (profile != null) {
+                if (profile.getFullName() != null && !profile.getFullName().isEmpty()) {
+                    binding.tvProfileName.setText(profile.getFullName());
+                } else {
+                    binding.tvProfileName.setText("Khách hàng");
+                }
+                if (profile.getPhoneNumber() != null && !profile.getPhoneNumber().isEmpty()) {
+                    binding.tvProfilePhone.setText(profile.getPhoneNumber());
+                }
+            }
+        });
     }
 
     @Override
     public void onResume() {
         super.onResume();
+        if (profileViewModel != null) {
+            profileViewModel.loadProfile();
+        }
         if (autoRefreshHelper == null) {
             autoRefreshHelper = new AutoRefreshHelper(
                     requireContext(),

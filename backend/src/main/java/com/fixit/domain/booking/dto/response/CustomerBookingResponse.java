@@ -27,6 +27,10 @@ public class CustomerBookingResponse {
     private BigDecimal laborCost;
     private BigDecimal materialCost;
     private String cancellationReason;
+    private UUID quotationId; // ID của quotation Pending (khi Surveying) hoặc Accepted
+    private String quotationStatus; // "Pending" hoặc "Accepted"
+    private String paymentCode;
+    private java.util.List<String> doneActions;
 
     // Thông tin thợ (Sẽ null nếu đơn đang ở trạng thái Pending chưa ghép được thợ)
     private WorkerInfo worker;
@@ -38,5 +42,7 @@ public class CustomerBookingResponse {
         private String fullName;
         private String avatarUrl;
         private String phoneNumber; // Cần join bảng users để lấy sđt
+        private java.math.BigDecimal latitude;
+        private java.math.BigDecimal longitude;
     }
 }

@@ -31,6 +31,8 @@ import java.util.Locale;
 import android.widget.Toast;
 import com.fixit.feature.upload.domain.model.UploadPurpose;
 import com.fixit.feature.upload.presentation.UploadViewModel;
+import com.fixit.feature.customer.profile.presentation.AddressViewModel;
+import com.fixit.feature.customer.profile.domain.model.CustomerAddress;
 import dagger.hilt.android.AndroidEntryPoint;
 
 @AndroidEntryPoint
@@ -39,9 +41,16 @@ public class CustomerBookingFragment extends BaseFragment<FragmentCustomerBookin
     private String problemDescription = "";
     private String specialNote = "";
     private String currentAddress = "207/17B Bùi Xương Trạch, Khương Đình, Thanh Xuân, Hà Nội";
+    private double currentLatitude = 21.0285;
+    private double currentLongitude = 105.8542;
     private String selectedTimeText = "Ngay bây giờ";
     private final List<Uri> selectedImages = new ArrayList<>();
     private UploadViewModel uploadViewModel;
+    private AddressViewModel addressViewModel;
+    private List<CustomerAddress> addressesList = new ArrayList<>();
+    private String currentAddressId = null;
+    private String currentLabel = "TỰ ĐỘNG";
+    private boolean isAddressUserSelected = false;
     private int serviceId = 1;
     private String serviceName = "Dịch vụ sửa chữa";
 
@@ -66,7 +75,10 @@ public class CustomerBookingFragment extends BaseFragment<FragmentCustomerBookin
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        uploadViewModel = new ViewModelProvider(this).get(UploadViewModel.class);        
+        uploadViewModel = new ViewModelProvider(this).get(UploadViewModel.class);
+        addressViewModel = new ViewModelProvider(this).get(AddressViewModel.class);
+        addressViewModel.loadAddresses();
+        
         if (getArguments() != null) {
             serviceId = getArguments().getInt("serviceId", 1);
             serviceName = getArguments().getString("serviceName", "Dịch vụ sửa chữa");
@@ -101,6 +113,11 @@ public class CustomerBookingFragment extends BaseFragment<FragmentCustomerBookin
                 String address = bundle.getString(CustomerLocationPickerFragment.ADDRESS_KEY);
                 if (address != null) {
                     currentAddress = address;
+                    currentLatitude = bundle.getDouble(CustomerLocationPickerFragment.LATITUDE_KEY, 21.0285);
+                    currentLongitude = bundle.getDouble(CustomerLocationPickerFragment.LONGITUDE_KEY, 105.8542);
+                    currentAddressId = null;
+                    currentLabel = "Bản đồ";
+                    isAddressUserSelected = true;
                     updateLocationUI();
                 }
             }
@@ -117,15 +134,9 @@ public class CustomerBookingFragment extends BaseFragment<FragmentCustomerBookin
             if (navController != null) navController.popBackStack();
         });
 
-        binding.cardLocation.setOnClickListener(v -> {
-            if (navController != null) navController.navigate(R.id.nav_customer_location_picker);
-        });
-        binding.tvLocationEdit.setOnClickListener(v -> {
-            if (navController != null) navController.navigate(R.id.nav_customer_location_picker);
-        });
-        binding.cardMap.setOnClickListener(v -> {
-            if (navController != null) navController.navigate(R.id.nav_customer_location_picker);
-        });
+        binding.cardLocation.setOnClickListener(v -> showAddressSelectionBottomSheet());
+        binding.tvLocationEdit.setOnClickListener(v -> showAddressSelectionBottomSheet());
+        binding.cardMap.setOnClickListener(v -> showAddressSelectionBottomSheet());
 
         binding.cardProblem.setOnClickListener(v -> navigateToInput("problem", "Vấn đề của bạn", problemDescription));
         binding.cardNote.setOnClickListener(v -> navigateToInput("note", "Ghi chú", specialNote));
@@ -137,12 +148,15 @@ public class CustomerBookingFragment extends BaseFragment<FragmentCustomerBookin
 
         binding.btnFindWorker.setOnClickListener(v -> {
             // Lấy dữ liệu từ UI
-            java.math.BigDecimal lat = new java.math.BigDecimal("21.0285"); // Mặc định Hà Nội
-            java.math.BigDecimal lng = new java.math.BigDecimal("105.8542"); // Mặc định Hà Nội
+            java.math.BigDecimal lat = new java.math.BigDecimal(String.valueOf(currentLatitude));
+            java.math.BigDecimal lng = new java.math.BigDecimal(String.valueOf(currentLongitude));
             String desc = problemDescription + (specialNote.isEmpty() ? "" : "\nGhi chú: " + specialNote);
 
+            // Phương thức thanh toán mặc định là CASH - khách sẽ chọn lại ở bước nghiệm thu cuối
+            String paymentMethod = "CASH";
+
             // 1. Cập nhật trạng thái: Đang tìm thợ & gọi API tạo đơn
-            orderViewModel.createBooking(serviceId, currentAddress, lat, lng, desc);
+            orderViewModel.createBooking(serviceId, currentAddress, lat, lng, desc, paymentMethod);
             
             // 2. Chuyển sang Tab Đơn hàng
             if (navController != null) {
@@ -261,8 +275,50 @@ public class CustomerBookingFragment extends BaseFragment<FragmentCustomerBookin
         }
     }
 
+    private void selectAddress(CustomerAddress address) {
+        if (address == null) return;
+        currentAddress = address.getAddress();
+        currentLatitude = address.getLatitude() != null ? address.getLatitude() : 21.0285;
+        currentLongitude = address.getLongitude() != null ? address.getLongitude() : 105.8542;
+        currentAddressId = address.getId();
+        currentLabel = address.getLabel() != null ? address.getLabel() : "ĐỊA CHỈ";
+        isAddressUserSelected = true;
+        updateLocationUI();
+    }
+
+    private void showAddressSelectionBottomSheet() {
+        CustomerAddressSelectionBottomSheet bottomSheet = CustomerAddressSelectionBottomSheet.newInstance(addressesList, currentAddressId);
+        bottomSheet.setListener(new CustomerAddressSelectionBottomSheet.OnAddressSelectedListener() {
+            @Override
+            public void onAddressSelected(CustomerAddress address) {
+                selectAddress(address);
+            }
+
+            @Override
+            public void onSelectFromMapSelected() {
+                if (navController != null) {
+                    navController.navigate(R.id.nav_customer_location_picker);
+                }
+            }
+
+            @Override
+            public void onAddNewAddressSelected() {
+                if (navController != null) {
+                    navController.navigate(R.id.nav_customer_address_add_edit);
+                }
+            }
+        });
+        bottomSheet.show(getParentFragmentManager(), "ADDRESS_SELECTION");
+    }
+
     private void updateLocationUI() {
         binding.tvLocationAddress.setText(currentAddress);
+        if (currentLabel != null && !currentLabel.isEmpty()) {
+            binding.tvLocationBadge.setText(currentLabel.toUpperCase());
+            binding.tvLocationBadge.setVisibility(android.view.View.VISIBLE);
+        } else {
+            binding.tvLocationBadge.setVisibility(android.view.View.GONE);
+        }
     }
 
     private void updateProblemUI() {
@@ -287,6 +343,25 @@ public class CustomerBookingFragment extends BaseFragment<FragmentCustomerBookin
 
     @Override
     protected void observeData() {
+        // Observe danh sách sổ địa chỉ
+        addressViewModel.getAddressesData().observe(getViewLifecycleOwner(), addresses -> {
+            if (addresses == null) return;
+            addressesList = addresses;
+            if (!isAddressUserSelected && !addresses.isEmpty()) {
+                CustomerAddress defaultAddr = null;
+                for (CustomerAddress addr : addresses) {
+                    if (addr.getDefaultAddress() != null && addr.getDefaultAddress()) {
+                        defaultAddr = addr;
+                        break;
+                    }
+                }
+                if (defaultAddr == null) {
+                    defaultAddr = addresses.get(0);
+                }
+                selectAddress(defaultAddr);
+            }
+        });
+
         // Observe kết quả upload ảnh vấn đề
         uploadViewModel.uploadResult.observe(getViewLifecycleOwner(), result -> {
             if (result == null) return;

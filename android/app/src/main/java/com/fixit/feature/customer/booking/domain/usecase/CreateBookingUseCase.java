@@ -16,7 +16,7 @@ public class CreateBookingUseCase {
         this.repository = repository;
     }
 
-    public void execute(Integer serviceId, String address, BigDecimal lat, BigDecimal lng, String issueDescription, ResultCallback<CustomerBooking> callback) {
-        repository.createBooking(serviceId, address, lat, lng, issueDescription, callback);
+    public void execute(Integer serviceId, String address, BigDecimal lat, BigDecimal lng, String issueDescription, String paymentMethod, ResultCallback<CustomerBooking> callback) {
+        repository.createBooking(serviceId, address, lat, lng, issueDescription, paymentMethod, callback);
     }
 }

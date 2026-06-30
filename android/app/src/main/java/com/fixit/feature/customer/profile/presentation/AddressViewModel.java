@@ -132,4 +132,8 @@ public class AddressViewModel extends ViewModel {
     public LiveData<String> getErrorMessage() {
         return errorMessage;
     }
+
+    public LiveData<String> getSuccessMessage() {
+        return successMessage;
+    }
 }

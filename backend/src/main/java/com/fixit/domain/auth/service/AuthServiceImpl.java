@@ -7,6 +7,8 @@ import com.fixit.domain.auth.repository.OtpCodeRepository;
 import com.fixit.domain.auth.repository.RefreshTokenRepository;
 import com.fixit.domain.auth.repository.UserRepository;
 import com.fixit.domain.auth.repository.UserSocialLoginRepository;
+import com.fixit.domain.customer.entity.Customer;
+import com.fixit.domain.customer.repository.CustomerRepository;
 import com.fixit.domain.wallet.entity.WorkerWallet;
 import com.fixit.domain.customer.entity.Customer;
 import com.fixit.domain.customer.repository.CustomerRepository;
@@ -14,6 +16,7 @@ import com.fixit.domain.wallet.repository.WorkerWalletRepository;
 import com.fixit.domain.worker.entity.Worker;
 import com.fixit.domain.worker.entity.WorkerVerificationStatus;
 import com.fixit.domain.worker.repository.WorkerRepository;
+import com.fixit.domain.email.service.EmailService;
 import com.fixit.global.security.JwtService;
 import com.fixit.global.exception.AppException;
 import com.fixit.global.exception.ErrorCode;
@@ -35,15 +38,15 @@ import java.util.UUID;
 public class AuthServiceImpl implements AuthService {
 
     private final UserRepository userRepository;
+    private final CustomerRepository customerRepository;
     private final WorkerRepository workerRepository;
     private final WorkerWalletRepository workerWalletRepository;
     private final RefreshTokenRepository refreshTokenRepository;
     private final OtpCodeRepository otpCodeRepository;
     private final UserSocialLoginRepository userSocialLoginRepository;
     private final PasswordEncoder passwordEncoder;
-    private final AuthenticationManager authenticationManager;
     private final JwtService jwtService;
-    private final CustomerRepository customerRepository;
+    private final EmailService emailService;
 
     @Override
     @Transactional
@@ -129,6 +132,15 @@ public class AuthServiceImpl implements AuthService {
             throw new AppException(ErrorCode.INVALID_CREDENTIALS);
         }
 
+        // Kiểm tra role: nếu client khai báo role và không khớp với role thực tế của user
+        if (request.getRole() != null && !request.getRole().trim().isEmpty()) {
+            String clientRole = request.getRole().trim();
+            String actualRole = user.getRole() != null ? user.getRole().name() : "";
+            if (!clientRole.equalsIgnoreCase(actualRole)) {
+                throw new AppException(ErrorCode.WRONG_ROLE);
+            }
+        }
+
         refreshTokenRepository.revokeAllActiveTokensByUserId(user.getId());
 
         String accessToken = jwtService.generateToken(user);
@@ -190,17 +202,29 @@ public class AuthServiceImpl implements AuthService {
     @Override
     @Transactional
     public void sendOtp(SendOtpRequest request) {
-        String identifier = request.getPhoneNumber() != null ? request.getPhoneNumber() : request.getEmail();
-        otpCodeRepository.findByPhoneNumberAndActionTypeAndUsedFalse(identifier, request.getActionType())
-                .ifPresent(otp -> {
-                    otp.setUsed(true);
-                    otpCodeRepository.save(otp);
-                });
+        String phoneNumber = request.getPhoneNumber();
+        String email = request.getEmail();
+
+        if (phoneNumber != null) {
+            otpCodeRepository.findByPhoneNumberAndActionTypeAndUsedFalse(phoneNumber, request.getActionType())
+                    .ifPresent(otp -> {
+                        otp.setUsed(true);
+                        otpCodeRepository.save(otp);
+                    });
+        }
+        if (email != null) {
+            otpCodeRepository.findByEmailAndActionTypeAndUsedFalse(email, request.getActionType())
+                    .ifPresent(otp -> {
+                        otp.setUsed(true);
+                        otpCodeRepository.save(otp);
+                    });
+        }
 
         String code = String.format("%06d", new Random().nextInt(999999));
 
         OtpCode otpCode = OtpCode.builder()
-                .phoneNumber(identifier)
+                .phoneNumber(phoneNumber)
+                .email(email)
                 .otpCode(code)
                 .actionType(request.getActionType())
                 .expiresAt(OffsetDateTime.now().plusMinutes(2))
@@ -208,15 +232,28 @@ public class AuthServiceImpl implements AuthService {
                 .build();
 
         otpCodeRepository.save(otpCode);
-        log.info("Mã OTP gửi đến {}: {}", identifier, code);
+
+        if (email != null) {
+            log.info("Mã OTP gửi đến email {}: {}", email, code);
+            emailService.sendOtpEmail(email, code);
+        } else if (phoneNumber != null) {
+            log.info("Mã OTP gửi đến phone {}: {}", phoneNumber, code);
+        }
     }
 
     @Override
     @Transactional
     public AuthResponse verifyOtp(VerifyOtpRequest request) {
-        String identifier = request.getPhoneNumber() != null ? request.getPhoneNumber() : request.getEmail();
-        OtpCode otp = otpCodeRepository.findByPhoneNumberAndActionTypeAndUsedFalse(identifier, request.getActionType())
-                .orElseThrow(() -> new RuntimeException("Mã OTP không tồn tại hoặc đã được sử dụng"));
+        String phoneNumber = request.getPhoneNumber();
+        String email = request.getEmail();
+        OtpCode otp;
+        if (email != null) {
+            otp = otpCodeRepository.findByEmailAndActionTypeAndUsedFalse(email, request.getActionType())
+                    .orElseThrow(() -> new RuntimeException("Mã OTP không tồn tại hoặc đã được sử dụng"));
+        } else {
+            otp = otpCodeRepository.findByPhoneNumberAndActionTypeAndUsedFalse(phoneNumber, request.getActionType())
+                    .orElseThrow(() -> new RuntimeException("Mã OTP không tồn tại hoặc đã được sử dụng"));
+        }
 
         if (otp.getExpiresAt().isBefore(OffsetDateTime.now())) {
             throw new RuntimeException("Mã OTP đã hết hạn");
@@ -229,9 +266,9 @@ public class AuthServiceImpl implements AuthService {
         otp.setUsed(true);
         otpCodeRepository.save(otp);
 
-        User user = userRepository.findByPhoneNumber(identifier)
-                .orElseGet(() -> userRepository.findByEmail(identifier)
-                        .orElseThrow(() -> new RuntimeException("Người dùng không tồn tại")));
+        User user = email != null
+                ? userRepository.findByEmail(email).orElseThrow(() -> new RuntimeException("Người dùng không tồn tại"))
+                : userRepository.findByPhoneNumber(phoneNumber).orElseThrow(() -> new RuntimeException("Người dùng không tồn tại"));
 
         return buildAuthResponse(user);
     }
@@ -239,10 +276,18 @@ public class AuthServiceImpl implements AuthService {
     @Override
     @Transactional
     public void resetPassword(ResetPasswordRequest request) {
-        String identifier = request.getPhoneNumber() != null ? request.getPhoneNumber() : request.getEmail();
-        OtpCode otp = otpCodeRepository
-                .findByPhoneNumberAndActionTypeAndUsedFalse(identifier, OtpActionType.FORGOT_PASSWORD)
-                .orElseThrow(() -> new RuntimeException("Mã OTP không tồn tại hoặc đã được sử dụng"));
+        String phoneNumber = request.getPhoneNumber();
+        String email = request.getEmail();
+        OtpCode otp;
+        if (email != null && !email.trim().isEmpty()) {
+            otp = otpCodeRepository.findByEmailAndActionTypeAndUsedFalse(email, OtpActionType.FORGOT_PASSWORD)
+                    .orElseThrow(() -> new RuntimeException("Mã OTP không tồn tại hoặc đã được sử dụng"));
+        } else if (phoneNumber != null && !phoneNumber.trim().isEmpty()) {
+            otp = otpCodeRepository.findByPhoneNumberAndActionTypeAndUsedFalse(phoneNumber, OtpActionType.FORGOT_PASSWORD)
+                    .orElseThrow(() -> new RuntimeException("Mã OTP không tồn tại hoặc đã được sử dụng"));
+        } else {
+            throw new RuntimeException("Email hoặc số điện thoại không được để trống");
+        }
 
         if (otp.getExpiresAt().isBefore(OffsetDateTime.now())) {
             throw new RuntimeException("Mã OTP đã hết hạn");
@@ -255,9 +300,9 @@ public class AuthServiceImpl implements AuthService {
         otp.setUsed(true);
         otpCodeRepository.save(otp);
 
-        User user = userRepository.findByPhoneNumber(identifier)
-                .orElseGet(() -> userRepository.findByEmail(identifier)
-                        .orElseThrow(() -> new RuntimeException("Người dùng không tồn tại")));
+        User user = (email != null && !email.trim().isEmpty())
+                ? userRepository.findByEmail(email).orElseThrow(() -> new RuntimeException("Người dùng không tồn tại"))
+                : userRepository.findByPhoneNumber(phoneNumber).orElseThrow(() -> new RuntimeException("Người dùng không tồn tại"));
 
         user.setPasswordHash(passwordEncoder.encode(request.getNewPassword()));
         userRepository.save(user);
@@ -316,14 +361,29 @@ public class AuthServiceImpl implements AuthService {
     @Transactional
     public void forgotPassword(ForgotPasswordRequest request) {
         String email = request.getEmail();
-        userRepository.findByEmail(email)
-                .orElseThrow(() -> new RuntimeException("Người dùng không tồn tại"));
+        String phoneNumber = request.getPhoneNumber();
 
-        SendOtpRequest sendOtpRequest = SendOtpRequest.builder()
-                .email(email)
-                .actionType(OtpActionType.FORGOT_PASSWORD)
-                .build();
-        sendOtp(sendOtpRequest);
+        if (email != null && !email.trim().isEmpty()) {
+            userRepository.findByEmail(email)
+                    .orElseThrow(() -> new RuntimeException("Người dùng không tồn tại"));
+
+            SendOtpRequest sendOtpRequest = SendOtpRequest.builder()
+                    .email(email)
+                    .actionType(OtpActionType.FORGOT_PASSWORD)
+                    .build();
+            sendOtp(sendOtpRequest);
+        } else if (phoneNumber != null && !phoneNumber.trim().isEmpty()) {
+            userRepository.findByPhoneNumber(phoneNumber)
+                    .orElseThrow(() -> new RuntimeException("Người dùng không tồn tại"));
+
+            SendOtpRequest sendOtpRequest = SendOtpRequest.builder()
+                    .phoneNumber(phoneNumber)
+                    .actionType(OtpActionType.FORGOT_PASSWORD)
+                    .build();
+            sendOtp(sendOtpRequest);
+        } else {
+            throw new RuntimeException("Email hoặc số điện thoại không được để trống");
+        }
     }
 
     private AuthResponse buildAuthResponse(User user, String accessToken, String refreshToken) {
@@ -353,10 +413,22 @@ public class AuthServiceImpl implements AuthService {
     }
 
     private AuthResponse.UserInfo mapToUserInfo(User user) {
+        String fullName = null;
+        if (user.getRole() == UserRole.Customer) {
+            fullName = customerRepository.findById(user.getId())
+                    .map(Customer::getFullName)
+                    .orElse(null);
+        } else if (user.getRole() == UserRole.Worker) {
+            fullName = workerRepository.findById(user.getId())
+                    .map(Worker::getFullName)
+                    .orElse(null);
+        }
+
         return AuthResponse.UserInfo.builder()
                 .id(user.getId())
                 .phone(user.getPhoneNumber())
                 .email(user.getEmail())
+                .fullName(fullName)
                 .role(user.getRole().name())
                 .avatarUrl(user.getAvatarUrl())
                 .build();

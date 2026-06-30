@@ -237,9 +237,9 @@ public class WorkerOrdersRepositoryImpl implements WorkerOrdersRepository {
                     public void onResponse(Call<ApiResponse<BookingActionResponseDto>> call,
                             Response<ApiResponse<BookingActionResponseDto>> response) {
                         if (response.isSuccessful() && response.body() != null && response.body().isSuccess()) {
-                            callback.onResult(Result.success(JobStatus.COMPLETED));
+                            callback.onResult(Result.success(JobStatus.WAITING_APPROVAL));
                         } else {
-                            callback.onResult(Result.error(new AppError("Không thể hoàn thành đơn hàng")));
+                            callback.onResult(Result.error(new AppError("Không thể báo hoàn thành")));
                         }
                     }
 
@@ -250,10 +250,34 @@ public class WorkerOrdersRepositoryImpl implements WorkerOrdersRepository {
                 });
                 break;
 
+            case WAITING_PAYMENT:
+                confirmPayment(orderId, callback);
+                break;
+
             default:
                 callback.onResult(Result.success(currentStatus));
                 break;
         }
+    }
+
+    @Override
+    public void confirmPayment(String orderId, ResultCallback<JobStatus> callback) {
+        api.confirmPayment(orderId).enqueue(new Callback<ApiResponse<BookingActionResponseDto>>() {
+            @Override
+            public void onResponse(Call<ApiResponse<BookingActionResponseDto>> call,
+                    Response<ApiResponse<BookingActionResponseDto>> response) {
+                if (response.isSuccessful() && response.body() != null && response.body().isSuccess()) {
+                    callback.onResult(Result.success(JobStatus.COMPLETED));
+                } else {
+                    callback.onResult(Result.error(new AppError("Không thể xác nhận nhận tiền")));
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ApiResponse<BookingActionResponseDto>> call, Throwable t) {
+                callback.onResult(Result.error(new AppError("Lỗi kết nối: " + t.getMessage(), t)));
+            }
+        });
     }
 
     @Override
@@ -291,5 +315,82 @@ public class WorkerOrdersRepositoryImpl implements WorkerOrdersRepository {
         } catch (UnsupportedEncodingException e) {
             return "";
         }
+    }
+
+    @Override
+    public void getPendingAssignments(ResultCallback<List<com.fixit.feature.worker.orders.domain.model.WorkerAssignment>> callback) {
+        api.getPendingAssignments().enqueue(new Callback<ApiResponse<com.fixit.feature.worker.orders.data.remote.dto.PendingAssignmentResponseDto>>() {
+            @Override
+            public void onResponse(Call<ApiResponse<com.fixit.feature.worker.orders.data.remote.dto.PendingAssignmentResponseDto>> call,
+                    Response<ApiResponse<com.fixit.feature.worker.orders.data.remote.dto.PendingAssignmentResponseDto>> response) {
+                if (!response.isSuccessful() || response.body() == null || !response.body().isSuccess()) {
+                    callback.onResult(Result.error(new AppError("Không tải được danh sách đơn chờ")));
+                    return;
+                }
+
+                List<com.fixit.feature.worker.orders.domain.model.WorkerAssignment> assignments = new ArrayList<>();
+                if (response.body().getData() != null && response.body().getData().getItems() != null) {
+                    assignments = response.body().getData().getItems().stream()
+                            .map(WorkerOrdersMapper::map)
+                            .collect(Collectors.toList());
+                }
+                callback.onResult(Result.success(assignments));
+            }
+
+            @Override
+            public void onFailure(Call<ApiResponse<com.fixit.feature.worker.orders.data.remote.dto.PendingAssignmentResponseDto>> call, Throwable t) {
+                callback.onResult(Result.error(new AppError("Lỗi kết nối: " + t.getMessage(), t)));
+            }
+        });
+    }
+
+    @Override
+    public void acceptAssignment(String bookingId, String assignmentId, ResultCallback<String> callback) {
+        api.acceptAssignment(bookingId, assignmentId).enqueue(new Callback<ApiResponse<com.fixit.feature.worker.orders.data.remote.dto.AssignmentActionResponseDto>>() {
+            @Override
+            public void onResponse(Call<ApiResponse<com.fixit.feature.worker.orders.data.remote.dto.AssignmentActionResponseDto>> call,
+                    Response<ApiResponse<com.fixit.feature.worker.orders.data.remote.dto.AssignmentActionResponseDto>> response) {
+                if (response.isSuccessful() && response.body() != null && response.body().isSuccess()) {
+                    callback.onResult(Result.success(response.body().getData().getNextAction()));
+                } else {
+                    String errorMsg = "Không thể chấp nhận đơn này";
+                    com.fixit.core.network.ApiResponse<?> apiResponse = com.fixit.core.network.ApiResponse.parseError(response);
+                    if (apiResponse != null && apiResponse.getMessage() != null) {
+                        errorMsg = apiResponse.getMessage();
+                    }
+                    callback.onResult(Result.error(new AppError(errorMsg)));
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ApiResponse<com.fixit.feature.worker.orders.data.remote.dto.AssignmentActionResponseDto>> call, Throwable t) {
+                callback.onResult(Result.error(new AppError("Lỗi kết nối: " + t.getMessage(), t)));
+            }
+        });
+    }
+
+    @Override
+    public void rejectAssignment(String bookingId, String assignmentId, ResultCallback<String> callback) {
+        api.rejectAssignment(bookingId, assignmentId).enqueue(new Callback<ApiResponse<com.fixit.feature.worker.orders.data.remote.dto.AssignmentActionResponseDto>>() {
+            @Override
+            public void onResponse(Call<ApiResponse<com.fixit.feature.worker.orders.data.remote.dto.AssignmentActionResponseDto>> call,
+                    Response<ApiResponse<com.fixit.feature.worker.orders.data.remote.dto.AssignmentActionResponseDto>> response) {
+                if (response.isSuccessful() && response.body() != null && response.body().isSuccess()) {
+                    callback.onResult(Result.success(response.body().getData().getNextAction()));
+                } else {
+                    String errorMsg = "Không thể từ chối đơn này";
+                    com.fixit.core.network.ApiResponse<?> apiResponse = com.fixit.core.network.ApiResponse.parseError(response);
+                    if (apiResponse != null && apiResponse.getMessage() != null) {
+                        errorMsg = apiResponse.getMessage();
+                    }
+                    callback.onResult(Result.error(new AppError(errorMsg)));
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ApiResponse<com.fixit.feature.worker.orders.data.remote.dto.AssignmentActionResponseDto>> call, Throwable t) {
+                callback.onResult(Result.error(new AppError("Lỗi kết nối: " + t.getMessage(), t)));
+            }
+        });
     }
 }

@@ -1,16 +1,18 @@
 package com.fixit.domain.customer.controller;
 
+import com.fixit.domain.auth.entity.User;
 import com.fixit.domain.customer.dto.request.CustomerAddressRequest;
 import com.fixit.domain.customer.dto.request.CustomerProfileRequest;
 import com.fixit.domain.customer.dto.response.CustomerAddressResponse;
 import com.fixit.domain.customer.dto.response.CustomerProfileResponse;
 import com.fixit.domain.customer.service.CustomerService;
+import com.fixit.global.response.ApiResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
-import java.security.Principal;
 import java.util.List;
 import java.util.UUID;
 
@@ -31,6 +33,15 @@ public class CustomerController {
     // Lễ tân (Controller) bắt buộc phải có Bộ não (Service) để hỏi cách xử lý.
     private final CustomerService customerService;
 
+    // Helper: Lấy UUID của user từ JWT đã được xác thực.
+    // JwtAuthenticationFilter đặt User entity (UserDetails) làm principal trong Authentication,
+    // nên ta cast thẳng ra User entity và lấy id thật (UUID), không dùng getName() vì getName()
+    // trả về username = phoneNumber, không phải UUID.
+    private UUID getUserId(Authentication authentication) {
+        User user = (User) authentication.getPrincipal();
+        return user.getId();
+    }
+
     // ---------------------------------------------------------
     // NHÓM 1: PROFILE
     // ---------------------------------------------------------
@@ -38,24 +49,19 @@ public class CustomerController {
     // CÚ PHÁP: @[Tên_Annotation]("[Đường_dẫn_phụ]")
     // Ý NGHĨA: Khai báo API lấy thông tin. @GetMapping hứng request có method là GET (chỉ lấy dữ liệu, không sửa).
     @GetMapping("/profile")
-    public ResponseEntity<CustomerProfileResponse> getProfile(Principal principal) {
-        // Principal chứa thông tin của người đang đăng nhập (do hệ thống Security JWT cấp).
-        // Lấy ID của người dùng từ token.
-        UUID userId = UUID.fromString(principal.getName());
+    public ResponseEntity<ApiResponse<CustomerProfileResponse>> getProfile(Authentication authentication) {
+        UUID userId = getUserId(authentication);
         
         // Gọi Service xử lý và trả kết quả về cho Android với mã HTTP 200 OK.
-        return ResponseEntity.ok(customerService.getProfile(userId));
+        return ResponseEntity.ok(ApiResponse.success(customerService.getProfile(userId)));
     }
 
-    // Ý NGHĨA: @PutMapping hứng request sửa dữ liệu.
-    // @Valid: Bật chế độ "máy quét" DTO lên. Nếu gõ tên rỗng, nó sẽ chặn lại ngay ở cửa, không cho đi tiếp vào Service.
-    // @RequestBody: Lấy cục JSON từ điện thoại gửi lên ném vào cái thùng xốp CustomerProfileRequest.
     @PutMapping("/profile")
-    public ResponseEntity<CustomerProfileResponse> updateProfile(
-            Principal principal, 
+    public ResponseEntity<ApiResponse<CustomerProfileResponse>> updateProfile(
+            Authentication authentication,
             @Valid @RequestBody CustomerProfileRequest request) {
-        UUID userId = UUID.fromString(principal.getName());
-        return ResponseEntity.ok(customerService.updateProfile(userId, request));
+        UUID userId = getUserId(authentication);
+        return ResponseEntity.ok(ApiResponse.success(customerService.updateProfile(userId, request)));
     }
 
     // ---------------------------------------------------------
@@ -63,48 +69,46 @@ public class CustomerController {
     // ---------------------------------------------------------
 
     @GetMapping("/addresses")
-    public ResponseEntity<List<CustomerAddressResponse>> getAddresses(Principal principal) {
-        UUID userId = UUID.fromString(principal.getName());
-        return ResponseEntity.ok(customerService.getCustomerAddresses(userId));
+    public ResponseEntity<ApiResponse<List<CustomerAddressResponse>>> getAddresses(Authentication authentication) {
+        UUID userId = getUserId(authentication);
+        return ResponseEntity.ok(ApiResponse.success(customerService.getCustomerAddresses(userId)));
     }
 
-    // @PostMapping: Hứng request tạo mới (Create).
     @PostMapping("/addresses")
-    public ResponseEntity<CustomerAddressResponse> addAddress(
-            Principal principal, 
+    public ResponseEntity<ApiResponse<CustomerAddressResponse>> addAddress(
+            Authentication authentication,
             @Valid @RequestBody CustomerAddressRequest request) {
-        UUID userId = UUID.fromString(principal.getName());
-        return ResponseEntity.ok(customerService.addAddress(userId, request));
+        UUID userId = getUserId(authentication);
+        return ResponseEntity.ok(ApiResponse.success(customerService.addAddress(userId, request)));
     }
 
-    // /{addressId}: Lấy biến addressId trực tiếp từ đường dẫn URL. 
+    // /{addressId}: Lấy biến addressId trực tiếp từ đường dẫn URL.
     // Ví dụ: PUT /addresses/12345 -> addressId sẽ là 12345
     @PutMapping("/addresses/{addressId}")
-    public ResponseEntity<CustomerAddressResponse> updateAddress(
-            Principal principal,
+    public ResponseEntity<ApiResponse<CustomerAddressResponse>> updateAddress(
+            Authentication authentication,
             @PathVariable UUID addressId,
             @Valid @RequestBody CustomerAddressRequest request) {
-        UUID userId = UUID.fromString(principal.getName());
-        return ResponseEntity.ok(customerService.updateAddress(userId, addressId, request));
+        UUID userId = getUserId(authentication);
+        return ResponseEntity.ok(ApiResponse.success(customerService.updateAddress(userId, addressId, request)));
     }
 
-    // @DeleteMapping: Hứng request Xóa.
     @DeleteMapping("/addresses/{addressId}")
-    public ResponseEntity<Void> deleteAddress(
-            Principal principal,
+    public ResponseEntity<ApiResponse<Void>> deleteAddress(
+            Authentication authentication,
             @PathVariable UUID addressId) {
-        UUID userId = UUID.fromString(principal.getName());
+        UUID userId = getUserId(authentication);
         customerService.deleteAddress(userId, addressId);
-        // Xóa xong thì trả về mã 204 No Content (Thành công nhưng không có dữ liệu trả về)
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.ok(ApiResponse.success(null, "Xóa địa chỉ thành công"));
     }
 
-    // @PatchMapping: Hứng request sửa một phần nhỏ (ở đây là chỉ set cờ mặc định).
     @PatchMapping("/addresses/{addressId}/default")
-    public ResponseEntity<CustomerAddressResponse> setDefaultAddress(
-            Principal principal,
+    public ResponseEntity<ApiResponse<CustomerAddressResponse>> setDefaultAddress(
+            Authentication authentication,
             @PathVariable UUID addressId) {
-        UUID userId = UUID.fromString(principal.getName());
-        return ResponseEntity.ok(customerService.setDefaultAddress(userId, addressId));
+        UUID userId = getUserId(authentication);
+        return ResponseEntity.ok(ApiResponse.success(customerService.setDefaultAddress(userId, addressId)));
     }
 }
+
+

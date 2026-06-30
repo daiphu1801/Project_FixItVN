@@ -37,6 +37,12 @@ public interface CustomerBookingApi {
 
     @POST("api/v1/customers/me/bookings/{bookingId}/payments")
     Call<ApiResponse<Void>> processPayment(
+            @Path("bookingId") String bookingId,
+            @retrofit2.http.Query("paymentMethod") String paymentMethod
+    );
+
+    @POST("api/v1/customers/me/bookings/{bookingId}/payments/simulate-bank-transfer")
+    Call<ApiResponse<Void>> simulateBankTransfer(
             @Path("bookingId") String bookingId
     );
 }
