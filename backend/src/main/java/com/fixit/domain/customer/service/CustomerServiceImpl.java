@@ -13,6 +13,8 @@ import com.fixit.domain.customer.repository.CustomerRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import com.fixit.global.exception.AppException;
+import com.fixit.global.exception.ErrorCode;
 
 import java.util.List;
 import java.util.UUID;
@@ -54,6 +56,7 @@ public class CustomerServiceImpl implements CustomerService {
                         .phoneNumber(customer.getUser() != null ? customer.getUser().getPhoneNumber() : null)
                         .gender(customer.getGender())
                         .dob(customer.getDob())
+                        .avatarUrl(customer.getUser() != null ? customer.getUser().getAvatarUrl() : null)
                         .build())
                 .orElseGet(() -> {
                     // Customer record chưa tồn tại → trả về profile tối thiểu từ User entity
@@ -66,6 +69,7 @@ public class CustomerServiceImpl implements CustomerService {
                             .phoneNumber(user.getPhoneNumber())
                             .gender(null)
                             .dob(null)
+                            .avatarUrl(user.getAvatarUrl())
                             .build();
                 });
     }
@@ -100,8 +104,17 @@ public class CustomerServiceImpl implements CustomerService {
         if (request.getEmail() != null) {
             User user = customer.getUser();
             if (user != null) {
-                user.setEmail(request.getEmail());
-                userRepository.save(user);
+                String newEmail = request.getEmail().trim().toLowerCase();
+                if (!newEmail.isEmpty() && !newEmail.equals(user.getEmail())) {
+                    if (userRepository.existsByEmail(newEmail)) {
+                        throw new AppException(ErrorCode.EMAIL_ALREADY_EXISTS);
+                    }
+                    user.setEmail(newEmail);
+                    userRepository.save(user);
+                } else if (newEmail.isEmpty()) {
+                    user.setEmail(null);
+                    userRepository.save(user);
+                }
             }
         }
 
@@ -116,6 +129,7 @@ public class CustomerServiceImpl implements CustomerService {
                 .phoneNumber(savedCustomer.getUser() != null ? savedCustomer.getUser().getPhoneNumber() : null)
                 .gender(savedCustomer.getGender())
                 .dob(savedCustomer.getDob())
+                .avatarUrl(savedCustomer.getUser() != null ? savedCustomer.getUser().getAvatarUrl() : null)
                 .build();
     }
 

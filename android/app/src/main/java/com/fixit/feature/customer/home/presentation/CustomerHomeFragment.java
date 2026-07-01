@@ -6,7 +6,9 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.lifecycle.ViewModelProvider;
 
+import com.bumptech.glide.Glide;
 import com.fixit.R;
+import com.fixit.core.common.AutoRefreshHelper;
 import com.fixit.core.ui.BaseFragment;
 import com.fixit.databinding.FragmentCustomerHomeBinding;
 import com.fixit.feature.customer.service.domain.model.ServiceCategory;
@@ -19,6 +21,7 @@ public class CustomerHomeFragment extends BaseFragment<FragmentCustomerHomeBindi
 
     private CustomerHomeViewModel viewModel;
     private HomeServiceGridAdapter serviceAdapter;
+    private AutoRefreshHelper autoRefreshHelper;
 
     @NonNull
     @Override
@@ -87,8 +90,46 @@ public class CustomerHomeFragment extends BaseFragment<FragmentCustomerHomeBindi
             }
         });
 
+        // Tải ảnh avatar từ cache SharedPreferences để hiển thị nhanh
+        String savedAvatar = requireContext().getSharedPreferences(com.fixit.core.common.Constants.PREF_NAME, android.content.Context.MODE_PRIVATE)
+                .getString("user_avatar", null);
+        if (savedAvatar != null && !savedAvatar.isEmpty()) {
+            binding.ivUserAvatar.setPadding(0, 0, 0, 0);
+            binding.ivUserAvatar.setImageTintList(null);
+            Glide.with(this).load(savedAvatar).circleCrop().into(binding.ivUserAvatar);
+        } else {
+            binding.ivUserAvatar.setImageTintList(android.content.res.ColorStateList.valueOf(
+                    android.graphics.Color.parseColor("#42c2ff")
+            ));
+            int p = (int) (8 * getResources().getDisplayMetrics().density);
+            binding.ivUserAvatar.setPadding(p, p, p, p);
+            binding.ivUserAvatar.setImageResource(R.drawable.ic_lucide_user);
+        }
+
         // Gọi API tải danh sách dịch vụ khi màn hình vừa mở lên
         viewModel.fetchCategories();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (autoRefreshHelper == null) {
+            autoRefreshHelper = new AutoRefreshHelper(
+                    requireContext(),
+                    0L,
+                    () -> viewModel.fetchProfile(),
+                    "com.fixit.PROFILE_UPDATE"
+            );
+        }
+        autoRefreshHelper.start();
+    }
+
+    @Override
+    public void onPause() {
+        if (autoRefreshHelper != null) {
+            autoRefreshHelper.stop();
+        }
+        super.onPause();
     }
 
     private void navigateToFindingWorker(int serviceId, String serviceName, String subServiceName) {
@@ -115,6 +156,40 @@ public class CustomerHomeFragment extends BaseFragment<FragmentCustomerHomeBindi
                 serviceAdapter.submitList(displayList);
             } else {
                 serviceAdapter.submitList(categories);
+            }
+        });
+
+        viewModel.profile.observe(getViewLifecycleOwner(), profile -> {
+            if (profile != null) {
+                if (profile.getFullName() != null && !profile.getFullName().trim().isEmpty()) {
+                    binding.tvGreeting.setText("Xin chào, " + profile.getFullName() + " 👋");
+                }
+                String avatarUrl = profile.getAvatarUrl();
+                if (avatarUrl != null && !avatarUrl.trim().isEmpty()) {
+                    requireContext().getSharedPreferences(com.fixit.core.common.Constants.PREF_NAME, android.content.Context.MODE_PRIVATE)
+                            .edit()
+                            .putString("user_avatar", avatarUrl)
+                            .apply();
+                    binding.ivUserAvatar.setPadding(0, 0, 0, 0);
+                    binding.ivUserAvatar.setImageTintList(null);
+                    Glide.with(this)
+                            .load(avatarUrl)
+                            .placeholder(R.drawable.ic_lucide_user)
+                            .error(R.drawable.ic_lucide_user)
+                            .circleCrop()
+                            .into(binding.ivUserAvatar);
+                } else {
+                    requireContext().getSharedPreferences(com.fixit.core.common.Constants.PREF_NAME, android.content.Context.MODE_PRIVATE)
+                            .edit()
+                            .remove("user_avatar")
+                            .apply();
+                    binding.ivUserAvatar.setImageTintList(android.content.res.ColorStateList.valueOf(
+                            android.graphics.Color.parseColor("#42c2ff")
+                    ));
+                    int p = (int) (8 * getResources().getDisplayMetrics().density);
+                    binding.ivUserAvatar.setPadding(p, p, p, p);
+                    binding.ivUserAvatar.setImageResource(R.drawable.ic_lucide_user);
+                }
             }
         });
 

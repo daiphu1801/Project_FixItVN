@@ -12,6 +12,7 @@ import com.fixit.databinding.FragmentCustomerOrderContainerBinding;
 import com.fixit.feature.customer.booking.presentation.CustomerFindingWorkerFragment;
 import com.fixit.feature.customer.order.presentation.CustomerOrderDetailFragment;
 
+import com.fixit.core.common.AutoRefreshHelper;
 import dagger.hilt.android.AndroidEntryPoint;
 
 /**
@@ -22,6 +23,7 @@ import dagger.hilt.android.AndroidEntryPoint;
 public class CustomerOrderContainerFragment extends BaseFragment<FragmentCustomerOrderContainerBinding> {
 
     private CustomerOrderViewModel viewModel;
+    private AutoRefreshHelper autoRefreshHelper;
 
     @NonNull
     @Override
@@ -54,6 +56,27 @@ public class CustomerOrderContainerFragment extends BaseFragment<FragmentCustome
         if (viewModel != null && (viewModel.orderStatus.getValue() == null || viewModel.orderStatus.getValue() == 0)) {
             viewModel.checkActiveBooking();
         }
+        if (autoRefreshHelper == null) {
+            autoRefreshHelper = new AutoRefreshHelper(
+                    requireContext(),
+                    0L,
+                    () -> {
+                        if (viewModel != null) {
+                            viewModel.checkActiveBooking();
+                        }
+                    },
+                    "com.fixit.BOOKING_UPDATE"
+            );
+        }
+        autoRefreshHelper.start();
+    }
+
+    @Override
+    public void onPause() {
+        if (autoRefreshHelper != null) {
+            autoRefreshHelper.stop();
+        }
+        super.onPause();
     }
 
     private void checkOrderStatusAndDisplay(int status) {

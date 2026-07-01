@@ -69,7 +69,7 @@
             android:textSize="16sp"
             android:textStyle="bold"
             app:layout_constraintStart_toEndOf="@id/layoutAvatar"
-            app:layout_constraintEnd_toStartOf="@id/btnCall"
+            app:layout_constraintEnd_toStartOf="@id/btnMore"
             app:layout_constraintTop_toTopOf="@id/layoutAvatar"
             app:layout_constraintBottom_toTopOf="@id/tvStatus"
             app:layout_constraintVertical_chainStyle="packed"/>
@@ -83,21 +83,9 @@
             android:textColor="#00C853"
             android:textSize="11sp"
             app:layout_constraintStart_toEndOf="@id/layoutAvatar"
-            app:layout_constraintEnd_toStartOf="@id/btnCall"
+            app:layout_constraintEnd_toStartOf="@id/btnMore"
             app:layout_constraintTop_toBottomOf="@id/tvName"
             app:layout_constraintBottom_toBottomOf="@id/layoutAvatar"/>
-
-        <ImageButton
-            android:id="@+id/btnCall"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:layout_marginEnd="4dp"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:src="@drawable/ic_phone"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@id/btnMore"
-            app:layout_constraintTop_toTopOf="parent"
-            app:tint="#42c2ff" />
 
         <ImageButton
             android:id="@+id/btnMore"
@@ -137,27 +125,16 @@
         app:layout_constraintBottom_toBottomOf="parent">
 
         <ImageButton
-            android:id="@+id/btnAdd"
-            android:layout_width="36dp"
-            android:layout_height="36dp"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:src="@drawable/ic_add"
-            app:tint="#64748B"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="parent"/>
-
-        <ImageButton
             android:id="@+id/btnGallery"
             android:layout_width="36dp"
             android:layout_height="36dp"
-            android:layout_marginStart="4dp"
+            android:layout_marginStart="0dp"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:src="@drawable/ic_lucide_image"
             app:tint="#64748B"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toEndOf="@id/btnAdd"/>
+            app:layout_constraintStart_toStartOf="parent"/>
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/layoutInputBox"

@@ -26,7 +26,8 @@ public class CustomerProfileMapper {
                 dto.getEmail(),
                 dto.getPhoneNumber(),
                 dto.getGender(),
-                dto.getDob()
+                dto.getDob(),
+                dto.getAvatarUrl()
         );
     }
 

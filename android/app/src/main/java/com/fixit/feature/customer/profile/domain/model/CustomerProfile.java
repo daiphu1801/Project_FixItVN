@@ -12,17 +12,19 @@ public class CustomerProfile {
     private String phoneNumber;
     private String gender;
     private String dob;
+    private String avatarUrl;
 
     // ----------------------------------------------------
     // HÀM KHỞI TẠO
     // ----------------------------------------------------
-    public CustomerProfile(String id, String fullName, String email, String phoneNumber, String gender, String dob) {
+    public CustomerProfile(String id, String fullName, String email, String phoneNumber, String gender, String dob, String avatarUrl) {
         this.id = id;
         this.fullName = fullName;
         this.email = email;
         this.phoneNumber = phoneNumber;
         this.gender = gender;
         this.dob = dob;
+        this.avatarUrl = avatarUrl;
     }
 
     // ----------------------------------------------------
@@ -74,5 +76,13 @@ public class CustomerProfile {
 
     public void setDob(String dob) {
         this.dob = dob;
+    }
+
+    public String getAvatarUrl() {
+        return avatarUrl;
+    }
+
+    public void setAvatarUrl(String avatarUrl) {
+        this.avatarUrl = avatarUrl;
     }
 }

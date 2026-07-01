@@ -79,12 +79,10 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent">
 
-                    <com.google.android.gms.maps.MapView
+                    <org.osmdroid.views.MapView
                         android:id="@+id/mapView"
                         android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        app:liteMode="true"
-                        app:mapType="normal" />
+                        android:layout_height="match_parent" />
 
                     <!-- Sleek "Chỉ đường" navigation pill badge -->
                     <com.google.android.material.card.MaterialCardView

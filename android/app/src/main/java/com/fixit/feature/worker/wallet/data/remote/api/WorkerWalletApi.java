@@ -4,6 +4,7 @@ package com.fixit.feature.worker.wallet.data.remote.api;
 
 import com.fixit.core.network.ApiResponse;
 import com.fixit.feature.worker.wallet.data.remote.dto.request.DepositCreateRequest;
+import com.fixit.feature.worker.wallet.data.remote.dto.request.WithdrawCreateRequest;
 import com.fixit.feature.worker.wallet.data.remote.dto.response.DepositQrResponse;
 import com.fixit.feature.worker.wallet.data.remote.dto.response.DepositResponse;
 import com.fixit.feature.worker.wallet.data.remote.dto.response.WalletTransactionsResponse;
@@ -52,6 +53,18 @@ public interface WorkerWalletApi {
     // Hủy yêu cầu nạp tiền
     @POST("api/v1/workers/me/wallet/deposits/{transactionId}/cancel")
     Call<ApiResponse<Void>> cancelDeposit(
+            @Path("transactionId") String transactionId
+    );
+
+    // Tạo yêu cầu rút tiền
+    @POST("api/v1/workers/me/wallet/withdrawals")
+    Call<ApiResponse<Void>> createWithdraw(
+            @Body WithdrawCreateRequest request
+    );
+
+    // Hủy yêu cầu rút tiền
+    @POST("api/v1/workers/me/wallet/withdrawals/{transactionId}/cancel")
+    Call<ApiResponse<Void>> cancelWithdraw(
             @Path("transactionId") String transactionId
     );
 }

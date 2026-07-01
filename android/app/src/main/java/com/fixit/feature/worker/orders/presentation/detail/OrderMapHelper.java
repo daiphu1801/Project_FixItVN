@@ -5,10 +5,12 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
-import com.google.android.gms.maps.CameraUpdateFactory;
-import com.google.android.gms.maps.MapView;
-import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.MarkerOptions;
+
+import org.osmdroid.tileprovider.tilesource.TileSourceFactory;
+import org.osmdroid.util.GeoPoint;
+import org.osmdroid.views.MapView;
+import org.osmdroid.views.overlay.Marker;
+
 import java.util.List;
 import java.util.Locale;
 
@@ -18,12 +20,14 @@ public class OrderMapHelper {
 
     public OrderMapHelper(MapView mapView) {
         this.mapView = mapView;
+        if (this.mapView != null) {
+            this.mapView.setTileSource(TileSourceFactory.MAPNIK);
+            this.mapView.setMultiTouchControls(true);
+        }
     }
 
     public void onCreate(Bundle savedInstanceState) {
-        if (mapView != null) {
-            mapView.onCreate(savedInstanceState);
-        }
+        // OSMDroid does not require onCreate
     }
 
     public void onResume() {
@@ -39,15 +43,10 @@ public class OrderMapHelper {
     }
 
     public void onDestroy() {
-        if (mapView != null) {
-            mapView.onDestroy();
-        }
+        // OSMDroid has no explicit onDestroy
     }
 
     public void onLowMemory() {
-        if (mapView != null) {
-            mapView.onLowMemory();
-        }
     }
 
     public void loadMap(Context context, String address) {
@@ -55,46 +54,48 @@ public class OrderMapHelper {
             return;
         }
 
-        mapView.getMapAsync(googleMap -> {
-            new Thread(() -> {
-                try {
-                    android.location.Geocoder geocoder = new android.location.Geocoder(context, Locale.getDefault());
-                    List<android.location.Address> addresses = geocoder.getFromLocationName(address, 1);
-                    if (addresses != null && !addresses.isEmpty()) {
-                        android.location.Address loc = addresses.get(0);
-                        LatLng latLng = new LatLng(loc.getLatitude(), loc.getLongitude());
+        new Thread(() -> {
+            try {
+                android.location.Geocoder geocoder = new android.location.Geocoder(context, Locale.getDefault());
+                List<android.location.Address> addresses = geocoder.getFromLocationName(address, 1);
+                if (addresses != null && !addresses.isEmpty()) {
+                    android.location.Address loc = addresses.get(0);
+                    GeoPoint geoPoint = new GeoPoint(loc.getLatitude(), loc.getLongitude());
 
-                        new Handler(Looper.getMainLooper()).post(() -> {
-                            if (mapView != null) {
-                                googleMap.clear();
-                                googleMap.addMarker(new MarkerOptions()
-                                        .position(latLng)
-                                        .title(address));
-                                googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 15f));
-                            }
-                        });
-                    }
-                } catch (Exception e) {
-                    Log.e(TAG, "Geocoding failed: " + e.getMessage());
+                    new Handler(Looper.getMainLooper()).post(() -> {
+                        if (mapView != null) {
+                            mapView.getOverlays().clear();
+                            Marker marker = new Marker(mapView);
+                            marker.setPosition(geoPoint);
+                            marker.setTitle(address);
+                            mapView.getOverlays().add(marker);
+                            mapView.getController().setCenter(geoPoint);
+                            mapView.getController().setZoom(16.5);
+                            mapView.invalidate();
+                        }
+                    });
                 }
-            }).start();
-        });
+            } catch (Exception e) {
+                Log.e(TAG, "Geocoding failed: " + e.getMessage());
+            }
+        }).start();
     }
 
     public void loadMapByCoords(double lat, double lng) {
         if (mapView == null) return;
 
-        mapView.getMapAsync(googleMap -> {
-            LatLng latLng = new LatLng(lat, lng);
-            new Handler(Looper.getMainLooper()).post(() -> {
-                if (mapView != null) {
-                    googleMap.clear();
-                    googleMap.addMarker(new MarkerOptions()
-                            .position(latLng)
-                            .title("Địa điểm"));
-                    googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 15f));
-                }
-            });
+        GeoPoint geoPoint = new GeoPoint(lat, lng);
+        new Handler(Looper.getMainLooper()).post(() -> {
+            if (mapView != null) {
+                mapView.getOverlays().clear();
+                Marker marker = new Marker(mapView);
+                marker.setPosition(geoPoint);
+                marker.setTitle("Địa điểm");
+                mapView.getOverlays().add(marker);
+                mapView.getController().setCenter(geoPoint);
+                mapView.getController().setZoom(16.5);
+                mapView.invalidate();
+            }
         });
     }
 }

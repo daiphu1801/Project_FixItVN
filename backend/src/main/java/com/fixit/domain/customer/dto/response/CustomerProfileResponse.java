@@ -31,6 +31,6 @@ public class CustomerProfileResponse {
 
     private String dob;
 
-// CÚ PHÁP: }
-// Ý NGHĨA: Đóng class.
+    private String avatarUrl;
 }
+// Ý NGHĨA: Đóng class.

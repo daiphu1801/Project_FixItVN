@@ -95,8 +95,15 @@ public class WorkerProfileFragment extends BaseFragment<FragmentWorkerProfileBin
             }
         });
 
+        viewModel.walletBalance.observe(getViewLifecycleOwner(), balance -> {
+            if (balance != null) {
+                binding.tvWalletBalance.setText(balance);
+            }
+        });
+
         viewModel.loadProfile();
         viewModel.loadSkills();
+        viewModel.loadWalletBalance();
     }
 
     private void bindProfile(WorkerProfile profile) {
@@ -138,11 +145,7 @@ public class WorkerProfileFragment extends BaseFragment<FragmentWorkerProfileBin
         binding.layoutProfileHeader.tvRating.setText(
                 String.format(java.util.Locale.US, "%.1f ★", profile.getReputationScore()));
 
-        /*
-         * Wallet hiện chưa nối API wallet thật ở màn này.
-         * Khi nối GET /workers/me/wallet thì mới set lại tvWalletBalance.
-         */
-        binding.tvWalletBalance.setText(ViewUtils.formatCurrency(0));
+        // Wallet balance is updated via live data observation in observeData().
 
         // Ràng buộc hiển thị trạng thái KYC cho CCCD và Header Badge
         String verificationStatus = profile.getVerificationStatus();
@@ -238,6 +241,7 @@ public class WorkerProfileFragment extends BaseFragment<FragmentWorkerProfileBin
                         if (viewModel != null) {
                             viewModel.loadProfile();
                             viewModel.loadSkills();
+                            viewModel.loadWalletBalance();
                         }
                     },
                     "com.fixit.PROFILE_UPDATE"

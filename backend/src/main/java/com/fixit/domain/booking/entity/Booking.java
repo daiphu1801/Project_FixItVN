@@ -66,4 +66,7 @@ public class Booking {
     @Builder.Default
     @Column(name = "created_at", updatable = false)
     private OffsetDateTime createdAt = OffsetDateTime.now();
+
+    @Column(name = "completed_at")
+    private OffsetDateTime completedAt;
 }

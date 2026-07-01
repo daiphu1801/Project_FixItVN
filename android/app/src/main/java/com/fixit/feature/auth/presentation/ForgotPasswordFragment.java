@@ -87,13 +87,13 @@ public class ForgotPasswordFragment extends BaseFragment<FragmentForgotpasswordB
 
     private void handleSendOtp() {
         if (isEmailMethod) {
-            String email = binding.etEmail.getText().toString().trim();
+            String email = binding.etEmail.getText().toString().trim().toLowerCase();
             if (email.isEmpty()) {
-                Toast.makeText(getContext(), "Vui lòng nhập email", Toast.LENGTH_SHORT).show();
+                showError("Vui lòng nhập email");
                 return;
             }
             if (!android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
-                Toast.makeText(getContext(), "Định dạng email không hợp lệ", Toast.LENGTH_SHORT).show();
+                showError("Định dạng email không hợp lệ");
                 return;
             }
             userEmail = email;
@@ -102,11 +102,11 @@ public class ForgotPasswordFragment extends BaseFragment<FragmentForgotpasswordB
         } else {
             String phone = binding.etPhone.getText().toString().trim();
             if (phone.isEmpty()) {
-                Toast.makeText(getContext(), "Vui lòng nhập số điện thoại", Toast.LENGTH_SHORT).show();
+                showError("Vui lòng nhập số điện thoại");
                 return;
             }
             if (phone.length() < 9) {
-                Toast.makeText(getContext(), "Số điện thoại không hợp lệ", Toast.LENGTH_SHORT).show();
+                showError("Số điện thoại không hợp lệ");
                 return;
             }
             userPhone = phone;
@@ -121,22 +121,22 @@ public class ForgotPasswordFragment extends BaseFragment<FragmentForgotpasswordB
         String confirmPassword = binding.etConfirmPassword.getText().toString().trim();
 
         if (otpCode.isEmpty() || otpCode.length() < 6) {
-            Toast.makeText(getContext(), "Vui lòng nhập đúng mã OTP 6 số", Toast.LENGTH_SHORT).show();
+            showError("Vui lòng nhập đúng mã OTP 6 số");
             return;
         }
 
         if (newPassword.isEmpty()) {
-            Toast.makeText(getContext(), "Vui lòng nhập mật khẩu mới", Toast.LENGTH_SHORT).show();
+            showError("Vui lòng nhập mật khẩu mới");
             return;
         }
 
         if (newPassword.length() < 6) {
-            Toast.makeText(getContext(), "Mật khẩu phải chứa ít nhất 6 ký tự", Toast.LENGTH_SHORT).show();
+            showError("Mật khẩu phải chứa ít nhất 6 ký tự");
             return;
         }
 
         if (!newPassword.equals(confirmPassword)) {
-            Toast.makeText(getContext(), "Xác nhận mật khẩu không khớp", Toast.LENGTH_SHORT).show();
+            showError("Xác nhận mật khẩu không khớp");
             return;
         }
 
@@ -198,7 +198,7 @@ public class ForgotPasswordFragment extends BaseFragment<FragmentForgotpasswordB
 
             // Chỉ hiện Toast lỗi khi KHÔNG phải loading và có message lỗi
             if (!isLoading && state.getErrorMessage() != null) {
-                Toast.makeText(getContext(), state.getErrorMessage(), Toast.LENGTH_LONG).show();
+                showError(state.getErrorMessage());
                 // Reset state ngay sau khi đã hiện lỗi — tránh Toast xuất hiện lại khi re-observe
                 viewModel.resetState();
             }
@@ -210,12 +210,12 @@ public class ForgotPasswordFragment extends BaseFragment<FragmentForgotpasswordB
                 // Consume event trước để tránh bị phát lại
                 viewModel.consumeEvent();
                 String method = isEmailMethod ? "email của bạn" : "số điện thoại của bạn";
-                Toast.makeText(getContext(), "Đã gửi mã OTP đến " + method, Toast.LENGTH_SHORT).show();
+                showSuccess("Đã gửi mã OTP đến " + method);
                 showOTPStep();
                 startResendTimer();
             } else if (event.getType() == AuthEvent.Type.RESET_PASSWORD_SUCCESS) {
                 viewModel.consumeEvent();
-                Toast.makeText(getContext(), "Đặt lại mật khẩu thành công! Hãy đăng nhập lại.", Toast.LENGTH_LONG).show();
+                showSuccess("Đặt lại mật khẩu thành công! Hãy đăng nhập lại.");
                 if (navController != null) {
                     navController.navigateUp();
                 }

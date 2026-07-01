@@ -9,6 +9,7 @@ import com.fixit.core.network.ApiResponse;
 import com.fixit.core.ui.ViewUtils;
 import com.fixit.feature.worker.wallet.data.remote.api.WorkerWalletApi;
 import com.fixit.feature.worker.wallet.data.remote.dto.request.DepositCreateRequest;
+import com.fixit.feature.worker.wallet.data.remote.dto.request.WithdrawCreateRequest;
 import com.fixit.feature.worker.wallet.data.remote.dto.response.DepositQrResponse;
 import com.fixit.feature.worker.wallet.data.remote.dto.response.DepositResponse;
 import com.fixit.feature.worker.wallet.data.remote.dto.response.WalletTransactionItemResponse;
@@ -231,14 +232,69 @@ public class WorkerWalletRepositoryImpl implements WorkerWalletRepository {
 
     @Override
     public void createWithdrawal(long amount, String bankAccountId, ResultCallback<Void> callback) {
-        // TODO: Gọi API khi backend có endpoint rút tiền
-        callback.onResult(Result.success(null));
+        WithdrawCreateRequest request = new WithdrawCreateRequest(BigDecimal.valueOf(amount), bankAccountId);
+        api.createWithdraw(request).enqueue(new Callback<ApiResponse<Void>>() {
+            @Override
+            public void onResponse(Call<ApiResponse<Void>> call, Response<ApiResponse<Void>> response) {
+                if (!response.isSuccessful()) {
+                    ApiResponse<?> errorResponse = ApiResponse.parseError(response);
+                    String errorMsg = (errorResponse != null && errorResponse.getMessage() != null)
+                            ? errorResponse.getMessage()
+                            : "Yêu cầu rút tiền thất bại. HTTP " + response.code();
+                    callback.onResult(Result.error(new AppError(errorMsg)));
+                    return;
+                }
+
+                ApiResponse<Void> body = response.body();
+                if (body == null || !body.isSuccess()) {
+                    callback.onResult(Result.error(new AppError(
+                            body != null && body.getMessage() != null ? body.getMessage() : "Yêu cầu rút tiền thất bại"
+                    )));
+                    return;
+                }
+                callback.onResult(Result.success(null));
+            }
+
+            @Override
+            public void onFailure(Call<ApiResponse<Void>> call, Throwable t) {
+                callback.onResult(Result.error(new AppError(
+                        "Lỗi kết nối khi rút tiền: " + t.getMessage(), t
+                )));
+            }
+        });
     }
 
     @Override
     public void cancelWithdrawal(String transactionId, ResultCallback<Void> callback) {
-        // TODO: Gọi API khi backend có endpoint hủy rút tiền
-        callback.onResult(Result.success(null));
+        api.cancelWithdraw(transactionId).enqueue(new Callback<ApiResponse<Void>>() {
+            @Override
+            public void onResponse(Call<ApiResponse<Void>> call, Response<ApiResponse<Void>> response) {
+                if (!response.isSuccessful()) {
+                    ApiResponse<?> errorResponse = ApiResponse.parseError(response);
+                    String errorMsg = (errorResponse != null && errorResponse.getMessage() != null)
+                            ? errorResponse.getMessage()
+                            : "Hủy rút tiền thất bại. HTTP " + response.code();
+                    callback.onResult(Result.error(new AppError(errorMsg)));
+                    return;
+                }
+
+                ApiResponse<Void> body = response.body();
+                if (body == null || !body.isSuccess()) {
+                    callback.onResult(Result.error(new AppError(
+                            body != null && body.getMessage() != null ? body.getMessage() : "Hủy rút tiền thất bại"
+                    )));
+                    return;
+                }
+                callback.onResult(Result.success(null));
+            }
+
+            @Override
+            public void onFailure(Call<ApiResponse<Void>> call, Throwable t) {
+                callback.onResult(Result.error(new AppError(
+                        "Lỗi kết nối khi hủy rút tiền: " + t.getMessage(), t
+                )));
+            }
+        });
     }
 
     @Override
@@ -381,7 +437,8 @@ public class WorkerWalletRepositoryImpl implements WorkerWalletRepository {
                     isCredit,
                     resolvedWalletType,
                     item.getStatus() != null ? item.getStatus().toUpperCase() : "SUCCESS",
-                    item.getBookingId()
+                    item.getBookingId(),
+                    type
             ));
         }
         return result;

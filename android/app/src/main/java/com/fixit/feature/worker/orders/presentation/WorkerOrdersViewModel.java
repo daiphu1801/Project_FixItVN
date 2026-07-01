@@ -99,6 +99,8 @@ public class WorkerOrdersViewModel extends BaseViewModel {
     }
 
     public void loadOrderDetails(String orderId, boolean showLoading) {
+        _orderDetails.setValue(null);
+        _currentStatus.setValue(null);
         if (showLoading) {
             setLoading(true);
         }

@@ -21,7 +21,6 @@ public class WorkerWalletFragment extends BaseFragment<FragmentWorkerWalletBindi
 
     private WorkerWalletViewModel viewModel;
     private WalletTransactionAdapter adapter;
-    private int currentTabPosition = 0;
 
     @Override
     protected FragmentWorkerWalletBinding inflateViewBinding(LayoutInflater inflater, ViewGroup container) {
@@ -43,15 +42,10 @@ public class WorkerWalletFragment extends BaseFragment<FragmentWorkerWalletBindi
 
         // Pull-to-refresh
         binding.swipeRefreshLayout.setOnRefreshListener(() -> {
-            String tabType = "available";
-            switch (currentTabPosition) {
-                case 1: tabType = "held"; break;
-                case 2: tabType = "debt"; break;
-            }
-            viewModel.refresh(tabType);
+            viewModel.refresh("available");
         });
 
-        // RecyclerView lịch sử giao dịch
+        // RecyclerView lịch sử giao dịch gần đây
         adapter = new WalletTransactionAdapter();
         binding.rvWalletTransactions.setLayoutManager(new LinearLayoutManager(requireContext()));
         binding.rvWalletTransactions.setAdapter(adapter);
@@ -64,16 +58,11 @@ public class WorkerWalletFragment extends BaseFragment<FragmentWorkerWalletBindi
                     .navigate(R.id.action_wallet_to_tx_detail, bundle);
         });
 
-        // Tab phân loại giao dịch
-        binding.tabLayoutTx.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
-            @Override
-            public void onTabSelected(TabLayout.Tab tab) {
-                currentTabPosition = tab.getPosition();
-                filterCurrentTab();
-            }
-            @Override public void onTabUnselected(TabLayout.Tab tab) {}
-            @Override public void onTabReselected(TabLayout.Tab tab) {}
-        });
+        // Nút Xem tất cả lịch sử giao dịch
+        binding.btnViewAllTransactions.setOnClickListener(v ->
+                Navigation.findNavController(requireView())
+                        .navigate(R.id.action_wallet_to_tx_history)
+        );
 
         // Quick Action: Nạp tiền
         binding.btnActionTopUp.setOnClickListener(v ->
@@ -121,15 +110,6 @@ public class WorkerWalletFragment extends BaseFragment<FragmentWorkerWalletBindi
         });
     }
 
-    private void filterCurrentTab() {
-        if (viewModel == null) return;
-        switch (currentTabPosition) {
-            case 0: viewModel.filterByWallet("available"); break;
-            case 1: viewModel.filterByWallet("held");      break;
-            case 2: viewModel.filterByWallet("debt");      break;
-        }
-    }
-
     @Override
     protected void observeData() {
         viewModel = new ViewModelProvider(this).get(WorkerWalletViewModel.class);
@@ -159,15 +139,20 @@ public class WorkerWalletFragment extends BaseFragment<FragmentWorkerWalletBindi
         viewModel.incomeThisMonth.observe(getViewLifecycleOwner(),
                 month -> binding.tvIncomeThisMonth.setText(month));
 
-        // Danh sách giao dịch (lọc theo tab)
+        // Danh sách giao dịch gần đây (lấy top 3)
         viewModel.filteredTransactions.observe(getViewLifecycleOwner(), txList -> {
-            adapter.submitList(txList);
+            java.util.List<com.fixit.feature.worker.wallet.domain.model.WalletTransaction> recentList = new java.util.ArrayList<>();
+            if (txList != null) {
+                for (int i = 0; i < Math.min(3, txList.size()); i++) {
+                    recentList.add(txList.get(i));
+                }
+            }
+            adapter.submitList(recentList);
 
             // Hiện/ẩn empty state
-            View empty = requireView().findViewById(R.id.layoutEmpty);
+            View empty = requireView().findViewById(R.id.layoutEmptyState);
             if (empty != null) {
-                empty.setVisibility(txList == null || txList.isEmpty()
-                        ? View.VISIBLE : View.GONE);
+                empty.setVisibility(recentList.isEmpty() ? View.VISIBLE : View.GONE);
             }
         });
     }
@@ -177,12 +162,7 @@ public class WorkerWalletFragment extends BaseFragment<FragmentWorkerWalletBindi
         super.onResume();
         if (viewModel != null) {
             // Làm mới số dư và danh sách giao dịch in-memory
-            String tabType = "available";
-            switch (currentTabPosition) {
-                case 1: tabType = "held"; break;
-                case 2: tabType = "debt"; break;
-            }
-            viewModel.refresh(tabType);
+            viewModel.refresh("available");
         }
     }
 }

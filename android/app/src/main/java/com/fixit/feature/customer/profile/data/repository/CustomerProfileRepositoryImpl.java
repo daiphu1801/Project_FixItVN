@@ -62,9 +62,9 @@ public class CustomerProfileRepositoryImpl implements CustomerProfileRepository 
                     // Bấm bộ đàm báo TIN VUI về cho màn hình Android vẽ ra
                     callback.onResult(Result.success(result));
                 } else {
-                    String errMsg = "Mã lỗi " + response.code();
-                    try { if (response.errorBody() != null) errMsg += ": " + response.errorBody().string(); } catch (Exception ignored) {}
-                    callback.onResult(Result.error(new AppError("Lỗi tải thông tin (" + errMsg + ")")));
+                    ApiResponse<?> apiResponse = ApiResponse.parseError(response);
+                    String errMsg = apiResponse != null ? apiResponse.getMessage() : "Mã lỗi " + response.code();
+                    callback.onResult(Result.error(new AppError(errMsg)));
                 }
             }
 
@@ -96,9 +96,9 @@ public class CustomerProfileRepositoryImpl implements CustomerProfileRepository 
                     CustomerProfile result = CustomerProfileMapper.toDomain(response.body().getData());
                     callback.onResult(Result.success(result));
                 } else {
-                    String errMsg = "Mã lỗi " + response.code();
-                    try { if (response.errorBody() != null) errMsg += ": " + response.errorBody().string(); } catch (Exception ignored) {}
-                    callback.onResult(Result.error(new AppError("Không thể cập nhật hồ sơ (" + errMsg + ")")));
+                    ApiResponse<?> apiResponse = ApiResponse.parseError(response);
+                    String errMsg = apiResponse != null ? apiResponse.getMessage() : "Mã lỗi " + response.code();
+                    callback.onResult(Result.error(new AppError(errMsg)));
                 }
             }
 

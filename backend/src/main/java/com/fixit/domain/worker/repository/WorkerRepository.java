@@ -30,7 +30,7 @@ public interface WorkerRepository extends JpaRepository<Worker, UUID> {
                                 FROM bookings b
                                 WHERE b.worker_id = w.worker_id
                                   AND DATE(b.scheduled_time) = CURRENT_DATE
-                                  AND b.status IN ('Accepted', 'Surveying', 'Waiting_Approval', 'In_Progress')
+                                  AND b.status IN ('Accepted', 'Surveying', 'Waiting_Approval', 'Waiting_Payment', 'In_Progress')
                             ), 0) AS int) AS "todayAppointmentCount",
 
                             CAST(COALESCE((

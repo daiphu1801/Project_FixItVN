@@ -14,6 +14,7 @@ import com.fixit.feature.worker.profile.domain.usecase.GetWorkerSkillsUseCase;
 import com.fixit.feature.worker.profile.domain.usecase.UpdateWorkerProfileUseCase;
 import com.fixit.feature.worker.profile.domain.usecase.UpdateWorkerSkillsUseCase;
 import com.fixit.feature.worker.profile.domain.usecase.GetServiceCategoriesUseCase;
+import com.fixit.feature.worker.wallet.domain.usecase.GetWalletBalanceUseCase;
 
 import java.util.List;
 
@@ -30,6 +31,7 @@ public class WorkerProfileViewModel extends BaseViewModel {
     private final GetWorkerSkillsUseCase getWorkerSkillsUseCase;
     private final UpdateWorkerSkillsUseCase updateWorkerSkillsUseCase;
     private final GetServiceCategoriesUseCase getServiceCategoriesUseCase;
+    private final GetWalletBalanceUseCase getWalletBalanceUseCase;
 
     private final MutableLiveData<Boolean> _logoutSuccess = new MutableLiveData<>();
     public LiveData<Boolean> logoutSuccess = _logoutSuccess;
@@ -49,6 +51,9 @@ public class WorkerProfileViewModel extends BaseViewModel {
     private final MutableLiveData<List<ServiceCategory>> _categories = new MutableLiveData<>();
     public LiveData<List<ServiceCategory>> categories = _categories;
 
+    private final MutableLiveData<String> _walletBalance = new MutableLiveData<>("0 đ");
+    public LiveData<String> walletBalance = _walletBalance;
+
     @Inject
     public WorkerProfileViewModel(
             LogoutUseCase logoutUseCase,
@@ -56,7 +61,8 @@ public class WorkerProfileViewModel extends BaseViewModel {
             UpdateWorkerProfileUseCase updateWorkerProfileUseCase,
             GetWorkerSkillsUseCase getWorkerSkillsUseCase,
             UpdateWorkerSkillsUseCase updateWorkerSkillsUseCase,
-            GetServiceCategoriesUseCase getServiceCategoriesUseCase
+            GetServiceCategoriesUseCase getServiceCategoriesUseCase,
+            GetWalletBalanceUseCase getWalletBalanceUseCase
     ) {
         this.logoutUseCase = logoutUseCase;
         this.getWorkerProfileUseCase = getWorkerProfileUseCase;
@@ -64,6 +70,15 @@ public class WorkerProfileViewModel extends BaseViewModel {
         this.getWorkerSkillsUseCase = getWorkerSkillsUseCase;
         this.updateWorkerSkillsUseCase = updateWorkerSkillsUseCase;
         this.getServiceCategoriesUseCase = getServiceCategoriesUseCase;
+        this.getWalletBalanceUseCase = getWalletBalanceUseCase;
+    }
+
+    public void loadWalletBalance() {
+        getWalletBalanceUseCase.execute(result -> {
+            if (result.isSuccess() && result.getData() != null) {
+                _walletBalance.postValue(result.getData().getAvailableBalance());
+            }
+        });
     }
 
     public void loadProfile() {

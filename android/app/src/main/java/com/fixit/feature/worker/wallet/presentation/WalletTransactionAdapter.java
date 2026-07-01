@@ -87,14 +87,52 @@ public class WalletTransactionAdapter extends RecyclerView.Adapter<WalletTransac
                 b.tvTransactionStatus.setTextColor(Color.parseColor("#64748b"));
             }
 
-            // Icon màu theo loại ví
-            int iconTint;
-            switch (tx.getWalletType()) {
-                case "held": iconTint = Color.parseColor("#f59e0b"); break;
-                case "debt": iconTint = Color.parseColor("#ef4444"); break;
-                default:     iconTint = Color.parseColor("#42c2ff"); break;
+            // Gán icon động dựa trên type giao dịch
+            int iconRes = com.fixit.R.drawable.ic_lucide_wallet;
+            String type = tx.getType();
+            if (type != null) {
+                switch (type) {
+                    case "Deposit":
+                        iconRes = com.fixit.R.drawable.ic_deposit_arrow;
+                        break;
+                    case "Withdraw":
+                        iconRes = com.fixit.R.drawable.ic_withdraw_arrow;
+                        break;
+                    case "Holding":
+                        iconRes = com.fixit.R.drawable.ic_lucide_lock;
+                        break;
+                    case "Release":
+                        iconRes = com.fixit.R.drawable.ic_lucide_check_circle;
+                        break;
+                    case "Fee_Deduction":
+                        iconRes = com.fixit.R.drawable.ic_lucide_receipt;
+                        break;
+                }
             }
+            b.ivTransactionIcon.setImageResource(iconRes);
+
+            // Icon màu và background tròn màu theo loại ví
+            int iconTint;
+            int bgRes;
+            
+            if ("held".equals(tx.getWalletType())) {
+                iconTint = Color.parseColor("#d97706"); // Amber đậm
+                bgRes = com.fixit.R.drawable.bg_badge_yellow_light;
+            } else if ("debt".equals(tx.getWalletType())) {
+                iconTint = Color.parseColor("#dc2626"); // Đỏ đậm
+                bgRes = com.fixit.R.drawable.bg_badge_red;
+            } else { // available
+                if (tx.isCredit()) {
+                    iconTint = Color.parseColor("#16a34a"); // Xanh lá
+                    bgRes = com.fixit.R.drawable.bg_badge_green_light;
+                } else {
+                    iconTint = Color.parseColor("#2563eb"); // Xanh dương
+                    bgRes = com.fixit.R.drawable.bg_badge_light_blue;
+                }
+            }
+            
             b.ivTransactionIcon.setColorFilter(iconTint);
+            b.ivTransactionIcon.setBackgroundResource(bgRes);
         }
     }
 }

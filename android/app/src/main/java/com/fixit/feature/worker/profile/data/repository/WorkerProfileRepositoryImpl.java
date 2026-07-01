@@ -47,8 +47,9 @@ public class WorkerProfileRepositoryImpl implements WorkerProfileRepository {
                     Response<ApiResponse<WorkerProfileResponse>> response
             ) {
                 if (!response.isSuccessful()) {
+                    ApiResponse<?> apiResponse = ApiResponse.parseError(response);
                     callback.onResult(Result.error(new AppError(
-                            "Không tải được hồ sơ thợ. HTTP " + response.code()
+                            apiResponse != null ? apiResponse.getMessage() : "Không tải được hồ sơ thợ. HTTP " + response.code()
                     )));
                     return;
                 }
@@ -89,8 +90,9 @@ public class WorkerProfileRepositoryImpl implements WorkerProfileRepository {
                     Response<ApiResponse<WorkerProfileResponse>> response
             ) {
                 if (!response.isSuccessful()) {
+                    ApiResponse<?> apiResponse = ApiResponse.parseError(response);
                     callback.onResult(Result.error(new AppError(
-                            "Cập nhật hồ sơ thất bại. HTTP " + response.code()
+                            apiResponse != null ? apiResponse.getMessage() : "Cập nhật hồ sơ thất bại. HTTP " + response.code()
                     )));
                     return;
                 }

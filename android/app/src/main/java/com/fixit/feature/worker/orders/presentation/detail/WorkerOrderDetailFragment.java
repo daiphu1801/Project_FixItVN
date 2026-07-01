@@ -40,6 +40,10 @@ public class WorkerOrderDetailFragment extends BaseFragment<FragmentWorkerOrderD
     private AutoRefreshHelper autoRefreshHelper;
     private android.os.Bundle savedInstanceState;
 
+    // Tracking trạng thái để tránh rebuild UI mỗi lần polling
+    private String lastRenderedStatus = null;
+    private String lastRenderedOrderId = null;
+
     // UI Helper coordinates layout states
     private OrderDetailUiHelper uiHelper;
 
@@ -125,8 +129,18 @@ public class WorkerOrderDetailFragment extends BaseFragment<FragmentWorkerOrderD
 
         viewModel.orderDetails.observe(getViewLifecycleOwner(), order -> {
             if (order != null) {
+                String newStatus = order.getStatus() != null ? order.getStatus() : "";
+                String newOrderId = order.getOrderId();
+                boolean isNewOrStatusChanged = !newOrderId.equals(lastRenderedOrderId)
+                        || !newStatus.equals(lastRenderedStatus);
+
                 currentOrder = order;
-                uiHelper.bindOrderData(order);
+
+                if (isNewOrStatusChanged) {
+                    lastRenderedOrderId = newOrderId;
+                    lastRenderedStatus = newStatus;
+                    uiHelper.bindOrderData(order);
+                }
             }
         });
 
@@ -223,10 +237,13 @@ public class WorkerOrderDetailFragment extends BaseFragment<FragmentWorkerOrderD
         if (uiHelper != null && uiHelper.getMapHelper() != null) {
             uiHelper.getMapHelper().onResume();
         }
+        // Reset tracking de force full render khi quay lai man hinh
+        lastRenderedStatus = null;
+        lastRenderedOrderId = null;
         if (autoRefreshHelper == null) {
             autoRefreshHelper = new AutoRefreshHelper(
                     requireContext(),
-                    0L,
+                    5000L,  // Polling mỗi 5 giây để dự phòng khi FCM bị chậm
                     () -> {
                         String orderId = getCurrentOrderId();
                         if (viewModel != null && orderId != null) {

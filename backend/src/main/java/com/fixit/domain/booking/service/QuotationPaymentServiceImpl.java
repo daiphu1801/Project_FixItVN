@@ -130,6 +130,27 @@ public class QuotationPaymentServiceImpl implements QuotationPaymentService {
                         .updatedAt(OffsetDateTime.now())
                         .build()
         );
+
+        // Gửi thông báo FCM cho thợ để cập nhật giao diện real-time
+        try {
+            if (booking.getWorker() != null && booking.getWorker().getUser() != null) {
+                UUID workerUserId = booking.getWorker().getUser().getId();
+                String customerName = booking.getCustomer() != null ? booking.getCustomer().getFullName() : "Khách hàng";
+                Map<String, String> data = Map.of(
+                        "bookingId", booking.getId().toString(),
+                        "status", "In_Progress",
+                        "type", "QUOTATION_ACCEPTED"
+                );
+                notificationSenderService.sendNotification(
+                        workerUserId,
+                        "Khách đã duyệt báo giá",
+                        customerName + " đã đồng ý báo giá của bạn. Hãy tiến hành sửa chữa!",
+                        data
+                );
+            }
+        } catch (Exception e) {
+            log.error("Failed to send notification for quotation acceptance: {}", bookingId, e);
+        }
     }
 
     @Override
@@ -270,6 +291,7 @@ public class QuotationPaymentServiceImpl implements QuotationPaymentService {
 
         // Hoàn tất đơn
         booking.setStatus(BookingStatus.Completed);
+        booking.setCompletedAt(OffsetDateTime.now());
         bookingRepository.save(booking);
 
         // Gửi thông báo cho khách

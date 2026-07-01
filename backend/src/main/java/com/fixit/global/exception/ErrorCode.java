@@ -9,7 +9,7 @@ public enum ErrorCode {
         // Auth & Security
         UNAUTHORIZED(401, HttpStatus.UNAUTHORIZED, "Unauthorized access"),
         FORBIDDEN(403, HttpStatus.FORBIDDEN, "Forbidden access"),
-        USER_NOT_FOUND(404, HttpStatus.NOT_FOUND, "User not found"),
+        USER_NOT_FOUND(404, HttpStatus.NOT_FOUND, "Người dùng không tồn tại"),
         INVALID_CREDENTIALS(400, HttpStatus.BAD_REQUEST, "Số điện thoại hoặc mật khẩu không chính xác"),
         USER_ALREADY_EXISTS(409, HttpStatus.CONFLICT, "User already exists"),
         PHONE_ALREADY_EXISTS(409, HttpStatus.CONFLICT, "Số điện thoại đã được đăng ký"),
@@ -17,6 +17,10 @@ public enum ErrorCode {
         USER_BLOCKED(403, HttpStatus.FORBIDDEN, "Tài khoản đã bị khóa"),
         WRONG_ROLE(400, HttpStatus.BAD_REQUEST, "Số điện thoại hoặc mật khẩu không chính xác"),
         NOTIFICATION_NOT_FOUND(404, HttpStatus.NOT_FOUND, "Notification not found"),
+        OTP_INVALID(400, HttpStatus.BAD_REQUEST, "Mã OTP không chính xác"),
+        OTP_EXPIRED(400, HttpStatus.BAD_REQUEST, "Mã OTP đã hết hạn"),
+        OTP_NOT_FOUND(400, HttpStatus.BAD_REQUEST, "Mã OTP không tồn tại hoặc đã được sử dụng"),
+        OLD_PASSWORD_INCORRECT(400, HttpStatus.BAD_REQUEST, "Mật khẩu cũ không chính xác"),
 
         // Worker assignment
         WORKER_ASSIGNMENT_NOT_FOUND(404, HttpStatus.NOT_FOUND, "Không tìm thấy đơn đang phát cho thợ hiện tại"),

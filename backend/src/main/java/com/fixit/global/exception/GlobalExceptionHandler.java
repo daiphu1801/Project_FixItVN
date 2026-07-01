@@ -24,7 +24,7 @@ public class GlobalExceptionHandler {
 
                 ApiResponse<Void> response = ApiResponse.error(
                                 errorCode.getCode(),
-                                errorCode.getMessage());
+                                ex.getMessage());
 
                 return new ResponseEntity<>(response, errorCode.getHttpStatus());
         }

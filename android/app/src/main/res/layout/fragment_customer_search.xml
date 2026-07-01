@@ -151,7 +151,6 @@
                 android:text="Tất cả"
                 android:textSize="13sp"
                 android:checked="true"
-                app:chipBackgroundColor="@color/colorPrimary"
                 app:checkedIconVisible="false" />
 
             <com.google.android.material.chip.Chip

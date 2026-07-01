@@ -4,40 +4,35 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
+import com.fixit.core.ui.BaseFragment;
 import com.fixit.databinding.FragmentRegisterBinding;
 
 import dagger.hilt.android.AndroidEntryPoint;
 
 @AndroidEntryPoint
-public class RegisterFragment extends Fragment {
+public class RegisterFragment extends BaseFragment<FragmentRegisterBinding> {
 
-    private FragmentRegisterBinding binding;
     private AuthViewModel viewModel;
     private String selectedRole = "CUSTOMER";
 
-    @Nullable
+    @NonNull
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        binding = FragmentRegisterBinding.inflate(inflater, container, false);
-        viewModel = new ViewModelProvider(this).get(AuthViewModel.class);
+    protected FragmentRegisterBinding inflateViewBinding(@NonNull LayoutInflater inflater, ViewGroup container) {
+        return FragmentRegisterBinding.inflate(inflater, container, false);
+    }
+
+    @Override
+    protected void setupViews() {
+        viewModel = new ViewModelProvider(requireActivity()).get(AuthViewModel.class);
 
         if (getArguments() != null) {
             selectedRole = getArguments().getString("role", "CUSTOMER");
         }
-
-        return binding.getRoot();
-    }
-
-    @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
 
         binding.btnBack.setOnClickListener(v -> requireActivity().onBackPressed());
         binding.tvLogin.setOnClickListener(v -> requireActivity().onBackPressed());
@@ -45,37 +40,40 @@ public class RegisterFragment extends Fragment {
         binding.btnRegister.setOnClickListener(v -> {
             String fullName = binding.etFullName.getText().toString().trim();
             String phone = binding.etPhone.getText().toString().trim();
-            String email = binding.etEmail.getText().toString().trim();
+            String email = binding.etEmail.getText().toString().trim().toLowerCase();
             String password = binding.etPassword.getText().toString().trim();
             String confirmPass = binding.etConfirmPassword.getText().toString().trim();
 
             if (fullName.isEmpty() || phone.isEmpty() || email.isEmpty() || password.isEmpty()) {
-                Toast.makeText(getContext(), "Vui lòng nhập đầy đủ thông tin", Toast.LENGTH_SHORT).show();
+                showError("Vui lòng nhập đầy đủ thông tin");
                 return;
             }
 
             if (!android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
-                Toast.makeText(getContext(), "Email không đúng định dạng", Toast.LENGTH_SHORT).show();
+                showError("Email không đúng định dạng");
                 return;
             }
 
             if (!password.equals(confirmPass)) {
-                Toast.makeText(getContext(), "Mật khẩu xác nhận không khớp", Toast.LENGTH_SHORT).show();
+                showError("Mật khẩu xác nhận không khớp");
                 return;
             }
 
             String passwordPattern = "^(?=.*[0-9])(?=.*[.,!@#$%^&*()_+\\-=\\[\\]{};':\"\\\\|<>/?])[A-Z].{7,}$";
             if (!password.matches(passwordPattern)) {
-                Toast.makeText(getContext(), "Mật khẩu phải từ 8 ký tự trở lên, bắt đầu bằng chữ viết hoa, chứa ít nhất một chữ số và một ký tự đặc biệt (ví dụ: .,!)", Toast.LENGTH_LONG).show();
+                showError("Mật khẩu phải từ 8 ký tự trở lên, bắt đầu bằng chữ viết hoa, chứa ít nhất một chữ số và một ký tự đặc biệt (ví dụ: .,!)");
                 return;
             }
 
             viewModel.register(phone, email, password, fullName, selectedRole);
         });
+    }
 
+    @Override
+    protected void observeData() {
         viewModel.event.observe(getViewLifecycleOwner(), event -> {
             if (event != null && event.getType() == AuthEvent.Type.REGISTER_SUCCESS) {
-                Toast.makeText(getContext(), "Đăng ký thành công!", Toast.LENGTH_SHORT).show();
+                showSuccess("Đăng ký thành công!");
                 requireActivity().onBackPressed();
             }
         });
@@ -87,14 +85,8 @@ public class RegisterFragment extends Fragment {
             binding.btnRegister.setEnabled(!state.isLoading());
             binding.btnRegister.setText(state.isLoading() ? "Đang xử lý..." : "Đăng ký");
             if (state.getErrorMessage() != null) {
-                Toast.makeText(getContext(), state.getErrorMessage(), Toast.LENGTH_LONG).show();
+                showError(state.getErrorMessage());
             }
         });
-    }
-
-    @Override
-    public void onDestroyView() {
-        super.onDestroyView();
-        binding = null;
     }
 }

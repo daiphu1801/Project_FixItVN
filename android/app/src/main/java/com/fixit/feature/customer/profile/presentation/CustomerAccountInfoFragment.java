@@ -6,9 +6,12 @@ import android.view.ViewGroup;
 import android.widget.RadioButton;
 import android.widget.Toast;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.lifecycle.ViewModelProvider;
 
+import com.bumptech.glide.Glide;
 import com.fixit.R;
 import com.fixit.core.storage.SessionStorage;
 import com.fixit.core.ui.BaseFragment;
@@ -16,6 +19,9 @@ import com.fixit.databinding.FragmentCustomerAccountInfoBinding;
 import com.fixit.feature.auth.domain.model.Session;
 import com.fixit.feature.auth.domain.model.User;
 import com.fixit.feature.customer.profile.domain.model.CustomerProfile;
+import com.fixit.feature.upload.domain.model.UploadPurpose;
+import com.fixit.feature.upload.domain.model.UploadTargetType;
+import com.fixit.feature.upload.presentation.UploadViewModel;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.android.material.datepicker.MaterialDatePicker;
 import com.google.android.material.card.MaterialCardView;
@@ -28,9 +34,6 @@ import javax.inject.Inject;
 
 import dagger.hilt.android.AndroidEntryPoint;
 
-import android.widget.Toast;
-import androidx.lifecycle.ViewModelProvider;
-
 @AndroidEntryPoint
 public class CustomerAccountInfoFragment extends BaseFragment<FragmentCustomerAccountInfoBinding> {
 
@@ -38,6 +41,30 @@ public class CustomerAccountInfoFragment extends BaseFragment<FragmentCustomerAc
     SessionStorage sessionStorage;
 
     private CustomerProfileViewModel viewModel;
+    private UploadViewModel uploadViewModel;
+    private com.fixit.core.common.AutoRefreshHelper autoRefreshHelper;
+
+    // Image picker cho avatar khách hàng
+    private final ActivityResultLauncher<String> pickAvatarLauncher = registerForActivityResult(
+            new ActivityResultContracts.GetContent(),
+            uri -> {
+                if (uri != null) {
+                    // Hiển thị ảnh mới ngay lập tức trên CircleImageView
+                    Glide.with(this).load(uri).circleCrop().into(binding.ivUserAvatar);
+                    // Upload lên server
+                    uploadViewModel.upload(
+                            requireContext(),
+                            uri,
+                            UploadPurpose.AVATAR,
+                            UploadTargetType.USER_AVATAR,
+                            null,
+                            null,
+                            "avatar",
+                            null
+                    );
+                }
+            }
+    );
 
     @NonNull
     @Override
@@ -67,14 +94,17 @@ public class CustomerAccountInfoFragment extends BaseFragment<FragmentCustomerAc
         // Chọn ngày sinh
         binding.boxDob.setOnClickListener(v -> showDatePicker());
 
+        // Click vào avatar -> mở gallery chọn ảnh đại diện
+        binding.flAvatar.setOnClickListener(v -> pickAvatarLauncher.launch("image/*"));
+
         binding.btnSave.setOnClickListener(v -> {
             String fullName = binding.etFullName.getText().toString().trim();
-            String email = binding.etEmail.getText().toString().trim();
+            String email = binding.etEmail.getText().toString().trim().toLowerCase();
             String gender = binding.tvGenderValue.getText().toString().trim();
             String dob = binding.tvDobValue.getText().toString().trim();
 
             if (fullName.isEmpty()) {
-                showToast("Vui lòng nhập họ và tên");
+                showError("Vui lòng nhập họ và tên");
                 return;
             }
 
@@ -155,11 +185,50 @@ public class CustomerAccountInfoFragment extends BaseFragment<FragmentCustomerAc
     @Override
     protected void observeData() {
         viewModel = new ViewModelProvider(this).get(CustomerProfileViewModel.class);
+        uploadViewModel = new ViewModelProvider(this).get(UploadViewModel.class);
 
-        // Theo dõi trạng thái tải (Loading)
+        // Theo dõi trạng thái tải (Loading) của cả thông tin profile và upload avatar
         viewModel.getIsLoading().observe(getViewLifecycleOwner(), isLoading -> {
-            binding.btnSave.setEnabled(!isLoading);
+            Boolean uploadingVal = uploadViewModel.isUploading.getValue();
+            boolean uploading = uploadingVal != null && uploadingVal;
+            binding.btnSave.setEnabled(!isLoading && !uploading);
             binding.btnSave.setText(isLoading ? "Đang lưu..." : "Lưu thay đổi");
+        });
+
+        uploadViewModel.isUploading.observe(getViewLifecycleOwner(), isUploading -> {
+            Boolean loadingVal = viewModel.getIsLoading().getValue();
+            boolean loading = loadingVal != null && loadingVal;
+            binding.btnSave.setEnabled(!isUploading && !loading);
+            if (isUploading != null && isUploading) {
+                binding.btnSave.setText("Đang tải ảnh lên...");
+            } else {
+                binding.btnSave.setText(loading ? "Đang lưu..." : "Lưu thay đổi");
+            }
+        });
+
+        // Observe kết quả upload avatar
+        uploadViewModel.uploadResult.observe(getViewLifecycleOwner(), result -> {
+            if (result == null) return;
+            if (result.isSuccess()) {
+                Toast.makeText(requireContext(), "Ảnh đại diện đã cập nhật", Toast.LENGTH_SHORT).show();
+                if (result.getConfirmedUpload() != null) {
+                    String fileUrl = result.getConfirmedUpload().getFileUrl();
+                    if (fileUrl != null && !fileUrl.isEmpty()) {
+                        requireContext().getSharedPreferences(com.fixit.core.common.Constants.PREF_NAME, android.content.Context.MODE_PRIVATE)
+                                .edit()
+                                .putString("user_avatar", fileUrl)
+                                .apply();
+                        Glide.with(this).load(fileUrl).circleCrop().into(binding.ivUserAvatar);
+                    }
+
+                    try {
+                        Intent intent = new Intent("com.fixit.PROFILE_UPDATE");
+                        requireContext().sendBroadcast(intent);
+                    } catch (Exception ignored) {}
+                }
+            } else {
+                Toast.makeText(requireContext(), result.getErrorMessage(), Toast.LENGTH_SHORT).show();
+            }
         });
 
         // Theo dõi thông tin người dùng được tải về
@@ -183,13 +252,26 @@ public class CustomerAccountInfoFragment extends BaseFragment<FragmentCustomerAc
                 // Ngày sinh
                 String dob = profile.getDob();
                 binding.tvDobValue.setText(dob != null && !dob.isEmpty() ? dob : "Chưa cập nhật");
+
+                // Ảnh đại diện
+                String avatarUrl = profile.getAvatarUrl();
+                if (avatarUrl != null && !avatarUrl.trim().isEmpty()) {
+                    Glide.with(this)
+                            .load(avatarUrl)
+                            .placeholder(R.drawable.ic_person)
+                            .error(R.drawable.ic_person)
+                            .circleCrop()
+                            .into(binding.ivUserAvatar);
+                } else {
+                    binding.ivUserAvatar.setImageResource(R.drawable.ic_person);
+                }
             }
         });
 
         // Theo dõi thông báo lỗi
         viewModel.getErrorMessage().observe(getViewLifecycleOwner(), error -> {
             if (error != null && !error.isEmpty()) {
-                showToast(error);
+                showError(error);
             }
         });
 
@@ -197,7 +279,7 @@ public class CustomerAccountInfoFragment extends BaseFragment<FragmentCustomerAc
         viewModel.getUpdateSuccess().observe(getViewLifecycleOwner(), success -> {
             if (success != null) {
                 if (success) {
-                    showToast("Cập nhật thông tin thành công");
+                    showSuccess("Cập nhật thông tin thành công");
                     
                     // Cập nhật thông tin trong SessionStorage
                     CustomerProfile updatedProfile = viewModel.getProfileData().getValue();
@@ -230,7 +312,7 @@ public class CustomerAccountInfoFragment extends BaseFragment<FragmentCustomerAc
                         navController.popBackStack();
                     }
                 } else {
-                    showToast("Cập nhật thông tin thất bại");
+                    showError("Cập nhật thông tin thất bại");
                 }
                 viewModel.clearUpdateSuccess();
             }
@@ -238,5 +320,31 @@ public class CustomerAccountInfoFragment extends BaseFragment<FragmentCustomerAc
 
         // Tải dữ liệu ban đầu
         viewModel.loadProfile();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (autoRefreshHelper == null) {
+            autoRefreshHelper = new com.fixit.core.common.AutoRefreshHelper(
+                    requireContext(),
+                    0L,
+                    () -> {
+                        if (viewModel != null) {
+                            viewModel.loadProfile();
+                        }
+                    },
+                    "com.fixit.PROFILE_UPDATE"
+            );
+        }
+        autoRefreshHelper.start();
+    }
+
+    @Override
+    public void onPause() {
+        if (autoRefreshHelper != null) {
+            autoRefreshHelper.stop();
+        }
+        super.onPause();
     }
 }

@@ -71,6 +71,7 @@ public class WorkerEditSpecializationFragment extends BaseFragment<FragmentWorke
                         }
                     }
                     adapter.notifyDataSetChanged();
+                    Toast.makeText(requireContext(), "Đã chọn dịch vụ mới. Nhớ nhấn nút \"Lưu thay đổi\" ở góc dưới màn hình nhé!", Toast.LENGTH_LONG).show();
                 }
             });
             bottomSheet.show(getChildFragmentManager(), "SelectServiceBottomSheet");

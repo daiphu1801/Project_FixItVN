@@ -17,6 +17,7 @@ import com.fixit.domain.worker.entity.WorkerServiceId;
 import com.fixit.domain.worker.repository.WorkerRepository;
 import com.fixit.domain.worker.repository.WorkerServiceRepository;
 import com.fixit.domain.worker.support.CurrentWorkerResolver;
+import com.fixit.domain.auth.repository.UserRepository;
 import com.fixit.global.exception.AppException;
 import com.fixit.global.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
@@ -35,6 +36,7 @@ public class WorkerProfileServiceImpl implements WorkerProfileService {
     private final WorkerRepository workerRepository;
     private final WorkerServiceRepository workerServiceRepository;
     private final ServiceCategoryRepository serviceCategoryRepository;
+    private final UserRepository userRepository;
 
     @Override
     @Transactional(readOnly = true)
@@ -75,7 +77,15 @@ public class WorkerProfileServiceImpl implements WorkerProfileService {
 
         if (user != null) {
             if (request.getEmail() != null) {
-                user.setEmail(trimToNull(request.getEmail()));
+                String newEmail = request.getEmail().trim().toLowerCase();
+                if (!newEmail.isEmpty() && !newEmail.equals(user.getEmail())) {
+                    if (userRepository.existsByEmail(newEmail)) {
+                        throw new AppException(ErrorCode.EMAIL_ALREADY_EXISTS);
+                    }
+                    user.setEmail(newEmail);
+                } else if (newEmail.isEmpty()) {
+                    user.setEmail(null);
+                }
             }
 
             // Avatar is updated only through /api/v1/users/me/avatar with an uploadId.

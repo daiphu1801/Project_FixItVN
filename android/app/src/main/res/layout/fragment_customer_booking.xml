@@ -15,6 +15,7 @@
         android:paddingEnd="16dp"
         android:paddingTop="44dp"
         android:paddingBottom="16dp"
+        android:clipToPadding="false"
         app:layout_constraintTop_toTopOf="parent">
 
         <ImageView
@@ -26,7 +27,6 @@
             android:padding="8dp"
             app:tint="#42c2ff"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toBottomOf="@id/tvHeaderTitle"
             app:layout_constraintStart_toStartOf="parent"/>
 
         <TextView
@@ -38,7 +38,8 @@
             android:textColor="@color/white"
             android:textSize="20sp"
             android:textStyle="bold"
-            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintTop_toTopOf="@id/btnBack"
+            app:layout_constraintBottom_toBottomOf="@id/btnBack"
             app:layout_constraintStart_toEndOf="@id/btnBack"
             app:layout_constraintEnd_toEndOf="parent"/>
 
@@ -51,7 +52,7 @@
             android:text="Điền thông tin để tìm thợ phù hợp"
             android:textColor="#CCE8FF"
             android:textSize="13sp"
-            app:layout_constraintTop_toBottomOf="@id/tvHeaderTitle"
+            app:layout_constraintTop_toBottomOf="@id/btnBack"
             app:layout_constraintStart_toEndOf="@id/btnBack"
             app:layout_constraintEnd_toEndOf="parent"/>
 
@@ -380,11 +381,10 @@
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintEnd_toEndOf="parent">
 
-                        <ImageView
+                        <org.osmdroid.views.MapView
+                            android:id="@+id/mapView"
                             android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:scaleType="centerCrop"
-                            android:src="@drawable/img_map_placeholder" /> 
+                            android:layout_height="match_parent" />
                     </com.google.android.material.card.MaterialCardView>
                 </androidx.constraintlayout.widget.ConstraintLayout>
             </com.google.android.material.card.MaterialCardView>

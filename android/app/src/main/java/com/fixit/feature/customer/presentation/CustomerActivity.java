@@ -24,6 +24,8 @@ import androidx.core.content.ContextCompat;
 import com.fixit.feature.notification.domain.usecase.RegisterDeviceTokenUseCase;
 import com.google.firebase.messaging.FirebaseMessaging;
 import javax.inject.Inject;
+import androidx.lifecycle.ViewModelProvider;
+import com.fixit.feature.customer.order.presentation.CustomerOrderViewModel;
 
 /**
  * CẬP NHẬT: KẾT NỐI THANH ĐIỀU HƯỚNG 5 MỤC (TRANG CHỦ, ĐƠN HÀNG, LỊCH SỬ, THỢ QUEN, CÁ NHÂN)
@@ -37,6 +39,8 @@ public class CustomerActivity extends BaseActivity<ActivityCustomerBinding> {
     RegisterDeviceTokenUseCase registerDeviceTokenUseCase;
 
     private NavController navController;
+    private CustomerOrderViewModel orderViewModel;
+    private boolean isStartupRedirectNeeded = true;
 
     @Override
     protected ActivityCustomerBinding inflateViewBinding(android.view.LayoutInflater inflater) {
@@ -45,6 +49,7 @@ public class CustomerActivity extends BaseActivity<ActivityCustomerBinding> {
 
     @Override
     protected void setupViews() {
+        orderViewModel = new ViewModelProvider(this).get(CustomerOrderViewModel.class);
         setupNavigation();
         checkNotificationPermission();
     }
@@ -83,15 +88,40 @@ public class CustomerActivity extends BaseActivity<ActivityCustomerBinding> {
                 // Các mục khác sử dụng mặc định của NavigationUI
                 return NavigationUI.onNavDestinationSelected(item, navController);
             });
-            
-            // Chú thích: Tôi đã loại bỏ phần code liên quan đến nút tròn FAB và Placeholder 
-            // để phù hợp với giao diện 5 mục dàn hàng ngang như ảnh bạn vừa gửi.
+
+            // Ẩn Bottom Navigation Bar (và CoordinatorLayout chứa nó) ở các màn hình con để tránh bị đè/dè giao diện
+            navController.addOnDestinationChangedListener((controller, destination, arguments) -> {
+                int id = destination.getId();
+                if (id == R.id.nav_customer_home ||
+                        id == R.id.nav_customer_order ||
+                        id == R.id.nav_customer_history ||
+                        id == R.id.nav_customer_contacts ||
+                        id == R.id.nav_customer_profile ||
+                        id == R.id.nav_customer_search) {
+                    binding.coordinatorLayoutCustomer.setVisibility(android.view.View.VISIBLE);
+                } else {
+                    binding.coordinatorLayoutCustomer.setVisibility(android.view.View.GONE);
+                }
+            });
         }
     }
 
     @Override
     protected void observeData() {
-        // Quan sát dữ liệu khách hàng (nếu có)
+        if (orderViewModel != null) {
+            orderViewModel.orderStatus.observe(this, status -> {
+                if (status != null && status != 0) {
+                    if (isStartupRedirectNeeded) {
+                        isStartupRedirectNeeded = false;
+                        if (binding.bottomNavigationView.getSelectedItemId() != R.id.nav_customer_order) {
+                            binding.bottomNavigationView.setSelectedItemId(R.id.nav_customer_order);
+                        }
+                    }
+                }
+            });
+            // Kiểm tra trạng thái đơn hàng hoạt động từ server khi khởi động màn hình chính
+            orderViewModel.checkActiveBooking();
+        }
     }
 
     private void checkNotificationPermission() {

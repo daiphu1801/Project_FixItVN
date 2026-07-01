@@ -38,8 +38,6 @@ public class CustomerSearchFragment extends BaseFragment<FragmentCustomerSearchB
     protected void setupViews() {
         viewModel = new ViewModelProvider(this).get(CustomerSearchViewModel.class);
 
-
-
         // Thiết lập Adapter cho RecyclerView (Dùng lại ServiceCategoryAdapter)
         serviceAdapter = new ServiceCategoryAdapter(new ServiceCategoryAdapter.OnCategoryClickListener() {
             @Override
@@ -56,6 +54,33 @@ public class CustomerSearchFragment extends BaseFragment<FragmentCustomerSearchB
         });
         binding.rvServices.setAdapter(serviceAdapter);
 
+        // Sự kiện click chọn bộ lọc chip
+        binding.chipGroupFilter.setOnCheckedChangeListener((group, checkedId) -> {
+            if (checkedId == -1) {
+                // Nếu người dùng bỏ chọn toàn bộ, bắt buộc chọn lại "Tất cả"
+                binding.chipAll.setChecked(true);
+                return;
+            }
+            updateChipStyles();
+
+            String filterType = "ALL";
+            if (checkedId == R.id.chipAll) {
+                filterType = "ALL";
+            } else if (checkedId == R.id.chipElectric) {
+                filterType = "ELECTRIC";
+            } else if (checkedId == R.id.chipAc) {
+                filterType = "AC";
+            } else if (checkedId == R.id.chipPlumbing) {
+                filterType = "PLUMBING";
+            } else if (checkedId == R.id.chipCleaning) {
+                filterType = "CLEANING";
+            }
+            viewModel.filterByChip(filterType);
+        });
+
+        // Thiết lập giao diện màu sắc ban đầu cho các chip
+        updateChipStyles();
+
         // Sự kiện gõ tìm kiếm
         binding.etSearch.addTextChangedListener(new TextWatcher() {
             @Override
@@ -63,14 +88,56 @@ public class CustomerSearchFragment extends BaseFragment<FragmentCustomerSearchB
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                viewModel.searchCategories(s.toString());
+                String query = s.toString();
+                viewModel.searchCategories(query);
+                binding.ivClearSearch.setVisibility(query.isEmpty() ? android.view.View.GONE : android.view.View.VISIBLE);
             }
 
             @Override
             public void afterTextChanged(Editable s) {}
         });
 
+        // Sự kiện click nút xóa chữ ở ô tìm kiếm
+        binding.ivClearSearch.setOnClickListener(v -> {
+            binding.etSearch.setText("");
+        });
+
         viewModel.fetchCategories();
+    }
+
+    private void updateChipStyles() {
+        int checkedId = binding.chipGroupFilter.getCheckedChipId();
+
+        int[][] states = new int[][] {
+            new int[] { android.R.attr.state_checked }, // checked
+            new int[] { -android.R.attr.state_checked } // unchecked
+        };
+
+        // Màu thương hiệu premium (xanh dương đậm và xám nhạt)
+        int activeBgColor = android.graphics.Color.parseColor("#0284C7");
+        int inactiveBgColor = android.graphics.Color.parseColor("#F1F5F9");
+
+        int activeTextColor = android.graphics.Color.parseColor("#FFFFFF");
+        int inactiveTextColor = android.graphics.Color.parseColor("#475569");
+
+        for (int i = 0; i < binding.chipGroupFilter.getChildCount(); i++) {
+            android.view.View view = binding.chipGroupFilter.getChildAt(i);
+            if (view instanceof com.google.android.material.chip.Chip) {
+                com.google.android.material.chip.Chip chip = (com.google.android.material.chip.Chip) view;
+
+                chip.setChipBackgroundColor(new android.content.res.ColorStateList(
+                    states,
+                    new int[] { activeBgColor, inactiveBgColor }
+                ));
+
+                chip.setTextColor(new android.content.res.ColorStateList(
+                    states,
+                    new int[] { activeTextColor, inactiveTextColor }
+                ));
+
+                chip.setTypeface(android.graphics.Typeface.create("sans-serif-medium", android.graphics.Typeface.NORMAL));
+            }
+        }
     }
 
     private void navigateToFindingWorker(int serviceId, String serviceName, String subServiceName) {
@@ -89,6 +156,22 @@ public class CustomerSearchFragment extends BaseFragment<FragmentCustomerSearchB
     protected void observeData() {
         viewModel.categories.observe(getViewLifecycleOwner(), categories -> {
             serviceAdapter.submitList(categories);
+
+            // Cập nhật số lượng và hiển thị empty state
+            if (categories != null) {
+                binding.tvServiceCount.setText(String.valueOf(categories.size()));
+                if (categories.isEmpty()) {
+                    binding.layoutEmpty.setVisibility(android.view.View.VISIBLE);
+                    binding.rvServices.setVisibility(android.view.View.GONE);
+                } else {
+                    binding.layoutEmpty.setVisibility(android.view.View.GONE);
+                    binding.rvServices.setVisibility(android.view.View.VISIBLE);
+                }
+            } else {
+                binding.tvServiceCount.setText("0");
+                binding.layoutEmpty.setVisibility(android.view.View.VISIBLE);
+                binding.rvServices.setVisibility(android.view.View.GONE);
+            }
         });
 
         viewModel.getIsLoading().observe(getViewLifecycleOwner(), isLoading -> {

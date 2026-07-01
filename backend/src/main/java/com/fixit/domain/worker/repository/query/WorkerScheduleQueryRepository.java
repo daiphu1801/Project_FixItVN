@@ -36,7 +36,7 @@ public interface WorkerScheduleQueryRepository extends Repository<Booking, UUID>
             LEFT JOIN customers c
                 ON c.customer_id = b.customer_id
             WHERE b.worker_id = :workerId
-              AND b.status IN ('Accepted', 'Surveying', 'Waiting_Approval', 'In_Progress')
+              AND b.status IN ('Accepted', 'Surveying', 'Waiting_Approval', 'Waiting_Payment', 'In_Progress')
             ORDER BY b.scheduled_time ASC NULLS LAST
             """, nativeQuery = true)
     List<WorkerScheduleItemProjection> findActiveByWorkerId(
@@ -69,7 +69,7 @@ public interface WorkerScheduleQueryRepository extends Repository<Booking, UUID>
             WHERE b.worker_id = :workerId
               AND b.scheduled_time IS NOT NULL
               AND DATE(b.scheduled_time AT TIME ZONE 'Asia/Ho_Chi_Minh') = :targetDate
-              AND b.status IN ('Accepted', 'Surveying', 'Waiting_Approval', 'In_Progress')
+              AND b.status IN ('Accepted', 'Surveying', 'Waiting_Approval', 'Waiting_Payment', 'In_Progress')
             ORDER BY b.scheduled_time ASC
             """, nativeQuery = true)
     List<WorkerScheduleItemProjection> findScheduleByWorkerIdAndDate(

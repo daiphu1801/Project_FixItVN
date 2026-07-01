@@ -168,6 +168,26 @@ public class ProfileCustomerFragment extends BaseFragment<FragmentProfileCustome
                         if (profile.getPhoneNumber() != null && !profile.getPhoneNumber().isEmpty()) {
                             binding.tvProfilePhone.setText(profile.getPhoneNumber());
                         }
+
+                        String avatarUrl = profile.getAvatarUrl();
+                        if (avatarUrl != null && !avatarUrl.trim().isEmpty()) {
+                            requireContext().getSharedPreferences(com.fixit.core.common.Constants.PREF_NAME, android.content.Context.MODE_PRIVATE)
+                                    .edit()
+                                    .putString("user_avatar", avatarUrl)
+                                    .apply();
+                            Glide.with(ProfileCustomerFragment.this)
+                                    .load(avatarUrl)
+                                    .placeholder(R.drawable.ic_person)
+                                    .error(R.drawable.ic_person)
+                                    .circleCrop()
+                                    .into(binding.ivAvatar);
+                        } else {
+                            requireContext().getSharedPreferences(com.fixit.core.common.Constants.PREF_NAME, android.content.Context.MODE_PRIVATE)
+                                    .edit()
+                                    .remove("user_avatar")
+                                    .apply();
+                            binding.ivAvatar.setImageResource(R.drawable.ic_person);
+                        }
                     });
 
                     // Lưu lại vào session cache để hiển thị nhanh lần sau
@@ -211,11 +231,13 @@ public class ProfileCustomerFragment extends BaseFragment<FragmentProfileCustome
                 Toast.makeText(requireContext(), "Ảnh đại diện đã cập nhật", Toast.LENGTH_SHORT).show();
                 if (result.getConfirmedUpload() != null) {
                     String fileUrl = result.getConfirmedUpload().getFileUrl();
-                    requireContext().getSharedPreferences(com.fixit.core.common.Constants.PREF_NAME, android.content.Context.MODE_PRIVATE)
-                            .edit()
-                            .putString("user_avatar", fileUrl)
-                            .apply();
-                    Glide.with(this).load(fileUrl).circleCrop().into(binding.ivAvatar);
+                    if (fileUrl != null && !fileUrl.isEmpty()) {
+                        requireContext().getSharedPreferences(com.fixit.core.common.Constants.PREF_NAME, android.content.Context.MODE_PRIVATE)
+                                .edit()
+                                .putString("user_avatar", fileUrl)
+                                .apply();
+                        Glide.with(this).load(fileUrl).circleCrop().into(binding.ivAvatar);
+                    }
 
                     try {
                         Intent intent = new Intent("com.fixit.PROFILE_UPDATE");
@@ -236,6 +258,26 @@ public class ProfileCustomerFragment extends BaseFragment<FragmentProfileCustome
                 }
                 if (profile.getPhoneNumber() != null && !profile.getPhoneNumber().isEmpty()) {
                     binding.tvProfilePhone.setText(profile.getPhoneNumber());
+                }
+
+                String avatarUrl = profile.getAvatarUrl();
+                if (avatarUrl != null && !avatarUrl.trim().isEmpty()) {
+                    requireContext().getSharedPreferences(com.fixit.core.common.Constants.PREF_NAME, android.content.Context.MODE_PRIVATE)
+                            .edit()
+                            .putString("user_avatar", avatarUrl)
+                            .apply();
+                    Glide.with(this)
+                            .load(avatarUrl)
+                            .placeholder(R.drawable.ic_person)
+                            .error(R.drawable.ic_person)
+                            .circleCrop()
+                            .into(binding.ivAvatar);
+                } else {
+                    requireContext().getSharedPreferences(com.fixit.core.common.Constants.PREF_NAME, android.content.Context.MODE_PRIVATE)
+                            .edit()
+                            .remove("user_avatar")
+                            .apply();
+                    binding.ivAvatar.setImageResource(R.drawable.ic_person);
                 }
             }
         });

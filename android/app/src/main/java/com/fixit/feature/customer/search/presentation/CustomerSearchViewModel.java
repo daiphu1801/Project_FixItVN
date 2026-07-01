@@ -23,6 +23,8 @@ public class CustomerSearchViewModel extends BaseViewModel {
     public final LiveData<List<ServiceCategory>> categories = _categories;
 
     private List<ServiceCategory> allCategories = new ArrayList<>();
+    private String currentFilterType = "ALL";
+    private String currentSearchQuery = "";
 
     @Inject
     public CustomerSearchViewModel(GetAllServiceCategoriesUseCase getAllCategoriesUseCase) {
@@ -35,7 +37,7 @@ public class CustomerSearchViewModel extends BaseViewModel {
             setLoading(false);
             if (result.isSuccess()) {
                 allCategories = result.getData();
-                _categories.setValue(allCategories);
+                applyFilter();
             } else {
                 setError(result.getError().getMessage());
             }
@@ -43,15 +45,53 @@ public class CustomerSearchViewModel extends BaseViewModel {
     }
 
     public void searchCategories(String query) {
-        if (query == null || query.trim().isEmpty()) {
-            _categories.setValue(allCategories);
-            return;
-        }
+        currentSearchQuery = query != null ? query : "";
+        applyFilter();
+    }
 
-        String lowerQuery = query.toLowerCase().trim();
+    public void filterByChip(String filterType) {
+        currentFilterType = filterType != null ? filterType : "ALL";
+        applyFilter();
+    }
+
+    private void applyFilter() {
         List<ServiceCategory> filteredList = new ArrayList<>();
+        String lowerQuery = currentSearchQuery.toLowerCase().trim();
+
         for (ServiceCategory category : allCategories) {
-            if (category.getName() != null && category.getName().toLowerCase().contains(lowerQuery)) {
+            String name = category.getName();
+            if (name == null) continue;
+            String lowerName = name.toLowerCase();
+
+            // 1. Check search query
+            if (!lowerQuery.isEmpty() && !lowerName.contains(lowerQuery)) {
+                continue;
+            }
+
+            // 2. Check chip filter type
+            boolean matchesChip = false;
+            switch (currentFilterType) {
+                case "ALL":
+                    matchesChip = true;
+                    break;
+                case "ELECTRIC":
+                    matchesChip = lowerName.contains("điện nước") || lowerName.contains("điện");
+                    break;
+                case "AC":
+                    matchesChip = lowerName.contains("điện lạnh") || lowerName.contains("máy lạnh") || lowerName.contains("lạnh");
+                    break;
+                case "PLUMBING":
+                    matchesChip = lowerName.contains("thông nghẹt") || lowerName.contains("ống nước") || lowerName.contains("cơ khí");
+                    break;
+                case "CLEANING":
+                    matchesChip = lowerName.contains("vệ sinh") || lowerName.contains("giặt ghế") || lowerName.contains("dọn dẹp");
+                    break;
+                default:
+                    matchesChip = true;
+                    break;
+            }
+
+            if (matchesChip) {
                 filteredList.add(category);
             }
         }

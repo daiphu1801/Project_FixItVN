@@ -27,6 +27,8 @@ import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.Locale;
 
+import com.fixit.core.common.AutoRefreshHelper;
+
 import dagger.hilt.android.AndroidEntryPoint;
 
 @AndroidEntryPoint
@@ -36,6 +38,11 @@ public class CustomerOrderDetailFragment extends BaseFragment<FragmentCustomerOr
     private final DecimalFormat priceFormat = new DecimalFormat("#,###");
     private Marker customerMarker;
     private Marker workerMarker;
+    private AutoRefreshHelper autoRefreshHelper;
+
+    // Theo dõi trạng thái lần cuối để tránh rebuild toàn bộ UI mỗi lần polling
+    private String lastRenderedStatus = null;
+    private String lastRenderedBookingId = null;
 
     @NonNull
     @Override
@@ -160,6 +167,21 @@ public class CustomerOrderDetailFragment extends BaseFragment<FragmentCustomerOr
 
     private void bindBookingData(CustomerBooking booking) {
         if (booking == null) return;
+
+        String currentStatus = booking.getStatus();
+        String currentBookingId = booking.getBookingId();
+        boolean isNewOrStatusChanged = !currentBookingId.equals(lastRenderedBookingId)
+                || !java.util.Objects.equals(currentStatus, lastRenderedStatus);
+
+        if (!isNewOrStatusChanged) {
+            // Chỉ cập nhật vị trí thợ trên bản đồ (không reset UI/scroll)
+            updateMapMarkers(booking);
+            return;
+        }
+
+        lastRenderedBookingId = currentBookingId;
+        lastRenderedStatus = currentStatus;
+
 
         // Mã đơn hàng
         String shortId = booking.getBookingId() != null && booking.getBookingId().length() > 8
@@ -650,13 +672,37 @@ public class CustomerOrderDetailFragment extends BaseFragment<FragmentCustomerOr
         if (binding != null && binding.mapView != null) {
             binding.mapView.onResume();
         }
+        // Reset tracking de lan tiep theo nhan du lieu luon render day du
+        lastRenderedStatus = null;
+        lastRenderedBookingId = null;
+
+        if (autoRefreshHelper == null) {
+            autoRefreshHelper = new AutoRefreshHelper(
+                    requireContext(),
+                    0L,
+                    () -> {
+                        CustomerBooking booking = viewModel.currentBooking.getValue();
+                        if (viewModel != null && booking != null && booking.getBookingId() != null) {
+                            // Reset tracking de broadcast luon force full-render
+                            lastRenderedStatus = null;
+                            lastRenderedBookingId = null;
+                            viewModel.loadBooking(booking.getBookingId());
+                        }
+                    },
+                    "com.fixit.BOOKING_UPDATE"
+            );
+        }
+        autoRefreshHelper.start();
     }
 
     @Override
     public void onPause() {
-        super.onPause();
+        if (autoRefreshHelper != null) {
+            autoRefreshHelper.stop();
+        }
         if (binding != null && binding.mapView != null) {
             binding.mapView.onPause();
         }
+        super.onPause();
     }
 }

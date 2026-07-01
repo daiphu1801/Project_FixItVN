@@ -34,6 +34,9 @@ import com.fixit.feature.upload.presentation.UploadViewModel;
 import com.fixit.feature.customer.profile.presentation.AddressViewModel;
 import com.fixit.feature.customer.profile.domain.model.CustomerAddress;
 import dagger.hilt.android.AndroidEntryPoint;
+import org.osmdroid.config.Configuration;
+import org.osmdroid.util.GeoPoint;
+import org.osmdroid.views.overlay.Marker;
 
 @AndroidEntryPoint
 public class CustomerBookingFragment extends BaseFragment<FragmentCustomerBookingBinding> {
@@ -63,8 +66,7 @@ public class CustomerBookingFragment extends BaseFragment<FragmentCustomerBookin
                     // Upload ảnh vấn đề lên server
                     uploadViewModel.upload(requireContext(), uri, UploadPurpose.BOOKING_ISSUE_IMAGE);
                 }
-            }
-    );
+            });
 
     @NonNull
     @Override
@@ -78,7 +80,7 @@ public class CustomerBookingFragment extends BaseFragment<FragmentCustomerBookin
         uploadViewModel = new ViewModelProvider(this).get(UploadViewModel.class);
         addressViewModel = new ViewModelProvider(this).get(AddressViewModel.class);
         addressViewModel.loadAddresses();
-        
+
         if (getArguments() != null) {
             serviceId = getArguments().getInt("serviceId", 1);
             serviceName = getArguments().getString("serviceName", "Dịch vụ sửa chữa");
@@ -88,50 +90,75 @@ public class CustomerBookingFragment extends BaseFragment<FragmentCustomerBookin
             }
         }
         getParentFragmentManager().setFragmentResultListener(
-            NoteInputFragment.REQUEST_KEY, 
-            this, 
-            (requestKey, bundle) -> {
-                String text = bundle.getString(NoteInputFragment.BUNDLE_KEY);
-                String type = bundle.getString(NoteInputFragment.TYPE_KEY);
-                
-                if (text != null && type != null) {
-                    if (type.equals("problem")) {
-                        problemDescription = text;
-                        updateProblemUI();
-                    } else if (type.equals("note")) {
-                        specialNote = text;
-                        updateNoteUI();
+                NoteInputFragment.REQUEST_KEY,
+                this,
+                (requestKey, bundle) -> {
+                    String text = bundle.getString(NoteInputFragment.BUNDLE_KEY);
+                    String type = bundle.getString(NoteInputFragment.TYPE_KEY);
+
+                    if (text != null && type != null) {
+                        if (type.equals("problem")) {
+                            problemDescription = text;
+                            updateProblemUI();
+                        } else if (type.equals("note")) {
+                            specialNote = text;
+                            updateNoteUI();
+                        }
                     }
-                }
-            }
-        );
+                });
 
         getParentFragmentManager().setFragmentResultListener(
-            CustomerLocationPickerFragment.REQUEST_KEY,
-            this,
-            (requestKey, bundle) -> {
-                String address = bundle.getString(CustomerLocationPickerFragment.ADDRESS_KEY);
-                if (address != null) {
-                    currentAddress = address;
-                    currentLatitude = bundle.getDouble(CustomerLocationPickerFragment.LATITUDE_KEY, 21.0285);
-                    currentLongitude = bundle.getDouble(CustomerLocationPickerFragment.LONGITUDE_KEY, 105.8542);
-                    currentAddressId = null;
-                    currentLabel = "Bản đồ";
-                    isAddressUserSelected = true;
-                    updateLocationUI();
-                }
-            }
-        );
+                CustomerLocationPickerFragment.REQUEST_KEY,
+                this,
+                (requestKey, bundle) -> {
+                    String address = bundle.getString(CustomerLocationPickerFragment.ADDRESS_KEY);
+                    if (address != null) {
+                        currentAddress = address;
+                        currentLatitude = bundle.getDouble(CustomerLocationPickerFragment.LATITUDE_KEY, 21.0285);
+                        currentLongitude = bundle.getDouble(CustomerLocationPickerFragment.LONGITUDE_KEY, 105.8542);
+                        currentAddressId = null;
+                        currentLabel = "Bản đồ";
+                        isAddressUserSelected = true;
+                        updateLocationUI();
+                    }
+                });
     }
 
     @Override
     protected void setupViews() {
-        CustomerOrderViewModel orderViewModel = new ViewModelProvider(requireActivity()).get(CustomerOrderViewModel.class);
+        CustomerOrderViewModel orderViewModel = new ViewModelProvider(requireActivity())
+                .get(CustomerOrderViewModel.class);
+
+        // Chặn người dùng nếu đang có đơn hàng hoạt động (trạng thái khác 0)
+        if (orderViewModel.orderStatus.getValue() != null && orderViewModel.orderStatus.getValue() != 0) {
+            Toast.makeText(requireContext(), "Bạn đang có đơn hàng hoạt động!", Toast.LENGTH_SHORT).show();
+            if (navController != null) {
+                navController.navigate(R.id.nav_customer_order);
+            }
+            return;
+        }
 
         binding.tvHeaderTitle.setText(serviceName);
 
         binding.btnBack.setOnClickListener(v -> {
-            if (navController != null) navController.popBackStack();
+            if (navController != null)
+                navController.popBackStack();
+        });
+
+        // Cấu hình osmdroid MapView
+        Configuration.getInstance().load(requireContext(),
+                requireContext().getSharedPreferences("osmdroid", android.content.Context.MODE_PRIVATE));
+        Configuration.getInstance().setUserAgentValue(requireContext().getPackageName());
+        binding.mapView.setTileSource(org.osmdroid.tileprovider.tilesource.TileSourceFactory.MAPNIK);
+        binding.mapView.setMultiTouchControls(false); // Vô hiệu hoá chạm đa điểm để vuốt trang mượt mà
+
+        // Nhấp vào bản đồ để chọn địa chỉ tương tự click vào cardLocation
+        binding.mapView.setOnTouchListener((v, event) -> {
+            if (event.getAction() == android.view.MotionEvent.ACTION_UP) {
+                v.performClick();
+                showAddressSelectionBottomSheet();
+            }
+            return true;
         });
 
         binding.cardLocation.setOnClickListener(v -> showAddressSelectionBottomSheet());
@@ -152,12 +179,13 @@ public class CustomerBookingFragment extends BaseFragment<FragmentCustomerBookin
             java.math.BigDecimal lng = new java.math.BigDecimal(String.valueOf(currentLongitude));
             String desc = problemDescription + (specialNote.isEmpty() ? "" : "\nGhi chú: " + specialNote);
 
-            // Phương thức thanh toán mặc định là CASH - khách sẽ chọn lại ở bước nghiệm thu cuối
+            // Phương thức thanh toán mặc định là CASH - khách sẽ chọn lại ở bước nghiệm thu
+            // cuối
             String paymentMethod = "CASH";
 
             // 1. Cập nhật trạng thái: Đang tìm thợ & gọi API tạo đơn
             orderViewModel.createBooking(serviceId, currentAddress, lat, lng, desc, paymentMethod);
-            
+
             // 2. Chuyển sang Tab Đơn hàng
             if (navController != null) {
                 navController.navigate(R.id.nav_customer_order);
@@ -168,7 +196,7 @@ public class CustomerBookingFragment extends BaseFragment<FragmentCustomerBookin
         updateNoteUI();
         updateLocationUI();
         updateTimeUI();
-        
+
         for (Uri uri : selectedImages) {
             addImageToUI(uri);
         }
@@ -215,7 +243,7 @@ public class CustomerBookingFragment extends BaseFragment<FragmentCustomerBookin
         datePicker.addOnPositiveButtonClickListener(selection -> {
             Calendar calendar = Calendar.getInstance();
             calendar.setTimeInMillis(selection);
-            
+
             MaterialTimePicker timePicker = new MaterialTimePicker.Builder()
                     .setTimeFormat(TimeFormat.CLOCK_24H)
                     .setHour(Calendar.getInstance().get(Calendar.HOUR_OF_DAY))
@@ -226,7 +254,7 @@ public class CustomerBookingFragment extends BaseFragment<FragmentCustomerBookin
             timePicker.addOnPositiveButtonClickListener(v -> {
                 calendar.set(Calendar.HOUR_OF_DAY, timePicker.getHour());
                 calendar.set(Calendar.MINUTE, timePicker.getMinute());
-                
+
                 SimpleDateFormat sdf = new SimpleDateFormat("HH:mm, dd/MM/yyyy", Locale.getDefault());
                 selectedTimeText = sdf.format(calendar.getTime());
                 updateTimeUI();
@@ -253,10 +281,11 @@ public class CustomerBookingFragment extends BaseFragment<FragmentCustomerBookin
         cardView.setStrokeColor(Color.parseColor("#E2E8F0"));
 
         ImageView imageView = new ImageView(requireContext());
-        imageView.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+        imageView.setLayoutParams(
+                new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
         imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
         cardView.addView(imageView);
-        
+
         Glide.with(this).load(uri).into(imageView);
         binding.layoutImageContainer.addView(cardView);
     }
@@ -276,7 +305,8 @@ public class CustomerBookingFragment extends BaseFragment<FragmentCustomerBookin
     }
 
     private void selectAddress(CustomerAddress address) {
-        if (address == null) return;
+        if (address == null)
+            return;
         currentAddress = address.getAddress();
         currentLatitude = address.getLatitude() != null ? address.getLatitude() : 21.0285;
         currentLongitude = address.getLongitude() != null ? address.getLongitude() : 105.8542;
@@ -287,7 +317,8 @@ public class CustomerBookingFragment extends BaseFragment<FragmentCustomerBookin
     }
 
     private void showAddressSelectionBottomSheet() {
-        CustomerAddressSelectionBottomSheet bottomSheet = CustomerAddressSelectionBottomSheet.newInstance(addressesList, currentAddressId);
+        CustomerAddressSelectionBottomSheet bottomSheet = CustomerAddressSelectionBottomSheet.newInstance(addressesList,
+                currentAddressId);
         bottomSheet.setListener(new CustomerAddressSelectionBottomSheet.OnAddressSelectedListener() {
             @Override
             public void onAddressSelected(CustomerAddress address) {
@@ -319,6 +350,23 @@ public class CustomerBookingFragment extends BaseFragment<FragmentCustomerBookin
         } else {
             binding.tvLocationBadge.setVisibility(android.view.View.GONE);
         }
+        updateMapLocation();
+    }
+
+    private void updateMapLocation() {
+        if (binding == null || binding.mapView == null)
+            return;
+        GeoPoint geoPoint = new GeoPoint(currentLatitude, currentLongitude);
+        binding.mapView.getController().setZoom(16.5);
+        binding.mapView.getController().setCenter(geoPoint);
+
+        binding.mapView.getOverlays().clear();
+        Marker marker = new Marker(binding.mapView);
+        marker.setPosition(geoPoint);
+        marker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM);
+        marker.setTitle("Vị trí của bạn");
+        binding.mapView.getOverlays().add(marker);
+        binding.mapView.invalidate();
     }
 
     private void updateProblemUI() {
@@ -334,7 +382,7 @@ public class CustomerBookingFragment extends BaseFragment<FragmentCustomerBookin
     private void updateNoteUI() {
         if (!specialNote.isEmpty()) {
             binding.tvNoteDesc.setText(specialNote);
-            binding.tvNoteDesc.setTextColor(Color.parseColor("#111827")); 
+            binding.tvNoteDesc.setTextColor(Color.parseColor("#111827"));
         } else {
             binding.tvNoteDesc.setText("Thêm yêu cầu đặc biệt...");
             binding.tvNoteDesc.setTextColor(Color.parseColor("#9CA3AF"));
@@ -343,9 +391,24 @@ public class CustomerBookingFragment extends BaseFragment<FragmentCustomerBookin
 
     @Override
     protected void observeData() {
+        CustomerOrderViewModel orderViewModel = new ViewModelProvider(requireActivity())
+                .get(CustomerOrderViewModel.class);
+
+        // Theo dõi trạng thái đơn hàng để tự động chuyển hướng khi có đơn hàng hoạt động
+        orderViewModel.orderStatus.observe(getViewLifecycleOwner(), status -> {
+            if (status != null && status != 0) {
+                if (navController != null && navController.getCurrentDestination() != null
+                        && navController.getCurrentDestination().getId() == R.id.nav_customer_booking) {
+                    Toast.makeText(requireContext(), "Bạn đang có đơn hàng hoạt động!", Toast.LENGTH_SHORT).show();
+                    navController.navigate(R.id.nav_customer_order);
+                }
+            }
+        });
+
         // Observe danh sách sổ địa chỉ
         addressViewModel.getAddressesData().observe(getViewLifecycleOwner(), addresses -> {
-            if (addresses == null) return;
+            if (addresses == null)
+                return;
             addressesList = addresses;
             if (!isAddressUserSelected && !addresses.isEmpty()) {
                 CustomerAddress defaultAddr = null;
@@ -364,7 +427,8 @@ public class CustomerBookingFragment extends BaseFragment<FragmentCustomerBookin
 
         // Observe kết quả upload ảnh vấn đề
         uploadViewModel.uploadResult.observe(getViewLifecycleOwner(), result -> {
-            if (result == null) return;
+            if (result == null)
+                return;
             if (result.isSuccess()) {
                 Toast.makeText(requireContext(), "Ảnh đã tải lên thành công", Toast.LENGTH_SHORT).show();
             } else {
@@ -374,8 +438,25 @@ public class CustomerBookingFragment extends BaseFragment<FragmentCustomerBookin
 
         uploadViewModel.isUploading.observe(getViewLifecycleOwner(), isLoading -> {
             if (isLoading != null && binding.layoutLoading != null) {
-                binding.layoutLoading.getRoot().setVisibility(isLoading ? android.view.View.VISIBLE : android.view.View.GONE);
+                binding.layoutLoading.getRoot()
+                        .setVisibility(isLoading ? android.view.View.VISIBLE : android.view.View.GONE);
             }
         });
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (binding != null && binding.mapView != null) {
+            binding.mapView.onResume();
+        }
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        if (binding != null && binding.mapView != null) {
+            binding.mapView.onPause();
+        }
     }
 }

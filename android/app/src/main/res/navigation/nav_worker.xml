@@ -71,6 +71,9 @@
         <action
             android:id="@+id/action_wallet_to_tx_detail"
             app:destination="@id/workerTransactionDetailFragment" />
+        <action
+            android:id="@+id/action_wallet_to_tx_history"
+            app:destination="@id/workerTransactionHistoryFragment" />
     </fragment>
 
     <fragment
@@ -224,4 +227,14 @@
         android:name="com.fixit.feature.worker.profile.presentation.WorkerLocationPickerFragment"
         android:label="Chọn vị trí hoạt động"
         tools:layout="@layout/fragment_worker_location_picker" />
+
+    <fragment
+        android:id="@+id/workerTransactionHistoryFragment"
+        android:name="com.fixit.feature.worker.wallet.presentation.WorkerTransactionHistoryFragment"
+        android:label="Lịch sử giao dịch"
+        tools:layout="@layout/fragment_worker_transaction_history">
+        <action
+            android:id="@+id/action_history_to_tx_detail"
+            app:destination="@id/workerTransactionDetailFragment" />
+    </fragment>
 </navigation>

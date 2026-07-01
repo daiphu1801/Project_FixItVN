@@ -203,7 +203,7 @@ public class AuthServiceImpl implements AuthService {
     @Transactional
     public void sendOtp(SendOtpRequest request) {
         String phoneNumber = request.getPhoneNumber();
-        String email = request.getEmail();
+        String email = request.getEmail() != null ? request.getEmail().trim().toLowerCase() : null;
 
         if (phoneNumber != null) {
             otpCodeRepository.findByPhoneNumberAndActionTypeAndUsedFalse(phoneNumber, request.getActionType())
@@ -245,30 +245,30 @@ public class AuthServiceImpl implements AuthService {
     @Transactional
     public AuthResponse verifyOtp(VerifyOtpRequest request) {
         String phoneNumber = request.getPhoneNumber();
-        String email = request.getEmail();
+        String email = request.getEmail() != null ? request.getEmail().trim().toLowerCase() : null;
         OtpCode otp;
         if (email != null) {
             otp = otpCodeRepository.findByEmailAndActionTypeAndUsedFalse(email, request.getActionType())
-                    .orElseThrow(() -> new RuntimeException("Mã OTP không tồn tại hoặc đã được sử dụng"));
+                    .orElseThrow(() -> new AppException(ErrorCode.OTP_NOT_FOUND));
         } else {
             otp = otpCodeRepository.findByPhoneNumberAndActionTypeAndUsedFalse(phoneNumber, request.getActionType())
-                    .orElseThrow(() -> new RuntimeException("Mã OTP không tồn tại hoặc đã được sử dụng"));
+                    .orElseThrow(() -> new AppException(ErrorCode.OTP_NOT_FOUND));
         }
 
         if (otp.getExpiresAt().isBefore(OffsetDateTime.now())) {
-            throw new RuntimeException("Mã OTP đã hết hạn");
+            throw new AppException(ErrorCode.OTP_EXPIRED);
         }
 
         if (!otp.getOtpCode().equals(request.getOtpCode())) {
-            throw new RuntimeException("Mã OTP không chính xác");
+            throw new AppException(ErrorCode.OTP_INVALID);
         }
 
         otp.setUsed(true);
         otpCodeRepository.save(otp);
 
         User user = email != null
-                ? userRepository.findByEmail(email).orElseThrow(() -> new RuntimeException("Người dùng không tồn tại"))
-                : userRepository.findByPhoneNumber(phoneNumber).orElseThrow(() -> new RuntimeException("Người dùng không tồn tại"));
+                ? userRepository.findByEmail(email).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND))
+                : userRepository.findByPhoneNumber(phoneNumber).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
 
         return buildAuthResponse(user);
     }
@@ -277,32 +277,32 @@ public class AuthServiceImpl implements AuthService {
     @Transactional
     public void resetPassword(ResetPasswordRequest request) {
         String phoneNumber = request.getPhoneNumber();
-        String email = request.getEmail();
+        String email = request.getEmail() != null ? request.getEmail().trim().toLowerCase() : null;
         OtpCode otp;
-        if (email != null && !email.trim().isEmpty()) {
+        if (email != null && !email.isEmpty()) {
             otp = otpCodeRepository.findByEmailAndActionTypeAndUsedFalse(email, OtpActionType.FORGOT_PASSWORD)
-                    .orElseThrow(() -> new RuntimeException("Mã OTP không tồn tại hoặc đã được sử dụng"));
+                    .orElseThrow(() -> new AppException(ErrorCode.OTP_NOT_FOUND));
         } else if (phoneNumber != null && !phoneNumber.trim().isEmpty()) {
             otp = otpCodeRepository.findByPhoneNumberAndActionTypeAndUsedFalse(phoneNumber, OtpActionType.FORGOT_PASSWORD)
-                    .orElseThrow(() -> new RuntimeException("Mã OTP không tồn tại hoặc đã được sử dụng"));
+                    .orElseThrow(() -> new AppException(ErrorCode.OTP_NOT_FOUND));
         } else {
-            throw new RuntimeException("Email hoặc số điện thoại không được để trống");
+            throw new AppException(ErrorCode.INVALID_REQUEST_PARAMETER, "Email hoặc số điện thoại không được để trống");
         }
 
         if (otp.getExpiresAt().isBefore(OffsetDateTime.now())) {
-            throw new RuntimeException("Mã OTP đã hết hạn");
+            throw new AppException(ErrorCode.OTP_EXPIRED);
         }
 
         if (!otp.getOtpCode().equals(request.getOtpCode())) {
-            throw new RuntimeException("Mã OTP không chính xác");
+            throw new AppException(ErrorCode.OTP_INVALID);
         }
 
         otp.setUsed(true);
         otpCodeRepository.save(otp);
 
-        User user = (email != null && !email.trim().isEmpty())
-                ? userRepository.findByEmail(email).orElseThrow(() -> new RuntimeException("Người dùng không tồn tại"))
-                : userRepository.findByPhoneNumber(phoneNumber).orElseThrow(() -> new RuntimeException("Người dùng không tồn tại"));
+        User user = (email != null && !email.isEmpty())
+                ? userRepository.findByEmail(email).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND))
+                : userRepository.findByPhoneNumber(phoneNumber).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
 
         user.setPasswordHash(passwordEncoder.encode(request.getNewPassword()));
         userRepository.save(user);
@@ -311,12 +311,17 @@ public class AuthServiceImpl implements AuthService {
     @Override
     @Transactional
     public void changePassword(String identifier, ChangePasswordRequest request) {
-        User user = userRepository.findByPhoneNumber(identifier)
-                .orElseGet(() -> userRepository.findByEmail(identifier)
-                        .orElseThrow(() -> new RuntimeException("Người dùng không tồn tại")));
+        String parsedIdentifier = identifier != null ? identifier.trim() : "";
+        if (parsedIdentifier.contains("@")) {
+            parsedIdentifier = parsedIdentifier.toLowerCase();
+        }
+        String finalIdentifier = parsedIdentifier;
+        User user = userRepository.findByPhoneNumber(finalIdentifier)
+                .orElseGet(() -> userRepository.findByEmail(finalIdentifier)
+                        .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND)));
 
         if (!passwordEncoder.matches(request.getOldPassword(), user.getPasswordHash())) {
-            throw new RuntimeException("Mật khẩu cũ không chính xác");
+            throw new AppException(ErrorCode.OLD_PASSWORD_INCORRECT);
         }
 
         user.setPasswordHash(passwordEncoder.encode(request.getNewPassword()));
@@ -327,15 +332,15 @@ public class AuthServiceImpl implements AuthService {
     @Transactional
     public AuthResponse refreshToken(TokenRefreshRequest request) {
         RefreshToken savedToken = refreshTokenRepository.findByToken(request.getRefreshToken())
-                .orElseThrow(() -> new RuntimeException("Refresh token không tồn tại"));
+                .orElseThrow(() -> new AppException(ErrorCode.UNAUTHORIZED, "Refresh token không tồn tại"));
 
         if (savedToken.getRevoked()) {
-            throw new RuntimeException("Refresh token đã bị thu hồi");
+            throw new AppException(ErrorCode.UNAUTHORIZED, "Refresh token đã bị thu hồi");
         }
 
         if (savedToken.getExpiresAt().isBefore(OffsetDateTime.now())) {
             refreshTokenRepository.delete(savedToken);
-            throw new RuntimeException("Refresh token đã hết hạn");
+            throw new AppException(ErrorCode.UNAUTHORIZED, "Refresh token đã hết hạn");
         }
 
         User user = savedToken.getUser();
@@ -360,12 +365,12 @@ public class AuthServiceImpl implements AuthService {
     @Override
     @Transactional
     public void forgotPassword(ForgotPasswordRequest request) {
-        String email = request.getEmail();
+        String email = request.getEmail() != null ? request.getEmail().trim().toLowerCase() : null;
         String phoneNumber = request.getPhoneNumber();
 
-        if (email != null && !email.trim().isEmpty()) {
+        if (email != null && !email.isEmpty()) {
             userRepository.findByEmail(email)
-                    .orElseThrow(() -> new RuntimeException("Người dùng không tồn tại"));
+                    .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
 
             SendOtpRequest sendOtpRequest = SendOtpRequest.builder()
                     .email(email)
@@ -374,7 +379,7 @@ public class AuthServiceImpl implements AuthService {
             sendOtp(sendOtpRequest);
         } else if (phoneNumber != null && !phoneNumber.trim().isEmpty()) {
             userRepository.findByPhoneNumber(phoneNumber)
-                    .orElseThrow(() -> new RuntimeException("Người dùng không tồn tại"));
+                    .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
 
             SendOtpRequest sendOtpRequest = SendOtpRequest.builder()
                     .phoneNumber(phoneNumber)
@@ -382,7 +387,7 @@ public class AuthServiceImpl implements AuthService {
                     .build();
             sendOtp(sendOtpRequest);
         } else {
-            throw new RuntimeException("Email hoặc số điện thoại không được để trống");
+            throw new AppException(ErrorCode.INVALID_REQUEST_PARAMETER, "Email hoặc số điện thoại không được để trống");
         }
     }
 

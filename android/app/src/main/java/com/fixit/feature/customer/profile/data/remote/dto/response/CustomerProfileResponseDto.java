@@ -77,5 +77,15 @@ public class CustomerProfileResponseDto {
     public void setDob(String dob) {
         this.dob = dob;
     }
-// CÚ PHÁP: }
+
+    @SerializedName("avatarUrl")
+    private String avatarUrl;
+
+    public String getAvatarUrl() {
+        return avatarUrl;
+    }
+
+    public void setAvatarUrl(String avatarUrl) {
+        this.avatarUrl = avatarUrl;
+    }
 }

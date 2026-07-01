@@ -44,6 +44,7 @@ public class CustomerListMsgFragment extends BaseFragment<FragmentListMsgBinding
         viewModel = new androidx.lifecycle.ViewModelProvider(this).get(ConversationsViewModel.class);
         configureTopBar();
         setupRecyclerView();
+        setupFilterListeners();
         viewModel.startListening();
 
         // Cấu hình sự kiện cho nút FAB (dấu cộng) để mở chat với thợ mẫu phục vụ việc test
@@ -55,6 +56,86 @@ public class CustomerListMsgFragment extends BaseFragment<FragmentListMsgBinding
                 navController.navigate(R.id.action_list_msg_to_chat, args);
             }
         });
+    }
+
+    private void setupFilterListeners() {
+        // Thiết lập bộ lắng nghe tìm kiếm
+        binding.etSearch.addTextChangedListener(new android.text.TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                viewModel.setSearchQuery(s.toString());
+            }
+
+            @Override
+            public void afterTextChanged(android.text.Editable s) {}
+        });
+
+        // Thiết lập click cho các chip
+        binding.chipAll.setOnClickListener(v -> {
+            viewModel.setFilterType("ALL");
+            updateFilterChipsUI("ALL");
+        });
+        binding.chipUnread.setOnClickListener(v -> {
+            viewModel.setFilterType("UNREAD");
+            updateFilterChipsUI("UNREAD");
+        });
+        binding.chipActive.setOnClickListener(v -> {
+            viewModel.setFilterType("ACTIVE_JOB");
+            updateFilterChipsUI("ACTIVE_JOB");
+        });
+
+        // Nút bộ lọc (Filter Icon) để ẩn/hiện bộ lọc nhanh
+        binding.btnFilter.setOnClickListener(v -> {
+            int visibility = binding.scrollFilters.getVisibility();
+            if (visibility == View.VISIBLE) {
+                binding.scrollFilters.setVisibility(View.GONE);
+            } else {
+                binding.scrollFilters.setVisibility(View.VISIBLE);
+            }
+        });
+    }
+
+    private void updateFilterChipsUI(String filterType) {
+        if ("ALL".equals(filterType)) {
+            binding.chipAll.setBackgroundResource(R.drawable.bg_chip_active);
+            binding.chipAll.setTextColor(android.graphics.Color.parseColor("#0284C7"));
+            binding.chipAll.setTypeface(null, android.graphics.Typeface.BOLD);
+
+            binding.chipUnread.setBackgroundResource(R.drawable.bg_chip_inactive);
+            binding.chipUnread.setTextColor(android.graphics.Color.parseColor("#64748B"));
+            binding.chipUnread.setTypeface(null, android.graphics.Typeface.NORMAL);
+
+            binding.chipActive.setBackgroundResource(R.drawable.bg_chip_inactive);
+            binding.chipActive.setTextColor(android.graphics.Color.parseColor("#64748B"));
+            binding.chipActive.setTypeface(null, android.graphics.Typeface.NORMAL);
+        } else if ("UNREAD".equals(filterType)) {
+            binding.chipAll.setBackgroundResource(R.drawable.bg_chip_inactive);
+            binding.chipAll.setTextColor(android.graphics.Color.parseColor("#64748B"));
+            binding.chipAll.setTypeface(null, android.graphics.Typeface.NORMAL);
+
+            binding.chipUnread.setBackgroundResource(R.drawable.bg_chip_active);
+            binding.chipUnread.setTextColor(android.graphics.Color.parseColor("#0284C7"));
+            binding.chipUnread.setTypeface(null, android.graphics.Typeface.BOLD);
+
+            binding.chipActive.setBackgroundResource(R.drawable.bg_chip_inactive);
+            binding.chipActive.setTextColor(android.graphics.Color.parseColor("#64748B"));
+            binding.chipActive.setTypeface(null, android.graphics.Typeface.NORMAL);
+        } else if ("ACTIVE_JOB".equals(filterType)) {
+            binding.chipAll.setBackgroundResource(R.drawable.bg_chip_inactive);
+            binding.chipAll.setTextColor(android.graphics.Color.parseColor("#64748B"));
+            binding.chipAll.setTypeface(null, android.graphics.Typeface.NORMAL);
+
+            binding.chipUnread.setBackgroundResource(R.drawable.bg_chip_inactive);
+            binding.chipUnread.setTextColor(android.graphics.Color.parseColor("#64748B"));
+            binding.chipUnread.setTypeface(null, android.graphics.Typeface.NORMAL);
+
+            binding.chipActive.setBackgroundResource(R.drawable.bg_chip_active);
+            binding.chipActive.setTextColor(android.graphics.Color.parseColor("#0284C7"));
+            binding.chipActive.setTypeface(null, android.graphics.Typeface.BOLD);
+        }
     }
 
     /**

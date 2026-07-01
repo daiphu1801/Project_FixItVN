@@ -128,14 +128,14 @@ public class WorkerEditProfileFragment extends BaseFragment<FragmentWorkerEditPr
 
         viewModel.profileUpdated.observe(getViewLifecycleOwner(), updated -> {
             if (Boolean.TRUE.equals(updated)) {
-                Toast.makeText(requireContext(), "Cập nhật hồ sơ thành công", Toast.LENGTH_SHORT).show();
+                showSuccess("Cập nhật hồ sơ thành công");
                 Navigation.findNavController(requireView()).navigateUp();
             }
         });
 
         viewModel.errorMessage.observe(getViewLifecycleOwner(), message -> {
             if (message != null && !message.trim().isEmpty()) {
-                Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show();
+                showError(message);
             }
         });
 
@@ -143,9 +143,9 @@ public class WorkerEditProfileFragment extends BaseFragment<FragmentWorkerEditPr
         uploadViewModel.uploadResult.observe(getViewLifecycleOwner(), result -> {
             if (result == null) return;
             if (result.isSuccess() && UploadPurpose.AVATAR.equals(result.getPurpose())) {
-                Toast.makeText(requireContext(), "Ảnh đại diện đã vào hàng đợi cập nhật", Toast.LENGTH_SHORT).show();
+                showSuccess("Ảnh đại diện đã vào hàng đợi cập nhật");
             } else if (!result.isSuccess()) {
-                Toast.makeText(requireContext(), result.getErrorMessage(), Toast.LENGTH_SHORT).show();
+                showError(result.getErrorMessage());
             }
         });
 
@@ -208,7 +208,7 @@ public class WorkerEditProfileFragment extends BaseFragment<FragmentWorkerEditPr
         // Lưu lại trạng thái người dùng đang chỉnh sửa trước khi View bị huỷ để khôi phục sau đó
         if (binding != null) {
             fullName = binding.etFullName.getText() != null ? binding.etFullName.getText().toString().trim() : null;
-            email = binding.etEmail.getText() != null ? binding.etEmail.getText().toString().trim() : null;
+            email = binding.etEmail.getText() != null ? binding.etEmail.getText().toString().trim().toLowerCase() : null;
             bio = binding.etBio.getText() != null ? binding.etBio.getText().toString().trim() : null;
             serviceArea = binding.etServiceArea.getText() != null ? binding.etServiceArea.getText().toString().trim() : null;
         }
@@ -221,7 +221,7 @@ public class WorkerEditProfileFragment extends BaseFragment<FragmentWorkerEditPr
                 : "";
 
         String inputEmail = binding.etEmail.getText() != null
-                ? binding.etEmail.getText().toString().trim()
+                ? binding.etEmail.getText().toString().trim().toLowerCase()
                 : "";
 
         String inputBio = binding.etBio.getText() != null

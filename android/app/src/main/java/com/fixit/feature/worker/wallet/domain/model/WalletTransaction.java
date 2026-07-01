@@ -27,9 +27,10 @@ public class WalletTransaction {
     private String walletType;  // "available" | "held" | "debt"
     private String status;      // "SUCCESS" | "PENDING" | "CANCELLED"
     private String bookingId;
+    private String type;        // "Deposit" | "Withdraw" | "Holding" | "Release" | "Fee_Deduction"
 
     public WalletTransaction(String id, String title, String date, String amount,
-                              boolean isCredit, String walletType, String status, String bookingId) {
+                              boolean isCredit, String walletType, String status, String bookingId, String type) {
         this.id = id;
         this.title = title;
         this.date = date;
@@ -38,6 +39,7 @@ public class WalletTransaction {
         this.walletType = walletType;
         this.status = status;
         this.bookingId = bookingId;
+        this.type = type;
     }
 
     public String getId()         { return id; }
@@ -48,6 +50,7 @@ public class WalletTransaction {
     public String getWalletType() { return walletType; }
     public String getStatus()     { return status; }
     public String getBookingId()  { return bookingId; }
+    public String getType()       { return type; }
 
     public void setStatus(String status) {
         this.status = status;

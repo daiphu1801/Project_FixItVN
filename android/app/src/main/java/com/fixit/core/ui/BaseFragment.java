@@ -69,6 +69,30 @@ public abstract class BaseFragment<VB extends ViewBinding> extends Fragment {
         }
     }
 
+    protected void showError(String message) {
+        if (getView() != null && getContext() != null) {
+            com.google.android.material.snackbar.Snackbar snackbar = 
+                    com.google.android.material.snackbar.Snackbar.make(getView(), message, com.google.android.material.snackbar.Snackbar.LENGTH_LONG);
+            snackbar.setBackgroundTint(android.graphics.Color.parseColor("#E11D48")); // Rose 600 (High-end error red)
+            snackbar.setTextColor(android.graphics.Color.WHITE);
+            snackbar.show();
+        } else {
+            showToast(message);
+        }
+    }
+
+    protected void showSuccess(String message) {
+        if (getView() != null && getContext() != null) {
+            com.google.android.material.snackbar.Snackbar snackbar = 
+                    com.google.android.material.snackbar.Snackbar.make(getView(), message, com.google.android.material.snackbar.Snackbar.LENGTH_LONG);
+            snackbar.setBackgroundTint(android.graphics.Color.parseColor("#10B981")); // Emerald 500 (High-end success green)
+            snackbar.setTextColor(android.graphics.Color.WHITE);
+            snackbar.show();
+        } else {
+            showToast(message);
+        }
+    }
+
     protected void showWarningDialog(String title, String message) {
         if (getContext() != null) {
             new com.google.android.material.dialog.MaterialAlertDialogBuilder(getContext())

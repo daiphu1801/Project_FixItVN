@@ -19,6 +19,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
+import com.fixit.core.common.AutoRefreshHelper;
+
 import dagger.hilt.android.AndroidEntryPoint;
 
 /**
@@ -33,6 +35,7 @@ public class OrderHistoryFragment extends BaseFragment<FragmentCustomerOrderHist
     private final List<CustomerBooking> allBookings = new ArrayList<>();
     private String currentFilterStatus = "Tất cả";
     private String currentSearchQuery = "";
+    private AutoRefreshHelper autoRefreshHelper;
 
     @NonNull
     @Override
@@ -159,5 +162,31 @@ public class OrderHistoryFragment extends BaseFragment<FragmentCustomerOrderHist
                         .setVisibility(isLoading ? android.view.View.VISIBLE : android.view.View.GONE);
             }
         });
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (autoRefreshHelper == null) {
+            autoRefreshHelper = new AutoRefreshHelper(
+                    requireContext(),
+                    0L,
+                    () -> {
+                        if (orderViewModel != null) {
+                            orderViewModel.fetchBookings();
+                        }
+                    },
+                    "com.fixit.BOOKING_UPDATE"
+            );
+        }
+        autoRefreshHelper.start();
+    }
+
+    @Override
+    public void onPause() {
+        if (autoRefreshHelper != null) {
+            autoRefreshHelper.stop();
+        }
+        super.onPause();
     }
 }

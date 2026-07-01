@@ -393,6 +393,7 @@ public class WorkerBookingActionServiceImpl implements WorkerBookingActionServic
         OffsetDateTime now = OffsetDateTime.now();
 
         booking.setStatus(BookingStatus.Completed);
+        booking.setCompletedAt(now);
         saveHistory(booking, "Payment_Confirmed", now);
 
         sendNotificationToCustomer(

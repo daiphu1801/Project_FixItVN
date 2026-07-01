@@ -35,14 +35,15 @@ public interface WorkerHomeQueryRepository extends JpaRepository<Worker, UUID> {
             LEFT JOIN service_categories sc ON sc.id = b.service_id
             LEFT JOIN customers c ON c.customer_id = b.customer_id
             WHERE b.worker_id = :workerId
-              AND b.status IN ('Accepted', 'Surveying', 'Waiting_Approval', 'In_Progress')
+              AND b.status IN ('Accepted', 'Surveying', 'Waiting_Approval', 'Waiting_Payment', 'In_Progress')
             ORDER BY
                 CASE b.status
                     WHEN 'In_Progress' THEN 1
-                    WHEN 'Waiting_Approval' THEN 2
-                    WHEN 'Surveying' THEN 3
-                    WHEN 'Accepted' THEN 4
-                    ELSE 5
+                    WHEN 'Waiting_Payment' THEN 2
+                    WHEN 'Waiting_Approval' THEN 3
+                    WHEN 'Surveying' THEN 4
+                    WHEN 'Accepted' THEN 5
+                    ELSE 6
                 END,
                 b.scheduled_time ASC NULLS LAST,
                 b.created_at DESC
@@ -68,7 +69,7 @@ public interface WorkerHomeQueryRepository extends JpaRepository<Worker, UUID> {
             WHERE b.worker_id = :workerId
               AND b.scheduled_time >= :startOfDay
               AND b.scheduled_time < :endOfDay
-              AND b.status IN ('Accepted', 'Surveying', 'Waiting_Approval', 'In_Progress')
+              AND b.status IN ('Accepted', 'Surveying', 'Waiting_Approval', 'Waiting_Payment', 'In_Progress')
             ORDER BY b.scheduled_time ASC NULLS LAST
             """, nativeQuery = true)
     List<WorkerScheduleItemProjection> findTodayAppointments(
@@ -97,29 +98,25 @@ public interface WorkerHomeQueryRepository extends JpaRepository<Worker, UUID> {
                       AND b.created_at >= DATE_TRUNC('month', CURRENT_DATE)
                 ), 0) AS int) AS "completedJobsThisMonth",
                 COALESCE((
-                    SELECT SUM(th.amount)
-                    FROM transaction_histories th
-                    WHERE th.wallet_id = :workerId
-                      AND th.transaction_type = 'Release'
-                      AND th.status = 'Success'
-                      -- TỐI ƯU
-                      AND th.transaction_time >= CURRENT_DATE
+                    SELECT SUM(b.final_price)
+                    FROM bookings b
+                    WHERE b.worker_id = :workerId
+                      AND b.status = 'Completed'
+                      AND b.completed_at >= CURRENT_DATE
                 ), 0) AS "incomeToday",
                 COALESCE((
-                    SELECT SUM(th.amount)
-                    FROM transaction_histories th
-                    WHERE th.wallet_id = :workerId
-                      AND th.transaction_type = 'Release'
-                      AND th.status = 'Success'
-                      AND th.transaction_time >= DATE_TRUNC('week', CURRENT_DATE)
+                    SELECT SUM(b.final_price)
+                    FROM bookings b
+                    WHERE b.worker_id = :workerId
+                      AND b.status = 'Completed'
+                      AND b.completed_at >= DATE_TRUNC('week', CURRENT_DATE)
                 ), 0) AS "incomeThisWeek",
                 COALESCE((
-                    SELECT SUM(th.amount)
-                    FROM transaction_histories th
-                    WHERE th.wallet_id = :workerId
-                      AND th.transaction_type = 'Release'
-                      AND th.status = 'Success'
-                      AND th.transaction_time >= DATE_TRUNC('month', CURRENT_DATE)
+                    SELECT SUM(b.final_price)
+                    FROM bookings b
+                    WHERE b.worker_id = :workerId
+                      AND b.status = 'Completed'
+                      AND b.completed_at >= DATE_TRUNC('month', CURRENT_DATE)
                 ), 0) AS "incomeThisMonth",
                 COALESCE((
                     SELECT AVG(r.rating)
@@ -142,20 +139,18 @@ public interface WorkerHomeQueryRepository extends JpaRepository<Worker, UUID> {
     @Query(value = """
             SELECT
                 TO_CHAR(days.day, 'Dy') AS "label",
-                COALESCE(SUM(th.amount), 0) AS "income",
-                CAST(COALESCE(COUNT(DISTINCT th.booking_id), 0) AS int) AS "completedJobs"
+                COALESCE(SUM(b.final_price), 0) AS "income",
+                CAST(COALESCE(COUNT(b.id), 0) AS int) AS "completedJobs"
             FROM generate_series(
                 CURRENT_DATE - INTERVAL '6 days',
                 CURRENT_DATE,
                 INTERVAL '1 day'
             ) AS days(day)
-            LEFT JOIN transaction_histories th
-                -- TỐI ƯU: Đổi sang so sánh khoảng (Range check) để dùng được Index trên th.transaction_time
-                ON th.transaction_time >= days.day
-               AND th.transaction_time < days.day + INTERVAL '1 day'
-               AND th.wallet_id = :workerId
-               AND th.transaction_type = 'Release'
-               AND th.status = 'Success'
+            LEFT JOIN bookings b
+                ON b.worker_id = :workerId
+               AND b.status = 'Completed'
+               AND b.completed_at >= days.day
+               AND b.completed_at < days.day + INTERVAL '1 day'
             GROUP BY days.day
             ORDER BY days.day ASC
             """, nativeQuery = true)
@@ -166,8 +161,8 @@ public interface WorkerHomeQueryRepository extends JpaRepository<Worker, UUID> {
     @Query(value = """
             SELECT
                 blocks.label AS "label",
-                COALESCE(SUM(th.amount), 0) AS "income",
-                CAST(COALESCE(COUNT(DISTINCT th.booking_id), 0) AS int) AS "completedJobs"
+                COALESCE(SUM(b.final_price), 0) AS "income",
+                CAST(COALESCE(COUNT(b.id), 0) AS int) AS "completedJobs"
             FROM (
                 SELECT CURRENT_DATE AS start_time, CURRENT_DATE + INTERVAL '4 hours' AS end_time, '0-4h' AS label
                 UNION ALL
@@ -181,12 +176,11 @@ public interface WorkerHomeQueryRepository extends JpaRepository<Worker, UUID> {
                 UNION ALL
                 SELECT CURRENT_DATE + INTERVAL '20 hours', CURRENT_DATE + INTERVAL '24 hours', '20-24h'
             ) blocks
-            LEFT JOIN transaction_histories th
-                ON th.transaction_time >= blocks.start_time
-               AND th.transaction_time < blocks.end_time
-               AND th.wallet_id = :workerId
-               AND th.transaction_type = 'Release'
-               AND th.status = 'Success'
+            LEFT JOIN bookings b
+                ON b.worker_id = :workerId
+               AND b.status = 'Completed'
+               AND b.completed_at >= blocks.start_time
+               AND b.completed_at < blocks.end_time
             GROUP BY blocks.label, blocks.start_time
             ORDER BY blocks.start_time ASC
             """, nativeQuery = true)
@@ -197,8 +191,8 @@ public interface WorkerHomeQueryRepository extends JpaRepository<Worker, UUID> {
     @Query(value = """
             SELECT
                 weeks.label AS "label",
-                COALESCE(SUM(th.amount), 0) AS "income",
-                CAST(COALESCE(COUNT(DISTINCT th.booking_id), 0) AS int) AS "completedJobs"
+                COALESCE(SUM(b.final_price), 0) AS "income",
+                CAST(COALESCE(COUNT(b.id), 0) AS int) AS "completedJobs"
             FROM (
                 SELECT DATE_TRUNC('month', CURRENT_DATE) AS start_date, DATE_TRUNC('month', CURRENT_DATE) + INTERVAL '7 days' AS end_date, 'W1' AS label
                 UNION ALL
@@ -208,12 +202,11 @@ public interface WorkerHomeQueryRepository extends JpaRepository<Worker, UUID> {
                 UNION ALL
                 SELECT DATE_TRUNC('month', CURRENT_DATE) + INTERVAL '21 days', DATE_TRUNC('month', CURRENT_DATE) + INTERVAL '1 month', 'W4'
             ) weeks
-            LEFT JOIN transaction_histories th
-                ON th.transaction_time >= weeks.start_date
-               AND th.transaction_time < weeks.end_date
-               AND th.wallet_id = :workerId
-               AND th.transaction_type = 'Release'
-               AND th.status = 'Success'
+            LEFT JOIN bookings b
+                ON b.worker_id = :workerId
+               AND b.status = 'Completed'
+               AND b.completed_at >= weeks.start_date
+               AND b.completed_at < weeks.end_date
             GROUP BY weeks.label, weeks.start_date
             ORDER BY weeks.start_date ASC
             """, nativeQuery = true)

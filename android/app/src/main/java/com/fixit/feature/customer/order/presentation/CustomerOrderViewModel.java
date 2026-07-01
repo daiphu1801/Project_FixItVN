@@ -160,6 +160,7 @@ public class CustomerOrderViewModel extends BaseViewModel {
     public void loadBooking(String bookingId) {
         stopPolling();
         this.currentBookingId = bookingId;
+        _currentBooking.setValue(null);
         setLoading(true);
         getBookingDetailUseCase.execute(bookingId, result -> {
             setLoading(false);

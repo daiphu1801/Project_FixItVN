@@ -51,10 +51,10 @@ public class WorkerConfirmPaymentFragment extends BaseFragment<FragmentConfirmPa
             if (navController != null) navController.popBackStack();
         });
 
-        // Set fixed Labor Cost
-        binding.etLaborCost.setText(String.valueOf(laborCostVal));
-        binding.etLaborCost.setEnabled(false);
-        binding.llLaborSuggestions.setVisibility(View.GONE);
+        // Enable Labor Cost editing
+        binding.etLaborCost.setText(laborCostVal > 0 ? String.valueOf(laborCostVal) : "");
+        binding.etLaborCost.setEnabled(true);
+        binding.llLaborSuggestions.setVisibility(View.VISIBLE);
 
         // Nút Gửi Báo Giá
         binding.btnConfirm.setText("Gửi báo giá cho khách");
@@ -80,6 +80,26 @@ public class WorkerConfirmPaymentFragment extends BaseFragment<FragmentConfirmPa
                     binding.tvServiceTitle.setText(order.getServiceTitle());
                     binding.tvLocation.setText(order.getAddress());
                     binding.tvStatus.setText("ĐANG KHẢO SÁT");
+
+                    // Populate labor cost if not set yet and we got a price from the order
+                    String currentLaborText = binding.etLaborCost.getText().toString().trim();
+                    if (currentLaborText.isEmpty() || currentLaborText.equals("0")) {
+                        long cost = 0;
+                        if (order.getFinalPrice() != null) {
+                            cost = order.getFinalPrice().longValue();
+                        } else if (order.getPrice() != null) {
+                            try {
+                                String cleanedPrice = order.getPrice().replaceAll("[^0-9]", "");
+                                if (!cleanedPrice.isEmpty()) {
+                                    cost = Long.parseLong(cleanedPrice);
+                                }
+                            } catch (Exception ignored) {}
+                        }
+                        if (cost > 0) {
+                            binding.etLaborCost.setText(String.valueOf(cost));
+                            calculateTotal();
+                        }
+                    }
                 } else {
                     Toast.makeText(requireContext(), "Không thể tải chi tiết đơn hàng", Toast.LENGTH_SHORT).show();
                 }
@@ -88,13 +108,28 @@ public class WorkerConfirmPaymentFragment extends BaseFragment<FragmentConfirmPa
     }
 
     private void setupSuggestionButtons() {
+        // Labor suggestions
+        for (int i = 0; i < binding.llLaborSuggestions.getChildCount(); i++) {
+            View view = binding.llLaborSuggestions.getChildAt(i);
+            if (view instanceof com.google.android.material.button.MaterialButton) {
+                com.google.android.material.button.MaterialButton btn = (com.google.android.material.button.MaterialButton) view;
+                btn.setOnClickListener(v -> {
+                    String text = btn.getText().toString().replaceAll("[^0-9]", "");
+                    binding.etLaborCost.setText(text);
+                });
+            }
+        }
+
         // Material suggestions
         for (int i = 0; i < binding.llMaterialSuggestions.getChildCount(); i++) {
-            com.google.android.material.button.MaterialButton btn = (com.google.android.material.button.MaterialButton) binding.llMaterialSuggestions.getChildAt(i);
-            btn.setOnClickListener(v -> {
-                String text = btn.getText().toString().replaceAll("[^0-9]", "");
-                binding.etMaterialCost.setText(text);
-            });
+            View view = binding.llMaterialSuggestions.getChildAt(i);
+            if (view instanceof com.google.android.material.button.MaterialButton) {
+                com.google.android.material.button.MaterialButton btn = (com.google.android.material.button.MaterialButton) view;
+                btn.setOnClickListener(v -> {
+                    String text = btn.getText().toString().replaceAll("[^0-9]", "");
+                    binding.etMaterialCost.setText(text);
+                });
+            }
         }
     }
 
@@ -135,6 +170,11 @@ public class WorkerConfirmPaymentFragment extends BaseFragment<FragmentConfirmPa
 
             BigDecimal labor = laborStr.isEmpty() ? BigDecimal.ZERO : new BigDecimal(laborStr);
             BigDecimal material = materialStr.isEmpty() ? BigDecimal.ZERO : new BigDecimal(materialStr);
+
+            if (labor.compareTo(BigDecimal.ZERO) <= 0) {
+                Toast.makeText(requireContext(), "Vui lòng nhập tiền công lớn hơn 0", Toast.LENGTH_SHORT).show();
+                return;
+            }
 
             if (material.compareTo(BigDecimal.ZERO) < 0) {
                 Toast.makeText(requireContext(), "Tiền vật tư không hợp lệ", Toast.LENGTH_SHORT).show();
