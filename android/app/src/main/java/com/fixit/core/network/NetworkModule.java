@@ -10,6 +10,8 @@ import dagger.Module;
 import dagger.Provides;
 import dagger.hilt.InstallIn;
 import dagger.hilt.components.SingletonComponent;
+import android.content.Context;
+import dagger.hilt.android.qualifiers.ApplicationContext;
 import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Retrofit;
@@ -29,8 +31,12 @@ public class NetworkModule {
 
 @Provides
 @Singleton
-public OkHttpClient provideOkHttpClient(AuthInterceptor authInterceptor, HttpLoggingInterceptor loggingInterceptor) {
+public OkHttpClient provideOkHttpClient(
+        @ApplicationContext Context context,
+        AuthInterceptor authInterceptor, 
+        HttpLoggingInterceptor loggingInterceptor) {
     return new OkHttpClient.Builder()
+            .addInterceptor(new NetworkConnectionInterceptor(context))
             .addInterceptor(authInterceptor)
             .addInterceptor(loggingInterceptor)
             .connectTimeout(30, TimeUnit.SECONDS)

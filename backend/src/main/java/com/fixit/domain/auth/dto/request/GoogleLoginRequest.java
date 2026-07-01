@@ -14,4 +14,7 @@ public class GoogleLoginRequest {
 
     @NotBlank(message = "ID Token không được để trống")
     private String idToken;
+
+    private String role;
 }
+

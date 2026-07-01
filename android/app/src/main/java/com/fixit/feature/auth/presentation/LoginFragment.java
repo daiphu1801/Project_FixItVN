@@ -56,8 +56,7 @@ public class LoginFragment extends BaseFragment<FragmentLoginBinding> {
                         showError(errorMsg);
                     }
                 }
-            }
-    );
+            });
 
     @NonNull
     @Override
@@ -107,11 +106,11 @@ public class LoginFragment extends BaseFragment<FragmentLoginBinding> {
             viewModel.loginWithGoogle(googleIdToken, selectedRole);
         });
 
-        binding.tvRegister.setOnClickListener(v ->
-                Navigation.findNavController(v).navigate(R.id.action_loginFragment_to_registerFragment, getArguments()));
+        binding.tvRegister.setOnClickListener(v -> Navigation.findNavController(v)
+                .navigate(R.id.action_loginFragment_to_registerFragment, getArguments()));
 
-        binding.tvForgotPassword.setOnClickListener(v ->
-                Navigation.findNavController(v).navigate(R.id.action_loginFragment_to_forgotPasswordFragment, getArguments()));
+        binding.tvForgotPassword.setOnClickListener(v -> Navigation.findNavController(v)
+                .navigate(R.id.action_loginFragment_to_forgotPasswordFragment, getArguments()));
 
         binding.btnLogin.setOnClickListener(v -> {
             String phone = binding.etPhone.getText().toString().trim();
@@ -129,7 +128,8 @@ public class LoginFragment extends BaseFragment<FragmentLoginBinding> {
     @Override
     protected void observeData() {
         viewModel.uiState.observe(getViewLifecycleOwner(), state -> {
-            if (state == null) return;
+            if (state == null)
+                return;
             boolean isLoading = state.isLoading();
             binding.btnLogin.setEnabled(!isLoading);
             binding.btnLogin.setText(isLoading ? "Đang xử lý..." : "Đăng nhập");
@@ -146,7 +146,7 @@ public class LoginFragment extends BaseFragment<FragmentLoginBinding> {
     /**
      * Tuỳ biến UI theo vai trò đăng nhập:
      * - CUSTOMER: màu xanh dương, badge "Khách hàng", hiện nút Google
-     * - WORKER:   màu cam/amber, badge "Thợ sửa chữa", ẩn nút Google
+     * - WORKER: màu cam/amber, badge "Thợ sửa chữa", ẩn nút Google
      */
     private void applyRoleStyle() {
         boolean isWorker = "Worker".equalsIgnoreCase(selectedRole);

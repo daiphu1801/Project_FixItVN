@@ -70,6 +70,21 @@ public abstract class BaseFragment<VB extends ViewBinding> extends Fragment {
     }
 
     protected void showError(String message) {
+        if (message != null) {
+            String lowercaseMsg = message.toLowerCase();
+            if (lowercaseMsg.contains("noconnectivityexception")
+                    || lowercaseMsg.contains("failed to connect")
+                    || lowercaseMsg.contains("unknownhostexception")
+                    || lowercaseMsg.contains("connectexception")
+                    || lowercaseMsg.contains("sockettimeoutexception")
+                    || lowercaseMsg.contains("lỗi kết nối")
+                    || lowercaseMsg.contains("timeout")
+                    || lowercaseMsg.contains("no route to host")
+                    || lowercaseMsg.contains("network")
+                    || lowercaseMsg.contains("mất mạng")) {
+                message = "Yêu cầu kết nối mạng để thực hiện chức năng này";
+            }
+        }
         if (getView() != null && getContext() != null) {
             com.google.android.material.snackbar.Snackbar snackbar = 
                     com.google.android.material.snackbar.Snackbar.make(getView(), message, com.google.android.material.snackbar.Snackbar.LENGTH_LONG);

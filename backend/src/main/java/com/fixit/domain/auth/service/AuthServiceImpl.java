@@ -26,9 +26,11 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.client.RestTemplate;
 
 import java.math.BigDecimal;
 import java.time.OffsetDateTime;
+import java.util.Map;
 import java.util.Random;
 import java.util.UUID;
 
@@ -132,7 +134,8 @@ public class AuthServiceImpl implements AuthService {
             throw new AppException(ErrorCode.INVALID_CREDENTIALS);
         }
 
-        // Kiểm tra role: nếu client khai báo role và không khớp với role thực tế của user
+        // Kiểm tra role: nếu client khai báo role và không khớp với role thực tế của
+        // user
         if (request.getRole() != null && !request.getRole().trim().isEmpty()) {
             String clientRole = request.getRole().trim();
             String actualRole = user.getRole() != null ? user.getRole().name() : "";
@@ -161,9 +164,24 @@ public class AuthServiceImpl implements AuthService {
     @Override
     @Transactional
     public AuthResponse googleLogin(GoogleLoginRequest request) {
-        String googleId = "mock-google-id-" + UUID.randomUUID().toString().substring(0, 8);
-        String email = "mock@gmail.com";
-        String name = "Mock Google User";
+        String url = "https://oauth2.googleapis.com/tokeninfo?id_token=" + request.getIdToken();
+        RestTemplate restTemplate = new RestTemplate();
+        Map<String, Object> response;
+        try {
+            response = restTemplate.getForObject(url, Map.class);
+        } catch (Exception e) {
+            log.error("Xác thực ID Token Google thất bại: ", e);
+            throw new AppException(ErrorCode.UNAUTHORIZED, "ID Token Google không hợp lệ hoặc đã hết hạn");
+        }
+
+        if (response == null || !response.containsKey("sub")) {
+            throw new AppException(ErrorCode.UNAUTHORIZED, "Không thể xác thực với Google");
+        }
+
+        String googleId = (String) response.get("sub");
+        String email = (String) response.get("email");
+        String name = (String) response.get("name");
+        String picture = (String) response.get("picture");
 
         UserSocialLogin socialLogin = userSocialLoginRepository.findByProviderAndProviderId("GOOGLE", googleId)
                 .orElse(null);
@@ -172,19 +190,57 @@ public class AuthServiceImpl implements AuthService {
         if (socialLogin == null) {
             user = userRepository.findByEmail(email).orElse(null);
             if (user == null) {
+                UserRole targetRole = UserRole.Customer;
+                if (request.getRole() != null && !request.getRole().trim().isEmpty()) {
+                    try {
+                        targetRole = UserRole.fromString(request.getRole());
+                    } catch (Exception e) {
+                        // fallback
+                    }
+                }
+
                 user = User.builder()
                         .email(email)
-                        .role(UserRole.Customer)
+                        .role(targetRole)
+                        .avatarUrl(picture)
                         .active(true)
                         .build();
                 User savedUser = userRepository.save(user);
 
-                Customer customer = Customer.builder()
-                        .user(savedUser)
-                        .fullName(name)
-                        .build();
-                customerRepository.save(customer);
+                if (targetRole == UserRole.Worker) {
+                    Worker worker = Worker.builder()
+                            .user(savedUser)
+                            .fullName(name != null ? name.trim() : "Thợ FixIt")
+                            .verificationStatus(WorkerVerificationStatus.Unverified)
+                            .available(false)
+                            .reputationScore(BigDecimal.valueOf(5.0))
+                            .missedCount(0)
+                            .rejectionCount(0)
+                            .build();
+
+                    Worker savedWorker = workerRepository.save(worker);
+
+                    WorkerWallet wallet = WorkerWallet.builder()
+                            .worker(savedWorker)
+                            .availableBalance(BigDecimal.ZERO)
+                            .heldBalance(BigDecimal.ZERO)
+                            .debtBalance(BigDecimal.ZERO)
+                            .build();
+
+                    workerWalletRepository.save(wallet);
+                } else {
+                    Customer customer = Customer.builder()
+                            .user(savedUser)
+                            .fullName(name != null ? name.trim() : "Người dùng FixIt")
+                            .build();
+                    customerRepository.save(customer);
+                }
                 user = savedUser;
+            } else {
+                if (user.getAvatarUrl() == null || user.getAvatarUrl().isEmpty()) {
+                    user.setAvatarUrl(picture);
+                    user = userRepository.save(user);
+                }
             }
             UserSocialLogin newSocialLogin = UserSocialLogin.builder()
                     .user(user)
@@ -194,6 +250,10 @@ public class AuthServiceImpl implements AuthService {
             userSocialLoginRepository.save(newSocialLogin);
         } else {
             user = socialLogin.getUser();
+            if (picture != null && !picture.equals(user.getAvatarUrl())) {
+                user.setAvatarUrl(picture);
+                user = userRepository.save(user);
+            }
         }
 
         return buildAuthResponse(user);
@@ -268,7 +328,8 @@ public class AuthServiceImpl implements AuthService {
 
         User user = email != null
                 ? userRepository.findByEmail(email).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND))
-                : userRepository.findByPhoneNumber(phoneNumber).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
+                : userRepository.findByPhoneNumber(phoneNumber)
+                        .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
 
         return buildAuthResponse(user);
     }
@@ -283,7 +344,8 @@ public class AuthServiceImpl implements AuthService {
             otp = otpCodeRepository.findByEmailAndActionTypeAndUsedFalse(email, OtpActionType.FORGOT_PASSWORD)
                     .orElseThrow(() -> new AppException(ErrorCode.OTP_NOT_FOUND));
         } else if (phoneNumber != null && !phoneNumber.trim().isEmpty()) {
-            otp = otpCodeRepository.findByPhoneNumberAndActionTypeAndUsedFalse(phoneNumber, OtpActionType.FORGOT_PASSWORD)
+            otp = otpCodeRepository
+                    .findByPhoneNumberAndActionTypeAndUsedFalse(phoneNumber, OtpActionType.FORGOT_PASSWORD)
                     .orElseThrow(() -> new AppException(ErrorCode.OTP_NOT_FOUND));
         } else {
             throw new AppException(ErrorCode.INVALID_REQUEST_PARAMETER, "Email hoặc số điện thoại không được để trống");
@@ -302,7 +364,8 @@ public class AuthServiceImpl implements AuthService {
 
         User user = (email != null && !email.isEmpty())
                 ? userRepository.findByEmail(email).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND))
-                : userRepository.findByPhoneNumber(phoneNumber).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
+                : userRepository.findByPhoneNumber(phoneNumber)
+                        .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
 
         user.setPasswordHash(passwordEncoder.encode(request.getNewPassword()));
         userRepository.save(user);

@@ -6,6 +6,7 @@ import android.net.Uri;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
+import com.fixit.core.network.NetworkUtils;
 import com.fixit.core.ui.BaseViewModel;
 import com.fixit.feature.upload.domain.model.ConfirmedUpload;
 import com.fixit.feature.upload.domain.model.QueuedUpload;
@@ -69,6 +70,11 @@ public class UploadViewModel extends BaseViewModel {
      * @param purpose Mục đích upload (lấy từ UploadPurpose.*)
      */
     public void upload(Context context, Uri uri, String purpose) {
+        if (!NetworkUtils.isNetworkAvailable(context)) {
+            _uploadResult.postValue(UploadResult.error(purpose, "Yêu cầu kết nối mạng để thực hiện chức năng này"));
+            return;
+        }
+
         _isUploading.postValue(true);
 
         try {
@@ -125,6 +131,11 @@ public class UploadViewModel extends BaseViewModel {
             String slotKey,
             String extraPayloadJson,
             boolean autoProcess) {
+        if (!NetworkUtils.isNetworkAvailable(context)) {
+            _uploadResult.postValue(UploadResult.error(purpose, "Yêu cầu kết nối mạng để thực hiện chức năng này"));
+            return;
+        }
+
         _isUploading.postValue(true);
 
         try {
